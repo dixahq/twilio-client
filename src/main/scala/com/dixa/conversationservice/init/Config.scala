@@ -1,6 +1,5 @@
 package com.dixa.conversationservice.init
 
-
 import com.dixa.dynamoutil.DynamoConfig
 
 //TODO this object should mimic application.conf

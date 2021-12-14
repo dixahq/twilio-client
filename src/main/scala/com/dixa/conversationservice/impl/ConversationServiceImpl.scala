@@ -3,7 +3,7 @@ package com.dixa.conversationservice.impl
 import com.dixa.server.util.Logging
 import com.dixa.thrift.generated._
 import com.dixa.thrift.server.AbstractService
-import com.twitter.util.{Future => TFuture}
+import com.twitter.util.{ Future => TFuture }
 
 import scala.collection.Map
 import scala.concurrent.ExecutionContext
