@@ -1,0 +1,10 @@
+#! groovy
+
+node('remote') {
+  initializeBuild('scala-service-template')
+  setupDynamo()
+  sbtClean()
+  buildAndTestPrOrBranch()
+  packageWithSnapshotFailure()
+  pushToRegistryWithTag()
+}
