@@ -50,23 +50,24 @@ lazy val `twilio-client` = project
           Some(releasesRepository)
         }
       },
-    libraryDependencies ++= Seq(
-      "org.http4s"                   %% "http4s-blaze-client" % Version.Http4s,
-      "org.http4s"                   %% "http4s-circe"        % Version.Http4s,
-      "org.http4s"                   %% "http4s-client"       % Version.Http4s,
-      "org.http4s"                   %% "http4s-core"         % Version.Http4s,
-      "org.typelevel"                %% "cats-effect"         % Version.CatsEffect,
-      "io.circe"                     %% "circe-core"          % Version.Circe,
-      "io.circe"                     %% "circe-generic"       % Version.Circe,
-      "io.circe"                     %% "circe-parser"        % Version.Circe,
-      "com.beachape"                 %% "enumeratum"          % "1.7.0",
-      "com.dixa"                     %% "thrift"              % Version.Protocols,
-      "com.twilio.sdk"                % "twilio-java-sdk"     % "6.3.0",
-      "com.googlecode.libphonenumber" % "libphonenumber"      % "8.12.39",
-      "com.dixa"                     %% "thirdparty-library"  % "2.1.4",
-      "com.dixa"                     %% "testutil"            % "1.3.3"           % Test,
-      "org.scalatest"                %% "scalatest"           % Version.Scalatest % Test
-    ),
+      libraryDependencies ++= Seq(
+        "org.http4s"                   %% "http4s-blaze-client" % Version.Http4s,
+        "org.http4s"                   %% "http4s-circe"        % Version.Http4s,
+        "org.http4s"                   %% "http4s-client"       % Version.Http4s,
+        "org.http4s"                   %% "http4s-core"         % Version.Http4s,
+        "org.typelevel"                %% "cats-effect"         % Version.CatsEffect,
+        "io.circe"                     %% "circe-core"          % Version.Circe,
+        "io.circe"                     %% "circe-generic"       % Version.Circe,
+        "io.circe"                     %% "circe-parser"        % Version.Circe,
+        "com.beachape"                 %% "enumeratum"          % "1.7.0",
+        "com.dixa"                     %% "thrift"              % Version.Protocols,
+        "com.twilio.sdk"                % "twilio-java-sdk"     % "6.3.0",
+        "com.googlecode.libphonenumber" % "libphonenumber"      % "8.12.39",
+        "com.dixa"                     %% "thirdparty-library"  % "2.1.4",
+        "org.scalactic"                %% "scalactic"           % Version.ScalatestScalactic,
+        "com.dixa"                     %% "testutil"            % "1.3.3"           % Test,
+        "org.scalatest"                %% "scalatest"           % Version.Scalatest % Test
+      ),
       Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )

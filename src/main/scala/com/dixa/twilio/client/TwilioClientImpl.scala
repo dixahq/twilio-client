@@ -2,21 +2,26 @@ package com.dixa.twilio.client
 
 import java.util
 import cats.effect.IO
-import cats.effect.kernel.Resource
-import cats.effect.unsafe.IORuntime
-import com.dixa.thrift.generated.{PhoneNumber, RequestMeta, TelephonyAccount}
+import com.dixa.thrift.generated.{PhoneNumber => ThriftPhoneNumber, RequestMeta, TelephonyAccount}
+import com.dixa.twilio.client.model.{
+  InProgress,
+  Paused,
+  PhoneNumber,
+  RecordingStatus,
+  TRecordings,
+  TwilioOutboundVerified,
+  UpdateRecordingResponse
+}
 import com.twilio.sdk.TwilioRestException
 import com.twilio.sdk.resource.instance._
 import io.circe.generic.auto._
 import org.apache.http.NameValuePair
 import org.apache.http.message.BasicNameValuePair
 import org.http4s.Method.{GET, POST}
-import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.circe.CirceEntityDecoder._
-import org.http4s.circe._
 import org.http4s.{BasicCredentials, EntityDecoder, MediaType, Uri, UrlForm}
 import org.slf4j.{Logger, LoggerFactory}
-
+import org.scalactic.TypeCheckedTripleEquals._
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, Future}
@@ -24,63 +29,20 @@ import org.http4s.client.dsl.io._
 import org.http4s.headers._
 import org.http4s.client._
 
+import scala.util.Try
 import scala.util.control.NonFatal
 
-sealed trait RecordingStatus {
-  def toTwilioString: String
-}
-case object Paused extends RecordingStatus {
-  override def toTwilioString: String = "paused"
-}
-case object InProgress extends RecordingStatus {
-  override def toTwilioString: String = "in-progress"
-}
-case object Stopped extends RecordingStatus {
-  override def toTwilioString: String = "stopped"
-}
-
-case class SubResourceListing(recordings: Option[String])
-case class TConference(subresource_uris: SubResourceListing, sid: String)
-
-object TConference {
-  implicit val decoder: EntityDecoder[IO, TConference] = jsonOf[IO, TConference]
-}
-
-case class GetConferenceResponse(conferences: List[TConference])
-case class TRecording(uri: String, sid: String)
-case class TRecordings(recordings: List[TRecording])
-
-object TRecordings {
-  implicit val decoder: EntityDecoder[IO, TRecordings] = jsonOf[IO, TRecordings]
-}
-
-case class UpdateRecordingResponse(status: String)
-
-object UpdateRecordingResponse {
-  implicit val decoder = jsonOf[IO, UpdateRecordingResponse]
-}
-
-object TwilioFront {
-  def resource(apiUrl: String)(clientFactory: TwilioRestClientFactory)(
-      implicit ioEc: ExecutionContext
-  ): Resource[IO, TwilioFront] = {
-    BlazeClientBuilder[IO](ioEc).resource
-      .map { client =>
-        new TwilioFront(clientFactory, client, apiUrl)
-      }
-  }
-}
-
-class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: String)(
+//todo: write tests
+class TwilioClientImpl(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: String)(
     implicit ioEc: ExecutionContext
-) {
+) extends TwilioClient {
 
   protected def log: Logger = LoggerFactory.getLogger(getClass)
 
-  def createSimultaneousRingCall(
+  override def createSimultaneousRingCall(
       account: TelephonyAccount,
-      from: PhoneNumber,
-      to: PhoneNumber,
+      from: ThriftPhoneNumber,
+      to: ThriftPhoneNumber,
       url: String,
       statusCallbackUrl: String,
       fallbackUrl: Option[String] = None,
@@ -121,8 +83,8 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
 
   def createCall(
       account: TelephonyAccount,
-      from: PhoneNumber,
-      to: PhoneNumber,
+      from: ThriftPhoneNumber,
+      to: ThriftPhoneNumber,
       url: String,
       csid: Long,
       endConferenceOnExit: Boolean,
@@ -177,7 +139,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield call
   }
 
-  def redirectCall(account: TelephonyAccount, callSid: String, url: String): IO[Unit] = {
+  override def redirectCall(account: TelephonyAccount, callSid: String, url: String): IO[Unit] = {
     for {
       _ <- factory.resource(account).use { client =>
         IO.blocking(
@@ -196,7 +158,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield ()
   }
 
-  def kickAllParticipants(
+  override def kickAllParticipants(
       account: TelephonyAccount,
       csid: Long,
       organizationId: String
@@ -225,7 +187,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield ()
   }
 
-  def putParticipantsOnHold(
+  override def putParticipantsOnHold(
       account: TelephonyAccount,
       csid: Long,
       orgId: String,
@@ -262,7 +224,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield ()
   }
 
-  def putAllOffHold(account: TelephonyAccount, csid: Long, orgId: String): IO[Unit] = {
+  override def putAllOffHold(account: TelephonyAccount, csid: Long, orgId: String): IO[Unit] = {
     val params = Map("Hold" -> "false")
     for {
       _ <- factory.resource(account).use { client =>
@@ -277,7 +239,11 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield ()
   }
 
-  def hangupCall(meta: RequestMeta, account: TelephonyAccount, callSid: String*): IO[Unit] = {
+  override def hangupCall(
+      meta: RequestMeta,
+      account: TelephonyAccount,
+      callSid: String*
+  ): IO[Unit] = {
     for {
       _ <- factory
         .resource(account)
@@ -297,7 +263,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield ()
   }
 
-  def deleteCallRecording(account: TelephonyAccount, url: String): IO[Boolean] = {
+  override def deleteCallRecording(account: TelephonyAccount, url: String): IO[Boolean] = {
     for {
       result <- factory.resource(account).use { client =>
         IO.blocking {
@@ -391,7 +357,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
     } yield updateResult
   }
 
-  def pauseCallRecording(
+  override def pauseCallRecording(
       account: TelephonyAccount,
       csid: Long,
       organizationId: String
@@ -404,7 +370,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
       }
   }
 
-  def resumeCallRecording(
+  override def resumeCallRecording(
       account: TelephonyAccount,
       csid: Long,
       organizationId: String
@@ -433,7 +399,7 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
   private def toFriendlyName(csid: Long, orgId: String) = s"${csid}_$orgId"
 
   // usageTrigger handling to be implemented?
-  def getApplication(
+  override def getApplication(
       account: TelephonyAccount,
       params: Map[String, String]
   ): IO[Option[com.twilio.sdk.resource.instance.Application]] = {
@@ -449,6 +415,42 @@ class TwilioFront(factory: TwilioRestClientFactory, client: Client[IO], apiUrl: 
         }
       }
     } yield result
+  }
+
+  override def isTwilioSuspended(account: TelephonyAccount): IO[Boolean] = {
+    factory.resource(account).use { twilioClient =>
+      IO.blocking {
+        val status = Try {
+          twilioClient.getAccount.getStatus
+        }.getOrElse("suspended")
+        status match {
+          case "active" => false
+          case _        => true
+        }
+      }
+    }
+  }
+
+  override def isNumberOutboundVerified(
+      phoneNumber: PhoneNumber,
+      account: TelephonyAccount
+  ): IO[TwilioOutboundVerified] = {
+    val twilioRespIo = factory.resource(account).use { twilioClient =>
+      IO.blocking {
+        val filter = Map("PhoneNumber" -> phoneNumber.inFormatE164).asJava
+        // toList is for force copy it in blocking context, as the returned type is a pretty
+        // complex one, that could lazy fetch stuff later.
+        twilioClient.getAccount.getOutgoingCallerIds(filter).asScala.toList
+      }
+    }
+    val validatedPhoneNumbersIo = twilioRespIo.map { twilioResp =>
+      twilioResp.map { on =>
+        PhoneNumber.fromE123OrE164(on.getPhoneNumber)
+      }
+    }
+    validatedPhoneNumbersIo.map { validatedPhoneNumbers =>
+      TwilioOutboundVerified.fromBoolean(validatedPhoneNumbers.exists(_ === phoneNumber))
+    }
   }
 
 }
