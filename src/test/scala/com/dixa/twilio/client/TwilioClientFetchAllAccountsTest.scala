@@ -74,7 +74,7 @@ final class TwilioClientFetchAllAccountsTest
         val connSettings                  = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientAccount = TwilioClient.defaultImpl().account
         val resultSource: Source[TwilioAccount, NotUsed] =
-          instance.fetchAllAccounts(connSettings)
+          instance.fetchAllAccounts(connSettings, Some(TwilioAccount.Status.Active))
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
         val result    = Await.result(resultFut, 15.seconds)
         val expectedValue = Set(
@@ -95,17 +95,6 @@ final class TwilioClientFetchAllAccountsTest
           )
         )
         assert(result.toSet === expectedValue)
-
-        //        val httpClient = Http()
-        //        val fut = httpClient.singleRequest(
-        //          HttpRequest(
-        //            method = HttpMethods.GET,
-        //            uri = s"http://localhost:$port/2010-04-01/Accounts.json?Status=active&b=2"
-        //          ).addHeader(Authorization(BasicHttpCredentials("testUsername", "testPassword")))
-        //        )
-        //        val result = Await.result(fut, 5.seconds)
-        //        assert(result.status === StatusCodes.OK)
-        //        println(result)
       }
     }
   }

@@ -17,6 +17,7 @@ private[implDetails] final class TwilioClientAccountImpl()(
 ) extends TwilioClientAccount {
 
   override def fetchAllAccounts(
-      connSettings: TwilioConnectionSettings
-  ): Source[TwilioAccount, NotUsed] = FetchAllAccountsRequest(connSettings)
+      connSettings: TwilioConnectionSettings,
+      status: Option[TwilioAccount.Status] = None
+  ): Source[TwilioAccount, NotUsed] = FetchAllAccountsRequest(connSettings, status)
 }

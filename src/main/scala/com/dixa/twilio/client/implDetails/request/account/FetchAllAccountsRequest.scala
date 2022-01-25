@@ -13,17 +13,21 @@ import io.circe.generic.auto._
 private[implDetails] object FetchAllAccountsRequest {
 
   def apply(
-      connSettings: TwilioConnectionSettings
+      connSettings: TwilioConnectionSettings,
+      status: Option[TwilioAccount.Status]
   )(
       implicit httpExt: HttpExt,
       materializer: Materializer
-  ): Source[TwilioAccount, NotUsed] = TwilioPagingFlow
-    .createPagingSrc(
-      connSettings,
-      NextPagePath("/2010-04-01/Accounts.json?Status=active&PageSize=1000")
-    )
-    .map(entityToAccountList)
-    .mapConcat(identity)
+  ): Source[TwilioAccount, NotUsed] = {
+    val statusParam = status.map(s => s"&Status=${s.apiName}").getOrElse("")
+    TwilioPagingFlow
+      .createPagingSrc(
+        connSettings,
+        NextPagePath(s"/2010-04-01/Accounts.json?PageSize=1000$statusParam")
+      )
+      .map(entityToAccountList)
+      .mapConcat(identity)
+  }
 
   // Only mapped the fields that we actually need for now, there is a lot more
   // info in these responses, that we could map once needed.
@@ -35,7 +39,7 @@ private[implDetails] object FetchAllAccountsRequest {
       TwilioAccount(
         TwilioAccount.Name(jsonRep.friendly_name),
         TwilioAccount.Sid(jsonRep.sid),
-        TwilioAccount.Status.fromTwilioStringStatus(jsonRep.status)
+        TwilioAccount.Status.fromApiName(jsonRep.status)
       )
     }
   }

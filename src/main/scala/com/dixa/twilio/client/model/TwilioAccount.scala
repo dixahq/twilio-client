@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.model
 
 import enumeratum.{Enum, EnumEntry}
-
+import org.scalactic.TypeCheckedTripleEquals._
 import scala.collection.immutable
 
 /** Represent a Account or a Subaccount at Twilio
@@ -18,18 +18,16 @@ object TwilioAccount {
   final case class Sid(override val toString: String)
   final case class AuthToken(override val toString: String)
 
-  sealed trait Status extends EnumEntry
+  sealed abstract class Status(private[client] val apiName: String) extends EnumEntry
   object Status extends Enum[Status] {
-    override def values: immutable.IndexedSeq[Status] = findValues
+    override val values: immutable.IndexedSeq[Status] = findValues
 
-    case object Active    extends Status
-    case object Suspended extends Status
-    case object Closed    extends Status
+    case object Active    extends Status("active")
+    case object Suspended extends Status("suspended")
+    case object Closed    extends Status("closed")
 
-    private[client] def fromTwilioStringStatus(s: String): TwilioAccount.Status = s match {
-      case "active"    => TwilioAccount.Status.Active
-      case "closed"    => TwilioAccount.Status.Closed
-      case "suspended" => TwilioAccount.Status.Suspended
-    }
+    private[client] def fromApiName(s: String): TwilioAccount.Status = findValues
+      .find(_.apiName === s)
+      .getOrElse(throw new IllegalArgumentException(s"$s is not a valiid Twilio account status."))
   }
 }
