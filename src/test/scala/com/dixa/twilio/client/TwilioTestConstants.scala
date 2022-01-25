@@ -8,6 +8,7 @@ object TwilioTestConstants {
     useHttps = false,
     accountSid = "testUsername",
     authToken = "testPassword",
-    parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores
+    parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
+    timeouts = TwilioConnectionSettings.Timeouts.default
   )
 }

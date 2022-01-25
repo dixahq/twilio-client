@@ -2,8 +2,9 @@ package com.dixa.twilio.client
 
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest}
-import com.dixa.twilio.client
 import org.scalactic.TypeCheckedTripleEquals._
+
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 /** Connection settings to use when communicating with Twilio
   *
@@ -21,6 +22,8 @@ import org.scalactic.TypeCheckedTripleEquals._
   *   Some request support doing some of the work in parallel, this value will in such cases be used
   *   for that. Note that not all request support running in parellel, and in the onces that do,
   *   only some part of it may. So this is more of a guideline to the library, rather than a law.
+  * @param timeouts
+  *   Timeouts to use in the clients.
   */
 final case class TwilioConnectionSettings(
     host: String,
@@ -28,7 +31,8 @@ final case class TwilioConnectionSettings(
     useHttps: Boolean,
     accountSid: String,
     authToken: String,
-    parallelFactor: TwilioConnectionSettings.ParallelFactor
+    parallelFactor: TwilioConnectionSettings.ParallelFactor,
+    timeouts: TwilioConnectionSettings.Timeouts
 ) {
 
   private val protocol: String = useHttps match {
@@ -72,6 +76,20 @@ object TwilioConnectionSettings {
       }
       ParallelFactor(halfCpu)
     }
+  }
+
+  /** Specify the different timeouts to be used by this client.
+    *
+    * @param requestEntityTimeout
+    *   The max time to use on fetching an entity of a single request against Twilio.
+    */
+  final case class Timeouts(requestEntityTimeout: FiniteDuration)
+
+  object Timeouts {
+
+    lazy val default: Timeouts = Timeouts(
+      requestEntityTimeout = 30.seconds
+    )
   }
 
 }

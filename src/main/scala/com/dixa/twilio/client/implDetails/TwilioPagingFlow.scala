@@ -68,7 +68,7 @@ private[client] object TwilioPagingFlow {
             resp
           }
           .mapAsync(1) { resp =>
-            resp.entity.toStrict(30.seconds)
+            resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout)
           }
           .map(entityStrict => HttpEntityString(entityStrict.data.utf8String))
       )
