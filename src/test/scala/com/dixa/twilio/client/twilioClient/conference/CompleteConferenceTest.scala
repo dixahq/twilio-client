@@ -2,6 +2,7 @@ package com.dixa.twilio.client.twilioClient.conference
 
 import com.dixa.twilio.client.model.TwilioAccount.{Name, Status}
 import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
+import com.dixa.twilio.client.twilioClient.{TwilioClientTest, WireMockTest}
 import com.dixa.twilio.client.{
   twilioClient,
   TestActorSystem,
@@ -18,26 +19,9 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-final class CompleteConferenceTest
-    extends AnyWordSpec
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with TestActorSystem {
+final class CompleteConferenceTest extends TwilioClientTest {
 
   import actorSystem.dispatcher
-
-  private val wireMockServer = new WireMockServer(0)
-  wireMockServer.start()
-
-  override protected def beforeEach(): Unit = {
-    wireMockServer.resetAll()
-    super.beforeEach()
-  }
-
-  override protected def afterAll(): Unit = {
-    wireMockServer.stop()
-    super.afterAll()
-  }
 
   private val account1 = TwilioAccount(
     Name("Test Account 1"),

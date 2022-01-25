@@ -4,6 +4,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import com.dixa.twilio.client.model.TwilioAccount
 import com.dixa.twilio.client.model.TwilioAccount.{Name, Sid, Status}
+import com.dixa.twilio.client.twilioClient.{TwilioClientTest, WireMockTest}
 import com.dixa.twilio.client.{
   twilioClient,
   TestActorSystem,
@@ -20,26 +21,9 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-final class FetchAllAccountsTest
-    extends AnyWordSpec
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with TestActorSystem {
+final class FetchAllAccountsTest extends TwilioClientTest {
 
   import actorSystem.dispatcher
-
-  private val wireMockServer = new WireMockServer(0)
-  wireMockServer.start()
-
-  override protected def beforeEach(): Unit = {
-    wireMockServer.resetAll()
-    super.beforeEach()
-  }
-
-  override protected def afterAll(): Unit = {
-    wireMockServer.stop()
-    super.afterAll()
-  }
 
   classOf[TwilioClient].getSimpleName when {
 
