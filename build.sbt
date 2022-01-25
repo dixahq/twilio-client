@@ -7,6 +7,15 @@ val snapshotsRepository =
 val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/"
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
+val Version = new AnyRef {
+  val Akka     = "2.6.18"
+  val AkkaHttp = "10.2.7"
+  val Circe    = "0.14.1"
+
+  // test
+  val ScalatestScalactic = "3.2.10"
+}
+
 lazy val `twilio-client` = project
   .in(file("."))
   .settings(
@@ -50,23 +59,25 @@ lazy val `twilio-client` = project
           Some(releasesRepository)
         }
       },
-    libraryDependencies ++= Seq(
-      "org.http4s"                   %% "http4s-blaze-client" % Version.Http4s,
-      "org.http4s"                   %% "http4s-circe"        % Version.Http4s,
-      "org.http4s"                   %% "http4s-client"       % Version.Http4s,
-      "org.http4s"                   %% "http4s-core"         % Version.Http4s,
-      "org.typelevel"                %% "cats-effect"         % Version.CatsEffect,
-      "io.circe"                     %% "circe-core"          % Version.Circe,
-      "io.circe"                     %% "circe-generic"       % Version.Circe,
-      "io.circe"                     %% "circe-parser"        % Version.Circe,
-      "com.beachape"                 %% "enumeratum"          % "1.7.0",
-      "com.dixa"                     %% "thrift"              % Version.Protocols,
-      "com.twilio.sdk"                % "twilio-java-sdk"     % "6.3.0",
-      "com.googlecode.libphonenumber" % "libphonenumber"      % "8.12.39",
-      "com.dixa"                     %% "thirdparty-library"  % "2.1.4",
-      "com.dixa"                     %% "testutil"            % "1.3.3"           % Test,
-      "org.scalatest"                %% "scalatest"           % Version.Scalatest % Test
-    ),
+      libraryDependencies ++= Seq(
+        // Akka
+        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka,
+        "com.typesafe.akka" %% "akka-stream"      % Version.Akka,
+        "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp,
+
+        // Circe
+        "io.circe" %% "circe-core"    % Version.Circe,
+        "io.circe" %% "circe-generic" % Version.Circe,
+        "io.circe" %% "circe-parser"  % Version.Circe,
+
+        // Lang improvement libs
+        "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
+        "com.beachape"  %% "enumeratum" % "1.7.0",
+
+        // Test
+        "org.scalatest"         %% "scalatest" % Version.ScalatestScalactic % Test,
+        "com.github.tomakehurst" % "wiremock"  % "2.27.2"                   % Test
+      ),
       Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
