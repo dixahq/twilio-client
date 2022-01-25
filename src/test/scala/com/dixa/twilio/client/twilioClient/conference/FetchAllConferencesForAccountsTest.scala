@@ -1,9 +1,16 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.client.twilioClient.conference
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
+import com.dixa.twilio.client.{
+  twilioClient,
+  TestActorSystem,
+  TwilioClient,
+  TwilioClientConference,
+  TwilioTestConstants
+}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.scalatest.wordspec.AnyWordSpec
@@ -12,13 +19,13 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-final class TwilioClientFetchAllConferencesForAccountsTest
+final class FetchAllConferencesForAccountsTest
     extends AnyWordSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll
     with TestActorSystem {
 
-  import TwilioClientFetchAllConferencesForAccountsTest._
+  import FetchAllConferencesForAccountsTest._
 
   private val wireMockServer = new WireMockServer(0)
   wireMockServer.start()
@@ -269,7 +276,7 @@ final class TwilioClientFetchAllConferencesForAccountsTest
 }
 
 //noinspection TypeAnnotation
-private object TwilioClientFetchAllConferencesForAccountsTest {
+private object FetchAllConferencesForAccountsTest {
   val account1 = TwilioAccount(
     TwilioAccount.Name("Test Account 1"),
     TwilioAccount.Sid("TwilioTestAccount1"),

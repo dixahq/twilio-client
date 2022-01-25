@@ -1,7 +1,14 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.client.twilioClient.conference
 
 import com.dixa.twilio.client.model.TwilioAccount.{Name, Status}
 import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
+import com.dixa.twilio.client.{
+  twilioClient,
+  TestActorSystem,
+  TwilioClient,
+  TwilioClientConference,
+  TwilioTestConstants
+}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -11,7 +18,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-final class TwilioClientCompleteConferenceTest
+final class CompleteConferenceTest
     extends AnyWordSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll

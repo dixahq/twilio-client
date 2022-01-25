@@ -1,9 +1,16 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.client.twilioClient.account
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import com.dixa.twilio.client.model.TwilioAccount.{Name, Sid, Status}
 import com.dixa.twilio.client.model.TwilioAccount
+import com.dixa.twilio.client.model.TwilioAccount.{Name, Sid, Status}
+import com.dixa.twilio.client.{
+  twilioClient,
+  TestActorSystem,
+  TwilioClient,
+  TwilioClientAccount,
+  TwilioTestConstants
+}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -13,7 +20,7 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-final class TwilioClientFetchAllAccountsTest
+final class FetchAllAccountsTest
     extends AnyWordSpec
     with BeforeAndAfterEach
     with BeforeAndAfterAll
