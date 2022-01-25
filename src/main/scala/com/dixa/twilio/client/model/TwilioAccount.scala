@@ -16,6 +16,7 @@ object TwilioAccount {
 
   final case class Name(override val toString: String)
   final case class Sid(override val toString: String)
+  final case class AuthToken(override val toString: String)
 
   sealed trait Status extends EnumEntry
   object Status extends Enum[Status] {

@@ -2,6 +2,7 @@ package com.dixa.twilio.client
 
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest}
+import com.dixa.twilio.client.model.TwilioAccount
 import org.scalactic.TypeCheckedTripleEquals._
 
 import java.net.URL
@@ -24,8 +25,8 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   */
 final case class TwilioConnectionSettings(
     url: URL,
-    accountSid: String,
-    authToken: String,
+    accountSid: TwilioAccount.Sid,
+    authToken: TwilioAccount.AuthToken,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
     timeouts: TwilioConnectionSettings.Timeouts
 ) {
@@ -42,7 +43,7 @@ final case class TwilioConnectionSettings(
       }
     HttpRequest(method, safeUri).addHeader(
       Authorization(
-        BasicHttpCredentials(accountSid, authToken)
+        BasicHttpCredentials(accountSid.toString, authToken.toString)
       )
     )
   }
