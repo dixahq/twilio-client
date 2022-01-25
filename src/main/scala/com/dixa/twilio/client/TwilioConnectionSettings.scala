@@ -4,16 +4,13 @@ import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest}
 import org.scalactic.TypeCheckedTripleEquals._
 
+import java.net.URL
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 /** Connection settings to use when communicating with Twilio
   *
-  * @param host
-  *   Twilio host to use.
-  * @param port
-  *   Port to use.
-  * @param useHttps
-  *   Use https or plain http
+  * @param url
+  *   The URL to connect to.
   * @param accountSid
   *   The account sid to connect as.
   * @param authToken
@@ -26,19 +23,12 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *   Timeouts to use in the clients.
   */
 final case class TwilioConnectionSettings(
-    host: String,
-    port: Int,
-    useHttps: Boolean,
+    url: URL,
     accountSid: String,
     authToken: String,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
     timeouts: TwilioConnectionSettings.Timeouts
 ) {
-
-  private val protocol: String = useHttps match {
-    case true  => "https"
-    case false => "http"
-  }
 
   private[client] def createBaseRequest(
       method: HttpMethod = HttpMethods.GET,
@@ -48,7 +38,7 @@ final case class TwilioConnectionSettings(
       if (pathOrUri.startsWith("http")) pathOrUri
       else {
         val pathWithSlashPrefix = if (pathOrUri.startsWith("/")) pathOrUri else s"/$pathOrUri"
-        s"$protocol://$host:$port$pathWithSlashPrefix"
+        s"${url.getProtocol}://${url.getHost}:${url.getPort}$pathWithSlashPrefix"
       }
     HttpRequest(method, safeUri).addHeader(
       Authorization(
