@@ -95,7 +95,7 @@ final class TwilioClientCompleteConferenceTest
           accountSid = "testUsername",
           authToken = "testPassword"
         )
-        val instance: TwilioClient = TwilioClient.defaultImpl()
+        val instance: TwilioClientConference = TwilioClient.defaultImpl().conference
         val resultFut: Future[TwilioConference] =
           instance.completeConference(connSettings, conference1)
         val result = Await.result(resultFut, 15.seconds)

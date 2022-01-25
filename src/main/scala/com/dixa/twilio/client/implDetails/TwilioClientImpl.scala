@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.scaladsl.{Flow, Source}
-import com.dixa.twilio.client.TwilioClient
+import com.dixa.twilio.client.{TwilioClient, TwilioClientAccount, TwilioClientConference}
 import com.dixa.twilio.client.implDetails.request.account.FetchAllAccountsRequest
 import com.dixa.twilio.client.implDetails.request.conference.{
   CompleteConferenceRequest,
@@ -30,20 +30,9 @@ private[client] final class TwilioClientImpl()(
 
   private implicit val http: HttpExt = Http()
 
-  override def fetchAllAccounts(
-      connSettings: TwilioConnectionSettings
-  ): Source[TwilioAccount, NotUsed] = FetchAllAccountsRequest(connSettings)
+  override val account: TwilioClientAccount = new TwilioClientAccountImpl()
 
-  override def fetchAllConferencesWithParticipants(
-      connSettings: TwilioConnectionSettings,
-      statusFilter: Option[TwilioConference.Status]
-  ): Flow[TwilioAccount, TwilioConferenceWithParticipants, NotUsed] =
-    FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
-
-  override def completeConference(
-      connSettings: TwilioConnectionSettings,
-      conference: TwilioConference
-  ): Future[TwilioConference] = CompleteConferenceRequest(connSettings, conference)
+  override val conference: TwilioClientConference = new TwilioClientConferenceImpl()
 }
 
 private object TwilioClientImpl {

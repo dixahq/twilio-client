@@ -78,8 +78,9 @@ final class TwilioClientFetchAllAccountsTest
           accountSid = "testUsername",
           authToken = "testPassword"
         )
-        val instance: TwilioClient                       = TwilioClient.defaultImpl()
-        val resultSource: Source[TwilioAccount, NotUsed] = instance.fetchAllAccounts(connSettings)
+        val instance: TwilioClientAccount = TwilioClient.defaultImpl().account
+        val resultSource: Source[TwilioAccount, NotUsed] =
+          instance.fetchAllAccounts(connSettings)
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
         val result    = Await.result(resultFut, 15.seconds)
         val expectedValue = Set(

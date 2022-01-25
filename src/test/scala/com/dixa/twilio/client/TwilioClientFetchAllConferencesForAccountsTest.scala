@@ -190,7 +190,7 @@ final class TwilioClientFetchAllConferencesForAccountsTest
           accountSid = "testUsername",
           authToken = "testPassword"
         )
-        val instance: TwilioClient = TwilioClient.defaultImpl()
+        val instance: TwilioClientConference = TwilioClient.defaultImpl().conference
 
         val resultFlow: Flow[TwilioAccount, TwilioConference, NotUsed] =
           instance.fetchAllConferencesWithParticipants(
