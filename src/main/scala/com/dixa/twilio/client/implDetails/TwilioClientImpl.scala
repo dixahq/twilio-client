@@ -4,14 +4,20 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.scaladsl.{Flow, Source}
-import com.dixa.twilio.client.{TwilioClient, TwilioClientAccount, TwilioClientConference}
+import com.dixa.twilio.client
+import com.dixa.twilio.client.{
+  RequestParallelFactor,
+  TwilioClient,
+  TwilioClientAccount,
+  TwilioClientConference
+}
 import com.dixa.twilio.client.implDetails.request.account.FetchAllAccountsRequest
 import com.dixa.twilio.client.implDetails.request.conference.{
   CompleteConferenceRequest,
   FetchAllConferencesWithParticipantsRequest
 }
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference, TwilioConnectionSettings}
+import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,25 +32,9 @@ private[client] final class TwilioClientImpl()(
     executionContext: ExecutionContext
 ) extends TwilioClient {
 
-  import TwilioClientImpl._
-
   private implicit val http: HttpExt = Http()
 
   override val account: TwilioClientAccount = new TwilioClientAccountImpl()
 
   override val conference: TwilioClientConference = new TwilioClientConferenceImpl()
-}
-
-private object TwilioClientImpl {
-
-  /** Some operation runs different layers of paralellism in there streams, and for these using
-    * around half the cores, with a minimum of 2 for each is a valid guess.
-    */
-  private implicit val parallelism: request.RequestParallelFactor = {
-    val halfCpuMin2 = Runtime.getRuntime.availableProcessors() match {
-      case numberOfCores if numberOfCores < 4 => 2
-      case numberOfCores                      => numberOfCores / 2
-    }
-    request.RequestParallelFactor(halfCpuMin2)
-  }
 }

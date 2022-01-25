@@ -4,9 +4,10 @@ import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.implDetails.TwilioPagingFlow.NextPagePath
 import com.dixa.twilio.client.implDetails.{HttpEntityString, TwilioPagingFlow}
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConnectionSettings}
+import com.dixa.twilio.client.model.TwilioAccount
 import io.circe.generic.auto._
 
 private[implDetails] object FetchAllAccountsRequest {

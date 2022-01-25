@@ -5,7 +5,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{Materializer, SourceShape}
-import com.dixa.twilio.client.model.TwilioConnectionSettings
+import com.dixa.twilio.client.TwilioConnectionSettings
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
 

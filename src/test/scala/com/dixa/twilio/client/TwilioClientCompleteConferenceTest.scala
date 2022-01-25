@@ -1,7 +1,7 @@
 package com.dixa.twilio.client
 
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference, TwilioConnectionSettings}
 import com.dixa.twilio.client.model.TwilioAccount.{Name, Status}
+import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -88,13 +88,7 @@ final class TwilioClientCompleteConferenceTest
             )
         )
 
-        val connSettings: TwilioConnectionSettings = TwilioConnectionSettings(
-          host = "localhost",
-          port = wireMockServer.port(),
-          useHttps = false,
-          accountSid = "testUsername",
-          authToken = "testPassword"
-        )
+        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientConference = TwilioClient.defaultImpl().conference
         val resultFut: Future[TwilioConference] =
           instance.completeConference(connSettings, conference1)

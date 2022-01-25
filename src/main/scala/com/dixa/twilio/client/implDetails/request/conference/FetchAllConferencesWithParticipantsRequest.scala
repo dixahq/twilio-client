@@ -4,17 +4,12 @@ import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.implDetails.TwilioPagingFlow.NextPagePath
-import com.dixa.twilio.client.implDetails.request.RequestParallelFactor
 import com.dixa.twilio.client.implDetails.request.conference.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.implDetails.{HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{
-  TwilioAccount,
-  TwilioCallSid,
-  TwilioConference,
-  TwilioConnectionSettings
-}
+import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -27,11 +22,10 @@ private[implDetails] object FetchAllConferencesWithParticipantsRequest {
   )(
       implicit http: HttpExt,
       materializer: Materializer,
-      executionContext: ExecutionContext,
-      parallelism: RequestParallelFactor
+      executionContext: ExecutionContext
   ): Flow[TwilioAccount, TwilioConferenceWithParticipants, NotUsed] = Flow[TwilioAccount]
     .flatMapMerge(
-      parallelism.asInt,
+      connSettings.parallelFactor.asInt,
       account =>
         {
           val statusParam = statusFilter.map(f => s"Status=${f.twilioApiStringRep}&").getOrElse("")
@@ -45,7 +39,7 @@ private[implDetails] object FetchAllConferencesWithParticipantsRequest {
     )
     // Just fetch all participants into memory. In most cases there will only be 2, and Twilios
     // max is 250, so it should be no problem fitting them all into memory at the same time
-    .mapAsync(parallelism.asInt) { confJs =>
+    .mapAsync(connSettings.parallelFactor.asInt) { confJs =>
       val fut = TwilioPagingFlow
         .createPagingSrc(connSettings, NextPagePath(confJs.subresource_uris.participants))
         .map(entityToParticipantList)

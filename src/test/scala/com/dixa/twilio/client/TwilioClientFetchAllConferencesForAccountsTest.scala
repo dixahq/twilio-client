@@ -3,12 +3,7 @@ package com.dixa.twilio.client
 import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{
-  TwilioAccount,
-  TwilioCallSid,
-  TwilioConference,
-  TwilioConnectionSettings
-}
+import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.scalatest.wordspec.AnyWordSpec
@@ -183,13 +178,7 @@ final class TwilioClientFetchAllConferencesForAccountsTest
             )
         )
 
-        val twilioConnectionSetting: TwilioConnectionSettings = TwilioConnectionSettings(
-          host = "localhost",
-          port = wireMockServer.port(),
-          useHttps = false,
-          accountSid = "testUsername",
-          authToken = "testPassword"
-        )
+        val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientConference = TwilioClient.defaultImpl().conference
 
         val resultFlow: Flow[TwilioAccount, TwilioConference, NotUsed] =

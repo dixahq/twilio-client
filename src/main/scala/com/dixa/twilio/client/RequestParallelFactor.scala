@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails.request
+package com.dixa.twilio.client
 
 /** Represent a parallel factor for request to run at.
   *

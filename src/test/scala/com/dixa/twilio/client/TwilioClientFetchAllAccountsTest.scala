@@ -3,7 +3,7 @@ package com.dixa.twilio.client
 import akka.NotUsed
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import com.dixa.twilio.client.model.TwilioAccount.{Name, Sid, Status}
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConnectionSettings}
+import com.dixa.twilio.client.model.TwilioAccount
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -71,13 +71,7 @@ final class TwilioClientFetchAllAccountsTest
             )
         )
 
-        val connSettings: TwilioConnectionSettings = TwilioConnectionSettings(
-          host = "localhost",
-          port = wireMockServer.port(),
-          useHttps = false,
-          accountSid = "testUsername",
-          authToken = "testPassword"
-        )
+        val connSettings                  = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientAccount = TwilioClient.defaultImpl().account
         val resultSource: Source[TwilioAccount, NotUsed] =
           instance.fetchAllAccounts(connSettings)

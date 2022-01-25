@@ -3,7 +3,7 @@ package com.dixa.twilio.client
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference, TwilioConnectionSettings}
+import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
 
 import scala.concurrent.Future
 

@@ -4,9 +4,9 @@ import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpExt
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.TwilioClientAccount
+import com.dixa.twilio.client.{TwilioClientAccount, TwilioConnectionSettings}
 import com.dixa.twilio.client.implDetails.request.account.FetchAllAccountsRequest
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConnectionSettings}
+import com.dixa.twilio.client.model.TwilioAccount
 
 import scala.concurrent.ExecutionContext
 
