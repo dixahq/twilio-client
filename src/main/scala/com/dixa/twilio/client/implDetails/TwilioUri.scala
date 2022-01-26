@@ -49,7 +49,8 @@ private[client] object TwilioUri {
   // constructing the HttpRequest. But it needs to carry it from places where this class
   // is used, to later stages where a Path may be used. Also it typically no problem,
   // as this is used to represent URL we get from twilio, after performing a request
-  // based on a Path and a Subdomain, so we will have the information.
+  // based on a Path and a Subdomain, so we will have the information when creating
+  // instances anyway.
   private[client] final case class TwilioUrl(
       method: HttpMethod,
       uri: Uri,
