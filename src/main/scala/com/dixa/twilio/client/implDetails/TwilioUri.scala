@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.implDetails
 
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, Uri}
+import akka.http.scaladsl.model.{HttpMethod, HttpRequest, Uri}
 import com.dixa.twilio.client.TwilioConnectionSettings
 
 /** Represent a URI for a request to perform agains the Twilio API
@@ -39,9 +39,9 @@ private[client] object TwilioUri {
     require(path.startsWith("/"), "NextPagePath.path must start must be a path starting with a /")
 
     override def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest = {
-      val uri =
+      val url =
         s"${conSettings.protocol}://${conSettings.hostNameFor(subDomain)}:${conSettings.port}$path"
-      createHttpRequestImpl(conSettings, method, uri)
+      TwilioUrl(method, url, subDomain).createHttpRequest(conSettings)
     }
   }
 
@@ -59,10 +59,19 @@ private[client] object TwilioUri {
     require(uri.isAbsolute, "NextPageUri.uri must be absolute uri starting with a protocol.")
 
     override def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest = {
-      createHttpRequestImpl(conSettings, method, uri)
+      HttpRequest(method, uri).addHeader(
+        Authorization(
+          BasicHttpCredentials(conSettings.accountSid.toString, conSettings.authToken.toString)
+        )
+      )
     }
   }
 
+  /** Autodetect if the provided urlOrPath is TwilioUrl or TwilioPath.
+    *
+    * Usefully when receiving sub resources from Twilio, where we do not now if they are specified
+    * as a path or full URL.
+    */
   private[client] def autoDetect(
       urlOrPath: String,
       methods: HttpMethod,
@@ -70,18 +79,6 @@ private[client] object TwilioUri {
   ): TwilioUri = {
     if (urlOrPath.startsWith("http")) TwilioUrl(methods, urlOrPath, fallbackSubDomain)
     else if (urlOrPath.startsWith("/")) TwilioPath(fallbackSubDomain, methods, urlOrPath)
-    else TwilioPath(fallbackSubDomain, methods, "/$urlOrPath")
-  }
-
-  private def createHttpRequestImpl(
-      conSettings: TwilioConnectionSettings,
-      method: HttpMethod = HttpMethods.GET,
-      uri: Uri,
-  ): HttpRequest = {
-    HttpRequest(method, uri).addHeader(
-      Authorization(
-        BasicHttpCredentials(conSettings.accountSid.toString, conSettings.authToken.toString)
-      )
-    )
+    else TwilioPath(fallbackSubDomain, methods, s"/$urlOrPath")
   }
 }
