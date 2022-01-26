@@ -83,12 +83,12 @@ object TwilioConference {
     case object Failed     extends ParticipantStatus("failed", isActive = false)
 
     private[client] def fromTwilioStringStatus(s: String): ParticipantStatus = s match {
-      case Queued.twilioApiStringRep    => Queued
-      case Connected.twilioApiStringRep => Connected
-      case Ringing.twilioApiStringRep   => Ringing
-      case Connected.twilioApiStringRep => Connected
-      case Complete.twilioApiStringRep  => Complete
-      case Failed.twilioApiStringRep    => Failed
+      case Queued.twilioApiStringRep     => Queued
+      case Connecting.twilioApiStringRep => Connecting
+      case Ringing.twilioApiStringRep    => Ringing
+      case Connected.twilioApiStringRep  => Connected
+      case Complete.twilioApiStringRep   => Complete
+      case Failed.twilioApiStringRep     => Failed
     }
   }
 

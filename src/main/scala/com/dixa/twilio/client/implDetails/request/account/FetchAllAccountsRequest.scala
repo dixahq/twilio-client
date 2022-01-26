@@ -2,11 +2,12 @@ package com.dixa.twilio.client.implDetails.request.account
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.TwilioPagingFlow.NextPagePath
-import com.dixa.twilio.client.implDetails.{HttpEntityString, TwilioPagingFlow}
+import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
+import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.model.TwilioAccount
 import io.circe.generic.auto._
 
@@ -23,7 +24,11 @@ private[implDetails] object FetchAllAccountsRequest {
     TwilioPagingFlow
       .createPagingSrc(
         connSettings,
-        NextPagePath(s"/2010-04-01/Accounts.json?PageSize=1000$statusParam")
+        TwilioPath(
+          ApiSubDomain.Api,
+          HttpMethods.GET,
+          s"/2010-04-01/Accounts.json?PageSize=1000$statusParam"
+        )
       )
       .map(entityToAccountList)
       .mapConcat(identity)

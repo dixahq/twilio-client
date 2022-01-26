@@ -1,17 +1,26 @@
 package com.dixa.twilio.client
 
-import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest}
+import com.dixa.twilio.client
+import com.dixa.twilio.client.implDetails.ApiSubDomain
 import com.dixa.twilio.client.model.TwilioAccount
+import enumeratum.{Enum, EnumEntry}
 import org.scalactic.TypeCheckedTripleEquals._
 
-import java.net.URL
+import scala.collection.immutable
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 /** Connection settings to use when communicating with Twilio
   *
-  * @param url
-  *   The URL to connect to.
+  * @param baseHostName
+  *   The base host name to connect to without the sup domain part. The URL to connect to. For
+  *   production this would be `twilio.com` and then request would end up being made agains the
+  *   respective sub domains like `api.twilio.com` and `messagin.twilio.com` depending on the
+  *   request. The Exception is localhost or 127.0.0.1, if that is set, then no subdomain will be
+  *   added, no matter what the request is.
+  * @param port
+  *   TCP port to use for connecting to Twilio
+  * @param protocol
+  *   Protocol to use for connecting to Twilio
   * @param accountSid
   *   The account sid to connect as.
   * @param authToken
@@ -24,32 +33,40 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *   Timeouts to use in the clients.
   */
 final case class TwilioConnectionSettings(
-    url: URL,
+    baseHostName: String,
+    port: Int,
+    protocol: client.TwilioConnectionSettings.Protocol,
     accountSid: TwilioAccount.Sid,
     authToken: TwilioAccount.AuthToken,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
     timeouts: TwilioConnectionSettings.Timeouts
 ) {
 
-  private[client] def createBaseRequest(
-      method: HttpMethod = HttpMethods.GET,
-      pathOrUri: String,
-  ): HttpRequest = {
-    val safeUri =
-      if (pathOrUri.startsWith("http")) pathOrUri
-      else {
-        val pathWithSlashPrefix = if (pathOrUri.startsWith("/")) pathOrUri else s"/$pathOrUri"
-        s"${url.getProtocol}://${url.getHost}:${url.getPort}$pathWithSlashPrefix"
-      }
-    HttpRequest(method, safeUri).addHeader(
-      Authorization(
-        BasicHttpCredentials(accountSid.toString, authToken.toString)
-      )
-    )
+  /** Return the hostname for a specific API sub domain.
+    *
+    * Twilio is using different sub domains, for different parts of there API, so the
+    * TwilioConnectionSetting is only setting what base hostname to connect agains, and it then up
+    * to each individual request, to specify what sub domain they should use, and use this method
+    * for constructing the full hostname.
+    *
+    * If the base hostname is localhost or 127.0.0.1, then this method will just return that without
+    * changing it. This is to make it possible to stub request in unit test with a tool like
+    * Wiremock, where the request should just go to localhost without a subdomain appended.
+    */
+  private[client] def hostNameFor(subDomain: ApiSubDomain): String = {
+    if (baseHostName === "localhost" || baseHostName === "127.0.0.1") baseHostName
+    else s"$subDomain.$baseHostName"
   }
 }
 
 object TwilioConnectionSettings {
+
+  sealed abstract class Protocol(override val toString: String) extends EnumEntry
+  object Protocol extends Enum[Protocol] {
+    override val values: immutable.IndexedSeq[Protocol] = findValues
+    case object Http  extends Protocol("http")
+    case object Https extends Protocol("https")
+  }
 
   /** Represent a parallel factor for request to run at. */
   final case class ParallelFactor(asInt: Int)
@@ -82,5 +99,4 @@ object TwilioConnectionSettings {
       requestEntityTimeout = 30.seconds
     )
   }
-
 }

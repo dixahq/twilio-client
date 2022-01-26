@@ -2,12 +2,18 @@ package com.dixa.twilio.client.implDetails.request.conference
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.TwilioPagingFlow.NextPagePath
+import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
 import com.dixa.twilio.client.implDetails.request.conference.ConferenceJsonResp.TwilioConferenceJsonResp
-import com.dixa.twilio.client.implDetails.{HttpEntityString, TwilioPagingFlow}
+import com.dixa.twilio.client.implDetails.{
+  ApiSubDomain,
+  HttpEntityString,
+  TwilioPagingFlow,
+  TwilioUri
+}
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
 import io.circe.generic.auto._
@@ -29,7 +35,9 @@ private[implDetails] object FetchAllConferencesWithParticipantsRequest {
       account =>
         {
           val statusParam = statusFilter.map(f => s"Status=${f.twilioApiStringRep}&").getOrElse("")
-          val initPath = NextPagePath(
+          val initPath = TwilioPath(
+            ApiSubDomain.Api,
+            HttpMethods.GET,
             s"/2010-04-01/Accounts/${account.sid}/Conferences.json?${statusParam}PageSize=1000"
           )
           TwilioPagingFlow.createPagingSrc(connSettings, initPath)
@@ -41,7 +49,11 @@ private[implDetails] object FetchAllConferencesWithParticipantsRequest {
     // max is 250, so it should be no problem fitting them all into memory at the same time
     .mapAsync(connSettings.parallelFactor.asInt) { confJs =>
       val fut = TwilioPagingFlow
-        .createPagingSrc(connSettings, NextPagePath(confJs.subresource_uris.participants))
+        .createPagingSrc(
+          connSettings,
+          TwilioUri
+            .autoDetect(confJs.subresource_uris.participants, HttpMethods.GET, ApiSubDomain.Api)
+        )
         .map(entityToParticipantList)
         .mapConcat(identity)
         .toMat(Sink.seq)(Keep.right)

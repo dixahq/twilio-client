@@ -4,8 +4,9 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.HttpEntityString
+import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
 import com.dixa.twilio.client.implDetails.request.conference.ConferenceJsonResp.TwilioConferenceJsonResp
+import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.TwilioConference
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
@@ -23,11 +24,12 @@ private[implDetails] object CompleteConferenceRequest {
       materializer: Materializer,
       executionContext: ExecutionContext
   ): Future[TwilioConference] = {
-    val req = connSettings
-      .createBaseRequest(
-        HttpMethods.POST,
-        s"/2010-04-01/Accounts/${conference.accountSid}/Conferences/${conference.sid}.json"
-      )
+    val req = TwilioPath(
+      ApiSubDomain.Api,
+      HttpMethods.POST,
+      s"/2010-04-01/Accounts/${conference.accountSid}/Conferences/${conference.sid}.json"
+    )
+      .createHttpRequest(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, "Status=completed"))
     http.singleRequest(req).flatMap { resp =>
       if (resp.status !== StatusCodes.OK) {
@@ -42,5 +44,4 @@ private[implDetails] object CompleteConferenceRequest {
       }
     }
   }
-
 }

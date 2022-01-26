@@ -1,9 +1,17 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.client.twilioClient.conference
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
+import com.dixa.twilio.client.twilioClient.{TwilioClientTest, WireMockTest}
+import com.dixa.twilio.client.{
+  twilioClient,
+  TestActorSystem,
+  TwilioClient,
+  TwilioClientConference,
+  TwilioTestConstants
+}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import org.scalatest.wordspec.AnyWordSpec
@@ -12,28 +20,11 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-final class TwilioClientFetchAllConferencesForAccountsTest
-    extends AnyWordSpec
-    with BeforeAndAfterEach
-    with BeforeAndAfterAll
-    with TestActorSystem {
+final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
 
-  import TwilioClientFetchAllConferencesForAccountsTest._
-
-  private val wireMockServer = new WireMockServer(0)
-  wireMockServer.start()
+  import FetchAllConferencesForAccountsTest._
 
   import actorSystem.dispatcher
-
-  override protected def beforeEach(): Unit = {
-    wireMockServer.resetAll()
-    super.beforeEach()
-  }
-
-  override protected def afterAll(): Unit = {
-    wireMockServer.stop()
-    super.afterAll()
-  }
 
   classOf[TwilioClient].getSimpleName when {
 
@@ -269,7 +260,7 @@ final class TwilioClientFetchAllConferencesForAccountsTest
 }
 
 //noinspection TypeAnnotation
-private object TwilioClientFetchAllConferencesForAccountsTest {
+private object FetchAllConferencesForAccountsTest {
   val account1 = TwilioAccount(
     TwilioAccount.Name("Test Account 1"),
     TwilioAccount.Sid("TwilioTestAccount1"),
