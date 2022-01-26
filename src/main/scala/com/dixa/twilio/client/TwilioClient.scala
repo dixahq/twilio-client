@@ -14,7 +14,6 @@ trait TwilioClient {
 
 object TwilioClient {
   def defaultImpl()(
-      implicit actorSystem: ActorSystem,
-      executionContext: ExecutionContext
+      implicit actorSystem: ActorSystem
   ): TwilioClient = new TwilioClientImpl()
 }

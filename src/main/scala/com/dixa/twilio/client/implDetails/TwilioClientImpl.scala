@@ -1,25 +1,8 @@
 package com.dixa.twilio.client.implDetails
 
-import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.{Http, HttpExt}
-import akka.stream.scaladsl.{Flow, Source}
-import com.dixa.twilio.client
-import com.dixa.twilio.client.{
-  RequestParallelFactor,
-  TwilioClient,
-  TwilioClientAccount,
-  TwilioClientConference
-}
-import com.dixa.twilio.client.implDetails.request.account.FetchAllAccountsRequest
-import com.dixa.twilio.client.implDetails.request.conference.{
-  CompleteConferenceRequest,
-  FetchAllConferencesWithParticipantsRequest
-}
-import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
-
-import scala.concurrent.{ExecutionContext, Future}
+import com.dixa.twilio.client.{TwilioClient, TwilioClientAccount, TwilioClientConference}
 
 /** Default implementation of a TwilioClient.
   *
@@ -28,9 +11,10 @@ import scala.concurrent.{ExecutionContext, Future}
   * the package object of [[com.dixa.twilio.client.implDetails.request]]
   */
 private[client] final class TwilioClientImpl()(
-    implicit actorSystem: ActorSystem,
-    executionContext: ExecutionContext
+    implicit actorSystem: ActorSystem
 ) extends TwilioClient {
+
+  import actorSystem.dispatcher
 
   private implicit val http: HttpExt = Http()
 

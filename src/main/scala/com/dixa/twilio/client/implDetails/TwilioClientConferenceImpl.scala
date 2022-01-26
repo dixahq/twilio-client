@@ -3,6 +3,7 @@ package com.dixa.twilio.client.implDetails
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpExt
+import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.{
   RequestParallelFactor,
@@ -19,7 +20,7 @@ import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithPartici
 import scala.concurrent.{ExecutionContext, Future}
 
 private[implDetails] final class TwilioClientConferenceImpl()(
-    implicit actorSystem: ActorSystem,
+    implicit materializer: Materializer,
     executionContext: ExecutionContext,
     httpExt: HttpExt
 ) extends TwilioClientConference {

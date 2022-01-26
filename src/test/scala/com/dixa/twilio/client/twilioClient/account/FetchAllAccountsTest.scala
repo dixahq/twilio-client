@@ -23,8 +23,6 @@ import scala.concurrent.duration.DurationInt
 
 final class FetchAllAccountsTest extends TwilioClientTest {
 
-  import actorSystem.dispatcher
-
   classOf[TwilioClient].getSimpleName when {
 
     "ask to fetch all active sub accounts" should {

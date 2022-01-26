@@ -21,8 +21,6 @@ import scala.concurrent.{Await, Future}
 
 final class CompleteConferenceTest extends TwilioClientTest {
 
-  import actorSystem.dispatcher
-
   private val account1 = TwilioAccount(
     Name("Test Account 1"),
     TwilioAccount.Sid("TwilioTestAccount1"),
