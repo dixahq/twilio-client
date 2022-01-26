@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "page": 1,
+    "page_size": 2,
+    "first_page_url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=0",
+    "previous_page_url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=0&PageToken=PTMGd8410e59416697cb4455c87eba98a6d0",
+    "next_page_url": null,
+    "key": "services",
+    "url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=1&PageToken=PTMGd8410e59416697cb4455c87eba98a6d"
+  },
+  "services": [
+    {
+      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3",
+      "friendly_name": "My third Service!",
+      "sid": "MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3",
+      "date_created": "2017-07-30T20:12:31Z",
+      "date_updated": "2017-07-30T20:12:33Z",
+      "sticky_sender": true,
+      "mms_converter": true,
+      "smart_encoding": false,
+      "fallback_to_long_code": true,
+      "area_code_geomatch": true,
+      "validity_period": 600,
+      "scan_message_content": "inherit",
+      "synchronous_validation": true,
+      "inbound_request_url": null,
+      "inbound_method": "POST",
+      "fallback_url": "https://fallback.dixa.com",
+      "fallback_method": "POST",
+      "status_callback": "https://www.example.com",
+      "usecase": "marketing",
+      "us_app_to_person_registered": false,
+      "use_inbound_webhook_on_number": false,
+      "links": {
+        "phone_numbers": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/PhoneNumbers",
+        "short_codes": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/ShortCodes",
+        "alpha_senders": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/AlphaSenders",
+        "messages": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/Messages",
+        "broadcasts": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/Broadcasts",
+        "us_app_to_person": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/Compliance/Usa2p",
+        "us_app_to_person_usecases": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3/Compliance/Usa2p/Usecases"
+      },
+      "url": "https://messaging.twilio.com/v1/Services/MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"
+    }
+  ]
+}
