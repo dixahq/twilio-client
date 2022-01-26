@@ -5,17 +5,17 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.{TwilioClientAccount, TwilioConnectionSettings}
-import com.dixa.twilio.client.implDetails.request.account.FetchAllAccountsRequest
-import com.dixa.twilio.client.model.TwilioAccount
+import com.dixa.twilio.client.{TwilioClientIam, TwilioConnectionSettings}
+import com.dixa.twilio.client.implDetails.request.iam.FetchAllAccountsRequest
+import com.dixa.twilio.client.model.iam.TwilioAccount
 
 import scala.concurrent.ExecutionContext
 
-private[implDetails] final class TwilioClientAccountImpl()(
+private[implDetails] final class TwilioClientIamImpl()(
     implicit executionContext: ExecutionContext,
     materializer: Materializer,
     httpExt: HttpExt
-) extends TwilioClientAccount {
+) extends TwilioClientIam {
 
   override def fetchAllAccounts(
       connSettings: TwilioConnectionSettings,

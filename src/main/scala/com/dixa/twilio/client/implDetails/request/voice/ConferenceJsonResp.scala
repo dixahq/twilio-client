@@ -1,15 +1,16 @@
-package com.dixa.twilio.client.implDetails.request.conference
+package com.dixa.twilio.client.implDetails.request.voice
 
-import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
+import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.client.model.voice.TwilioConference
+import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
 
-private[conference] object ConferenceJsonResp {
+private[voice] object ConferenceJsonResp {
 
   /** Class representing the Twilio JSON representation of a sub object of a Conference.
     *
     * This is a sub resource of [[TwilioConferenceJsonResp]] so see that for details.
     */
-  private[conference] final case class TwilioConferenceSubUrisRep(participants: String)
+  private[voice] final case class TwilioConferenceSubUrisRep(participants: String)
 
   /** Class representing the Twilio JSON representation of a conference.
     *
@@ -20,14 +21,14 @@ private[conference] object ConferenceJsonResp {
     * just add extra fields whenever needed. Full descriptions of how the JSON looks like can be
     * found here: https://www.twilio.com/docs/voice/api/conference-resource
     */
-  private[conference] final case class TwilioConferenceJsonResp(
+  private[voice] final case class TwilioConferenceJsonResp(
       status: String,
       friendly_name: String,
       account_sid: String,
       sid: String,
       subresource_uris: TwilioConferenceSubUrisRep
   ) {
-    private[conference] def toModel(
+    private[voice] def toModel(
         participants: Seq[TwilioConference.Participant]
     ): TwilioConferenceWithParticipants = {
       TwilioConferenceWithParticipants(
@@ -39,7 +40,7 @@ private[conference] object ConferenceJsonResp {
       )
     }
 
-    private[conference] def toModel: TwilioConference.DefaultImpl = {
+    private[voice] def toModel: TwilioConference.DefaultImpl = {
       TwilioConference(
         TwilioConference.Sid(sid),
         TwilioConference.Status.fromTwilioStringStatus(status),

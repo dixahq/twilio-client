@@ -1,20 +1,11 @@
-package com.dixa.twilio.client.twilioClient.conference
+package com.dixa.twilio.client.twilioClient.voice
 
-import com.dixa.twilio.client.model.TwilioAccount.{Name, Status}
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
-import com.dixa.twilio.client.twilioClient.{TwilioClientTest, WireMockTest}
-import com.dixa.twilio.client.{
-  twilioClient,
-  TestActorSystem,
-  TwilioClient,
-  TwilioClientConference,
-  TwilioTestConstants
-}
-import com.github.tomakehurst.wiremock.WireMockServer
+import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.client.model.voice.TwilioConference
+import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.{TwilioClient, TwilioClientVoice, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
@@ -22,9 +13,9 @@ import scala.concurrent.{Await, Future}
 final class CompleteConferenceTest extends TwilioClientTest {
 
   private val account1 = TwilioAccount(
-    Name("Test Account 1"),
+    TwilioAccount.Name("Test Account 1"),
     TwilioAccount.Sid("TwilioTestAccount1"),
-    Status.Active
+    TwilioAccount.Status.Active
   )
 
   private val conference1 = TwilioConference(
@@ -77,8 +68,8 @@ final class CompleteConferenceTest extends TwilioClientTest {
             )
         )
 
-        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-        val instance: TwilioClientConference = TwilioClient.defaultImpl().conference
+        val connSettings                = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
         val resultFut: Future[TwilioConference] =
           instance.completeConference(connSettings, conference1)
         val result = Await.result(resultFut, 15.seconds)

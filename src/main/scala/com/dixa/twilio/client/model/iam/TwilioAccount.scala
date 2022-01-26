@@ -1,7 +1,8 @@
-package com.dixa.twilio.client.model
+package com.dixa.twilio.client.model.iam
 
 import enumeratum.{Enum, EnumEntry}
 import org.scalactic.TypeCheckedTripleEquals._
+
 import scala.collection.immutable
 
 /** Represent a Account or a Subaccount at Twilio

@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails.request.account
+package com.dixa.twilio.client.implDetails.request.iam
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
@@ -8,7 +8,7 @@ import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
 import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
-import com.dixa.twilio.client.model.TwilioAccount
+import com.dixa.twilio.client.model.iam.TwilioAccount
 import io.circe.generic.auto._
 
 private[implDetails] object FetchAllAccountsRequest {

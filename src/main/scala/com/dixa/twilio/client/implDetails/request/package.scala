@@ -18,8 +18,8 @@ package com.dixa.twilio.client.implDetails
   * be documented to clearly describe what they are usable for.
   *
   * Request can also be grouped in sub package, and then have the code in common in that sub package
-  * package. This would be prefered if possible, as it limits the scope of where this shared logic
-  * is available. See [[com.dixa.twilio.client.implDetails.request.conference]] for an example of
-  * that.
+  * package. This should be done, so that it resembles how Twilios API is structured, as it limits
+  * the scope of where this shared logic is available. See
+  * [[com.dixa.twilio.client.implDetails.request.voice]] for an example of that.
   */
 package object request {}

@@ -7,9 +7,9 @@ import scala.concurrent.ExecutionContext
 
 trait TwilioClient {
 
-  def account: TwilioClientAccount
+  def iam: TwilioClientIam
 
-  def conference: TwilioClientConference
+  def voice: TwilioClientVoice
 }
 
 object TwilioClient {

@@ -1,22 +1,12 @@
-package com.dixa.twilio.client.twilioClient.account
+package com.dixa.twilio.client.twilioClient.iam
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Keep, Sink, Source}
-import com.dixa.twilio.client.model.TwilioAccount
-import com.dixa.twilio.client.model.TwilioAccount.{Name, Sid, Status}
-import com.dixa.twilio.client.twilioClient.{TwilioClientTest, WireMockTest}
-import com.dixa.twilio.client.{
-  twilioClient,
-  TestActorSystem,
-  TwilioClient,
-  TwilioClientAccount,
-  TwilioTestConstants
-}
-import com.github.tomakehurst.wiremock.WireMockServer
+import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.{TwilioClient, TwilioClientIam, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -60,27 +50,27 @@ final class FetchAllAccountsTest extends TwilioClientTest {
             )
         )
 
-        val connSettings                  = TwilioTestConstants.connSettings(wireMockServer.port())
-        val instance: TwilioClientAccount = TwilioClient.defaultImpl().account
+        val connSettings              = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: TwilioClientIam = TwilioClient.defaultImpl().iam
         val resultSource: Source[TwilioAccount, NotUsed] =
           instance.fetchAllAccounts(connSettings, Some(TwilioAccount.Status.Active))
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
         val result    = Await.result(resultFut, 15.seconds)
         val expectedValue = Set(
           TwilioAccount(
-            Name("Dixa main account"),
-            Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
-            Status.Active
+            TwilioAccount.Name("Dixa main account"),
+            TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+            TwilioAccount.Status.Active
           ),
           TwilioAccount(
-            Name("b1d45851-4ea1-4d28-9513-9fd770166a3e"),
-            Sid("AC3183a741f1bab4764dac2492c8d1fd89"),
-            Status.Active
+            TwilioAccount.Name("b1d45851-4ea1-4d28-9513-9fd770166a3e"),
+            TwilioAccount.Sid("AC3183a741f1bab4764dac2492c8d1fd89"),
+            TwilioAccount.Status.Active
           ),
           TwilioAccount(
-            Name("7f67d27b-6aa8-4a37-9dd4-8992ab3170ea"),
-            Sid("AC4e8db239dc8664688a791d7f9cf45740"),
-            Status.Active
+            TwilioAccount.Name("7f67d27b-6aa8-4a37-9dd4-8992ab3170ea"),
+            TwilioAccount.Sid("AC4e8db239dc8664688a791d7f9cf45740"),
+            TwilioAccount.Status.Active
           )
         )
         assert(result.toSet === expectedValue)

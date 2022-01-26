@@ -2,12 +2,13 @@ package com.dixa.twilio.client
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioConference}
+import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.client.model.voice.TwilioConference
+import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
 
 import scala.concurrent.Future
 
-trait TwilioClientConference {
+trait TwilioClientVoice {
   def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[TwilioConference.Status]

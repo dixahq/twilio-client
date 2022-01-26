@@ -1,5 +1,6 @@
-package com.dixa.twilio.client.model
+package com.dixa.twilio.client.model.voice
 
+import com.dixa.twilio.client.model.iam.TwilioAccount
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable

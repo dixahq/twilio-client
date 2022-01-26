@@ -2,7 +2,7 @@ package com.dixa.twilio.client
 
 import com.dixa.twilio.client
 import com.dixa.twilio.client.implDetails.ApiSubDomain
-import com.dixa.twilio.client.model.TwilioAccount
+import com.dixa.twilio.client.model.iam.TwilioAccount
 import enumeratum.{Enum, EnumEntry}
 import org.scalactic.TypeCheckedTripleEquals._
 

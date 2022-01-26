@@ -1,11 +1,12 @@
-package com.dixa.twilio.client.twilioClient.conference
+package com.dixa.twilio.client.twilioClient.voice
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
-import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
+import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.client.model.voice.{TwilioCallSid, TwilioConference}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioClientConference, TwilioTestConstants}
+import com.dixa.twilio.client.{TwilioClient, TwilioClientVoice, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 
 import scala.concurrent.Await
@@ -14,7 +15,6 @@ import scala.concurrent.duration.DurationInt
 final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
 
   import FetchAllConferencesForAccountsTest._
-  import actorSystem.dispatcher
 
   classOf[TwilioClient].getSimpleName when {
 
@@ -159,8 +159,8 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             )
         )
 
-        val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
-        val instance: TwilioClientConference = TwilioClient.defaultImpl().conference
+        val twilioConnectionSetting     = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
 
         val resultFlow: Flow[TwilioAccount, TwilioConference, NotUsed] =
           instance.fetchAllConferencesWithParticipants(

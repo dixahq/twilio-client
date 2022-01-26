@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import com.dixa.twilio.client.model.TwilioAccount
+import com.dixa.twilio.client.model.iam.TwilioAccount
 
 object TwilioTestConstants {
 

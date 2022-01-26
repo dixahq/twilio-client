@@ -2,7 +2,7 @@ package com.dixa.twilio.client.implDetails
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.{Http, HttpExt}
-import com.dixa.twilio.client.{TwilioClient, TwilioClientAccount, TwilioClientConference}
+import com.dixa.twilio.client.{TwilioClient, TwilioClientIam, TwilioClientVoice}
 
 /** Default implementation of a TwilioClient.
   *
@@ -18,7 +18,7 @@ private[client] final class TwilioClientImpl()(
 
   private implicit val http: HttpExt = Http()
 
-  override val account: TwilioClientAccount = new TwilioClientAccountImpl()
+  override val iam: TwilioClientIam = new TwilioClientIamImpl()
 
-  override val conference: TwilioClientConference = new TwilioClientConferenceImpl()
+  override val voice: TwilioClientVoice = new TwilioClientVoiceImpl()
 }

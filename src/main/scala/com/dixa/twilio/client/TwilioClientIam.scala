@@ -2,9 +2,9 @@ package com.dixa.twilio.client
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.model.TwilioAccount
+import com.dixa.twilio.client.model.iam.TwilioAccount
 
-trait TwilioClientAccount {
+trait TwilioClientIam {
 
   /** Fetch all Twilio accounts
     *
