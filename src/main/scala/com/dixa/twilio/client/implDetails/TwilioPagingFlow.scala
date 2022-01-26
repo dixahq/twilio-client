@@ -6,19 +6,13 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusC
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{Materializer, SourceShape}
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
 
-import scala.concurrent.duration.DurationInt
 import scala.util.Try
 
 private[client] object TwilioPagingFlow {
-
-  private[client] final case class NextPagePath(override val toString: String) {
-    def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest = {
-      conSettings.createBaseRequest(HttpMethods.GET, this.toString)
-    }
-  }
 
   /** Creates a flow, running paging GET request agains Twilio as a stream.
     *
@@ -43,7 +37,7 @@ private[client] object TwilioPagingFlow {
     */
   private[client] def createPagingSrc(
       connSettings: TwilioConnectionSettings,
-      initPath: NextPagePath
+      initPath: TwilioUri
   )(
       implicit materializer: Materializer,
       http: HttpExt
@@ -77,13 +71,13 @@ private[client] object TwilioPagingFlow {
       val detectNextPageFlow = builder
         .add(
           Flow[HttpEntityString]
-            .map(extractNextUrlPathFromHttpEntity)
+            .map(extractNextUrlPathFromHttpEntity(_, initPath.subDomain))
             .takeWhile(_.isDefined)
             .map(_.get)
         )
 
       val nextPageHttpRequestBuild =
-        builder.add(Flow[NextPagePath].map(_.createHttpRequest(connSettings)))
+        builder.add(Flow[TwilioUri].map(_.createHttpRequest(connSettings)))
 
       //    val httpRespBroadCast = builder.add(Broadcast[])
       // format: off
@@ -98,9 +92,12 @@ private[client] object TwilioPagingFlow {
 
   private final case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
 
-  private def extractNextUrlPathFromHttpEntity(in: HttpEntityString): Option[NextPagePath] = {
+  private def extractNextUrlPathFromHttpEntity(
+      in: HttpEntityString,
+      apiSubDomain: ApiSubDomain
+  ): Option[TwilioUri] = {
     val decoded = in.parseUnsafe[TwilioResponseNextPageJsonRep]()
-    decoded.next_page_uri.map(NextPagePath)
+    decoded.next_page_uri.map(s => TwilioUri.autoDetect(s, HttpMethods.GET, apiSubDomain))
   }
 
 }

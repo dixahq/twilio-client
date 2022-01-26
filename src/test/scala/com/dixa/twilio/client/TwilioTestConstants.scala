@@ -2,12 +2,12 @@ package com.dixa.twilio.client
 
 import com.dixa.twilio.client.model.TwilioAccount
 
-import java.net.URL
-
 object TwilioTestConstants {
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
-    url = new URL(s"http://localhost:$port"),
+    baseHostName = "localhost",
+    port = port,
+    protocol = TwilioConnectionSettings.Protocol.Http,
     accountSid = TwilioAccount.Sid("testUsername"),
     authToken = TwilioAccount.AuthToken("testPassword"),
     parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
