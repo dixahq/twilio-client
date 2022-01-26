@@ -69,7 +69,7 @@ final class CompleteConferenceTest extends TwilioClientTest {
               )
             )
             .withRequestBody(WireMock.equalTo("Status=completed"))
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
             .willReturn(
               aResponse()

@@ -34,7 +34,7 @@ final class FetchAllAccountsTest extends TwilioClientTest {
           WireMock
             .get(WireMock.urlPathEqualTo("/2010-04-01/Accounts.json"))
             .withQueryParam("Status", WireMock.equalTo("active"))
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -53,7 +53,7 @@ final class FetchAllAccountsTest extends TwilioClientTest {
                 "PTJTdCJTIyZnJpZW5kbHlOYW1lJTIyJTNBbnVsbCUyQyUyMnN0YXR1cyUyMiUzQSUyMmFjdGl2ZSUyMiU3RCwyMDIxLTA5LTI3VDA1JTNBMTQlM0EwNS0wNyUzQTAwLCU1QiUyMkFDMzE4M2E3NDFmMWJhYjQ3NjRkYWMyNDkyYzhkMWZkODklMjIlNUQ6MTo0MjMy"
               )
             )
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)

@@ -4,18 +4,9 @@ import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import com.dixa.twilio.client.model.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.model.{TwilioAccount, TwilioCallSid, TwilioConference}
-import com.dixa.twilio.client.twilioClient.{TwilioClientTest, WireMockTest}
-import com.dixa.twilio.client.{
-  twilioClient,
-  TestActorSystem,
-  TwilioClient,
-  TwilioClientConference,
-  TwilioTestConstants
-}
-import com.github.tomakehurst.wiremock.WireMockServer
+import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.{TwilioClient, TwilioClientConference, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
@@ -23,7 +14,6 @@ import scala.concurrent.duration.DurationInt
 final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
 
   import FetchAllConferencesForAccountsTest._
-
   import actorSystem.dispatcher
 
   classOf[TwilioClient].getSimpleName when {
@@ -38,7 +28,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
         wireMockServer.stubFor(
           WireMock
             .get(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/${account1.sid}/Conferences.json"))
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withQueryParam("Status", WireMock.equalTo("in-progress"))
             .willReturn(
               WireMock.aResponse
@@ -51,7 +41,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
         wireMockServer.stubFor(
           WireMock
             .get(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/${account1.sid}/Conferences.json"))
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withQueryParam("Status", WireMock.equalTo("in-progress"))
             .withQueryParam("Page", WireMock.equalTo("1"))
             .withQueryParam("PageToken", WireMock.equalTo("PACFda6b2b3527379329c1394829dfb9768e"))
@@ -67,7 +57,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
         wireMockServer.stubFor(
           WireMock
             .get(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/${account2.sid}/Conferences.json"))
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withQueryParam("Status", WireMock.equalTo("in-progress"))
             .willReturn(
               WireMock
@@ -90,7 +80,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
                 "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Participants.json"
               )
             )
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .willReturn(
               WireMock
                 .aResponse()
@@ -106,7 +96,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
                 "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Participants.json"
               )
             )
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withQueryParam("Page", WireMock.equalTo("1"))
             .withQueryParam("PageToken", WireMock.equalTo("soo2ei1aiv0Ohvahk0aingeeSh0eet1taivo"))
             .willReturn(
@@ -125,7 +115,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
                 "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference2Sid/Participants.json"
               )
             )
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .willReturn(
               WireMock
                 .aResponse()
@@ -142,7 +132,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
                 "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference3Sid/Participants.json"
               )
             )
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .willReturn(
               WireMock
                 .aResponse()
@@ -159,7 +149,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
                 "/2010-04-01/Accounts/TwilioTestAccount2/Conferences/TwilioTestConference4Sid/Participants.json"
               )
             )
-            .withBasicAuth("testUsername", "testPassword")
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .willReturn(
               WireMock
                 .aResponse()
