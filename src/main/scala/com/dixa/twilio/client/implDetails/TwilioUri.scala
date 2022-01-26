@@ -39,8 +39,8 @@ private[client] object TwilioUri {
     require(path.startsWith("/"), "NextPagePath.path must start must be a path starting with a /")
 
     override def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest = {
-      val url =
-        s"${conSettings.protocol}://${conSettings.hostNameFor(subDomain)}:${conSettings.port}$path"
+      val hostname = conSettings.hostNameFor(subDomain)
+      val url      = s"${conSettings.protocol}://$hostname:${conSettings.port}$path"
       TwilioUrl(method, url, subDomain).createHttpRequest(conSettings)
     }
   }
