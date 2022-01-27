@@ -61,6 +61,19 @@ final case class TwilioConnectionSettings(
 
 object TwilioConnectionSettings {
 
+  def forProduction(
+      accountSid: TwilioAccount.Sid,
+      authToken: TwilioAccount.AuthToken
+  ): TwilioConnectionSettings = TwilioConnectionSettings(
+    "twilio.com",
+    443,
+    Protocol.Https,
+    accountSid,
+    authToken,
+    ParallelFactor.halfCpuCores,
+    Timeouts.default
+  )
+
   sealed abstract class Protocol(override val toString: String) extends EnumEntry
   object Protocol extends Enum[Protocol] {
     override val values: immutable.IndexedSeq[Protocol] = findValues
