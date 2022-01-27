@@ -1,10 +1,10 @@
-package com.dixa.twilio.client.implDetails
+package com.dixa.twilio.client.impl
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
-import com.dixa.twilio.client.implDetails.request.voice.{
+import com.dixa.twilio.client.impl.request.voice.{
   CompleteConferenceRequest,
   FetchAllConferencesWithParticipantsRequest
 }
@@ -15,7 +15,7 @@ import com.dixa.twilio.client.{TwilioClientVoice, TwilioConnectionSettings}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[implDetails] final class TwilioClientVoiceImpl()(
+private[impl] final class TwilioClientVoiceImpl()(
     implicit materializer: Materializer,
     executionContext: ExecutionContext,
     httpExt: HttpExt

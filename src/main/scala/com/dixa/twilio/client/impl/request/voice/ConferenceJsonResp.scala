@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails.request.voice
+package com.dixa.twilio.client.impl.request.voice
 
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.voice.TwilioConference

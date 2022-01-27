@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails.request.messaging
+package com.dixa.twilio.client.impl.request.messaging
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
@@ -6,12 +6,12 @@ import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
-import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
+import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import io.circe.generic.auto._
 
-private[implDetails] final class ServicesReadRequest()(
+private[impl] final class ServicesReadRequest()(
     implicit httpExt: HttpExt,
     materializer: Materializer
 ) {

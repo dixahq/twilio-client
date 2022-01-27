@@ -1,17 +1,17 @@
-package com.dixa.twilio.client.implDetails.request.messaging
+package com.dixa.twilio.client.impl.request.messaging
 
 import akka.Done
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethods, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.implDetails.ApiSubDomain
-import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
+import com.dixa.twilio.client.impl.ApiSubDomain
+import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[implDetails] final class PhoneNumberDeleteRequest()(
+private[impl] final class PhoneNumberDeleteRequest()(
     implicit http: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext

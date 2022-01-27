@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails
+package com.dixa.twilio.client.impl
 
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.{HttpMethod, HttpRequest, Uri}
@@ -11,26 +11,26 @@ import com.dixa.twilio.client.TwilioConnectionSettings
   *
   * There are two concrete implementations:
   *
-  * [[com.dixa.twilio.client.implDetails.TwilioUri.TwilioUrl]] for representing a full URL,
-  * including specified domain name, and thereby ignoring the domain name form the
+  * [[com.dixa.twilio.client.impl.TwilioUri.TwilioUrl]] for representing a full URL, including
+  * specified domain name, and thereby ignoring the domain name form the
   * [[com.dixa.twilio.client.TwilioConnectionSettings]]. This is typically used, when we as a result
   * from one request, receives an full URL for getting sub resources.
   *
-  * [[com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath]] for representing the URI as a
-  * ApiSubDomain and a path. Full URL will the be consturcted by using the baseHostName from
+  * [[com.dixa.twilio.client.impl.TwilioUri.TwilioPath]] for representing the URI as a ApiSubDomain
+  * and a path. Full URL will the be consturcted by using the baseHostName from
   * [[com.dixa.twilio.client.TwilioConnectionSettings]]. This is what we should use, in most cases,
   * as it more flexible and easy to stub/mock in tests.
   */
-private[implDetails] sealed abstract class TwilioUri {
+private[impl] sealed abstract class TwilioUri {
 
   def subDomain: ApiSubDomain
 
   def createHttpRequest(connSettings: TwilioConnectionSettings): HttpRequest
 }
 
-private[implDetails] object TwilioUri {
+private[impl] object TwilioUri {
 
-  private[implDetails] final case class TwilioPath(
+  private[impl] final case class TwilioPath(
       subDomain: ApiSubDomain,
       method: HttpMethod,
       path: String
@@ -51,7 +51,7 @@ private[implDetails] object TwilioUri {
   // as this is used to represent URL we get from twilio, after performing a request
   // based on a Path and a Subdomain, so we will have the information when creating
   // instances anyway.
-  private[implDetails] final case class TwilioUrl(
+  private[impl] final case class TwilioUrl(
       method: HttpMethod,
       uri: Uri,
       subDomain: ApiSubDomain
@@ -73,7 +73,7 @@ private[implDetails] object TwilioUri {
     * Usefully when receiving sub resources from Twilio, where we do not now if they are specified
     * as a path or full URL.
     */
-  private[implDetails] def autoDetect(
+  private[impl] def autoDetect(
       urlOrPath: String,
       methods: HttpMethod,
       fallbackSubDomain: ApiSubDomain

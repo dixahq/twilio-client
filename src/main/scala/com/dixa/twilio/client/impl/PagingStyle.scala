@@ -1,13 +1,13 @@
-package com.dixa.twilio.client.implDetails
+package com.dixa.twilio.client.impl
 
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
 /** The Different Twilio APIs have different ways of doing paging. This enum specifies them. */
-private[implDetails] sealed abstract class PagingStyle extends EnumEntry
+private[impl] sealed abstract class PagingStyle extends EnumEntry
 
-private[implDetails] object PagingStyle extends Enum[PagingStyle] {
+private[impl] object PagingStyle extends Enum[PagingStyle] {
   override val values: immutable.IndexedSeq[PagingStyle] = findValues
 
   /** Paging is provided by having the paging attributes directly in the root json returned

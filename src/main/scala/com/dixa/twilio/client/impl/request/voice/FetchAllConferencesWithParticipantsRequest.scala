@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails.request.voice
+package com.dixa.twilio.client.impl.request.voice
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
@@ -6,14 +6,9 @@ import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
-import com.dixa.twilio.client.implDetails.request.voice.ConferenceJsonResp.TwilioConferenceJsonResp
-import com.dixa.twilio.client.implDetails.{
-  ApiSubDomain,
-  HttpEntityString,
-  TwilioPagingFlow,
-  TwilioUri
-}
+import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
+import com.dixa.twilio.client.impl.request.voice.ConferenceJsonResp.TwilioConferenceJsonResp
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.model.voice.{TwilioCallSid, TwilioConference}
@@ -21,7 +16,7 @@ import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 
-private[implDetails] object FetchAllConferencesWithParticipantsRequest {
+private[impl] object FetchAllConferencesWithParticipantsRequest {
 
   def apply(
       connSettings: TwilioConnectionSettings,

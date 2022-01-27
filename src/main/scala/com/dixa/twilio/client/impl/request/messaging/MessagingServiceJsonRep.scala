@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails.request.messaging
+package com.dixa.twilio.client.impl.request.messaging
 
 import com.dixa.twilio.client.model.HttpMethod
 import com.dixa.twilio.client.model.iam.TwilioAccount

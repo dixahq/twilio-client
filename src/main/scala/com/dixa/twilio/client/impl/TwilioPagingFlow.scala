@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails
+package com.dixa.twilio.client.impl
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
@@ -11,7 +11,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.util.Try
 
-private[implDetails] object TwilioPagingFlow {
+private[impl] object TwilioPagingFlow {
 
   /** Creates a flow, running paging GET request agains Twilio as a stream.
     *

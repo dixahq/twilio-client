@@ -1,10 +1,10 @@
-package com.dixa.twilio.client.implDetails
+package com.dixa.twilio.client.impl
 
 import akka.{Done, NotUsed}
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.implDetails.request.messaging.{
+import com.dixa.twilio.client.impl.request.messaging.{
   PhoneNumberCreateRequest,
   PhoneNumberDeleteRequest,
   ServiceCreateRequest,

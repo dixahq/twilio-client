@@ -1,7 +1,7 @@
 package com.dixa.twilio.client
 
 import akka.actor.ActorSystem
-import com.dixa.twilio.client.implDetails.TwilioClientImpl
+import com.dixa.twilio.client.impl.TwilioClientImpl
 
 trait TwilioClient {
 

@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.implDetails
+package com.dixa.twilio.client.impl
 
 /** This package contains a object per request that TwilioClient is offering.
   *
@@ -20,6 +20,6 @@ package com.dixa.twilio.client.implDetails
   * Request can also be grouped in sub package, and then have the code in common in that sub package
   * package. This should be done, so that it resembles how Twilios API is structured, as it limits
   * the scope of where this shared logic is available. See
-  * [[com.dixa.twilio.client.implDetails.request.voice]] for an example of that.
+  * [[com.dixa.twilio.client.impl.request.voice]] for an example of that.
   */
 package object request {}

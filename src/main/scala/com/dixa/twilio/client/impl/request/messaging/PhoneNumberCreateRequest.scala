@@ -1,11 +1,11 @@
-package com.dixa.twilio.client.implDetails.request.messaging
+package com.dixa.twilio.client.impl.request.messaging
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
-import com.dixa.twilio.client.implDetails.request.messaging.ServiceCreateRequest.createPostParamString
-import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
+import com.dixa.twilio.client.impl.request.messaging.ServiceCreateRequest.createPostParamString
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 import io.circe.generic.auto._
@@ -13,7 +13,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}
 import com.dixa.twilio.client.model.phonenumber.ActiveNumber
-private[implDetails] final class PhoneNumberCreateRequest()(
+private[impl] final class PhoneNumberCreateRequest()(
     implicit http: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext

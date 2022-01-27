@@ -1,12 +1,12 @@
-package com.dixa.twilio.client.implDetails.request.voice
+package com.dixa.twilio.client.impl.request.voice
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
-import com.dixa.twilio.client.implDetails.request.voice.ConferenceJsonResp.TwilioConferenceJsonResp
-import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
+import com.dixa.twilio.client.impl.request.voice.ConferenceJsonResp.TwilioConferenceJsonResp
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.voice.TwilioConference
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
@@ -14,7 +14,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ExecutionContext, Future}
 
-private[implDetails] object CompleteConferenceRequest {
+private[impl] object CompleteConferenceRequest {
 
   def apply(
       connSettings: TwilioConnectionSettings,

@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import com.dixa.twilio.client.implDetails.ApiSubDomain
+import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import org.scalatest.wordspec.AnyWordSpec
 
