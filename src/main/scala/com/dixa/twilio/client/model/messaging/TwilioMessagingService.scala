@@ -15,7 +15,6 @@ sealed trait TwilioMessagingService {
 
   import TwilioMessagingService._
 
-  def sid: Sid
   def accountSid: TwilioAccount.Sid
   def friendlyName: FriendlyName
   def inboundRequestWebhook: Option[InboundRequestWebhook]
@@ -25,6 +24,10 @@ sealed trait TwilioMessagingService {
 }
 
 object TwilioMessagingService {
+
+  sealed trait SidAttribute {
+    def sid: Sid
+  }
 
   final case class Sid(override val toString: String)
   final case class FriendlyName(override val toString: String)
@@ -52,7 +55,7 @@ object TwilioMessagingService {
       fallbackWebhook: Option[FallbackWebhook],
       statusCallback: Option[StatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
-  ): TwilioMessagingService = DefaultImpl(
+  ): TwilioMessagingService with SidAttribute = DefaultImpl(
     sid,
     accountSid,
     friendlyName,
@@ -71,4 +74,5 @@ object TwilioMessagingService {
       statusCallback: Option[StatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   ) extends TwilioMessagingService
+      with SidAttribute
 }

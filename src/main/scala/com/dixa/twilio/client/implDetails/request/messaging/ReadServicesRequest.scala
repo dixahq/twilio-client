@@ -11,6 +11,7 @@ import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString, Twili
 import com.dixa.twilio.client.model.HttpMethod
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
+import com.dixa.twilio.client.model.messaging.TwilioMessagingService.SidAttribute
 import io.circe.generic.auto._
 
 import java.net.URL
@@ -22,7 +23,9 @@ private[implDetails] final class ReadServicesRequest()(
 
   import ReadServicesRequest._
 
-  def apply(conSettings: TwilioConnectionSettings): Source[TwilioMessagingService, NotUsed] = {
+  def apply(
+      conSettings: TwilioConnectionSettings
+  ): Source[TwilioMessagingService with SidAttribute, NotUsed] = {
     TwilioPagingFlow
       .createPagingSrc(
         conSettings,
@@ -93,7 +96,7 @@ private object ReadServicesRequest {
   }
   private final case class OuterJsonRep(services: List[ServiceJsonRep])
 
-  private def entityToServiceList(entity: HttpEntityString): Seq[TwilioMessagingService] = {
+  private def entityToServiceList(entity: HttpEntityString) = {
     val decoded = entity.parseUnsafe[OuterJsonRep]()
     decoded.services.map(_.toTwilioMessagingService)
   }
