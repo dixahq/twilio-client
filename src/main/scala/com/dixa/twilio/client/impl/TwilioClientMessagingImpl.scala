@@ -29,22 +29,22 @@ private[client] final class TwilioClientMessagingImpl(
 
   override def serviceCreate(
       connSettings: TwilioConnectionSettings,
-      toCreate: TwilioClientMessaging.ServiceCreateRequest
+      req: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
-    new ServiceCreateRequest().apply(connSettings, toCreate)
+    new ServiceCreateRequest().apply(connSettings, req)
   }
 
   override def phoneNumberCreate(
       connSettings: TwilioConnectionSettings,
-      toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
+      req: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber] = {
-    new PhoneNumberCreateRequest().apply(connSettings, toCreate)
+    new PhoneNumberCreateRequest().apply(connSettings, req)
   }
 
   override def phoneNumberDelete(
       connSettings: TwilioConnectionSettings,
-      toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
+      req: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done] = {
-    new PhoneNumberDeleteRequest().apply(connSettings, toDelete)
+    new PhoneNumberDeleteRequest().apply(connSettings, req)
   }
 }

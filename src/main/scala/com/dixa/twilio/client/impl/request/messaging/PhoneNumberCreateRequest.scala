@@ -4,15 +4,14 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.request.messaging.ServiceCreateRequest.createPostParamString
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
+import com.dixa.twilio.client.model.phonenumber.ActiveNumber
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
 private[impl] final class PhoneNumberCreateRequest()(
     implicit http: HttpExt,
     materializer: Materializer,
@@ -23,23 +22,23 @@ private[impl] final class PhoneNumberCreateRequest()(
 
   def apply(
       connSettings: TwilioConnectionSettings,
-      toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
+      req: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber] = {
-    val postParam = s"PhoneNumberSid=${toCreate.activeNumberSid}"
-    val req = TwilioPath(
+    val postParam = s"PhoneNumberSid=${req.activeNumberSid}"
+    val httpReq = TwilioPath(
       ApiSubDomain.Messaging,
       HttpMethods.POST,
-      s"/v1/Services/${toCreate.serviceSid}/PhoneNumbers"
+      s"/v1/Services/${req.serviceSid}/PhoneNumbers"
     )
       .createHttpRequest(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
-    http.singleRequest(req).flatMap { resp =>
-      if (resp.status !== StatusCodes.OK) {
+    http.singleRequest(httpReq).flatMap { httpResp =>
+      if (httpResp.status !== StatusCodes.OK) {
         throw new RuntimeException(
-          s"Could not create: $toCreate, due to getting status code ${resp.status} from Twilio"
+          s"Could not create: $req, due to getting status code ${httpResp.status} from Twilio"
         )
       }
-      resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
+      httpResp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
         val decoded      = entityString.parseUnsafe[MessagingPhoneNumberJsonRep]()
         decoded.toModel

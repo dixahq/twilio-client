@@ -22,17 +22,17 @@ trait TwilioClientMessaging {
 
   def serviceCreate(
       connSettings: TwilioConnectionSettings,
-      toCreate: TwilioClientMessaging.ServiceCreateRequest
+      req: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService]
 
   def phoneNumberCreate(
       connSettings: TwilioConnectionSettings,
-      toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
+      req: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber]
 
   def phoneNumberDelete(
       connSettings: TwilioConnectionSettings,
-      toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
+      req: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done]
 }
 

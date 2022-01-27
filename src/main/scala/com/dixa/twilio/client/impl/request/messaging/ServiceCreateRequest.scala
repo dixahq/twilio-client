@@ -22,23 +22,23 @@ private[impl] final class ServiceCreateRequest()(
 
   def apply(
       connSettings: TwilioConnectionSettings,
-      toCreate: TwilioClientMessaging.ServiceCreateRequest
+      req: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
-    val postParams = createPostParamString(toCreate)
-    val req = TwilioPath(
+    val postParams = createPostParamString(req)
+    val httpReq = TwilioPath(
       ApiSubDomain.Messaging,
       HttpMethods.POST,
       "/v1/Services"
     )
       .createHttpRequest(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParams))
-    http.singleRequest(req).flatMap { resp =>
-      if (resp.status !== StatusCodes.Created) {
+    http.singleRequest(httpReq).flatMap { httpResp =>
+      if (httpResp.status !== StatusCodes.Created) {
         throw new RuntimeException(
-          s"Could not create service: $toCreate, due to getting status code ${resp.status} from Twilio"
+          s"Could not create service: $req, due to getting status code ${httpResp.status} from Twilio"
         )
       }
-      resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
+      httpResp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
         val decoded      = entityString.parseUnsafe[MessagingServiceJsonRep]()
         decoded.toTwilioMessagingService

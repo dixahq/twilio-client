@@ -18,21 +18,21 @@ private[impl] final class PhoneNumberDeleteRequest()(
 ) {
   def apply(
       connSettings: TwilioConnectionSettings,
-      toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
+      req: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done] = {
-    val req = TwilioPath(
+    val httpReq = TwilioPath(
       ApiSubDomain.Messaging,
       HttpMethods.DELETE,
-      s"/v1/Services/${toDelete.serviceSid}/PhoneNumbers/${toDelete.activeNumberSid}"
+      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.activeNumberSid}"
     )
       .createHttpRequest(connSettings)
-    http.singleRequest(req).map { resp =>
-      if (resp.status !== StatusCodes.OK) {
+    http.singleRequest(httpReq).map { httpResp =>
+      if (httpResp.status !== StatusCodes.OK) {
         throw new RuntimeException(
-          s"Could not delete: $toDelete, due to getting status code ${resp.status} from Twilio"
+          s"Could not delete: $req, due to getting status code ${httpResp.status} from Twilio"
         )
       }
-      resp.entity.discardBytes()
+      httpResp.entity.discardBytes()
       Done
     }
   }
