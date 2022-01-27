@@ -2,16 +2,15 @@ package com.dixa.twilio.client
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
   InboundRequestWebhook,
-  Sid,
   StatusCallback,
   UseInboundWebhookOnNumber
 }
+import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
+import com.dixa.twilio.client.model.phonenumber.ActiveNumber
 
 import scala.concurrent.Future
 
@@ -25,6 +24,11 @@ trait TwilioClientMessaging {
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService]
+
+  def createPhoneNumber(
+      conSettings: TwilioConnectionSettings,
+      toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
+  ): Future[TwilioMessagingPhoneNumber]
 }
 
 object TwilioClientMessaging {
@@ -35,5 +39,10 @@ object TwilioClientMessaging {
       fallbackWebhook: Option[FallbackWebhook],
       statusCallback: Option[StatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
+  )
+
+  final case class PhoneNumberCreateRequest(
+      serviceSid: TwilioMessagingService.Sid,
+      activeNumberSid: ActiveNumber.Sid
   )
 }

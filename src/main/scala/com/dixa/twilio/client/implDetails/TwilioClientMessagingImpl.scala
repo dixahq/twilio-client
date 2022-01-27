@@ -6,9 +6,10 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.implDetails.request.messaging.{
   CreateServiceRequest,
+  PhoneNumberCreateRequest,
   ReadServicesRequest
 }
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService
+import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,5 +31,12 @@ final class TwilioClientMessagingImpl(
       toCreate: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
     new CreateServiceRequest().apply(conSettings, toCreate)
+  }
+
+  override def createPhoneNumber(
+      conSettings: TwilioConnectionSettings,
+      toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
+  ): Future[TwilioMessagingPhoneNumber] = {
+    new PhoneNumberCreateRequest().apply(conSettings, toCreate)
   }
 }
