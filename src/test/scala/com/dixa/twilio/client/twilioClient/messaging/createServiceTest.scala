@@ -47,7 +47,7 @@ final class createServiceTest extends TwilioClientTest {
             .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(201)
                 .withHeader("Content-Type", "application/json")
                 .withBody(twilioResponse1)
             )

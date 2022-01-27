@@ -33,7 +33,7 @@ final class ServiceCreateRequest()(
       .createHttpRequest(conSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParams))
     http.singleRequest(req).flatMap { resp =>
-      if (resp.status !== StatusCodes.OK) {
+      if (resp.status !== StatusCodes.Created) {
         throw new RuntimeException(
           s"Could not create service: $toCreate, due to getting status code ${resp.status} from Twilio"
         )
