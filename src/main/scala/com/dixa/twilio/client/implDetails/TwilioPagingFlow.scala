@@ -6,7 +6,6 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusC
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{Materializer, SourceShape}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
 
@@ -92,12 +91,30 @@ private[client] object TwilioPagingFlow {
 
   private final case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
 
+//  Full meta json object likes like this, but for now we only need the nex_page_url:
+//  "meta": {
+//    "page": 1,
+//    "page_size": 2,
+//    "first_page_url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=0",
+//    "previous_page_url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=0&PageToken=PTMGd8410e59416697cb4455c87eba98a6d0",
+//    "url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=1&PageToken=PTMGf9a4a36b7b901e4a5d325ff1d92c6dcd",
+//    "next_page_url": null,
+//    "key": "services"
+//  }
+  private final case class MetaJsonRep(next_page_url: Option[String])
+  private final case class MetaRootJsonResp(meta: MetaJsonRep)
+
   private def extractNextUrlPathFromHttpEntity(
       in: HttpEntityString,
       apiSubDomain: ApiSubDomain
   ): Option[TwilioUri] = {
-    val decoded = in.parseUnsafe[TwilioResponseNextPageJsonRep]()
-    decoded.next_page_uri.map(s => TwilioUri.autoDetect(s, HttpMethods.GET, apiSubDomain))
+    val optionalUri = apiSubDomain.pagingStyle match {
+      case PagingStyle.PagingAttributesInRootJson =>
+        in.parseUnsafe[TwilioResponseNextPageJsonRep]().next_page_uri
+      case PagingStyle.MetaObject =>
+        in.parseUnsafe[MetaRootJsonResp]().meta.next_page_url
+    }
+    optionalUri.map(s => TwilioUri.autoDetect(s, HttpMethods.GET, apiSubDomain))
   }
 
 }

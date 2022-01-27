@@ -33,6 +33,11 @@ object TwilioMessagingService {
     override val values: immutable.IndexedSeq[UseInboundWebhookOnNumber] = findValues
     case object True  extends UseInboundWebhookOnNumber(true)
     case object False extends UseInboundWebhookOnNumber(false)
+
+    def fromBoolean(b: Boolean): UseInboundWebhookOnNumber = b match {
+      case true  => True
+      case false => False
+    }
   }
 
   def apply(
@@ -43,5 +48,23 @@ object TwilioMessagingService {
       fallbackWebhook: Option[FallbackWebhook],
       statusCallback: Option[StatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
-  ): TwilioMessagingService = ???
+  ): TwilioMessagingService = DefaultImpl(
+    sid,
+    accountSid,
+    friendlyName,
+    inboundRequestWebhook,
+    fallbackWebhook,
+    statusCallback,
+    useInboundWebhookOnNumber
+  )
+
+  private final case class DefaultImpl(
+      sid: Sid,
+      accountSid: TwilioAccount.Sid,
+      friendlyName: FriendlyName,
+      inboundRequestWebhook: Option[InboundRequestWebhook],
+      fallbackWebhook: Option[FallbackWebhook],
+      statusCallback: Option[StatusCallback],
+      useInboundWebhookOnNumber: UseInboundWebhookOnNumber
+  ) extends TwilioMessagingService
 }

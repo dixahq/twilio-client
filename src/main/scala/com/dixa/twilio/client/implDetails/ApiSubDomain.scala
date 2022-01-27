@@ -4,12 +4,16 @@ import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
-private[client] sealed abstract class ApiSubDomain(override val toString: String) extends EnumEntry
+/** Twilio use different subdomains for different APIs. This enum specifies them. */
+private[client] sealed abstract class ApiSubDomain(
+    override val toString: String,
+    val pagingStyle: PagingStyle
+) extends EnumEntry
 
 private[client] object ApiSubDomain extends Enum[ApiSubDomain] {
 
   override val values: immutable.IndexedSeq[ApiSubDomain] = findValues
 
-  case object Api       extends ApiSubDomain("api")
-  case object Messaging extends ApiSubDomain("messaging")
+  case object Api       extends ApiSubDomain("api", PagingStyle.PagingAttributesInRootJson)
+  case object Messaging extends ApiSubDomain("messaging", PagingStyle.MetaObject)
 }
