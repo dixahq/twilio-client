@@ -20,6 +20,8 @@ private[implDetails] final class ReadServicesRequest()(
     materializer: Materializer
 ) {
 
+  import ReadServicesRequest._
+
   def apply(conSettings: TwilioConnectionSettings): Source[TwilioMessagingService, NotUsed] = {
     TwilioPagingFlow
       .createPagingSrc(
@@ -29,7 +31,9 @@ private[implDetails] final class ReadServicesRequest()(
       .map(entityToServiceList)
       .mapConcat(identity)
   }
+}
 
+private object ReadServicesRequest {
   // It actually looks like Twilio tries to avoid null values in this API, and use empty
   // strings or default values instead, but lets
   // make all the optional attributes options anyway, just to be on the safe side.
