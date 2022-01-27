@@ -8,26 +8,6 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
 
   s"${classOf[TwilioConnectionSettings].getSimpleName}" when {
 
-    "factory for production settings is called" should {
-
-      "build settings with production settings, and use default values for parallel " +
-        "factor and timeouts" in {
-          val sid    = TwilioAccount.Sid("TestSid")
-          val token  = TwilioAccount.AuthToken("TestToken")
-          val result = TwilioConnectionSettings.forProduction(sid, token)
-          val expected = TwilioConnectionSettings(
-            "twilio.com",
-            443,
-            TwilioConnectionSettings.Protocol.Https,
-            sid,
-            token,
-            TwilioConnectionSettings.ParallelFactor.halfCpuCores,
-            TwilioConnectionSettings.Timeouts.default
-          )
-          assert(result === expected)
-        }
-    }
-
     "ask to build a hostnaem for a subdomain" should {
 
       "work with the Api sub domain" in {

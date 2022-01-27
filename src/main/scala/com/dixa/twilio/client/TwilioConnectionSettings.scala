@@ -16,11 +16,11 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *   production this would be `twilio.com` and then request would end up being made agains the
   *   respective sub domains like `api.twilio.com` and `messagin.twilio.com` depending on the
   *   request. The Exception is localhost or 127.0.0.1, if that is set, then no subdomain will be
-  *   added, no matter what the request is.
+  *   added, no matter what the request is. Should be "twilio.com" for the production Twilio API.
   * @param port
-  *   TCP port to use for connecting to Twilio
+  *   TCP port to use for connecting to Twilio Should be 443 for the production Twilio API.
   * @param protocol
-  *   Protocol to use for connecting to Twilio
+  *   Protocol to use for connecting to Twilio. Should be Https for production Twilio API.
   * @param accountSid
   *   The account sid to connect as.
   * @param authToken
@@ -60,19 +60,6 @@ final case class TwilioConnectionSettings(
 }
 
 object TwilioConnectionSettings {
-
-  def forProduction(
-      accountSid: TwilioAccount.Sid,
-      authToken: TwilioAccount.AuthToken
-  ): TwilioConnectionSettings = TwilioConnectionSettings(
-    "twilio.com",
-    443,
-    Protocol.Https,
-    accountSid,
-    authToken,
-    ParallelFactor.halfCpuCores,
-    Timeouts.default
-  )
 
   sealed abstract class Protocol(override val toString: String) extends EnumEntry
   object Protocol extends Enum[Protocol] {
