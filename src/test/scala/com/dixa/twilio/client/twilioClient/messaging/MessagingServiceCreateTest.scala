@@ -66,7 +66,7 @@ final class MessagingServiceCreateTest extends TwilioClientTest {
         val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance     = TwilioClient.defaultImpl().messaging
         val resultFut: Future[TwilioMessagingService] =
-          instance.createService(connSettings, toCreate)
+          instance.serviceCreate(connSettings, toCreate)
         val result = Await.result(resultFut, 15.seconds)
         assert(result === expected)
       }

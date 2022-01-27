@@ -21,27 +21,27 @@ final class TwilioClientMessagingImpl(
     executionContext: ExecutionContext
 ) extends TwilioClientMessaging {
 
-  override def readServices(
+  override def servicesRead(
       conSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed] = {
     new ServicesReadRequest().apply(conSettings)
   }
 
-  override def createService(
+  override def serviceCreate(
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
     new ServiceCreateRequest().apply(conSettings, toCreate)
   }
 
-  override def createPhoneNumber(
+  override def phoneNumberCreate(
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber] = {
     new PhoneNumberCreateRequest().apply(conSettings, toCreate)
   }
 
-  override def deletePhoneNumber(
+  override def phoneNumberDelete(
       connectionSettings: TwilioConnectionSettings,
       toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done] = {

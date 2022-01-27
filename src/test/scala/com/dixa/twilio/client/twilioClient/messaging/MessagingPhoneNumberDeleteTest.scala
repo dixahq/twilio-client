@@ -39,7 +39,7 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
         val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance     = TwilioClient.defaultImpl().messaging
         val resultFut: Future[Done] =
-          instance.deletePhoneNumber(connSettings, toDelete)
+          instance.phoneNumberDelete(connSettings, toDelete)
         // Does not return anything, so just make sure to await it, so we fail if it throws an Exception.
         Await.result(resultFut, 15.seconds)
       }

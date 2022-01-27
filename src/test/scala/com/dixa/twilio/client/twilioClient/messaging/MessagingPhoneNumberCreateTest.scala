@@ -49,7 +49,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance     = TwilioClient.defaultImpl().messaging
         val resultFut: Future[TwilioMessagingPhoneNumber] =
-          instance.createPhoneNumber(connSettings, toCreate)
+          instance.phoneNumberCreate(connSettings, toCreate)
         val result = Await.result(resultFut, 15.seconds)
         assert(result === expected)
       }

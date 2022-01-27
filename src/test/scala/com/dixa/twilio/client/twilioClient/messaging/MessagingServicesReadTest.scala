@@ -56,7 +56,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
         val instance: TwilioClientMessaging = TwilioClient.defaultImpl().messaging
 
         val resultSource: Source[TwilioMessagingService, NotUsed] =
-          instance.readServices(twilioConnectionSetting)
+          instance.servicesRead(twilioConnectionSetting)
         val resultFut =
           resultSource.runWith(Sink.seq)
 

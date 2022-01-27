@@ -16,21 +16,21 @@ import scala.concurrent.Future
 
 trait TwilioClientMessaging {
 
-  def readServices(
+  def servicesRead(
       conSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed]
 
-  def createService(
+  def serviceCreate(
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService]
 
-  def createPhoneNumber(
+  def phoneNumberCreate(
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber]
 
-  def deletePhoneNumber(
+  def phoneNumberDelete(
       connectionSettings: TwilioConnectionSettings,
       toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done]
