@@ -4,7 +4,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
-import com.dixa.twilio.client.implDetails.request.messaging.CreateServiceRequest.createPostParamString
+import com.dixa.twilio.client.implDetails.request.messaging.ServiceCreateRequest.createPostParamString
 import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
@@ -14,7 +14,7 @@ import io.circe.generic.auto._
 import java.net.URLEncoder
 import scala.concurrent.{ExecutionContext, Future}
 
-final class CreateServiceRequest()(
+final class ServiceCreateRequest()(
     implicit http: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext
@@ -48,7 +48,7 @@ final class CreateServiceRequest()(
 
 }
 
-private object CreateServiceRequest {
+private object ServiceCreateRequest {
   private def createPostParamString(t: TwilioClientMessaging.ServiceCreateRequest): String = {
     val sb = new StringBuilder
 

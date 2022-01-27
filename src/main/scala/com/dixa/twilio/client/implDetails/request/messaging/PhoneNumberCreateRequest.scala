@@ -4,7 +4,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.implDetails.TwilioUri.TwilioPath
-import com.dixa.twilio.client.implDetails.request.messaging.CreateServiceRequest.createPostParamString
+import com.dixa.twilio.client.implDetails.request.messaging.ServiceCreateRequest.createPostParamString
 import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}

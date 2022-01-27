@@ -5,9 +5,9 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.implDetails.request.messaging.{
-  CreateServiceRequest,
   PhoneNumberCreateRequest,
-  ReadServicesRequest
+  ServiceCreateRequest,
+  ServicesReadRequest
 }
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
@@ -23,14 +23,14 @@ final class TwilioClientMessagingImpl(
   override def readServices(
       conSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed] = {
-    new ReadServicesRequest().apply(conSettings)
+    new ServicesReadRequest().apply(conSettings)
   }
 
   override def createService(
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
-    new CreateServiceRequest().apply(conSettings, toCreate)
+    new ServiceCreateRequest().apply(conSettings, toCreate)
   }
 
   override def createPhoneNumber(

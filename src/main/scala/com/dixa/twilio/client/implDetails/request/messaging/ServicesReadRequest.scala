@@ -11,12 +11,12 @@ import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString, Twili
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import io.circe.generic.auto._
 
-private[implDetails] final class ReadServicesRequest()(
+private[implDetails] final class ServicesReadRequest()(
     implicit httpExt: HttpExt,
     materializer: Materializer
 ) {
 
-  import ReadServicesRequest._
+  import ServicesReadRequest._
 
   def apply(
       conSettings: TwilioConnectionSettings
@@ -31,7 +31,7 @@ private[implDetails] final class ReadServicesRequest()(
   }
 }
 
-private object ReadServicesRequest {
+private object ServicesReadRequest {
 
   private final case class OuterJsonRep(services: List[MessagingServiceJsonRep])
 
