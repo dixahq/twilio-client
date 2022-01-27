@@ -10,7 +10,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-final class createMessagingPhoneNumberTest extends TwilioClientTest {
+final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
   classOf[TwilioClientMessaging].getSimpleName when {
 
     "ask complete create a Phonenumber" should {

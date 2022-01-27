@@ -12,7 +12,7 @@ import java.net.URL
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.{Await, Future}
 
-final class createServiceTest extends TwilioClientTest {
+final class MessagingServiceCreateTest extends TwilioClientTest {
   classOf[TwilioClientMessaging].getSimpleName when {
 
     "ask complete create a Service" should {

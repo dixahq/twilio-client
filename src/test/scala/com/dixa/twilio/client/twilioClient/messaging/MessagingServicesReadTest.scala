@@ -14,7 +14,7 @@ import java.net.URL
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
 
-final class ReadServicesTest extends TwilioClientTest {
+final class MessagingServicesReadTest extends TwilioClientTest {
 
   classOf[TwilioClientMessaging].getSimpleName when {
 
