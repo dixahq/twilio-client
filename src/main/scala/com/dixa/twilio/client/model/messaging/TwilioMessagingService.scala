@@ -7,6 +7,10 @@ import enumeratum.{Enum, EnumEntry}
 import java.net.URL
 import scala.collection.immutable
 
+/** Represent a Service in the Twilios Messaging API.
+  *
+  * At time of writing, only some attributes are here. The rest could be added when needed.
+  */
 sealed trait TwilioMessagingService {
 
   import TwilioMessagingService._
