@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
@@ -29,6 +29,11 @@ trait TwilioClientMessaging {
       conSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber]
+
+  def deletePhoneNumber(
+      connectionSettings: TwilioConnectionSettings,
+      toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
+  ): Future[Done]
 }
 
 object TwilioClientMessaging {
@@ -42,6 +47,11 @@ object TwilioClientMessaging {
   )
 
   final case class PhoneNumberCreateRequest(
+      serviceSid: TwilioMessagingService.Sid,
+      activeNumberSid: ActiveNumber.Sid
+  )
+
+  final case class PhoneNumberDeleteRequest(
       serviceSid: TwilioMessagingService.Sid,
       activeNumberSid: ActiveNumber.Sid
   )

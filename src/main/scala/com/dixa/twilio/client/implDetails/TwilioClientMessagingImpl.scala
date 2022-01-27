@@ -1,11 +1,12 @@
 package com.dixa.twilio.client.implDetails
 
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.implDetails.request.messaging.{
   PhoneNumberCreateRequest,
+  PhoneNumberDeleteRequest,
   ServiceCreateRequest,
   ServicesReadRequest
 }
@@ -38,5 +39,12 @@ final class TwilioClientMessagingImpl(
       toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber] = {
     new PhoneNumberCreateRequest().apply(conSettings, toCreate)
+  }
+
+  override def deletePhoneNumber(
+      connectionSettings: TwilioConnectionSettings,
+      toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
+  ): Future[Done] = {
+    new PhoneNumberDeleteRequest().apply(connectionSettings, toDelete)
   }
 }
