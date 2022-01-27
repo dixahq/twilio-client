@@ -17,7 +17,7 @@ private[implDetails] final class PhoneNumberDeleteRequest()(
     executionContext: ExecutionContext
 ) {
   def apply(
-      conSettings: TwilioConnectionSettings,
+      connSettings: TwilioConnectionSettings,
       toDelete: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done] = {
     val req = TwilioPath(
@@ -25,7 +25,7 @@ private[implDetails] final class PhoneNumberDeleteRequest()(
       HttpMethods.DELETE,
       s"/v1/Services/${toDelete.serviceSid}/PhoneNumbers/${toDelete.activeNumberSid}"
     )
-      .createHttpRequest(conSettings)
+      .createHttpRequest(connSettings)
     http.singleRequest(req).map { resp =>
       if (resp.status !== StatusCodes.OK) {
         throw new RuntimeException(

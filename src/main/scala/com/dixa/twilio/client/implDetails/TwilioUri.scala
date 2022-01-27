@@ -25,7 +25,7 @@ private[implDetails] sealed abstract class TwilioUri {
 
   def subDomain: ApiSubDomain
 
-  def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest
+  def createHttpRequest(connSettings: TwilioConnectionSettings): HttpRequest
 }
 
 private[implDetails] object TwilioUri {
@@ -38,10 +38,10 @@ private[implDetails] object TwilioUri {
 
     require(path.startsWith("/"), "NextPagePath.path must start must be a path starting with a /")
 
-    override def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest = {
-      val hostname = conSettings.hostNameFor(subDomain)
-      val url      = s"${conSettings.protocol}://$hostname:${conSettings.port}$path"
-      TwilioUrl(method, url, subDomain).createHttpRequest(conSettings)
+    override def createHttpRequest(connSettings: TwilioConnectionSettings): HttpRequest = {
+      val hostname = connSettings.hostNameFor(subDomain)
+      val url      = s"${connSettings.protocol}://$hostname:${connSettings.port}$path"
+      TwilioUrl(method, url, subDomain).createHttpRequest(connSettings)
     }
   }
 
@@ -59,10 +59,10 @@ private[implDetails] object TwilioUri {
 
     require(uri.isAbsolute, "NextPageUri.uri must be absolute uri starting with a protocol.")
 
-    override def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest = {
+    override def createHttpRequest(connSettings: TwilioConnectionSettings): HttpRequest = {
       HttpRequest(method, uri).addHeader(
         Authorization(
-          BasicHttpCredentials(conSettings.accountSid.toString, conSettings.authToken.toString)
+          BasicHttpCredentials(connSettings.accountSid.toString, connSettings.authToken.toString)
         )
       )
     }

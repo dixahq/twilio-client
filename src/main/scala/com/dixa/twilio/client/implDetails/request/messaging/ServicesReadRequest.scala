@@ -19,11 +19,11 @@ private[implDetails] final class ServicesReadRequest()(
   import ServicesReadRequest._
 
   def apply(
-      conSettings: TwilioConnectionSettings
+      connSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed] = {
     TwilioPagingFlow
       .createPagingSrc(
-        conSettings,
+        connSettings,
         TwilioPath(ApiSubDomain.Messaging, HttpMethods.GET, "/v1/Services?PageSize=1000")
       )
       .map(entityToServiceList)

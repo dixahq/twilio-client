@@ -22,7 +22,7 @@ private[implDetails] final class PhoneNumberCreateRequest()(
   import PhoneNumberCreateRequest._
 
   def apply(
-      conSettings: TwilioConnectionSettings,
+      connSettings: TwilioConnectionSettings,
       toCreate: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber] = {
     val postParam = s"PhoneNumberSid=${toCreate.activeNumberSid}"
@@ -31,7 +31,7 @@ private[implDetails] final class PhoneNumberCreateRequest()(
       HttpMethods.POST,
       s"/v1/Services/${toCreate.serviceSid}/PhoneNumbers"
     )
-      .createHttpRequest(conSettings)
+      .createHttpRequest(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
     http.singleRequest(req).flatMap { resp =>
       if (resp.status !== StatusCodes.OK) {
@@ -39,7 +39,7 @@ private[implDetails] final class PhoneNumberCreateRequest()(
           s"Could not create: $toCreate, due to getting status code ${resp.status} from Twilio"
         )
       }
-      resp.entity.toStrict(conSettings.timeouts.requestEntityTimeout).map { entity =>
+      resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
         val decoded      = entityString.parseUnsafe[MessagingPhoneNumberJsonRep]()
         decoded.toModel
