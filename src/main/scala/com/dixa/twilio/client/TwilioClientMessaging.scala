@@ -25,11 +25,21 @@ trait TwilioClientMessaging {
       req: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService]
 
+  /** Add a phone number to a messaging service.
+    *
+    * The create is only in context of messaging. So it takes an existing phonenumber and creates it
+    * / adds it in a messaging service.
+    */
   def phoneNumberCreate(
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber]
 
+  /** Delete a phone number from a messaging service.
+    *
+    * The delete is only in context of messaging. So it takes an existing phonenumber and delete it
+    * / removes it from a messaging service.
+    */
   def phoneNumberDelete(
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.PhoneNumberDeleteRequest
