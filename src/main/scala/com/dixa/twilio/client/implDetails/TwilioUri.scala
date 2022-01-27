@@ -21,16 +21,16 @@ import com.dixa.twilio.client.TwilioConnectionSettings
   * [[com.dixa.twilio.client.TwilioConnectionSettings]]. This is what we should use, in most cases,
   * as it more flexible and easy to stub/mock in tests.
   */
-private[client] sealed abstract class TwilioUri {
+private[implDetails] sealed abstract class TwilioUri {
 
   def subDomain: ApiSubDomain
 
   def createHttpRequest(conSettings: TwilioConnectionSettings): HttpRequest
 }
 
-private[client] object TwilioUri {
+private[implDetails] object TwilioUri {
 
-  private[client] final case class TwilioPath(
+  private[implDetails] final case class TwilioPath(
       subDomain: ApiSubDomain,
       method: HttpMethod,
       path: String
@@ -51,7 +51,7 @@ private[client] object TwilioUri {
   // as this is used to represent URL we get from twilio, after performing a request
   // based on a Path and a Subdomain, so we will have the information when creating
   // instances anyway.
-  private[client] final case class TwilioUrl(
+  private[implDetails] final case class TwilioUrl(
       method: HttpMethod,
       uri: Uri,
       subDomain: ApiSubDomain
@@ -73,7 +73,7 @@ private[client] object TwilioUri {
     * Usefully when receiving sub resources from Twilio, where we do not now if they are specified
     * as a path or full URL.
     */
-  private[client] def autoDetect(
+  private[implDetails] def autoDetect(
       urlOrPath: String,
       methods: HttpMethod,
       fallbackSubDomain: ApiSubDomain

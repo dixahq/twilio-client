@@ -15,7 +15,7 @@ import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-final class TwilioClientMessagingImpl(
+private[client] final class TwilioClientMessagingImpl(
     implicit httpExt: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext

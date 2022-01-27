@@ -5,9 +5,9 @@ import enumeratum.{Enum, EnumEntry}
 import scala.collection.immutable
 
 /** The Different Twilio APIs have different ways of doing paging. This enum specifies them. */
-sealed abstract class PagingStyle extends EnumEntry
+private[implDetails] sealed abstract class PagingStyle extends EnumEntry
 
-object PagingStyle extends Enum[PagingStyle] {
+private[implDetails] object PagingStyle extends Enum[PagingStyle] {
   override val values: immutable.IndexedSeq[PagingStyle] = findValues
 
   /** Paging is provided by having the paging attributes directly in the root json returned

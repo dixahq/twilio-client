@@ -11,7 +11,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.util.Try
 
-private[client] object TwilioPagingFlow {
+private[implDetails] object TwilioPagingFlow {
 
   /** Creates a flow, running paging GET request agains Twilio as a stream.
     *

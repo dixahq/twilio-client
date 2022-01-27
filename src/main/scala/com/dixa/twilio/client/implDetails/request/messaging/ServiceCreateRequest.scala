@@ -14,7 +14,7 @@ import io.circe.generic.auto._
 import java.net.URLEncoder
 import scala.concurrent.{ExecutionContext, Future}
 
-final class ServiceCreateRequest()(
+private[implDetails] final class ServiceCreateRequest()(
     implicit http: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext

@@ -13,7 +13,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}
 import com.dixa.twilio.client.model.phonenumber.ActiveNumber
-final class PhoneNumberCreateRequest()(
+private[implDetails] final class PhoneNumberCreateRequest()(
     implicit http: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext
