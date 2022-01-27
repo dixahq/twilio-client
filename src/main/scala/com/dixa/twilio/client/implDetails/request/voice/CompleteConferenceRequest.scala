@@ -37,7 +37,7 @@ private[implDetails] object CompleteConferenceRequest {
           s"Could not close conference: $conference, due to getting status code ${resp.status} from Twilio"
         )
       }
-      resp.entity.toStrict(30.seconds).map { entity =>
+      resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
         val decoded      = entityString.parseUnsafe[TwilioConferenceJsonResp]()
         decoded.toModel

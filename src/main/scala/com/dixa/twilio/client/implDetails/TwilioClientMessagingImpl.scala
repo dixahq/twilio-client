@@ -4,18 +4,31 @@ import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.implDetails.request.messaging.ReadServicesRequest
+import com.dixa.twilio.client.implDetails.request.messaging.{
+  CreateServiceRequest,
+  ReadServicesRequest
+}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 
+import scala.concurrent.{ExecutionContext, Future}
+
 final class TwilioClientMessagingImpl(
     implicit httpExt: HttpExt,
-    materializer: Materializer
+    materializer: Materializer,
+    executionContext: ExecutionContext
 ) extends TwilioClientMessaging {
 
   override def readServices(
       conSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed] = {
     new ReadServicesRequest().apply(conSettings)
+  }
+
+  override def createService(
+      conSettings: TwilioConnectionSettings,
+      toCreate: TwilioClientMessaging.ServiceCreateRequest
+  ): Future[TwilioMessagingService] = {
+    new CreateServiceRequest().apply(conSettings, toCreate)
   }
 }

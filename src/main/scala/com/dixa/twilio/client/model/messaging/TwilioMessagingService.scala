@@ -30,9 +30,13 @@ object TwilioMessagingService {
   final case class FriendlyName(override val toString: String)
   final case class InboundRequestWebhook(method: HttpMethod, url: URL)
   final case class FallbackWebhook(method: HttpMethod, url: URL)
-  final case class StatusCallback(url: URL)
+  final case class StatusCallback(url: URL) {
+    override val toString: String = url.toString
+  }
 
-  sealed abstract class UseInboundWebhookOnNumber(asBoolean: Boolean) extends EnumEntry
+  sealed abstract class UseInboundWebhookOnNumber(asBoolean: Boolean) extends EnumEntry {
+    override val toString: String = asBoolean.toString
+  }
   object UseInboundWebhookOnNumber extends Enum[UseInboundWebhookOnNumber] {
     override val values: immutable.IndexedSeq[UseInboundWebhookOnNumber] = findValues
     case object True  extends UseInboundWebhookOnNumber(true)
