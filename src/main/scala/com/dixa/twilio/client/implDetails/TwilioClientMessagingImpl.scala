@@ -6,7 +6,6 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.implDetails.request.messaging.ReadServicesRequest
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService.SidAttribute
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 
 final class TwilioClientMessagingImpl(
@@ -16,7 +15,7 @@ final class TwilioClientMessagingImpl(
 
   override def readServices(
       conSettings: TwilioConnectionSettings
-  ): Source[TwilioMessagingService with SidAttribute, NotUsed] = {
+  ): Source[TwilioMessagingService, NotUsed] = {
     new ReadServicesRequest().apply(conSettings)
   }
 }

@@ -11,7 +11,6 @@ import com.dixa.twilio.client.implDetails.{ApiSubDomain, HttpEntityString, Twili
 import com.dixa.twilio.client.model.HttpMethod
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService.SidAttribute
 import io.circe.generic.auto._
 
 import java.net.URL
@@ -25,7 +24,7 @@ private[implDetails] final class ReadServicesRequest()(
 
   def apply(
       conSettings: TwilioConnectionSettings
-  ): Source[TwilioMessagingService with SidAttribute, NotUsed] = {
+  ): Source[TwilioMessagingService, NotUsed] = {
     TwilioPagingFlow
       .createPagingSrc(
         conSettings,
