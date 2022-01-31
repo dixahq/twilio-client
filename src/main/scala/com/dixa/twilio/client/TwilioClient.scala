@@ -1,20 +1,19 @@
 package com.dixa.twilio.client
 
 import akka.actor.ActorSystem
-import com.dixa.twilio.client.implDetails.TwilioClientImpl
-
-import scala.concurrent.ExecutionContext
+import com.dixa.twilio.client.impl.TwilioClientImpl
 
 trait TwilioClient {
 
-  def account: TwilioClientAccount
+  def iam: TwilioClientIam
 
-  def conference: TwilioClientConference
+  def voice: TwilioClientVoice
+
+  def messaging: TwilioClientMessaging
 }
 
 object TwilioClient {
   def defaultImpl()(
-      implicit actorSystem: ActorSystem,
-      executionContext: ExecutionContext
+      implicit actorSystem: ActorSystem
   ): TwilioClient = new TwilioClientImpl()
 }
