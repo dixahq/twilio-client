@@ -18,7 +18,7 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
 
   override def incomingPhoneNumberList(
       connSettings: TwilioConnectionSettings,
-      filter: Option[TwilioIncomingPhoneNumber.ListFilter]
+      filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   ): Source[TwilioIncomingPhoneNumber, NotUsed] =
     new IncomingPhoneNumberListRequest().apply(connSettings, filter)
 }

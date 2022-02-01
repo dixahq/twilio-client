@@ -19,7 +19,7 @@ object TwilioIncomingPhoneNumber {
     * represent such a filter. A filter works like contains, so applying a filter, will return all
     * result where the phone number contains the filter.
     */
-  final case class ListFilter(override val toString: String)
+  final case class PhoneNumberFilter(override val toString: String)
 
   def apply(
       sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid,

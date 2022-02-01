@@ -69,7 +69,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
         val resultSource: Source[TwilioIncomingPhoneNumber, NotUsed] =
           instance.incomingPhoneNumberList(
             twilioConnectionSetting,
-            Some(TwilioIncomingPhoneNumber.ListFilter("+45"))
+            Some(TwilioIncomingPhoneNumber.PhoneNumberFilter("+45"))
           )
         val resultFut =
           resultSource.runWith(Sink.seq)

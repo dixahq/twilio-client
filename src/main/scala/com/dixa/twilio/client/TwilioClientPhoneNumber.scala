@@ -12,10 +12,11 @@ trait TwilioClientPhoneNumber {
     * communication. Typically also called an ActiveNumber
     *
     * The optional filter will be applied at Twilio side if set. See doc on
-    * [[com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber.ListFilter]] for details.
+    * [[com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberFilter]] for
+    * details.
     */
   def incomingPhoneNumberList(
       connSettings: TwilioConnectionSettings,
-      filter: Option[TwilioIncomingPhoneNumber.ListFilter]
+      filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   ): Source[TwilioIncomingPhoneNumber, NotUsed]
 }

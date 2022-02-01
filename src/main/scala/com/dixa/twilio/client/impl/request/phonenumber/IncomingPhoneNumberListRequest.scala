@@ -25,7 +25,7 @@ private[impl] final class IncomingPhoneNumberListRequest()(
 
   def apply(
       connSettings: TwilioConnectionSettings,
-      filter: Option[TwilioIncomingPhoneNumber.ListFilter]
+      filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   ): Source[TwilioIncomingPhoneNumber, NotUsed] = {
     val filterQueryParam = filter
       .map { f =>
