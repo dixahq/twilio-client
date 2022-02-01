@@ -72,7 +72,7 @@ final class FetchAllAccountsTest extends TwilioClientTest {
             TwilioAccount.Status.Active
           )
         )
-        resultFut.map(res => assert(res.toSet === expectedValue))
+        resultFut.map(result => assert(result.toSet === expectedValue))
       }
     }
   }
