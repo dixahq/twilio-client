@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
+import com.dixa.twilio.client.model.phonenumber.TwilioActiveNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioClientMessaging, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -18,7 +18,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
         val toCreate = TwilioClientMessaging.PhoneNumberCreateRequest(
           serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
-          activeNumberSid = ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
+          activeNumberSid = TwilioActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
         )
 
         wireMockServer.stubFor(
@@ -42,7 +42,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         )
 
         val expected = TwilioMessagingPhoneNumber(
-          ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
+          TwilioActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
           TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
         )
 
@@ -50,8 +50,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         val instance     = TwilioClient.defaultImpl().messaging
         val resultFut: Future[TwilioMessagingPhoneNumber] =
           instance.phoneNumberCreate(connSettings, toCreate)
-        val result = Await.result(resultFut, 15.seconds)
-        assert(result === expected)
+        resultFut.map(result => assert(result === expected))
       }
     }
   }

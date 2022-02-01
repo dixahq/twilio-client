@@ -2,7 +2,7 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.Done
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
+import com.dixa.twilio.client.model.phonenumber.TwilioActiveNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioClientMessaging, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -19,7 +19,7 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
 
         val toDelete = TwilioClientMessaging.PhoneNumberDeleteRequest(
           serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
-          activeNumberSid = ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
+          activeNumberSid = TwilioActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
         )
 
         wireMockServer.stubFor(
@@ -41,7 +41,7 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
         val resultFut: Future[Done] =
           instance.phoneNumberDelete(connSettings, toDelete)
         // Does not return anything, so just make sure to await it, so we fail if it throws an Exception.
-        Await.result(resultFut, 15.seconds)
+        resultFut.map(_ => succeed)
       }
     }
   }

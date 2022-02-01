@@ -6,7 +6,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
+import com.dixa.twilio.client.model.phonenumber.TwilioActiveNumber
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
@@ -52,6 +52,9 @@ private object PhoneNumberCreateRequest {
 
   private final case class MessagingPhoneNumberJsonRep(sid: String, service_sid: String) {
     def toModel: TwilioMessagingPhoneNumber =
-      TwilioMessagingPhoneNumber(ActiveNumber.Sid(sid), TwilioMessagingService.Sid(service_sid))
+      TwilioMessagingPhoneNumber(
+        TwilioActiveNumber.Sid(sid),
+        TwilioMessagingService.Sid(service_sid)
+      )
   }
 }
