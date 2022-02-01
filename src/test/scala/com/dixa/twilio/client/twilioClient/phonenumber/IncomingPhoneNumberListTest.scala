@@ -3,7 +3,11 @@ package com.dixa.twilio.client.twilioClient.phonenumber
 import akka.NotUsed
 import akka.stream.scaladsl.{Sink, Source}
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.phonenumber.{PhoneNumberE164, TwilioIncomingPhoneNumber}
+import com.dixa.twilio.client.model.phonenumber.{
+  PhoneNumberE164,
+  TwilioIncomingPhoneNumber,
+  TwilioPhoneNumberSid
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{
   TwilioClient,
@@ -72,19 +76,19 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
 
         val expected = Seq(
           TwilioIncomingPhoneNumber(
-            TwilioIncomingPhoneNumber.Sid("PNf691901a0361ccfb5e4c11dc073a7274"),
+            TwilioPhoneNumberSid.IncomingPhoneNumberSid("PNf691901a0361ccfb5e4c11dc073a7274"),
             TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("(459) 375-1435"),
             PhoneNumberE164("+4593751435")
           ),
           TwilioIncomingPhoneNumber(
-            TwilioIncomingPhoneNumber.Sid("PNa6ab2f33d0ffca5a3fa907a4ce302607"),
+            TwilioPhoneNumberSid.IncomingPhoneNumberSid("PNa6ab2f33d0ffca5a3fa907a4ce302607"),
             TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("uva_testing_sms_dk"),
             PhoneNumberE164("+4581827622")
           ),
           TwilioIncomingPhoneNumber(
-            TwilioIncomingPhoneNumber.Sid("PN8ac53dd1867205c550ee4d41a35c0896"),
+            TwilioPhoneNumberSid.IncomingPhoneNumberSid("PN8ac53dd1867205c550ee4d41a35c0896"),
             TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("STAGING-2 NUMBER"),
             PhoneNumberE164("+4578750614")

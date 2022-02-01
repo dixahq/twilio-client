@@ -3,7 +3,7 @@ package com.dixa.twilio.client.model.phonenumber
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
 sealed trait TwilioIncomingPhoneNumber {
-  def sid: TwilioIncomingPhoneNumber.Sid
+  def sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid
   def accountSid: TwilioAccount.Sid
   def friendlyName: TwilioIncomingPhoneNumber.FriendlyName
   def phoneNumber: PhoneNumberE164
@@ -11,7 +11,6 @@ sealed trait TwilioIncomingPhoneNumber {
 
 object TwilioIncomingPhoneNumber {
 
-  final case class Sid(override val toString: String)
   final case class FriendlyName(override val toString: String)
 
   /** Wrapper arround a string, for representing a textual contains filter.
@@ -23,14 +22,14 @@ object TwilioIncomingPhoneNumber {
   final case class ListFilter(override val toString: String)
 
   def apply(
-      sid: TwilioIncomingPhoneNumber.Sid,
+      sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid,
       accountSid: TwilioAccount.Sid,
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
       phoneNumber: PhoneNumberE164
   ): TwilioIncomingPhoneNumber = DefaultImpl(sid, accountSid, friendlyName, phoneNumber)
 
   private final case class DefaultImpl(
-      sid: TwilioIncomingPhoneNumber.Sid,
+      sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid,
       accountSid: TwilioAccount.Sid,
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
       phoneNumber: PhoneNumberE164
