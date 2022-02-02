@@ -6,6 +6,7 @@ import com.dixa.twilio.client.{
   TwilioClient,
   TwilioClientIam,
   TwilioClientMessaging,
+  TwilioClientPhoneNumber,
   TwilioClientVoice
 }
 
@@ -28,4 +29,6 @@ private[client] final class TwilioClientImpl()(
   override val voice: TwilioClientVoice = new TwilioClientVoiceImpl()
 
   override val messaging: TwilioClientMessaging = new TwilioClientMessagingImpl()
+
+  override def phoneNumber: TwilioClientPhoneNumber = new TwilioClientPhoneNumberImpl()
 }
