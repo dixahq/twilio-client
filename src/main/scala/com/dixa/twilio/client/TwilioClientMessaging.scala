@@ -2,7 +2,6 @@ package com.dixa.twilio.client
 
 import akka.{Done, NotUsed}
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.TwilioClientMessaging.PhoneNumberCreateException
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
@@ -17,7 +16,7 @@ import scala.concurrent.Future
 
 trait TwilioClientMessaging {
 
-  import TwilioMessagingService._
+  import TwilioClientMessaging._
 
   def servicesRead(
       connSettings: TwilioConnectionSettings
@@ -84,6 +83,11 @@ object TwilioClientMessaging {
     final class PhoneNumberAlreadyInMessagingService
         extends IllegalStateException(
           "Phone Number or Short Code is already in the Messaging Service. More info: https://www.twilio.com/docs/errors/21710"
+        )
+        with PhoneNumberCreateException
+    final class PhoneNumberAssociatedWithOtherMessagingService
+        extends IllegalStateException(
+          "Phone Number or Short Code is associated with another Messaging Service. More info: https://www.twilio.com/docs/errors/21712"
         )
         with PhoneNumberCreateException
     final class UnspecifiedError(msg: Option[String], cause: Option[Throwable])

@@ -74,6 +74,8 @@ private[impl] final class PhoneNumberCreateRequest()(
       decoded.code match {
         case 21710L =>
           Left(new PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
+        case 21712L =>
+          Left(new PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
         case other =>
           Left(
             new PhoneNumberCreateException.UnspecifiedError(
