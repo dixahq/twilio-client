@@ -1,11 +1,12 @@
 package com.dixa.twilio.client.impl.request
 
-import com.dixa.twilio.client.model.iam.{
-  TwilioAuthToken,
+import com.dixa.twilio.client.RequestValidator
+import com.dixa.twilio.client.RequestValidator.{
   ValidationRequestStatus,
   ValidationStatus,
   XTwilioSignature
 }
+import com.dixa.twilio.client.model.iam.TwilioAccount
 
 import java.nio.charset.StandardCharsets
 import java.util
@@ -16,13 +17,13 @@ import javax.xml.bind.DatatypeConverter
 import scala.util.{Failure, Success, Try}
 import collection.JavaConverters._
 
-class RequestValidator() {
+private[client] class RequestValidatorImpl() extends RequestValidator {
 
   private val HMAC = "HmacSHA1"
 
-  def validate(
+  override def validate(
       requestUrl: String,
-      authToken: TwilioAuthToken,
+      authToken: TwilioAccount.AuthToken,
       params: Map[String, String],
       xTwilioSignature: XTwilioSignature
   ): ValidationRequestStatus = {
@@ -36,7 +37,7 @@ class RequestValidator() {
     *   `com.twilio.security.RequestValidator`
     */
   private def getValidationSignature(
-      authToken: TwilioAuthToken,
+      authToken: TwilioAccount.AuthToken,
       requestUrl: String,
       params: Map[String, String]
   ): Try[String] = {

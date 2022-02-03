@@ -1,14 +1,15 @@
 package com.dixa.twilio.client.twilioClient
 
-import com.dixa.twilio.client.impl.request.RequestValidator
-import com.dixa.twilio.client.model.iam.{TwilioAuthToken, ValidationStatus, XTwilioSignature}
+import com.dixa.twilio.client.RequestValidator.{ValidationStatus, XTwilioSignature}
+import com.dixa.twilio.client.impl.request.RequestValidatorImpl
+import com.dixa.twilio.client.model.iam.TwilioAccount
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
 
-  val requestValidator = new RequestValidator()
+  val requestValidator = new RequestValidatorImpl()
 
   val requestParams = Map(
     "ToCountry"           -> "DK",
@@ -35,7 +36,7 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
   )
 
   "RequestValidator" should "encript the full sms inbound request using the twilio auth token as signature " in {
-    val authToken        = TwilioAuthToken("fakeToken")
+    val authToken        = TwilioAccount.AuthToken("fakeToken")
     val xTwilioSignature = XTwilioSignature("kwVt9t4pyirEUMK+Bm/w6YIC0cc=")
 
     val requestUrl =
@@ -46,7 +47,7 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
   }
 
   it should "return invalid request when invalid token is used" in {
-    val authToken = TwilioAuthToken("invalidToken")
+    val authToken = TwilioAccount.AuthToken("invalidToken")
 
     val xTwilioSignature = XTwilioSignature("kwVt9t4pyirEUMK+Bm/w6YIC0cc=")
     val requestUrl =
