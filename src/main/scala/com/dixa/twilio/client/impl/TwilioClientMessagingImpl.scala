@@ -37,9 +37,14 @@ private[client] final class TwilioClientMessagingImpl(
   override def phoneNumberCreate(
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.PhoneNumberCreateRequest
-  ): Future[TwilioMessagingPhoneNumber] = {
+  ): Future[Either[TwilioClientMessaging.PhoneNumberCreateException, TwilioMessagingPhoneNumber]] =
     new PhoneNumberCreateRequest().apply(connSettings, req)
-  }
+
+  override def phoneNumberCreateUnsafe(
+      connSettings: TwilioConnectionSettings,
+      req: TwilioClientMessaging.PhoneNumberCreateRequest
+  ): Future[TwilioMessagingPhoneNumber] =
+    new PhoneNumberCreateRequest().apply(connSettings, req).map(_.fold(e => throw e, res => res))
 
   override def phoneNumberDelete(
       connSettings: TwilioConnectionSettings,

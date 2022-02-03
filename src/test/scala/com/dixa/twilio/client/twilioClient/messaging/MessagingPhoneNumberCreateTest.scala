@@ -13,46 +13,132 @@ import scala.concurrent.{Await, Future}
 final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
   classOf[TwilioClientMessaging].getSimpleName when {
 
-    "ask complete create a Phonenumber" should {
-      "ask twilio to create it (meaning adding it to a service), and return the data it gets back" in {
+    "ask to create a Phonenumber" should {
+      "ask twilio to create it (meaning adding it to a service), and return the data it " +
+        "gets back if unsafe variant is called" in {
 
-        val toCreate = TwilioClientMessaging.PhoneNumberCreateRequest(
-          serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
-          activeNumberSid = ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
-        )
+          val f = new Fixture
+          import f._
 
-        wireMockServer.stubFor(
-          WireMock
-            .post(
-              WireMock.urlPathEqualTo(
-                "/v1/Services/MG777c6a32c5b17bc426e7fff6a0f67aa0/PhoneNumbers"
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .willReturn(
+                aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(twilioResponse1)
               )
-            )
-            .withRequestBody(
-              WireMock.containing("PhoneNumberSid=PNa2ab2f57a0ffca3a3fa907a4ce305477")
-            )
-            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
-            .willReturn(
-              aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(twilioResponse1)
-            )
-        )
+          )
 
-        val expected = TwilioMessagingPhoneNumber(
-          ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
-          TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
-        )
+          val expected = TwilioMessagingPhoneNumber(
+            ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
+            TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
+          )
 
-        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-        val instance     = TwilioClient.defaultImpl().messaging
-        val resultFut: Future[TwilioMessagingPhoneNumber] =
-          instance.phoneNumberCreate(connSettings, toCreate)
-        val result = Await.result(resultFut, 15.seconds)
-        assert(result === expected)
-      }
+          val resultFut: Future[TwilioMessagingPhoneNumber] =
+            instance.phoneNumberCreateUnsafe(connSettings, createRequest)
+          val result = Await.result(resultFut, 15.seconds)
+          assert(result === expected)
+        }
+
+      "ask twilio to create it (meaning adding it to a service), and return the data it " +
+        "gets back if safe variant is called" in {
+
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .willReturn(
+                aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(twilioResponse1)
+              )
+          )
+
+          val expected = Right(
+            TwilioMessagingPhoneNumber(
+              ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
+              TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
+            )
+          )
+
+          val resultFut: Future[
+            Either[TwilioClientMessaging.PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+          ] =
+            instance.phoneNumberCreate(connSettings, createRequest)
+          val result = Await.result(resultFut, 15.seconds)
+          assert(result === expected)
+        }
+
+      "return a failed future if the phone number is already in the specified service, " +
+        "and unsafe variant is called" in {
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .willReturn(
+                aResponse()
+                  .withStatus(409)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(
+                    """{
+                      |  "code": 21710,
+                      |  "message": "Phone Number or Short Code is already in the Messaging Service.",
+                      |  "more_info": "https://www.twilio.com/docs/errors/21710",
+                      |  "status": 409
+                      |}""".stripMargin
+                  )
+              )
+          )
+
+          val resultFut: Future[TwilioMessagingPhoneNumber] =
+            instance.phoneNumberCreateUnsafe(connSettings, createRequest)
+          intercept[
+            TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService
+          ] {
+            Await.result(resultFut, 15.seconds)
+          }
+        }
+
+      "return a failed future if the phone number is already in the specified service, " +
+        "and safe variant is called" in {
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .willReturn(
+                aResponse()
+                  .withStatus(409)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(
+                    """{
+                      |  "code": 21710,
+                      |  "message": "Phone Number or Short Code is already in the Messaging Service.",
+                      |  "more_info": "https://www.twilio.com/docs/errors/21710",
+                      |  "status": 409
+                      |}""".stripMargin
+                  )
+              )
+          )
+
+          val resultFut: Future[
+            Either[TwilioClientMessaging.PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+          ] =
+            instance.phoneNumberCreate(connSettings, createRequest)
+
+          val result = Await.result(resultFut, 15.seconds)
+          assert(result.isLeft)
+          assert(
+            result.left.get.isInstanceOf[
+              TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService
+            ]
+          )
+
+        }
     }
   }
 
@@ -72,4 +158,27 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
       |  "service_sid": "MG777c6a32c5b17bc426e7fff6a0f67aa0"
       |}
       |""".stripMargin
+
+  // noinspection TypeAnnotation
+  final class Fixture {
+    val createRequest = TwilioClientMessaging.PhoneNumberCreateRequest(
+      serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
+      activeNumberSid = ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
+    )
+
+    val wireMockBuilderExpectedTwilioRequest = WireMock
+      .post(
+        WireMock.urlPathEqualTo(
+          "/v1/Services/MG777c6a32c5b17bc426e7fff6a0f67aa0/PhoneNumbers"
+        )
+      )
+      .withRequestBody(
+        WireMock.containing("PhoneNumberSid=PNa2ab2f57a0ffca3a3fa907a4ce305477")
+      )
+      .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+      .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+
+    val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+    val instance     = TwilioClient.defaultImpl().messaging
+  }
 }

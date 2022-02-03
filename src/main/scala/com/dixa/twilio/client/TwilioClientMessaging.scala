@@ -2,6 +2,7 @@ package com.dixa.twilio.client
 
 import akka.{Done, NotUsed}
 import akka.stream.scaladsl.Source
+import com.dixa.twilio.client.TwilioClientMessaging.PhoneNumberCreateException
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
@@ -16,6 +17,8 @@ import scala.concurrent.Future
 
 trait TwilioClientMessaging {
 
+  import TwilioMessagingService._
+
   def servicesRead(
       connSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed]
@@ -27,10 +30,25 @@ trait TwilioClientMessaging {
 
   /** Add a phone number to a messaging service.
     *
-    * The create is only in context of messaging. So it takes an existing phonenumber and creates it
-    * / adds it in a messaging service.
+    * The create is only in context of messaging. So it takes an existing phone number and creates
+    * it / adds it in a messaging service.
+    *
+    * This method will always return a successfully Future, with an Either having errors on its left
+    * side.
     */
   def phoneNumberCreate(
+      connSettings: TwilioConnectionSettings,
+      req: TwilioClientMessaging.PhoneNumberCreateRequest
+  ): Future[Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]]
+
+  /** Add a phone number to a messaging service.
+    *
+    * The create is only in context of messaging. So it takes an existing phonenumber and creates it
+    * / adds it in a messaging service.
+    *
+    * This method will return a Failed future in case of errors.
+    */
+  def phoneNumberCreateUnsafe(
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[TwilioMessagingPhoneNumber]
@@ -60,6 +78,26 @@ object TwilioClientMessaging {
       serviceSid: TwilioMessagingService.Sid,
       activeNumberSid: ActiveNumber.Sid
   )
+
+  sealed trait PhoneNumberCreateException extends RuntimeException
+  object PhoneNumberCreateException {
+    final class PhoneNumberAlreadyInMessagingService
+        extends IllegalStateException(
+          "Phone Number or Short Code is already in the Messaging Service. More info: https://www.twilio.com/docs/errors/21710"
+        )
+        with PhoneNumberCreateException
+    final class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
+        extends RuntimeException(
+          msg.getOrElse(
+            "Unspecified error happened trying to add phone number to Messaging Service"
+          ),
+          cause.orNull
+        )
+        with PhoneNumberCreateException {
+      def this(msg: String) = this(Some(msg), None)
+      def this(cause: Throwable) = this(None, Some(cause))
+    }
+  }
 
   final case class PhoneNumberDeleteRequest(
       serviceSid: TwilioMessagingService.Sid,
