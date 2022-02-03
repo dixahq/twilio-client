@@ -24,7 +24,7 @@ trait RequestValidator {
 
 object RequestValidator {
 
-  def apply(): RequestValidator = new RequestValidatorImpl()
+  def defaultImpl(): RequestValidator = new RequestValidatorImpl()
 
   final case class XTwilioSignature(override val toString: String)
 
