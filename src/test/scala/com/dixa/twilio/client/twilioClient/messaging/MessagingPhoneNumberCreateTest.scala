@@ -12,32 +12,6 @@ import scala.concurrent.{Await, Future}
 
 final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
-  private def twilioResponse1 =
-    """{
-      |  "phone_number": "+4581827622",
-      |  "date_updated": "2022-01-27T04:10:55Z",
-      |  "capabilities": [
-      |    "SMS",
-      |    "Voice"
-      |  ],
-      |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-      |  "url": "https://messaging.twilio.com/v1/Services/MG771c6a02c8b15bc046e7fff6b0f67aa0/PhoneNumbers/PNa6ab2f33d0ffca5a3fa907a4ce302607",
-      |  "country_code": "DK",
-      |  "sid": "PNa2ab2f57a0ffca3a3fa907a4ce305477",
-      |  "date_created": "2022-01-27T04:10:55Z",
-      |  "service_sid": "MG777c6a32c5b17bc426e7fff6a0f67aa0"
-      |}
-      |""".stripMargin
-
-  private val twilioResponseNumberAlreadyInOtherMesseginService =
-    """{
-      |  "code": 21712,
-      |  "message": "Phone Number or Short Code is associated with another Messaging Service.",
-      |  "more_info": "https://www.twilio.com/docs/errors/21712",
-      |  "status": 409
-      |}
-      |""".stripMargin
-
   classOf[TwilioClientMessaging].getSimpleName when {
 
     "ask to create a Phonenumber" should {
@@ -110,14 +84,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
                 aResponse()
                   .withStatus(409)
                   .withHeader("Content-Type", "application/json")
-                  .withBody(
-                    """{
-                      |  "code": 21710,
-                      |  "message": "Phone Number or Short Code is already in the Messaging Service.",
-                      |  "more_info": "https://www.twilio.com/docs/errors/21710",
-                      |  "status": 409
-                      |}""".stripMargin
-                  )
+                  .withBody(twilioResponseNumberAlreadyInMessagingServices)
               )
           )
 
@@ -141,14 +108,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
                 aResponse()
                   .withStatus(409)
                   .withHeader("Content-Type", "application/json")
-                  .withBody(
-                    """{
-                      |  "code": 21710,
-                      |  "message": "Phone Number or Short Code is already in the Messaging Service.",
-                      |  "more_info": "https://www.twilio.com/docs/errors/21710",
-                      |  "status": 409
-                      |}""".stripMargin
-                  )
+                  .withBody(twilioResponseNumberAlreadyInMessagingServices)
               )
           )
 
@@ -178,7 +138,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
                 aResponse()
                   .withStatus(409)
                   .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAlreadyInOtherMesseginService)
+                  .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
               )
           )
 
@@ -202,7 +162,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
                 aResponse()
                   .withStatus(409)
                   .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAlreadyInOtherMesseginService)
+                  .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
               )
           )
 
@@ -221,6 +181,41 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         }
     }
   }
+
+  private def twilioResponse1 =
+    """{
+      |  "phone_number": "+4581827622",
+      |  "date_updated": "2022-01-27T04:10:55Z",
+      |  "capabilities": [
+      |    "SMS",
+      |    "Voice"
+      |  ],
+      |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      |  "url": "https://messaging.twilio.com/v1/Services/MG771c6a02c8b15bc046e7fff6b0f67aa0/PhoneNumbers/PNa6ab2f33d0ffca5a3fa907a4ce302607",
+      |  "country_code": "DK",
+      |  "sid": "PNa2ab2f57a0ffca3a3fa907a4ce305477",
+      |  "date_created": "2022-01-27T04:10:55Z",
+      |  "service_sid": "MG777c6a32c5b17bc426e7fff6a0f67aa0"
+      |}
+      |""".stripMargin
+
+  private def twilioResponseNumberAlreadyInMessagingServices =
+    """{
+      |  "code": 21710,
+      |  "message": "Phone Number or Short Code is already in the Messaging Service.",
+      |  "more_info": "https://www.twilio.com/docs/errors/21710",
+      |  "status": 409
+      |}
+      |""".stripMargin
+
+  private def twilioResponseNumberAssociatedWithOtherMesseginService =
+    """{
+      |  "code": 21712,
+      |  "message": "Phone Number or Short Code is associated with another Messaging Service.",
+      |  "more_info": "https://www.twilio.com/docs/errors/21712",
+      |  "status": 409
+      |}
+      |""".stripMargin
 
   // noinspection TypeAnnotation
   final class Fixture {
