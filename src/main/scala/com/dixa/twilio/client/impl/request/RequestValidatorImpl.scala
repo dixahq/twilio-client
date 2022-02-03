@@ -16,6 +16,7 @@ import javax.crypto.spec.SecretKeySpec
 import javax.xml.bind.DatatypeConverter
 import scala.util.{Failure, Success, Try}
 import collection.JavaConverters._
+import scala.collection.JavaConversions._
 
 private[client] class RequestValidatorImpl() extends RequestValidator {
 
@@ -46,7 +47,6 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
 
       val sortedKeys: util.List[String] = new util.ArrayList[String](params.keySet.asJava)
       Collections.sort(sortedKeys)
-      import scala.collection.JavaConversions._
       for (key <- sortedKeys) {
         builder.append(key)
         val value: String = params(key)
