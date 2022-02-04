@@ -80,17 +80,17 @@ object TwilioClientMessaging {
 
   sealed trait PhoneNumberCreateException extends RuntimeException
   object PhoneNumberCreateException {
-    final class PhoneNumberAlreadyInMessagingService
+    final case class PhoneNumberAlreadyInMessagingService()
         extends IllegalStateException(
           "Phone Number or Short Code is already in the Messaging Service. More info: https://www.twilio.com/docs/errors/21710"
         )
         with PhoneNumberCreateException
-    final class PhoneNumberAssociatedWithOtherMessagingService
+    final case class PhoneNumberAssociatedWithOtherMessagingService()
         extends IllegalStateException(
           "Phone Number or Short Code is associated with another Messaging Service. More info: https://www.twilio.com/docs/errors/21712"
         )
         with PhoneNumberCreateException
-    final class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
+    final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to add phone number to Messaging Service"

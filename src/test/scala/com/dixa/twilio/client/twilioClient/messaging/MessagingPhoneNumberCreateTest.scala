@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
+import com.dixa.twilio.client.TwilioClientMessaging.PhoneNumberCreateException
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -38,8 +39,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
           val resultFut: Future[TwilioMessagingPhoneNumber] =
             instance.phoneNumberCreateUnsafe(connSettings, createRequest)
-          val result = Await.result(resultFut, 15.seconds)
-          assert(result === expected)
+          resultFut.map(result => assert(result === expected))
         }
 
       "ask twilio to create it (meaning adding it to a service), and return the data it " +
@@ -69,8 +69,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
             Either[TwilioClientMessaging.PhoneNumberCreateException, TwilioMessagingPhoneNumber]
           ] =
             instance.phoneNumberCreate(connSettings, createRequest)
-          val result = Await.result(resultFut, 15.seconds)
-          assert(result === expected)
+          resultFut.map(result => assert(result === expected))
         }
 
       "return a failed future if the phone number is already in the specified service, " +
@@ -115,15 +114,8 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
             Either[TwilioClientMessaging.PhoneNumberCreateException, TwilioMessagingPhoneNumber]
           ] =
             instance.phoneNumberCreate(connSettings, createRequest)
-
-          val result = Await.result(resultFut, 15.seconds)
-          assert(result.isLeft)
-          assert(
-            result.left.get.isInstanceOf[
-              TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService
-            ]
-          )
-
+          val expected = Left(new PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService)
+          resultFut.map(res => assert(res === expected))
         }
 
       "return a failed future if the phone number is already in another service, " +
@@ -145,10 +137,9 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
             instance.phoneNumberCreateUnsafe(connSettings, createRequest)
 
           resultFut.map(_ => fail("Should have already failed before this")).recover {
-            case _: TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService =>
+            case _: PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService =>
               succeed
           }
-
         }
 
       "return a failed future if the phone number is already in another service, " +
@@ -170,14 +161,10 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
             Either[TwilioClientMessaging.PhoneNumberCreateException, TwilioMessagingPhoneNumber]
           ] =
             instance.phoneNumberCreate(connSettings, createRequest)
+          val expected =
+            Left(new PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService)
+          resultFut.map(res => assert(res === expected))
 
-          val result = Await.result(resultFut, 15.seconds)
-          assert(result.isLeft)
-          assert(
-            result.left.get.isInstanceOf[
-              TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService
-            ]
-          )
         }
     }
   }
