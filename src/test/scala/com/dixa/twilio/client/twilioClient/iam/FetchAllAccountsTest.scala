@@ -55,7 +55,6 @@ final class FetchAllAccountsTest extends TwilioClientTest {
         val resultSource: Source[TwilioAccount, NotUsed] =
           instance.fetchAllAccounts(connSettings, Some(TwilioAccount.Status.Active))
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
-        val result    = Await.result(resultFut, 15.seconds)
         val expectedValue = Set(
           TwilioAccount(
             TwilioAccount.Name("Dixa main account"),
@@ -73,7 +72,7 @@ final class FetchAllAccountsTest extends TwilioClientTest {
             TwilioAccount.Status.Active
           )
         )
-        assert(result.toSet === expectedValue)
+        resultFut.map(result => assert(result.toSet === expectedValue))
       }
     }
   }

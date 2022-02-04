@@ -23,7 +23,7 @@ private[impl] final class PhoneNumberDeleteRequest()(
     val httpReq = TwilioPath(
       ApiSubDomain.Messaging,
       HttpMethods.DELETE,
-      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.activeNumberSid}"
+      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
     )
       .createHttpRequest(connSettings)
     http.singleRequest(httpReq).map { httpResp =>

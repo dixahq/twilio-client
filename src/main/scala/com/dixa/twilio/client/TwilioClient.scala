@@ -10,6 +10,8 @@ trait TwilioClient {
   def voice: TwilioClientVoice
 
   def messaging: TwilioClientMessaging
+
+  def phoneNumber: TwilioClientPhoneNumber
 }
 
 object TwilioClient {

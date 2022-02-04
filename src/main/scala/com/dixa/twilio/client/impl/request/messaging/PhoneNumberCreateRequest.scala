@@ -15,7 +15,7 @@ import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.request.DefaultApiErrorEntityJsonRep
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
+import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
 import io.circe.generic.auto._
 
@@ -32,7 +32,7 @@ private[impl] final class PhoneNumberCreateRequest()(
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.PhoneNumberCreateRequest
   ): Future[Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]] = {
-    val postParam = s"PhoneNumberSid=${req.activeNumberSid}"
+    val postParam = s"PhoneNumberSid=${req.phoneNumberSid}"
     val httpReq = TwilioPath(
       ApiSubDomain.Messaging,
       HttpMethods.POST,
@@ -92,7 +92,10 @@ private object PhoneNumberCreateRequest {
 
   private final case class MessagingPhoneNumberJsonRep(sid: String, service_sid: String) {
     def toModel: TwilioMessagingPhoneNumber =
-      TwilioMessagingPhoneNumber(ActiveNumber.Sid(sid), TwilioMessagingService.Sid(service_sid))
+      TwilioMessagingPhoneNumber(
+        TwilioPhoneNumberSid(sid),
+        TwilioMessagingService.Sid(service_sid)
+      )
   }
 
   private def unexpectedStatusCodeResult(

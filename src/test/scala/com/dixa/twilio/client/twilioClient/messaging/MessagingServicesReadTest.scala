@@ -101,8 +101,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.False
           )
         )
-        val result = Await.result(resultFut, 15.seconds)
-        assert(result.toSet === expected.toSet)
+        resultFut.map(result => assert(result.toSet === expected.toSet))
       }
     }
   }

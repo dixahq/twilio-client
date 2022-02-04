@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
+import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioClientMessaging, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -32,7 +32,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           )
 
           val expected = TwilioMessagingPhoneNumber(
-            ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
+            TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
             TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
           )
 
@@ -60,7 +60,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
           val expected = Right(
             TwilioMessagingPhoneNumber(
-              ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
+              TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
               TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
             )
           )
@@ -90,10 +90,9 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
           val resultFut: Future[TwilioMessagingPhoneNumber] =
             instance.phoneNumberCreateUnsafe(connSettings, createRequest)
-          intercept[
-            TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService
-          ] {
-            Await.result(resultFut, 15.seconds)
+          resultFut.map(_ => fail("Should have already failed before this.")).recover {
+            case _: TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService =>
+              succeed
           }
         }
 
@@ -144,11 +143,12 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
           val resultFut: Future[TwilioMessagingPhoneNumber] =
             instance.phoneNumberCreateUnsafe(connSettings, createRequest)
-          intercept[
-            TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService
-          ] {
-            Await.result(resultFut, 15.seconds)
+
+          resultFut.map(_ => fail("Should have already failed before this")).recover {
+            case _: TwilioClientMessaging.PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService =>
+              succeed
           }
+
         }
 
       "return a failed future if the phone number is already in another service, " +
@@ -221,7 +221,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
   final class Fixture {
     val createRequest = TwilioClientMessaging.PhoneNumberCreateRequest(
       serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
-      activeNumberSid = ActiveNumber.Sid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
+      phoneNumberSid = TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock

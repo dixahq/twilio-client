@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient
 
 import com.dixa.twilio.client.TestActorSystem
-import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
 
 /** Shared base class for all tests of functionality in the TwilioClientX classes.
   *
@@ -10,4 +10,7 @@ import org.scalatest.wordspec.AnyWordSpec
   *      test classes, and they all need to mix in the same trait. And is is faster to extends an
   *      absract class, than to mix in a trait.
   */
-abstract class TwilioClientTest extends AnyWordSpec with WireMockTest with TestActorSystem {}
+abstract class TwilioClientTest extends AsyncWordSpec with WireMockTest with TestActorSystem {
+
+  protected val expectedPageSizeForStreams = "1000"
+}

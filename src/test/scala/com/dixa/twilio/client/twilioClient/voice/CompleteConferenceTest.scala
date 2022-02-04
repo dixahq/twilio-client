@@ -7,8 +7,7 @@ import com.dixa.twilio.client.{TwilioClient, TwilioClientVoice, TwilioTestConsta
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-import scala.concurrent.duration.DurationInt
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 final class CompleteConferenceTest extends TwilioClientTest {
 
@@ -72,11 +71,10 @@ final class CompleteConferenceTest extends TwilioClientTest {
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
         val resultFut: Future[TwilioConference] =
           instance.completeConference(connSettings, conference1)
-        val result = Await.result(resultFut, 15.seconds)
         val expectedValue = conference1.copy(
           status = TwilioConference.Status.Completed
         )
-        assert(result === expectedValue)
+        resultFut.map(result => assert(result === expectedValue))
       }
     }
   }

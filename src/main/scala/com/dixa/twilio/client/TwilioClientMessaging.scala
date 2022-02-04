@@ -10,7 +10,7 @@ import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   UseInboundWebhookOnNumber
 }
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.ActiveNumber
+import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 
 import scala.concurrent.Future
 
@@ -75,7 +75,7 @@ object TwilioClientMessaging {
 
   final case class PhoneNumberCreateRequest(
       serviceSid: TwilioMessagingService.Sid,
-      activeNumberSid: ActiveNumber.Sid
+      phoneNumberSid: TwilioPhoneNumberSid
   )
 
   sealed trait PhoneNumberCreateException extends RuntimeException
@@ -105,6 +105,6 @@ object TwilioClientMessaging {
 
   final case class PhoneNumberDeleteRequest(
       serviceSid: TwilioMessagingService.Sid,
-      activeNumberSid: ActiveNumber.Sid
+      phoneNumberSid: TwilioPhoneNumberSid
   )
 }

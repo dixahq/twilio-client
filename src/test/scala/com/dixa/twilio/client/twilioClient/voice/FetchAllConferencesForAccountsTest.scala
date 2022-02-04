@@ -169,7 +169,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
           )
         val resultFut =
           Source(List(account1, account2)).via(resultFlow).toMat(Sink.seq)(Keep.right).run()
-        val result = Await.result(resultFut, 15.seconds)
+
         val expectedValue = Set(
           // 3 conferences for the 1. account (so that we can test pagination
           TwilioConferenceWithParticipants(
@@ -243,7 +243,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             )
           )
         )
-        assert(result.toSet === expectedValue)
+        resultFut.map(result => assert(result.toSet === expectedValue))
       }
     }
   }
