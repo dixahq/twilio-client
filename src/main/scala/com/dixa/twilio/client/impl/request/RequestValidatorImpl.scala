@@ -56,7 +56,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
         )
       }
 
-      val signingKey = new SecretKeySpec(authToken.toString.getBytes, HMAC)
+      val signingKey = new SecretKeySpec(authToken.asString.getBytes, HMAC)
       val mac: Mac   = Mac.getInstance(HMAC)
       mac.init(signingKey)
       val rawHmac: Array[Byte] = mac.doFinal(builder.toString.getBytes(StandardCharsets.UTF_8))

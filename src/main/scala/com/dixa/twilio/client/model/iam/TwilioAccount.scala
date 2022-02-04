@@ -17,7 +17,11 @@ object TwilioAccount {
 
   final case class Name(override val toString: String)
   final case class Sid(override val toString: String)
-  final case class AuthToken(override val toString: String)
+  final case class AuthToken(asString: String) {
+
+    /** Wil always return *** to not accidentially log auth tokens */
+    override def toString: String = authTokenSecretValueString
+  }
 
   sealed abstract class Status(private[client] val apiName: String) extends EnumEntry
   object Status extends Enum[Status] {
@@ -31,4 +35,6 @@ object TwilioAccount {
       .find(_.apiName === s)
       .getOrElse(throw new IllegalArgumentException(s"$s is not a valiid Twilio account status."))
   }
+
+  private val authTokenSecretValueString = "AuthToken(***)"
 }
