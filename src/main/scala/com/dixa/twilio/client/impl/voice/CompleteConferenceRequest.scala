@@ -1,11 +1,11 @@
-package com.dixa.twilio.client.impl.request.voice
+package com.dixa.twilio.client.impl.voice
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.request.voice.ConferenceJsonResp.TwilioConferenceJsonResp
+import ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.voice.TwilioConference
 import io.circe.generic.auto._

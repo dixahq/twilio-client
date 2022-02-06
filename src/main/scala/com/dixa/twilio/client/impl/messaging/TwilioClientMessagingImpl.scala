@@ -1,18 +1,12 @@
-package com.dixa.twilio.client.impl
+package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import akka.{Done, NotUsed}
-import com.dixa.twilio.client.impl.request.messaging.{
-  PhoneNumberCreateRequestClientImpl,
-  PhoneNumberDeleteRequest,
-  ServiceCreateRequest,
-  ServicesReadRequest
-}
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestClient, TwilioClientMessaging}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
-import com.dixa.twilio.client.TwilioConnectionSettings
 
 import scala.concurrent.{ExecutionContext, Future}
 

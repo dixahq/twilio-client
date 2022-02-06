@@ -1,7 +1,7 @@
-package com.dixa.twilio.client.impl.request
+package com.dixa.twilio.client.impl.callback
 
-import com.dixa.twilio.client.RequestValidator
-import com.dixa.twilio.client.RequestValidator.{
+import com.dixa.twilio.client.callback.RequestValidator
+import com.dixa.twilio.client.callback.RequestValidator.{
   ValidationRequestStatus,
   ValidationStatus,
   XTwilioSignature
@@ -14,9 +14,9 @@ import java.util.Collections
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.xml.bind.DatatypeConverter
-import scala.util.{Failure, Success, Try}
-import collection.JavaConverters._
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
+import scala.util.{Failure, Success, Try}
 
 private[client] class RequestValidatorImpl() extends RequestValidator {
 
@@ -30,7 +30,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
   ): ValidationRequestStatus = {
     getValidationSignature(authToken, requestUrl, params) match {
       case Success(signature) => secureCompare(signature, xTwilioSignature)
-      case Failure(ex)        => ValidationStatus.Invalid
+      case Failure(_)         => ValidationStatus.Invalid
     }
   }
 

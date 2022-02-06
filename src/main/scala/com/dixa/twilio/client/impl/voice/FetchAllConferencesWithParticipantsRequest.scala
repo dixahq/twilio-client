@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.impl.request.voice
+package com.dixa.twilio.client.impl.voice
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
@@ -7,7 +7,8 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.request.voice.ConferenceJsonResp.TwilioConferenceJsonResp
+import ConferenceJsonResp.TwilioConferenceJsonResp
+import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants

@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.impl.request.phonenumber
+package com.dixa.twilio.client.impl.phonenumber
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
@@ -6,11 +6,9 @@ import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.request.messaging.MessagingServiceJsonRep
-import com.dixa.twilio.client.impl.request.phonenumber.IncomingPhoneNumberListRequest.entityToIncomingPhoneNumberSeq
-import com.dixa.twilio.client.model.HttpMethod
+import com.dixa.twilio.client.impl.phonenumber.IncomingPhoneNumberListRequest.entityToIncomingPhoneNumberSeq
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
 import io.circe.generic.auto._
 

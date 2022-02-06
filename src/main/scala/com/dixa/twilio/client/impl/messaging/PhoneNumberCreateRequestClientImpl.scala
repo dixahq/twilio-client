@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.impl.request.messaging
+package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{
@@ -12,8 +12,7 @@ import akka.http.scaladsl.model.{
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.request.DefaultApiErrorEntityJsonRep
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient.{
   PhoneNumberCreateException,

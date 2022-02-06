@@ -1,10 +1,11 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.client.callback
 
-import com.dixa.twilio.client.RequestValidator.{ValidationRequestStatus, XTwilioSignature}
-import com.dixa.twilio.client.impl.request.RequestValidatorImpl
+import com.dixa.twilio.client.impl.callback.RequestValidatorImpl
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
 trait RequestValidator {
+
+  import RequestValidator._
 
   /** Validates that the request payload truly comes from twilio, by encrypting the payload (url +
     * params) with hmac-sha1 algorithm using the twilio account auth token for signing key. Finally

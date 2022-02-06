@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.impl.request.phonenumber
+package com.dixa.twilio.client.impl.phonenumber
 
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.phonenumber.{

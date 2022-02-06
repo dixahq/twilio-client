@@ -6,14 +6,13 @@ import com.dixa.twilio.client.iam.TwilioClientIam
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.TwilioClient
+import com.dixa.twilio.client.impl.iam.TwilioClientIamImpl
+import com.dixa.twilio.client.impl.messaging.TwilioClientMessagingImpl
+import com.dixa.twilio.client.impl.phonenumber.TwilioClientPhoneNumberImpl
+import com.dixa.twilio.client.impl.voice.TwilioClientVoiceImpl
 import com.dixa.twilio.client.voice.TwilioClientVoice
 
-/** Default implementation of a TwilioClient.
-  *
-  * To not make this class way to big and cluttered, each method is implemented in its own object.
-  * So all that this class has to do, is to find the right object and call it. See the scaladoc on
-  * the package object of [[com.dixa.twilio.client.impl.request]]
-  */
+/** Default implementation of a TwilioClient. */
 private[client] final class TwilioClientImpl()(
     implicit actorSystem: ActorSystem
 ) extends TwilioClient {

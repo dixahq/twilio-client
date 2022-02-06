@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.impl.request.messaging
+package com.dixa.twilio.client.impl.messaging
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt

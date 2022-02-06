@@ -1,13 +1,11 @@
-package com.dixa.twilio.client.impl
+package com.dixa.twilio.client.impl.iam
 
 import akka.NotUsed
-import akka.actor.ActorSystem
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.iam.TwilioClientIam
-import com.dixa.twilio.client.impl.request.iam.FetchAllAccountsRequest
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
 import scala.concurrent.ExecutionContext

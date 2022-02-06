@@ -1,12 +1,11 @@
-package com.dixa.twilio.client.impl
+package com.dixa.twilio.client.impl.phonenumber
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.impl.request.phonenumber.IncomingPhoneNumberListRequest
-import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 
 import scala.concurrent.ExecutionContext
