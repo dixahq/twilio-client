@@ -25,7 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 private[impl] final class PhoneNumberCreateRequestClientImpl()(
     implicit http: HttpExt,
     materializer: Materializer,
-    executionContext: ExecutionContext
+    override protected val executionContext: ExecutionContext
 ) extends PhoneNumberCreateRequestClient {
 
   import PhoneNumberCreateRequestClientImpl._
@@ -54,12 +54,6 @@ private[impl] final class PhoneNumberCreateRequestClientImpl()(
   }.recover { case e: Exception =>
     Left(new PhoneNumberCreateException.UnspecifiedError(e))
   }
-
-  override def unsafe(
-      connSettings: TwilioConnectionSettings,
-      req: PhoneNumberCreateRequest
-  ): Future[TwilioMessagingPhoneNumber] =
-    safe(connSettings, req).map(_.fold(e => throw e, res => res))
 
   private def buildSuccessResponse(
       entity: ResponseEntity,

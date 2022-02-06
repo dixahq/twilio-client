@@ -1,8 +1,10 @@
 package com.dixa.twilio.client
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
-trait SingleRequestClient[Req, Err, Success] {
+trait SingleRequestClient[Req, Err <: RuntimeException, Success] {
+
+  protected implicit def executionContext: ExecutionContext
 
   /** Run the request, with typesafe error handling
     *
@@ -13,7 +15,7 @@ trait SingleRequestClient[Req, Err, Success] {
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
     * the that error is communicated.
     */
-  def safe(connectionSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]]
+  def safe(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]]
 
   /** Run the request, returning failed Future on errors.
     *
@@ -21,5 +23,6 @@ trait SingleRequestClient[Req, Err, Success] {
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
     * the that error is communicated.
     */
-  def unsafe(connectionSettings: TwilioConnectionSettings, req: Req): Future[Success]
+  final def unsafe(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
+    safe(connSettings, req).map(_.fold(e => throw e, res => res))
 }
