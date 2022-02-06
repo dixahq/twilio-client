@@ -1,0 +1,25 @@
+package com.dixa.twilio.client
+
+import scala.concurrent.Future
+
+trait SingleRequestClient[Req, Err, Success] {
+
+  /** Run the request, with typesafe error handling
+    *
+    * Always return a Successfull future, and communicates erros of the request as part of the
+    * return type, in form as an Either.
+    *
+    * All the Error ADT used in the safe versions, are also exception, so a request would always be
+    * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
+    * the that error is communicated.
+    */
+  def safe(connectionSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]]
+
+  /** Run the request, returning failed Future on errors.
+    *
+    * All the Error ADT used in the safe versions, are also exception, so a request would always be
+    * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
+    * the that error is communicated.
+    */
+  def unsafe(connectionSettings: TwilioConnectionSettings, req: Req): Future[Success]
+}

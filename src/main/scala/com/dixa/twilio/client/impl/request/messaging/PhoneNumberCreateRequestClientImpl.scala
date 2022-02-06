@@ -10,27 +10,29 @@ import akka.http.scaladsl.model.{
   StatusCodes
 }
 import akka.stream.Materializer
-import com.dixa.twilio.client.TwilioClientMessaging.PhoneNumberCreateException
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.request.DefaultApiErrorEntityJsonRep
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
-import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
+import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient
+import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient._
 import io.circe.generic.auto._
 
 import scala.concurrent.{ExecutionContext, Future}
-private[impl] final class PhoneNumberCreateRequest()(
+
+private[impl] final class PhoneNumberCreateRequestClientImpl()(
     implicit http: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext
-) {
+) extends PhoneNumberCreateRequestClient {
 
-  import PhoneNumberCreateRequest._
+  import PhoneNumberCreateRequestClientImpl._
 
-  def apply(
+  override def safe(
       connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.PhoneNumberCreateRequest
+      req: PhoneNumberCreateRequest
   ): Future[Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]] = {
     val postParam = s"PhoneNumberSid=${req.phoneNumberSid}"
     val httpReq = TwilioPath(
@@ -53,6 +55,12 @@ private[impl] final class PhoneNumberCreateRequest()(
     Left(new PhoneNumberCreateException.UnspecifiedError(e))
   }
 
+  override def unsafe(
+      connSettings: TwilioConnectionSettings,
+      req: PhoneNumberCreateRequest
+  ): Future[TwilioMessagingPhoneNumber] =
+    safe(connSettings, req).map(_.fold(e => throw e, res => res))
+
   private def buildSuccessResponse(
       entity: ResponseEntity,
       timeouts: TwilioConnectionSettings.Timeouts
@@ -73,9 +81,9 @@ private[impl] final class PhoneNumberCreateRequest()(
       val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
       decoded.code match {
         case 21710L =>
-          Left(new PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
+          Left(PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
         case 21712L =>
-          Left(new PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
+          Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
         case other =>
           Left(
             new PhoneNumberCreateException.UnspecifiedError(
@@ -88,7 +96,7 @@ private[impl] final class PhoneNumberCreateRequest()(
   }
 }
 
-private object PhoneNumberCreateRequest {
+private object PhoneNumberCreateRequestClientImpl {
 
   private final case class MessagingPhoneNumberJsonRep(sid: String, service_sid: String) {
     def toModel: TwilioMessagingPhoneNumber =
@@ -99,10 +107,10 @@ private object PhoneNumberCreateRequest {
   }
 
   private def unexpectedStatusCodeResult(
-      req: TwilioClientMessaging.PhoneNumberCreateRequest,
+      req: PhoneNumberCreateRequest,
       status: StatusCode
   ) = Left(
-    new PhoneNumberCreateException.UnspecifiedError(
+    PhoneNumberCreateException.UnspecifiedError(
       Some(
         s"Could not create: $req, due to getting status code $status from Twilio"
       ),
