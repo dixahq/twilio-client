@@ -1,14 +1,14 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
-import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient
-import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient.{
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient.{
   PhoneNumberCreateException,
   PhoneNumberCreateRequest
 }
+import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestClient, TwilioClientMessaging}
+import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
+import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioClientMessaging, TwilioTestConstants}
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -165,7 +165,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           ] =
             instance.safe(connSettings, createRequest)
           val expected =
-            Left(new PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService)
+            Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
           resultFut.map(res => assert(res === expected))
 
         }

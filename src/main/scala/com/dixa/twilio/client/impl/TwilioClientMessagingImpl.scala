@@ -10,9 +10,9 @@ import com.dixa.twilio.client.impl.request.messaging.{
   ServiceCreateRequest,
   ServicesReadRequest
 }
+import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestClient, TwilioClientMessaging}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
-import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient
-import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
+import com.dixa.twilio.client.TwilioConnectionSettings
 
 import scala.concurrent.{ExecutionContext, Future}
 

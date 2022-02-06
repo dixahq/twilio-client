@@ -1,7 +1,8 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.client.phonenumber
 
 import akka.NotUsed
 import akka.stream.scaladsl.Source
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
 
 trait TwilioClientPhoneNumber {

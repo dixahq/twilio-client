@@ -2,13 +2,11 @@ package com.dixa.twilio.client.impl
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.{Http, HttpExt}
-import com.dixa.twilio.client.{
-  TwilioClient,
-  TwilioClientIam,
-  TwilioClientMessaging,
-  TwilioClientPhoneNumber,
-  TwilioClientVoice
-}
+import com.dixa.twilio.client.iam.TwilioClientIam
+import com.dixa.twilio.client.messaging.TwilioClientMessaging
+import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
+import com.dixa.twilio.client.TwilioClient
+import com.dixa.twilio.client.voice.TwilioClientVoice
 
 /** Default implementation of a TwilioClient.
   *

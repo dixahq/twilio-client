@@ -2,19 +2,16 @@ package com.dixa.twilio.client.twilioClient.phonenumber
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Sink, Source}
+import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.phonenumber.{
   PhoneNumberE164,
   TwilioIncomingPhoneNumber,
   TwilioPhoneNumberSid
 }
+import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{
-  TwilioClient,
-  TwilioClientMessaging,
-  TwilioClientPhoneNumber,
-  TwilioTestConstants
-}
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

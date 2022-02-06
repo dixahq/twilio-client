@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.request.messaging
+package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.SingleRequestClient
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}

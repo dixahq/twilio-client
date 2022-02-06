@@ -4,9 +4,10 @@ import akka.Done
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethods, StatusCodes}
 import akka.stream.Materializer
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
+import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}

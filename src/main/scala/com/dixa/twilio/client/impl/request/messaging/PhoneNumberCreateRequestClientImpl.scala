@@ -14,10 +14,13 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.request.DefaultApiErrorEntityJsonRep
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient.{
+  PhoneNumberCreateException,
+  PhoneNumberCreateRequest
+}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
-import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient
-import com.dixa.twilio.client.request.messaging.PhoneNumberCreateRequestClient._
 import io.circe.generic.auto._
 
 import scala.concurrent.{ExecutionContext, Future}

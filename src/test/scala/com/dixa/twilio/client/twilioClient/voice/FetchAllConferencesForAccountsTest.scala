@@ -6,7 +6,8 @@ import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.model.voice.{TwilioCallSid, TwilioConference}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioClientVoice, TwilioTestConstants}
+import com.dixa.twilio.client.voice.TwilioClientVoice
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 
 import scala.concurrent.Await

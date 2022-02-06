@@ -7,7 +7,8 @@ import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.request.messaging.ServiceCreateRequest.createPostParamString
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
-import com.dixa.twilio.client.{TwilioClientMessaging, TwilioConnectionSettings}
+import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import org.scalactic.TypeCheckedTripleEquals._
 import io.circe.generic.auto._
 
