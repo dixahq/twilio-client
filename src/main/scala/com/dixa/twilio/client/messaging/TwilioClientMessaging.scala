@@ -31,7 +31,7 @@ trait TwilioClientMessaging {
     * The create is only in context of messaging. So it takes an existing phone number and creates
     * it / adds it in a messaging service.
     */
-  def phoneNumberCreate(): PhoneNumberCreateRequestClient
+  def phoneNumberCreate(): PhoneNumberCreateRequestExecutor
 
   /** Delete a phone number from a messaging service.
     *

@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient.{
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
   PhoneNumberCreateException,
   PhoneNumberCreateRequest
 }
-import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestClient, TwilioClientMessaging}
+import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -227,7 +227,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
       .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: PhoneNumberCreateRequestClient =
+    val instance: PhoneNumberCreateRequestExecutor =
       TwilioClient.defaultImpl().messaging.phoneNumberCreate()
   }
 }

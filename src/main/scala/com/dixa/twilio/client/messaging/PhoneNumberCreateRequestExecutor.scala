@@ -1,17 +1,17 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.SingleRequestClient
+import com.dixa.twilio.client.SingleRequestExecutor
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 
-trait PhoneNumberCreateRequestClient
-    extends SingleRequestClient[
-      PhoneNumberCreateRequestClient.PhoneNumberCreateRequest,
-      PhoneNumberCreateRequestClient.PhoneNumberCreateException,
+trait PhoneNumberCreateRequestExecutor
+    extends SingleRequestExecutor[
+      PhoneNumberCreateRequestExecutor.PhoneNumberCreateRequest,
+      PhoneNumberCreateRequestExecutor.PhoneNumberCreateException,
       TwilioMessagingPhoneNumber
     ]
 
-object PhoneNumberCreateRequestClient {
+object PhoneNumberCreateRequestExecutor {
 
   final case class PhoneNumberCreateRequest(
       serviceSid: TwilioMessagingService.Sid,

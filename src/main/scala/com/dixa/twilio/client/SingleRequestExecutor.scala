@@ -2,7 +2,7 @@ package com.dixa.twilio.client
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait SingleRequestClient[Req, Err <: RuntimeException, Success] {
+trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
 
   protected implicit def executionContext: ExecutionContext
 

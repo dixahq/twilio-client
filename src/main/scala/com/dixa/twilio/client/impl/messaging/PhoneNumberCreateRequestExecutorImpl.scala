@@ -13,8 +13,8 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
-import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient
-import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestClient.{
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
   PhoneNumberCreateException,
   PhoneNumberCreateRequest
 }
@@ -24,13 +24,13 @@ import io.circe.generic.auto._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-private[impl] final class PhoneNumberCreateRequestClientImpl()(
+private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
     implicit http: HttpExt,
     materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends PhoneNumberCreateRequestClient {
+) extends PhoneNumberCreateRequestExecutor {
 
-  import PhoneNumberCreateRequestClientImpl._
+  import PhoneNumberCreateRequestExecutorImpl._
 
   override def run(
       connSettings: TwilioConnectionSettings,
@@ -92,7 +92,7 @@ private[impl] final class PhoneNumberCreateRequestClientImpl()(
   }
 }
 
-private object PhoneNumberCreateRequestClientImpl {
+private object PhoneNumberCreateRequestExecutorImpl {
 
   private final case class MessagingPhoneNumberJsonRep(sid: String, service_sid: String) {
     def toModel: TwilioMessagingPhoneNumber =
