@@ -99,7 +99,7 @@ object TwilioClientMessaging {
         )
         with PhoneNumberCreateException {
       def this(msg: String) = this(Some(msg), None)
-      def this(cause: Throwable) = this(None, Some(cause))
+      def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
     }
   }
 
