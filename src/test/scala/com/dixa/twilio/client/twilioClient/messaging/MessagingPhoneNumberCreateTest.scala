@@ -228,6 +228,6 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val instance: PhoneNumberCreateRequestExecutor =
-      TwilioClient.defaultImpl().messaging.phoneNumberCreate()
+      TwilioClient.defaultImpl().messaging.phoneNumberCreate
   }
 }
