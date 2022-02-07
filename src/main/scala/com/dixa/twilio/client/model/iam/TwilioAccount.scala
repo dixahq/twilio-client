@@ -19,7 +19,7 @@ object TwilioAccount {
   final case class Sid(override val toString: String)
   final case class AuthToken(asString: String) {
 
-    /** Wil always return *** to not accidentially log auth tokens */
+    /** Will always return AuthToken(***) to not accidentially log auth tokens */
     override def toString: String = authTokenSecretValueString
   }
 
