@@ -41,7 +41,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           )
 
           val resultFut: Future[TwilioMessagingPhoneNumber] =
-            instance.unsafe(connSettings, createRequest)
+            instance.unsafeRun(connSettings, createRequest)
           resultFut.map(result => assert(result === expected))
         }
 
@@ -71,7 +71,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           val resultFut: Future[
             Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
           ] =
-            instance.safe(connSettings, createRequest)
+            instance.run(connSettings, createRequest)
           resultFut.map(result => assert(result === expected))
         }
 
@@ -91,7 +91,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           )
 
           val resultFut: Future[TwilioMessagingPhoneNumber] =
-            instance.unsafe(connSettings, createRequest)
+            instance.unsafeRun(connSettings, createRequest)
           resultFut.map(_ => fail("Should have already failed before this.")).recover {
             case _: PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService =>
               succeed
@@ -116,7 +116,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           val resultFut: Future[
             Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
           ] =
-            instance.safe(connSettings, createRequest)
+            instance.run(connSettings, createRequest)
           val expected = Left(new PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService)
           resultFut.map(res => assert(res === expected))
         }
@@ -137,7 +137,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           )
 
           val resultFut: Future[TwilioMessagingPhoneNumber] =
-            instance.unsafe(connSettings, createRequest)
+            instance.unsafeRun(connSettings, createRequest)
 
           resultFut.map(_ => fail("Should have already failed before this")).recover {
             case _: PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService =>
@@ -163,7 +163,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           val resultFut: Future[
             Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
           ] =
-            instance.safe(connSettings, createRequest)
+            instance.run(connSettings, createRequest)
           val expected =
             Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
           resultFut.map(res => assert(res === expected))

@@ -32,7 +32,7 @@ private[impl] final class PhoneNumberCreateRequestClientImpl()(
 
   import PhoneNumberCreateRequestClientImpl._
 
-  override def safe(
+  override def run(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberCreateRequest
   ): Future[Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]] = {

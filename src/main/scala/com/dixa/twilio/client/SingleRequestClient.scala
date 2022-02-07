@@ -15,7 +15,7 @@ trait SingleRequestClient[Req, Err <: RuntimeException, Success] {
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
     * the that error is communicated.
     */
-  def safe(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]]
+  def run(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]]
 
   /** Run the request, returning failed Future on errors.
     *
@@ -23,6 +23,6 @@ trait SingleRequestClient[Req, Err <: RuntimeException, Success] {
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
     * the that error is communicated.
     */
-  final def unsafe(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
-    safe(connSettings, req).map(_.fold(e => throw e, res => res))
+  final def unsafeRun(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
+    run(connSettings, req).map(_.fold(e => throw e, res => res))
 }
