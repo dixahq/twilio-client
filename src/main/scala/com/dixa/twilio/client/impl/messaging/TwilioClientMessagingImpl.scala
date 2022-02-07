@@ -29,7 +29,7 @@ private[client] final class TwilioClientMessagingImpl(
     new ServiceCreateRequest().apply(connSettings, req)
   }
 
-  override def phoneNumberCreate(): PhoneNumberCreateRequestExecutor =
+  override val phoneNumberCreate: PhoneNumberCreateRequestExecutor =
     new PhoneNumberCreateRequestExecutorImpl()
 
   override def phoneNumberDelete(
