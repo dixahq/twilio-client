@@ -27,5 +27,5 @@ private[client] final class TwilioClientImpl()(
 
   override val messaging: TwilioClientMessaging = new TwilioClientMessagingImpl()
 
-  override def phoneNumber: TwilioClientPhoneNumber = new TwilioClientPhoneNumberImpl()
+  override val phoneNumber: TwilioClientPhoneNumber = new TwilioClientPhoneNumberImpl()
 }
