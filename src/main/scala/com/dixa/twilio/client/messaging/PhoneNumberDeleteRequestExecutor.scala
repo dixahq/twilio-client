@@ -21,6 +21,10 @@ object PhoneNumberDeleteRequestExecutor {
 
   sealed trait PhoneNumberDeleteException extends RuntimeException
   object PhoneNumberDeleteException {
+    final case class NotFound(msg: String)
+        extends IllegalStateException(msg)
+        with PhoneNumberDeleteException
+
     final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
