@@ -3,7 +3,11 @@ package com.dixa.twilio.client.phonenumber
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
+import com.dixa.twilio.client.model.phonenumber.{
+  TwilioActivePhoneNumber,
+  TwilioIncomingPhoneNumber,
+  TwilioPhoneNumberSid
+}
 
 trait TwilioClientPhoneNumber {
 
@@ -20,4 +24,16 @@ trait TwilioClientPhoneNumber {
       connSettings: TwilioConnectionSettings,
       filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   ): Source[TwilioIncomingPhoneNumber, NotUsed]
+
+  /** Lists active phone numbers for a particular Twilio subaccount as a Source.
+    *
+    * An active phone number is a number that is active in twilio, and is usable for voice
+    * communication. Typically also called an IncomingNumber.
+    *
+    * The optional filter will be applied at Twilio side if set.
+    */
+  def activePhoneNumberList(
+      connSettings: TwilioConnectionSettings,
+      phoneNumber: Option[TwilioPhoneNumberSid] = None
+  ): Source[TwilioActivePhoneNumber, NotUsed]
 }

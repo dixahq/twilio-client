@@ -5,7 +5,11 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
+import com.dixa.twilio.client.model.phonenumber.{
+  TwilioActivePhoneNumber,
+  TwilioIncomingPhoneNumber,
+  TwilioPhoneNumberSid
+}
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 
 import scala.concurrent.ExecutionContext
@@ -21,4 +25,10 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
       filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   ): Source[TwilioIncomingPhoneNumber, NotUsed] =
     new IncomingPhoneNumberListRequest().apply(connSettings, filter)
+
+  override def activePhoneNumberList(
+      connSettings: TwilioConnectionSettings,
+      phoneNumber: Option[TwilioPhoneNumberSid] = None
+  ): Source[TwilioActivePhoneNumber, NotUsed] =
+    new ActivePhoneNumberListRequest().apply(connSettings, phoneNumber)
 }
