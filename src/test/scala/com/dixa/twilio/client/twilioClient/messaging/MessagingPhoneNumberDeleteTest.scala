@@ -43,6 +43,23 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
           instance.run(connSettings, toDelete)
         resultFut.map(result => assert(result === Right(Done)))
       }
+
+      "return undefined error if twilio throws up" in {
+        val f = new Fixture
+        import f._
+
+        wiremockStubForServerError()
+
+        val resultFut = instance.run(connSettings, toDelete)
+        resultFut.map { result =>
+          assert(result.isLeft)
+          result.left.get match {
+            case e: PhoneNumberDeleteException.UnspecifiedError =>
+              assert(e.getMessage.contains("AErrorEntityThatShouldBePartOfTheErrorsMsg"))
+            case other => fail(s"Wrong error returned: $other")
+          }
+        }
+      }
     }
   }
 
@@ -68,6 +85,23 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
           .willReturn(
             aResponse()
               .withStatus(200)
+          )
+      )
+    }
+
+    def wiremockStubForServerError(): Unit = {
+      wireMockServer.stubFor(
+        WireMock
+          .delete(
+            WireMock.urlPathEqualTo(
+              "/v1/Services/MG777c6a32c5b17bc426e7fff6a0f67aa0/PhoneNumbers/PNa2ab2f57a0ffca3a3fa907a4ce305477"
+            )
+          )
+          .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+          .willReturn(
+            aResponse()
+              .withStatus(500)
+              .withBody("AErrorEntityThatShouldBePartOfTheErrorsMsg")
           )
       )
     }
