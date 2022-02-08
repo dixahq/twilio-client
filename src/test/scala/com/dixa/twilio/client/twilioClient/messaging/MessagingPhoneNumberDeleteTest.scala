@@ -1,10 +1,11 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.Done
+import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioClientMessaging, TwilioTestConstants}
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

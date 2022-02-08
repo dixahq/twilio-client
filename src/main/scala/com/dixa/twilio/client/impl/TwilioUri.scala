@@ -62,7 +62,7 @@ private[impl] object TwilioUri {
     override def createHttpRequest(connSettings: TwilioConnectionSettings): HttpRequest = {
       HttpRequest(method, uri).addHeader(
         Authorization(
-          BasicHttpCredentials(connSettings.accountSid.toString, connSettings.authToken.toString)
+          BasicHttpCredentials(connSettings.accountSid.toString, connSettings.authToken.asString)
         )
       )
     }
