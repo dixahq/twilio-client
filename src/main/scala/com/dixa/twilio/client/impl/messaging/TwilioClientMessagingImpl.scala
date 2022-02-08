@@ -36,7 +36,6 @@ private[client] final class TwilioClientMessagingImpl(
   override val phoneNumberCreate: PhoneNumberCreateRequestExecutor =
     new PhoneNumberCreateRequestExecutorImpl()
 
-  override val phoneNumberDelete: PhoneNumberDeleteRequestExecutor = {
+  override val phoneNumberDelete: PhoneNumberDeleteRequestExecutor =
     new PhoneNumberDeleteRequestExecutorImpl()
-  }
 }
