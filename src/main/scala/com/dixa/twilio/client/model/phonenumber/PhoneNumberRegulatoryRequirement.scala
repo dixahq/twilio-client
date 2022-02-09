@@ -6,7 +6,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 
-case class PhoneNumberRegulatoryRequirement(
+final case class PhoneNumberRegulatoryRequirement(
     addressRequirement: AddressRequirementType,
 )
 

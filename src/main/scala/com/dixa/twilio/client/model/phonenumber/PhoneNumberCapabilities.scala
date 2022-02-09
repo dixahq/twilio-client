@@ -6,7 +6,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 
-case class PhoneNumberCapabilities(
+final case class PhoneNumberCapabilities(
     voice: VoiceCapabilities,
     sms: SmsCapabilities,
     mms: MmsCapabilities,
@@ -43,7 +43,7 @@ object PhoneNumberCapabilities {
       .getOrElse(throw new IllegalArgumentException(s"$s is not a valid InboundReachability."))
   }
 
-  case class VoiceCapabilities(
+  final case class VoiceCapabilities(
       inboundConnectivity: Boolean,
       outboundConnectivity: Boolean,
       e911: Boolean,
@@ -58,7 +58,7 @@ object PhoneNumberCapabilities {
       inboundReachability: InboundReachability,
   )
 
-  case class SmsCapabilities(
+  final case class SmsCapabilities(
       inboundConnectivity: Boolean,
       outboundConnectivity: Boolean,
       gsm7: Boolean,
@@ -68,7 +68,7 @@ object PhoneNumberCapabilities {
       inboundMps: Int,
   )
 
-  case class MmsCapabilities(
+  final case class MmsCapabilities(
       inboundConnectivity: Boolean,
       outboundConnectivity: Boolean,
       inboundReachability: InboundReachability,

@@ -2,7 +2,7 @@ package com.dixa.twilio.client.model.phonenumber
 
 import com.neovisionaries.i18n.CountryCode
 
-case class PhoneNumberGeography(
+final case class PhoneNumberGeography(
     isoCountry: CountryCode,
     lata: Option[String] = None,
     rateCenter: Option[String] = None,

@@ -78,7 +78,7 @@ private[phonenumber] final case class ActivePhoneNumberJsonRep(
 }
 
 object ActivePhoneNumberJsonRep {
-  private[phonenumber] case class PhoneNumberVoiceCapabilitiesJsonRep(
+  private[phonenumber] final case class PhoneNumberVoiceCapabilitiesJsonRep(
       inbound_connectivity: Boolean,
       outbound_connectivity: Boolean,
       e911: Boolean,
@@ -93,7 +93,7 @@ object ActivePhoneNumberJsonRep {
       inbound_reachability: String,
   )
 
-  private[phonenumber] case class PhoneNumberSmsCapabilitiesJsonRep(
+  private[phonenumber] final case class PhoneNumberSmsCapabilitiesJsonRep(
       inbound_connectivity: Boolean,
       outbound_connectivity: Boolean,
       gsm7: Boolean,
@@ -103,20 +103,20 @@ object ActivePhoneNumberJsonRep {
       inbound_mps: Int,
   )
 
-  private[phonenumber] case class PhoneNumberMmsCapabilitiesJsonRep(
+  private[phonenumber] final case class PhoneNumberMmsCapabilitiesJsonRep(
       inbound_connectivity: Boolean,
       outbound_connectivity: Boolean,
       inbound_reachability: String,
       inbound_mps: Int,
   )
 
-  private[phonenumber] case class PhoneNumberCapabilitiesJsonRep(
+  private[phonenumber] final case class PhoneNumberCapabilitiesJsonRep(
       voice: PhoneNumberVoiceCapabilitiesJsonRep,
       sms: PhoneNumberSmsCapabilitiesJsonRep,
       mms: PhoneNumberMmsCapabilitiesJsonRep,
   )
 
-  private[phonenumber] case class PhoneNumberGeographyJsonRep(
+  private[phonenumber] final case class PhoneNumberGeographyJsonRep(
       iso_country: String,
       lata: Option[String],
       rate_center: Option[String],
@@ -127,11 +127,11 @@ object ActivePhoneNumberJsonRep {
       postal_code: Option[String],
   )
 
-  private[phonenumber] case class PhoneNumberRegulatoryJsonRep(
+  private[phonenumber] final case class PhoneNumberRegulatoryJsonRep(
       address_requirements: String,
   )
 
-  private[phonenumber] case class PhoneNumberVoiceConfigurationJsonRep(
+  private[phonenumber] final case class PhoneNumberVoiceConfigurationJsonRep(
       url: Option[String],
       method: Option[String],
       fallback_url: Option[String],
@@ -143,7 +143,7 @@ object ActivePhoneNumberJsonRep {
       caller_id_lookup: Option[Boolean],
   )
 
-  private[phonenumber] case class PhoneNumberSmsConfigurationJsonRep(
+  private[phonenumber] final case class PhoneNumberSmsConfigurationJsonRep(
       url: Option[String],
       method: Option[String],
       fallback_url: Option[String],
@@ -151,7 +151,7 @@ object ActivePhoneNumberJsonRep {
       application_sid: Option[String],
   )
 
-  private[phonenumber] case class PhoneNumberConfigurationJsonRep(
+  private[phonenumber] final case class PhoneNumberConfigurationJsonRep(
       friendly_name: String,
       status_callback_url: Option[String],
       status_callback_method: Option[String],

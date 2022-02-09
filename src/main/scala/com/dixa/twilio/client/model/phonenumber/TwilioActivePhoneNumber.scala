@@ -2,7 +2,7 @@ package com.dixa.twilio.client.model.phonenumber
 
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
-case class TwilioActivePhoneNumber(
+final case class TwilioActivePhoneNumber(
     sid: TwilioPhoneNumberSid,
     accountSid: TwilioAccount.Sid,
     phoneNumber: PhoneNumberE164,

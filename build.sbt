@@ -8,10 +8,9 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Akka            = "2.6.18"
-  val AkkaHttp        = "10.2.7"
-  val Circe           = "0.14.1"
-  val LibISOCountries = "1.29"
+  val Akka     = "2.6.18"
+  val AkkaHttp = "10.2.7"
+  val Circe    = "0.14.1"
 
   // test
   val ScalatestScalactic = "3.2.10"
@@ -72,7 +71,7 @@ lazy val `twilio-client` = project
         "io.circe" %% "circe-parser"  % Version.Circe,
 
         // Misc
-        "com.neovisionaries" % "nv-i18n" % Version.LibISOCountries,
+        "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
         "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
