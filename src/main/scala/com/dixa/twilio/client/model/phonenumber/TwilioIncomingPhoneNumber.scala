@@ -3,10 +3,11 @@ package com.dixa.twilio.client.model.phonenumber
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
 sealed trait TwilioIncomingPhoneNumber {
-  def sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid
+  def sid: TwilioPhoneNumberSid
   def accountSid: TwilioAccount.Sid
   def friendlyName: TwilioIncomingPhoneNumber.FriendlyName
   def phoneNumber: PhoneNumberE164
+  def capabilities: TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
 }
 
 object TwilioIncomingPhoneNumber {
@@ -21,17 +22,27 @@ object TwilioIncomingPhoneNumber {
     */
   final case class PhoneNumberFilter(override val toString: String)
 
+  final case class PhoneNumberCapabilitiesSummary(
+      voice: Boolean,
+      sms: Boolean,
+      mms: Boolean,
+      fax: Boolean,
+  )
+
   def apply(
-      sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid,
+      sid: TwilioPhoneNumberSid,
       accountSid: TwilioAccount.Sid,
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
-      phoneNumber: PhoneNumberE164
-  ): TwilioIncomingPhoneNumber = DefaultImpl(sid, accountSid, friendlyName, phoneNumber)
+      phoneNumber: PhoneNumberE164,
+      capabilities: PhoneNumberCapabilitiesSummary,
+  ): TwilioIncomingPhoneNumber =
+    DefaultImpl(sid, accountSid, friendlyName, phoneNumber, capabilities)
 
   private final case class DefaultImpl(
-      sid: TwilioPhoneNumberSid.IncomingPhoneNumberSid,
+      sid: TwilioPhoneNumberSid,
       accountSid: TwilioAccount.Sid,
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
-      phoneNumber: PhoneNumberE164
+      phoneNumber: PhoneNumberE164,
+      capabilities: PhoneNumberCapabilitiesSummary,
   ) extends TwilioIncomingPhoneNumber
 }

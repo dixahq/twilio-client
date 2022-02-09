@@ -16,13 +16,5 @@ object TwilioPhoneNumberSid {
 
   def apply(asString: String): TwilioPhoneNumberSid = DefaultImpl(asString)
 
-  sealed trait IncomingPhoneNumberSid extends TwilioPhoneNumberSid
-
-  object IncomingPhoneNumberSid {
-    def apply(asString: String): IncomingPhoneNumberSid = DefaultIncomingImpl(asString)
-  }
-
-  private final case class DefaultImpl(asString: String)         extends TwilioPhoneNumberSid
-  private final case class DefaultIncomingImpl(asString: String) extends IncomingPhoneNumberSid
-
+  private final case class DefaultImpl(asString: String) extends TwilioPhoneNumberSid
 }
