@@ -12,6 +12,7 @@ import com.dixa.twilio.client.model.phonenumber.{
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -73,22 +74,25 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
 
         val expected = Seq(
           TwilioIncomingPhoneNumber(
-            TwilioPhoneNumberSid.IncomingPhoneNumberSid("PNf691901a0361ccfb5e4c11dc073a7274"),
+            TwilioPhoneNumberSid("PNf691901a0361ccfb5e4c11dc073a7274"),
             TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("(459) 375-1435"),
-            PhoneNumberE164("+4593751435")
+            PhoneNumberE164("+4593751435"),
+            PhoneNumberCapabilitiesSummary(true, true, false, false)
           ),
           TwilioIncomingPhoneNumber(
-            TwilioPhoneNumberSid.IncomingPhoneNumberSid("PNa6ab2f33d0ffca5a3fa907a4ce302607"),
+            TwilioPhoneNumberSid("PNa6ab2f33d0ffca5a3fa907a4ce302607"),
             TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("uva_testing_sms_dk"),
-            PhoneNumberE164("+4581827622")
+            PhoneNumberE164("+4581827622"),
+            PhoneNumberCapabilitiesSummary(true, true, true, true)
           ),
           TwilioIncomingPhoneNumber(
-            TwilioPhoneNumberSid.IncomingPhoneNumberSid("PN8ac53dd1867205c550ee4d41a35c0896"),
+            TwilioPhoneNumberSid("PN8ac53dd1867205c550ee4d41a35c0896"),
             TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("STAGING-2 NUMBER"),
-            PhoneNumberE164("+4578750614")
+            PhoneNumberE164("+4578750614"),
+            PhoneNumberCapabilitiesSummary(true, false, false, false)
           )
         )
 
@@ -125,7 +129,8 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |      "capabilities": {
       |        "voice": true,
       |        "sms": true,
-      |        "mms": false
+      |        "mms": false,
+      |        "fax": false
       |      },
       |      "status_callback": "",
       |      "status_callback_method": "POST",
@@ -164,7 +169,8 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |      "capabilities": {
       |        "voice": true,
       |        "sms": true,
-      |        "mms": false
+      |        "mms": true,
+      |        "fax": true
       |      },
       |      "status_callback": "",
       |      "status_callback_method": "POST",
@@ -218,7 +224,8 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |      "capabilities": {
       |        "voice": true,
       |        "sms": false,
-      |        "mms": false
+      |        "mms": false,
+      |        "fax": false
       |      },
       |      "status_callback": "https://twilio.euw1.stag2.dixa.io/v1/twilio/completed",
       |      "status_callback_method": "POST",

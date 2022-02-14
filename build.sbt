@@ -70,6 +70,9 @@ lazy val `twilio-client` = project
         "io.circe" %% "circe-generic" % Version.Circe,
         "io.circe" %% "circe-parser"  % Version.Circe,
 
+        // Misc
+        "com.neovisionaries" % "nv-i18n" % "1.29",
+
         // Lang improvement libs
         "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
         "com.beachape"  %% "enumeratum" % "1.7.0",
