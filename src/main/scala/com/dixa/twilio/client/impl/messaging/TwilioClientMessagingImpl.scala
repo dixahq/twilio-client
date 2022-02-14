@@ -5,7 +5,11 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import akka.{Done, NotUsed}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestExecutor, TwilioClientMessaging}
+import com.dixa.twilio.client.messaging.{
+  PhoneNumberCreateRequestExecutor,
+  PhoneNumberDeleteRequestExecutor,
+  TwilioClientMessaging
+}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,10 +36,6 @@ private[client] final class TwilioClientMessagingImpl(
   override val phoneNumberCreate: PhoneNumberCreateRequestExecutor =
     new PhoneNumberCreateRequestExecutorImpl()
 
-  override def phoneNumberDelete(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.PhoneNumberDeleteRequest
-  ): Future[Done] = {
-    new PhoneNumberDeleteRequest().apply(connSettings, req)
-  }
+  override val phoneNumberDelete: PhoneNumberDeleteRequestExecutor =
+    new PhoneNumberDeleteRequestExecutorImpl()
 }

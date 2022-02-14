@@ -1,6 +1,6 @@
 import sbt.Test
 
-val scala2_12          = "2.12.14"
+val scala2_12          = "2.12.15"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -13,7 +13,7 @@ val Version = new AnyRef {
   val Circe    = "0.14.1"
 
   // test
-  val ScalatestScalactic = "3.2.10"
+  val ScalatestScalactic = "3.2.11"
 }
 
 lazy val `twilio-client` = project
