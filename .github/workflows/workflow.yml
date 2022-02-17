@@ -12,7 +12,7 @@ env:
   MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ["self-hosted", "default"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
