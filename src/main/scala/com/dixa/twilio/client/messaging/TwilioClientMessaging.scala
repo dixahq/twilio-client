@@ -37,10 +37,7 @@ trait TwilioClientMessaging {
     * The delete is only in context of messaging. So it takes an existing phonenumber and delete it
     * / removes it from a messaging service.
     */
-  def phoneNumberDelete(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.PhoneNumberDeleteRequest
-  ): Future[Done]
+  def phoneNumberDelete: PhoneNumberDeleteRequestExecutor
 
   def smsSend: SmsSendRequestExecutor
 }
@@ -53,10 +50,5 @@ object TwilioClientMessaging {
       fallbackWebhook: Option[FallbackWebhook],
       statusCallback: Option[StatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
-  )
-
-  final case class PhoneNumberDeleteRequest(
-      serviceSid: TwilioMessagingService.Sid,
-      phoneNumberSid: TwilioPhoneNumberSid
   )
 }

@@ -1,6 +1,6 @@
 import sbt.Test
 
-val scala2_12          = "2.12.14"
+val scala2_12          = "2.12.15"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -9,11 +9,11 @@ val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/
 
 val Version = new AnyRef {
   val Akka     = "2.6.18"
-  val AkkaHttp = "10.2.7"
+  val AkkaHttp = "10.2.8"
   val Circe    = "0.14.1"
 
   // test
-  val ScalatestScalactic = "3.2.10"
+  val ScalatestScalactic = "3.2.11"
 }
 
 lazy val `twilio-client` = project
@@ -69,6 +69,9 @@ lazy val `twilio-client` = project
         "io.circe" %% "circe-core"    % Version.Circe,
         "io.circe" %% "circe-generic" % Version.Circe,
         "io.circe" %% "circe-parser"  % Version.Circe,
+
+        // Misc
+        "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
         "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,

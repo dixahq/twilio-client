@@ -9,13 +9,9 @@ import com.dixa.twilio.client.callback.RequestValidator.{
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
 import java.nio.charset.StandardCharsets
-import java.util
-import java.util.Collections
+import java.util.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.xml.bind.DatatypeConverter
-import scala.collection.JavaConversions._
-import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
 private[client] class RequestValidatorImpl() extends RequestValidator {
@@ -45,8 +41,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
     Try {
       val builder: StringBuilder = new StringBuilder(requestUrl)
 
-      val sortedKeys: util.List[String] = new util.ArrayList[String](params.keySet.asJava)
-      Collections.sort(sortedKeys)
+      val sortedKeys = params.keySet.toArray.sorted
       for (key <- sortedKeys) {
         builder.append(key)
         val value: String = params(key)
@@ -60,7 +55,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
       val mac: Mac   = Mac.getInstance(HMAC)
       mac.init(signingKey)
       val rawHmac: Array[Byte] = mac.doFinal(builder.toString.getBytes(StandardCharsets.UTF_8))
-      DatatypeConverter.printBase64Binary(rawHmac)
+      Base64.getEncoder.encodeToString(rawHmac)
     }
   }
 

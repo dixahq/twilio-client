@@ -2,6 +2,19 @@ package com.dixa.twilio.client
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/** Base trait for an executor that is able and ready to fire a specific request in different ways.
+  *
+  * Different users have different preferences when it comes to error handling. So an instance of
+  * this, is ready to perform a specific request, but allows the user to decide how he prefers the
+  * response.
+  *
+  * @tparam Req
+  *   The Request type that is ready to be executed by this instance.
+  * @tparam Err
+  *   The Err type that the request might produce.
+  * @tparam Success
+  *   The type of a successfully response.
+  */
 trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
 
   protected implicit def executionContext: ExecutionContext
