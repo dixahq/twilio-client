@@ -132,7 +132,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
                 aResponse()
                   .withStatus(409)
                   .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
+                  .withBody(twilioResponseNumberAssociatedWithOtherMessagingService)
               )
           )
 
@@ -156,7 +156,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
                 aResponse()
                   .withStatus(409)
                   .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
+                  .withBody(twilioResponseNumberAssociatedWithOtherMessagingService)
               )
           )
 
@@ -198,7 +198,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
       |}
       |""".stripMargin
 
-  private def twilioResponseNumberAssociatedWithOtherMesseginService =
+  private def twilioResponseNumberAssociatedWithOtherMessagingService =
     """{
       |  "code": 21712,
       |  "message": "Phone Number or Short Code is associated with another Messaging Service.",

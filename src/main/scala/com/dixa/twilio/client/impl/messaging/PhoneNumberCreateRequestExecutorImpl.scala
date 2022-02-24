@@ -60,7 +60,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
   private def buildSuccessResponse(
       entity: ResponseEntity,
       timeouts: TwilioConnectionSettings.Timeouts
-  ) = {
+  ): Future[Right[Nothing, TwilioMessagingPhoneNumber]] = {
     entity.toStrict(timeouts.requestEntityTimeout).map { entity =>
       val entityString = HttpEntityString(entity.data.utf8String)
       val decoded      = entityString.parseUnsafe[MessagingPhoneNumberJsonRep]()
@@ -71,7 +71,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
   private def buildResultForConflictResponse(
       entity: ResponseEntity,
       timeouts: TwilioConnectionSettings.Timeouts
-  ) = {
+  ): Future[Left[PhoneNumberCreateException, Nothing]] = {
     entity.toStrict(timeouts.requestEntityTimeout).map { entity =>
       val entityString = HttpEntityString(entity.data.utf8String)
       val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
@@ -84,7 +84,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
           Left(
             new PhoneNumberCreateException.UnspecifiedError(
               s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
-                s"$other represent. Full error entity from Twilio: $entityString"
+                s"$other represents. Full error entity from Twilio: $entityString"
             )
           )
       }

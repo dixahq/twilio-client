@@ -3,14 +3,13 @@ package com.dixa.twilio.client.messaging
 import akka.stream.scaladsl.Source
 import akka.{Done, NotUsed}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
   InboundRequestWebhook,
-  StatusCallback,
   UseInboundWebhookOnNumber
 }
+import com.dixa.twilio.client.model.messaging.{StatusCallback, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 
 import scala.concurrent.Future
@@ -42,6 +41,8 @@ trait TwilioClientMessaging {
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.PhoneNumberDeleteRequest
   ): Future[Done]
+
+  def smsSend: SmsSendRequestExecutor
 }
 
 object TwilioClientMessaging {

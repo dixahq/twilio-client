@@ -33,7 +33,7 @@ object TwilioAccount {
 
     private[client] def fromApiName(s: String): TwilioAccount.Status = findValues
       .find(_.apiName === s)
-      .getOrElse(throw new IllegalArgumentException(s"$s is not a valiid Twilio account status."))
+      .getOrElse(throw new IllegalArgumentException(s"$s is not a valid Twilio account status."))
   }
 
   private val authTokenSecretValueString = "AuthToken(***)"
