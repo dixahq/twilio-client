@@ -1,40 +1,64 @@
 # What is this?
 
-This is a basic template we can use to create repos for new scala services.
+This is two libraries in 1:
 
-# How do i use it?
+1. Scala model representation of Twilio
+2. General purpose Twilio scala client library
 
-Let's assume your new scala service is called `functionality`, use a noun for the service name, singular or plural.
-There is no need to append the `-service` name.
+The model part is usefully in scala application working with twilio, needing model classes
+for representing the different Twilio entities.
 
-## Configure Jenkins CI build
+The client is usefully if you need to communicate with twilio from you scala application.
 
-1. Use the green button "Use this template". This will let you create a new service repository using this template.
+In the future, we might separate it into two libraries, where the client would then depend on the
+model, but not the other way around. 
 
-2. Create an AWS ECR repository called `functionality`. There is no need to configure any ECR settings.
+By general purpose is meant a library, that is not filled with Dixa specific stuff, but instead would
+be usable by anyone needing to use the Twilio APIs from scala. We are planning to open source
+this at some point in time, when it has matured a bit. That said we at time of writing, only implement
+the calls that we need at Dixa. 
 
-3. Configure the github repository settings as described at [Creating new Github repositories](https://www.notion.so/dixa/Creating-new-Github-repositories-0ab327e732a744958d0bd1654be082bc).
+# Why?
 
-4. In your first pull request replace the ECR repository name provided as the argument to `initializeBuild` with `functionality`
-   https://github.com/dixahq/scala-service-template/blob/master/Jenkinsfile#L4
+The newest version of the Twilio SDK (version 8.x at time of writing), has many flaws in our eyes:
 
-5. Make the service bootable and runnable, just doing nothing.
+1. It is really hard to stub out in tests. It uses classes that cannot be extended, so your cannot stub
+   with tools like scalamock, and it also uses hardcoded hostnames, so it's also impossible to stub it
+   with tools like wiremock.
+2. It is using static state for authentication. So you set the credentials as static state, and all
+   subsequent calls, will use the credentials. This is really problematic for us, as we perform a
+   lot of concurrent calls on different sub-accounts, using different credentials. This would force
+   us to use locking to ensure that a call uses the expected credentials.
+3. It's hard to now when the SDK actually performs blocking calls, and this can be a problem in
+   async applications.
 
-## Deploy the service onto k8s
+Beside the clear disadvantages in the Twilio SDK, doing our own client, also allows us to add in
+some extra sugar. For example by hiding paging logic behind reactive streams using Akka-streams.
 
-1. Take a recent service example from the `staging-2` namespace as a template, and replace the occurrences
-   of the service name with your `functionality`
+# How
 
-2. Make sure the pod spec uses `livenessProbe` based on thrift tcpSocket connection, if possible, and `readinessProbe` based on prometheus httpGet request.
+The library is using akka-http and akka-streams for communication with Twilio. Akka-http is
+an implementation detail, but akka-stream is part of the public API, as it has plenty of
+endpoint returning result as a Source.
 
-3. Initially use `cpu: limits: 1000m` (limit to maximum of 1 cpu core) to prevent unbound cpu usage by your new service.
+# Developing
 
-4. Monitor the resources usage, tune the resources according to https://github.com/dixahq/wiki/wiki/Infrastructure-pod-resource-tuning.
-   Remove the `cpu: limits` after the service seems stable.
+## Documentation
 
-5. Deploy your service to other staging namespaces, then to production, and tune the production resources.
+The code should be pretty good documented with scaladoc explaining most classes purpose.
+Each package also has a package-object with scaladoc, describing what each package represent.
+So if you are in doubt how to implement something, try reading these comments, and look at
+an existing implementation, and you should be going strong.
+Remember that all new stuff, should be documented just as well as the existing code.
 
-## Configure Scala Steward updates
+## Versioning
 
-All new scala services **MUST** be configured to start receiving dependency updates from _scala steward_, please have a look at [the scala steward readme.md](https://github.com/dixahq/scala-steward) for further instructions.
+This library has still not reached version 1, so until then, it is allowed to do breaking. But
+once we reach a state we are happy with, we should release version 1, and use semantic versioning
+going forward.
 
+## Publishing new version
+
+Create a PR for merging into `master`. Once that is done, CI pipeline will make sure to
+release a new minor version. If you want to increment major or middle version, you need
+to upate the `version.sbt` file as part of you pull request.

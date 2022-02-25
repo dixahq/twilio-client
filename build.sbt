@@ -9,7 +9,7 @@ val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/
 
 val Version = new AnyRef {
   val Akka     = "2.6.18"
-  val AkkaHttp = "10.2.7"
+  val AkkaHttp = "10.2.8"
   val Circe    = "0.14.1"
 
   // test
