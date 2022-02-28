@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.SingleRequestExecutor
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 
@@ -20,6 +20,9 @@ object PhoneNumberCreateRequestExecutor {
 
   sealed trait PhoneNumberCreateException extends RuntimeException
   object PhoneNumberCreateException {
+    final case class Api(cause: ApiException)
+        extends RuntimeException(cause)
+        with PhoneNumberCreateException
     final case class PhoneNumberAlreadyInMessagingService()
         extends IllegalStateException(
           "Phone Number or Short Code is already in the Messaging Service. More info: https://www.twilio.com/docs/errors/21710"
@@ -30,7 +33,7 @@ object PhoneNumberCreateRequestExecutor {
           "Phone Number or Short Code is associated with another Messaging Service. More info: https://www.twilio.com/docs/errors/21712"
         )
         with PhoneNumberCreateException
-    final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to add phone number to Messaging Service"
