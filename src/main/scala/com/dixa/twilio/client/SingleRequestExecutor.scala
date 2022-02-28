@@ -3,8 +3,6 @@ package com.dixa.twilio.client
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
-import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteException
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,18 +32,18 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     */
   final def run(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]] =
     Future {
-      execWithCheckForApiException(httpReq(connSettings, req), connSettings.timeouts).map {
-        apiErrorOrResp =>
-          apiErrorOrResp.left
-            .map(mapApiException)
-            .flatMap(HttpReqRespAndEntity =>
-              parseHttpResponse(
-                req,
-                HttpReqRespAndEntity._1,
-                HttpReqRespAndEntity._2,
-                HttpReqRespAndEntity._3
-              )
+      val httpRequest = createHttpReq(connSettings, req)
+      execWithCheckForApiException(httpRequest, connSettings.timeouts).map { apiErrorOrResp =>
+        apiErrorOrResp.left
+          .map(mapApiException)
+          .flatMap(HttpReqRespAndEntity =>
+            parseHttpResponse(
+              req,
+              HttpReqRespAndEntity._1,
+              HttpReqRespAndEntity._2,
+              HttpReqRespAndEntity._3
             )
+          )
       }
     }.flatten.recover { case e: Exception =>
       Left(
@@ -92,7 +90,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     * Implementations should provide this for building the HttpRequest for the request represented
     * by the concrete implementation.
     */
-  protected def httpReq(connSettings: TwilioConnectionSettings, req: Req): HttpRequest
+  protected def createHttpReq(connSettings: TwilioConnectionSettings, req: Req): HttpRequest
 
   /** Convert an ApiException into the request specific Exception. */
   protected def mapApiException(apiException: ApiException): ApiExceptionWrapper

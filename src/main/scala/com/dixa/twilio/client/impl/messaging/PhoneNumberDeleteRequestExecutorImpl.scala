@@ -24,7 +24,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
 
   override protected type UnspecifiedException = PhoneNumberDeleteException.UnspecifiedError
 
-  override protected def httpReq(
+  override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberDeleteRequest
   ): HttpRequest = {
