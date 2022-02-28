@@ -21,7 +21,7 @@ object PhoneNumberDeleteRequestExecutor {
 
   sealed trait PhoneNumberDeleteException extends RuntimeException
   object PhoneNumberDeleteException {
-    final case class API(cause: ApiException)
+    final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with PhoneNumberDeleteException
 

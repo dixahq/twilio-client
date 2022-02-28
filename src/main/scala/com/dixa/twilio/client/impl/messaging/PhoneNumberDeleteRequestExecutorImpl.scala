@@ -20,7 +20,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
 
   import PhoneNumberDeleteRequestExecutor._
 
-  override protected type ApiExceptionWrapper = PhoneNumberDeleteException.API
+  override protected type ApiExceptionWrapper = PhoneNumberDeleteException.Api
 
   override protected type UnspecifiedException = PhoneNumberDeleteException.UnspecifiedError
 
@@ -37,7 +37,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
-    PhoneNumberDeleteException.API(apiException)
+    PhoneNumberDeleteException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
