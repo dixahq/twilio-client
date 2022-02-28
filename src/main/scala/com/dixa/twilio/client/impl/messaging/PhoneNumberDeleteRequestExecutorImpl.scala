@@ -2,16 +2,15 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.Done
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethods, HttpResponse, ResponseEntity, StatusCodes}
+import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.TwilioConnectionSettings.Timeouts
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import io.circe.generic.auto._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
@@ -21,55 +20,57 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
 
   import PhoneNumberDeleteRequestExecutor._
 
-  override def run(
+  override protected type ApiExceptionWrapper = PhoneNumberDeleteException.API
+
+  override protected type UnspecifiedException = PhoneNumberDeleteException.UnspecifiedError
+
+  override protected def httpReq(
       connSettings: TwilioConnectionSettings,
-      req: PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteRequest
-  ): Future[Either[PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteException, Done]] = {
-    val httpReq = TwilioPath(
+      req: PhoneNumberDeleteRequest
+  ): HttpRequest = {
+    TwilioPath(
       ApiSubDomain.Messaging,
       HttpMethods.DELETE,
       s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
     )
       .createHttpRequest(connSettings)
-    http
-      .singleRequest(httpReq)
-      .flatMap { httpResp =>
-        httpResp.status match {
-          case StatusCodes.OK =>
-            httpResp.entity.discardBytes()
-            Future.successful(Right(Done))
-          case StatusCodes.NotFound =>
-            buildResultForNotFoundResponse(httpResp.entity, connSettings.timeouts)
-          case _ => buildOtherStatusCodeErrorResponse(req, httpResp, connSettings.timeouts)
-        }
-      }
-      .recover { case e: Exception =>
-        Left(new PhoneNumberDeleteException.UnspecifiedError(e))
-      }
+  }
+
+  override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
+    PhoneNumberDeleteException.API(apiException)
+
+  override protected def createUnspecifiedException(
+      msg: Option[String],
+      cause: Option[Exception]
+  ): UnspecifiedException = PhoneNumberDeleteException.UnspecifiedError(msg, cause)
+
+  override protected def parseHttpResponse(
+      request: PhoneNumberDeleteRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntity.Strict
+  ): Either[PhoneNumberDeleteException, Done] = httpResponse.status match {
+    case StatusCodes.OK =>
+      Right(Done)
+    case StatusCodes.NotFound =>
+      buildResultForNotFoundResponse(entity)
+    case _ => buildOtherStatusCodeErrorResponse(request, httpResponse, entity)
   }
 
   private def buildOtherStatusCodeErrorResponse(
       req: PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteRequest,
       resp: HttpResponse,
-      timeouts: Timeouts
+      entity: HttpEntity.Strict
   ) = {
-    resp.entity.toStrict(timeouts.requestEntityTimeout).map { entity =>
-      val entityAsString = entity.data.utf8String
-      val msg = s"Could not perform: $req, due to getting status code ${resp.status}. " +
-        s"Full entity is: $entityAsString"
-      Left(new PhoneNumberDeleteException.UnspecifiedError(msg))
-    }
+    val entityAsString = entity.data.utf8String
+    val msg = s"Could not perform: $req, due to getting status code ${resp.status}. " +
+      s"Full entity is: $entityAsString"
+    Left(new PhoneNumberDeleteException.UnspecifiedError(msg))
   }
 
-  private def buildResultForNotFoundResponse(
-      entity: ResponseEntity,
-      timeouts: TwilioConnectionSettings.Timeouts
-  ) = {
-    entity.toStrict(timeouts.requestEntityTimeout).map { entity =>
-      val entityString = HttpEntityString(entity.data.utf8String)
-      val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
-      Left(PhoneNumberDeleteException.NotFound(decoded.message))
-    }
+  private def buildResultForNotFoundResponse(entity: HttpEntity.Strict) = {
+    val entityString = HttpEntityString(entity.data.utf8String)
+    val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
+    Left(PhoneNumberDeleteException.NotFound(decoded.message))
   }
-
 }
