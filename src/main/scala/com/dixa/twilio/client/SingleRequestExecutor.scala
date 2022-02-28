@@ -87,7 +87,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     */
   protected type UnspecifiedException <: Err
 
-  /** Build the http response.
+  /** Build the http request.
     *
     * Implementations should provide this for building the HttpRequest for the request represented
     * by the concrete implementation.
