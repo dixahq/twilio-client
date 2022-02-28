@@ -14,8 +14,8 @@ import io.circe.generic.auto._
 import scala.concurrent.{ExecutionContext, Future}
 
 private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
-    implicit http: HttpExt,
-    materializer: Materializer,
+    implicit override protected val http: HttpExt,
+    override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
 ) extends PhoneNumberDeleteRequestExecutor {
 

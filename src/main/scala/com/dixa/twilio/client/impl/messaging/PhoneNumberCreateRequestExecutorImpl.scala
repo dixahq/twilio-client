@@ -1,14 +1,7 @@
 package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{
-  ContentTypes,
-  HttpEntity,
-  HttpMethods,
-  ResponseEntity,
-  StatusCode,
-  StatusCodes
-}
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCode, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
@@ -25,8 +18,8 @@ import io.circe.generic.auto._
 import scala.concurrent.{ExecutionContext, Future}
 
 private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
-    implicit http: HttpExt,
-    materializer: Materializer,
+    implicit override protected val http: HttpExt,
+    override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
 ) extends PhoneNumberCreateRequestExecutor {
 
@@ -44,50 +37,41 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
     )
       .createHttpRequest(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
-    http.singleRequest(httpReq).flatMap { httpResp =>
-      httpResp.status match {
-        case StatusCodes.OK => buildSuccessResponse(httpResp.entity, connSettings.timeouts)
-        case StatusCodes.Conflict =>
-          buildResultForConflictResponse(httpResp.entity, connSettings.timeouts)
-        case other => Future.successful(unexpectedStatusCodeResult(req, other))
-
+    execWithCheckForApiException(httpReq, connSettings.timeouts).map(apiErrorEither =>
+      apiErrorEither.left.map(PhoneNumberCreateException.Api).flatMap { respAndEntity =>
+        respAndEntity._1.status match {
+          case StatusCodes.OK => buildSuccessResponse(respAndEntity._2)
+          case StatusCodes.Conflict =>
+            buildResultForConflictResponse(respAndEntity._2)
+          case other => unexpectedStatusCodeResult(req, other)
+        }
       }
-    }
+    )
   }.recover { case e: Exception =>
     Left(new PhoneNumberCreateException.UnspecifiedError(e))
   }
 
-  private def buildSuccessResponse(
-      entity: ResponseEntity,
-      timeouts: TwilioConnectionSettings.Timeouts
-  ) = {
-    entity.toStrict(timeouts.requestEntityTimeout).map { entity =>
-      val entityString = HttpEntityString(entity.data.utf8String)
-      val decoded      = entityString.parseUnsafe[MessagingPhoneNumberJsonRep]()
-      Right(decoded.toModel)
-    }
+  private def buildSuccessResponse(entity: HttpEntity.Strict) = {
+    val entityString = HttpEntityString(entity.data.utf8String)
+    val decoded      = entityString.parseUnsafe[MessagingPhoneNumberJsonRep]()
+    Right(decoded.toModel)
   }
 
-  private def buildResultForConflictResponse(
-      entity: ResponseEntity,
-      timeouts: TwilioConnectionSettings.Timeouts
-  ) = {
-    entity.toStrict(timeouts.requestEntityTimeout).map { entity =>
-      val entityString = HttpEntityString(entity.data.utf8String)
-      val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
-      decoded.code match {
-        case 21710L =>
-          Left(PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
-        case 21712L =>
-          Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
-        case other =>
-          Left(
-            new PhoneNumberCreateException.UnspecifiedError(
-              s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
-                s"$other represent. Full error entity from Twilio: $entityString"
-            )
+  private def buildResultForConflictResponse(entity: HttpEntity.Strict) = {
+    val entityString = HttpEntityString(entity.data.utf8String)
+    val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
+    decoded.code match {
+      case 21710L =>
+        Left(PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
+      case 21712L =>
+        Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
+      case other =>
+        Left(
+          new PhoneNumberCreateException.UnspecifiedError(
+            s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+              s"$other represent. Full error entity from Twilio: $entityString"
           )
-      }
+        )
     }
   }
 }

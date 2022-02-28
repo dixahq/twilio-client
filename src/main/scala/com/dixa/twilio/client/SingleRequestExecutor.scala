@@ -1,5 +1,9 @@
 package com.dixa.twilio.client
 
+import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
+import akka.stream.Materializer
+
 import scala.concurrent.{ExecutionContext, Future}
 
 /** Base trait for an executor that is able and ready to fire a specific request in different ways.
@@ -16,6 +20,10 @@ import scala.concurrent.{ExecutionContext, Future}
   *   The type of a successfully response.
   */
 trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
+
+  protected def http: HttpExt
+
+  protected implicit def materializer: Materializer
 
   protected implicit def executionContext: ExecutionContext
 
@@ -38,4 +46,32 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     */
   final def unsafeRun(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
     run(connSettings, req).map(_.fold(e => throw e, res => res))
+
+  /** Will execute provided HttpRequest, and check the response for common API errors.
+    *
+    * This helps implementations in 2 ways:
+    *
+    * 1) It checks the response for the common errors all the Twilio APIs can return, and returns
+    * them as a Left(ApiException), that implementations easily can left map into ther own Exception
+    * wrapper for the ApiException
+    *
+    * 2) It reads in the entity, and return it as part of the successfully response as a
+    * HttpEntity.Strict. This makes the entity easy to handle for implementations, as they then do
+    * not need to remember either reading or discarding it. Also prevents them from trying to read
+    * it in a second time.
+    */
+  protected def execWithCheckForApiException(
+      httpReq: HttpRequest,
+      timeouts: TwilioConnectionSettings.Timeouts
+  ): Future[Either[ApiException, (HttpResponse, HttpEntity.Strict)]] = {
+    for {
+      httpResp <- http.singleRequest(httpReq)
+      entity   <- httpResp.entity.toStrict(timeouts.requestEntityTimeout)
+      result = httpResp.status match {
+        case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
+        // Fill in more cases here as we find them
+        case _ => Right(httpResp -> entity)
+      }
+    } yield result
+  }
 }
