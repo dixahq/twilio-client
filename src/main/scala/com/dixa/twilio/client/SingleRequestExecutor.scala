@@ -3,6 +3,8 @@ package com.dixa.twilio.client
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
+import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
+import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteException
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -120,6 +122,9 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     * throwing an Exception, then SingleRequestExecutor will make sure to map the exception into the
     * UndefinedException type of the request.
     *
+    * When looking for errors, the [[buildResultForUnhandledResponse]] is an easy way to create a
+    * willcard for the cases not handled.
+    *
     * @return
     *   Left in case of errors, right in case of success.
     * @param request
@@ -151,5 +156,21 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
         case _ => Right((httpReq, httpResp, entity))
       }
     } yield result
+  }
+
+  /** Helper method for creating a response to cases where we have no support for handling a
+    * Responese.
+    */
+  protected def buildResultForUnhandledResponse(
+      request: Req,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntity.Strict
+  ): Either[Err, Success] = {
+    val entityAsString = entity.data.utf8String
+    val msg =
+      s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
+        s"after firering $httpRequest. Full entity of response is: $entityAsString"
+    Left(createUnspecifiedException(Some(msg), None))
   }
 }

@@ -7,7 +7,6 @@ import akka.http.scaladsl.model.{
   HttpMethods,
   HttpRequest,
   HttpResponse,
-  StatusCode,
   StatusCodes
 }
 import akka.stream.Materializer
@@ -69,7 +68,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
     case StatusCodes.OK => buildSuccessResponse(entity)
     case StatusCodes.Conflict =>
       buildResultForConflictResponse(entity)
-    case other => unexpectedStatusCodeResult(req, httpReq, other)
+    case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
   }
 
   private def buildSuccessResponse(entity: HttpEntity.Strict) = {
@@ -106,18 +105,4 @@ private object PhoneNumberCreateRequestExecutorImpl {
         TwilioMessagingService.Sid(service_sid)
       )
   }
-
-  private def unexpectedStatusCodeResult(
-      req: PhoneNumberCreateRequest,
-      httpReq: HttpRequest,
-      status: StatusCode
-  ) = Left(
-    PhoneNumberCreateException.Unspecified(
-      Some(
-        s"Could not create: $req, due to getting status code $status from Twilio, after firering $httpReq"
-      ),
-      None
-    )
-  )
-
 }

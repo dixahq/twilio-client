@@ -54,18 +54,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
       Right(Done)
     case StatusCodes.NotFound =>
       buildResultForNotFoundResponse(entity)
-    case _ => buildOtherStatusCodeErrorResponse(request, httpResponse, entity)
-  }
-
-  private def buildOtherStatusCodeErrorResponse(
-      req: PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteRequest,
-      resp: HttpResponse,
-      entity: HttpEntity.Strict
-  ) = {
-    val entityAsString = entity.data.utf8String
-    val msg = s"Could not perform: $req, due to getting status code ${resp.status}. " +
-      s"Full entity is: $entityAsString"
-    Left(new PhoneNumberDeleteException.UnspecifiedError(msg))
+    case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
   }
 
   private def buildResultForNotFoundResponse(entity: HttpEntity.Strict) = {
