@@ -8,7 +8,7 @@ import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestExecutor, Twili
 import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -169,6 +169,52 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           resultFut.map(res => assert(res === expected))
 
         }
+
+      "Return a failed Future if credentials are wrong, and unsafe variant is called" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(401)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseInvalidCredentials)
+            )
+        )
+
+        val resultFut: Future[TwilioMessagingPhoneNumber] =
+          instance.unsafeRun(connSettings, createRequest)
+
+        resultFut.map(_ => fail("Should have already failed before this")).recover {
+          case PhoneNumberCreateException.Api(cause)
+              if cause == ApiException.AuthenticationException() =>
+            succeed
+        }
+      }
+
+      "Return a Left if credentials are wrong, and safe variant is called" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(401)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseInvalidCredentials)
+            )
+        )
+
+        val resultFut: Future[
+          Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+        ] = instance.run(connSettings, createRequest)
+        val expected =
+          Left(PhoneNumberCreateException.Api(ApiException.AuthenticationException()))
+        resultFut.map(res => assert(res === expected))
+      }
     }
   }
 
@@ -204,6 +250,16 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
       |  "message": "Phone Number or Short Code is associated with another Messaging Service.",
       |  "more_info": "https://www.twilio.com/docs/errors/21712",
       |  "status": 409
+      |}
+      |""".stripMargin
+
+  private def twilioResponseInvalidCredentials =
+    """{
+      |  "code": 20003,
+      |  "detail": "Your AccountSid or AuthToken was incorrect.",
+      |  "message": "Authentication Error - No credentials provided",
+      |  "more_info": "https://www.twilio.com/docs/errors/20003",
+      |  "status": 401
       |}
       |""".stripMargin
 
