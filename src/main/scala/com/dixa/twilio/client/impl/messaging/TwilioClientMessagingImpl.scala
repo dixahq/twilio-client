@@ -1,17 +1,14 @@
 package com.dixa.twilio.client.impl.messaging
 
+import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import akka.{Done, NotUsed}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
   PhoneNumberCreateRequestExecutor,
-<<<<<<< HEAD
-  SmsSendRequestExecutor,
-=======
   PhoneNumberDeleteRequestExecutor,
->>>>>>> origin/master
+  SmsSendRequestExecutor,
   TwilioClientMessaging
 }
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService

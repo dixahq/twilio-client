@@ -27,6 +27,7 @@ object SmsSendRequestExecutor {
       statusCallback: StatusCallback
   )
 
+  // TODO unauthorized 401?
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages
   sealed trait SmsSendException extends RuntimeException
   object SmsSendException {
@@ -70,16 +71,16 @@ object SmsSendRequestExecutor {
 
   // Response example: https://www.twilio.com/docs/sms/send-messages
   // Message properties/Response entity in more detail: https://www.twilio.com/docs/sms/api/message-resource#message-properties
-  // Not included: error_code, error_message, from, to, uri, subresourceUris
+  // TODO add comments here Not included: error_code, error_message, from, to, uri, subresourceUris
   final case class Response(
       accountSid: TwilioAccount.Sid,
       body: MessageBody,
-      dateCreated: Instant,
-      dateSent: Instant,
-      dateUpdated: Instant,
+      dateCreated: Option[Instant],
+      dateSent: Option[Instant],
+      dateUpdated: Option[Instant],
       direction: MessageDirection,
       from: MessageSender,
-      messagingServiceSid: TwilioMessagingService.Sid,
+      messagingServiceSid: Option[TwilioMessagingService.Sid],
       numMedia: Int, // number of media files associated with the message
       numSegments: MessageNumSegments,
       price: Option[BigDecimal],

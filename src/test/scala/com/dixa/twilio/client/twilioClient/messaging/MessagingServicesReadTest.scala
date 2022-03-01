@@ -5,7 +5,7 @@ import akka.stream.scaladsl.{Sink, Source}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.model.HttpMethod
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService
+import com.dixa.twilio.client.model.messaging.{StatusCallback, TwilioMessagingService}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -71,8 +71,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
                 .InboundRequestWebhook(HttpMethod.Post, new URL("https://www.example.com/"))
             ),
             fallbackWebhook = None,
-            statusCallback =
-              Some(TwilioMessagingService.StatusCallback(new URL("https://www.example.com"))),
+            statusCallback = Some(StatusCallback(new URL("https://www.example.com"))),
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.False
           ),
           TwilioMessagingService(
@@ -84,8 +83,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
                 .InboundRequestWebhook(HttpMethod.Get, new URL("https://www.example.com/"))
             ),
             fallbackWebhook = None,
-            statusCallback =
-              Some(TwilioMessagingService.StatusCallback(new URL("https://www.example.com"))),
+            statusCallback = Some(StatusCallback(new URL("https://www.example.com"))),
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.True
           ),
           TwilioMessagingService(
@@ -97,8 +95,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
               TwilioMessagingService
                 .FallbackWebhook(HttpMethod.Post, new URL("https://fallback.dixa.com"))
             ),
-            statusCallback =
-              Some(TwilioMessagingService.StatusCallback(new URL("https://www.example.com"))),
+            statusCallback = Some(StatusCallback(new URL("https://www.example.com"))),
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.False
           )
         )

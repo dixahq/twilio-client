@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.messaging
 
+import akka.NotUsed
 import akka.stream.scaladsl.Source
-import akka.{Done, NotUsed}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
@@ -10,7 +10,6 @@ import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   UseInboundWebhookOnNumber
 }
 import com.dixa.twilio.client.model.messaging.{StatusCallback, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 
 import scala.concurrent.Future
 

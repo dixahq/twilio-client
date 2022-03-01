@@ -7,6 +7,7 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.messaging.SmsSendRequestExecutorImpl.{
   parseDate,
+  parseMessagingServiceSid,
   parsePrice,
   parsePriceUnit,
   unexpectedStatusCodeResult
@@ -40,18 +41,23 @@ private[impl] final class SmsSendRequestExecutorImpl()(
       req: SmsSendRequest
   ): Future[Either[SmsSendException, Response]] = {
 
-    // postParam is a send-able sms - actually in plural postParams
-    // all send-able sms params should be in SmsSendRequestExecutor.SmsSendRequest
     // potentially might need to be FormData(Map(...)).toEntity cuz in the past we had troubles sending sms when having HttpEntity(ContentTypes.`application/x-www-form-urlencoded`
-    val postParam =
-      s"From=${req.from.asString}&To=${req.to.asString}&Body=${req.body.toString}&StatusCallback=${req.statusCallback.toString}"
+    // cannot create just a simple x-www-form-urlencoded string, because + symbols will be parsed as spaces
+    val reqEntity = FormData(
+      Map(
+        "From"           -> req.from.asString,
+        "To"             -> req.to.asString,
+        "Body"           -> req.body.toString,
+        "StatusCallback" -> req.statusCallback.toString
+      )
+    ).toEntity
 
     val httpReq = TwilioPath(
       ApiSubDomain.Api,
       HttpMethods.POST,
       s"/2010-04-01/Accounts/${req.accountSid}/Messages.json"
     ).createHttpRequest(connSettings)
-      .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
+      .withEntity(reqEntity)
 
     http.singleRequest(httpReq).flatMap { httpResp =>
       httpResp.status match {
@@ -104,16 +110,16 @@ private[impl] final class SmsSendRequestExecutorImpl()(
                       accountSid = TwilioAccount.Sid(decoded.account_sid),
                       body = MessageBody(decoded.body),
                       dateCreated = parseDate(decoded.date_created),
-                      dateSent = parseDate(decoded.date_sent),
+                      dateSent = decoded.date_sent.flatMap(parseDate),
                       dateUpdated = parseDate(decoded.date_updated),
                       direction = direction,
                       from = MessageSender.E164(PhoneNumberE164(decoded.from)),
                       messagingServiceSid =
-                        TwilioMessagingService.Sid(decoded.messaging_service_sid),
+                        decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
                       numMedia = decoded.num_media.toInt,
                       numSegments = MessageNumSegments(decoded.num_segments),
-                      price = parsePrice(decoded.price),
-                      priceUnit = parsePriceUnit(decoded.price_unit),
+                      price = decoded.price.flatMap(parsePrice),
+                      priceUnit = decoded.price_unit.flatMap(parsePriceUnit),
                       sid = MessageSid(decoded.sid),
                       status = status,
                       to = PhoneNumberE164(decoded.to)
@@ -158,12 +164,21 @@ private object SmsSendRequestExecutorImpl {
     )
   )
 
-  private def parseDate(date: String): Instant =
-    Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(date))
+  private def parseDate(date: String): Option[Instant] = date match {
+    case null => None
+    case _    => Some(Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(date)))
+  }
 
   private def parsePrice(price: String): Option[BigDecimal] =
     if (price.isBlank) None else Some(BigDecimal(price))
 
   private def parsePriceUnit(priceUnit: String): Option[Iso4127CountryCode] =
     if (priceUnit.isBlank) None else Some(Iso4127CountryCode(priceUnit))
+
+  private def parseMessagingServiceSid(
+      messagingServiceSid: String
+  ): Option[TwilioMessagingService.Sid] = messagingServiceSid match {
+    case null => None
+    case _    => Some(TwilioMessagingService.Sid(messagingServiceSid))
+  }
 }
