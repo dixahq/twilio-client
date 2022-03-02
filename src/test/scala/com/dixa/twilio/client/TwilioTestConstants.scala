@@ -4,8 +4,8 @@ import com.dixa.twilio.client.model.iam.TwilioAccount
 
 object TwilioTestConstants {
 
-  private[twilio] val testSid       = "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  private[twilio] val testAuthToken = "testPassword"
+  val testSid       = "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+  val testAuthToken = "testPassword"
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
     baseHostName = "localhost",

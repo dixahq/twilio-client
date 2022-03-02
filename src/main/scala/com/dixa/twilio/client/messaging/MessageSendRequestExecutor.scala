@@ -71,7 +71,8 @@ object MessageSendRequestExecutor {
     }
   }
 
-  /** Items from the json response not included in this Response:<br> <ul> <li>error_code,
+  /** Items from the json response not included in this Response:
+    * <ul> <li>error_code,
     * error_message - the message delivery errors are handled through status callbacks</li>
     * <li>uri</li> <li>subresourceUris</li> </ul>
     */
