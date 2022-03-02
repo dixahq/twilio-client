@@ -18,20 +18,6 @@ import scala.concurrent.Future
 final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
   classOf[PhoneNumberDeleteRequestExecutor].getSimpleName when {
 
-    "unsafeRun" should {
-      "ask twilio to delete it (meaning removing it from a service)" in {
-        val f = new Fixture
-        import f._
-
-        wiremockStubForSuccess()
-
-        val resultFut: Future[Done] =
-          instance.unsafeRun(connSettings, toDelete)
-        // Does not return anything, so just make sure to await it, so we fail if it throws an Exception.
-        resultFut.map(_ => succeed)
-      }
-    }
-
     "run" should {
       "ask twilio to delete it (meaning removing it from a service)" in {
         val f = new Fixture
