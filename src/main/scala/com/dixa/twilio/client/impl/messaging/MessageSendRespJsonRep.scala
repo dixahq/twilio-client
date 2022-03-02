@@ -1,10 +1,11 @@
 package com.dixa.twilio.client.impl.messaging
 
 // Response example: https://www.twilio.com/docs/sms/send-messages
+// Message properties/Response entity in more detail: https://www.twilio.com/docs/sms/api/message-resource#message-properties
 private[messaging] final case class MessageSendRespJsonRep(
     sid: String,
-    date_created: String,
-    date_updated: String,
+    date_created: Option[String],
+    date_updated: Option[String],
     date_sent: Option[String],
     account_sid: String,
     to: String,
@@ -24,25 +25,3 @@ private[messaging] final case class MessageSendRespJsonRep(
     subresource_uris: SubresourceUris
 )
 private[messaging] final case class SubresourceUris(media: String)
-
-//private[messaging] final case class MessageSendRespJsonRep(
-//                                                            account_sid: String,
-//                                                            body: String,
-//                                                            date_created: String,
-//                                                            date_sent: String,
-//                                                            date_updated: String,
-//                                                            direction: String,
-//                                                            error_code: String,
-//                                                            error_message: String,
-//                                                            from: String,
-//                                                            messaging_service_sid: String,
-//                                                            num_media: String,
-//                                                            num_segments: String,
-//                                                            price: String,
-//                                                            price_unit: String,
-//                                                            sid: String,
-//                                                            status: String,
-//                                                            subresource_uris: String,
-//                                                            to: String,
-//                                                            uri: String
-//                                                          )

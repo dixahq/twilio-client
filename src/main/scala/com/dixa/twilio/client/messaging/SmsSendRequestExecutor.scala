@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.SingleRequestExecutor
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.client.messaging.SmsSendRequestExecutor.Response
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
@@ -27,10 +27,10 @@ object SmsSendRequestExecutor {
       statusCallback: StatusCallback
   )
 
-  // TODO unauthorized 401?
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages
   sealed trait SmsSendException extends RuntimeException
   object SmsSendException {
+    final case class Api(cause: ApiException) extends RuntimeException(cause) with SmsSendException
     final case class PermissionDenied()
         extends IllegalStateException(
           "Account SID and/or AuthToken may be incorrect. More info: https://www.twilio.com/docs/api/errors/20003"
@@ -56,7 +56,7 @@ object SmsSendRequestExecutor {
           "Concatenated message body exceeds the maximum 1600 character limit. More info: https://www.twilio.com/docs/api/errors/21617"
         )
         with SmsSendException
-    final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to send an sms"
@@ -69,8 +69,7 @@ object SmsSendRequestExecutor {
     }
   }
 
-  // Response example: https://www.twilio.com/docs/sms/send-messages
-  // Message properties/Response entity in more detail: https://www.twilio.com/docs/sms/api/message-resource#message-properties
+
   // TODO add comments here Not included: error_code, error_message, from, to, uri, subresourceUris
   final case class Response(
       accountSid: TwilioAccount.Sid,

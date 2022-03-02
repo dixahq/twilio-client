@@ -1,5 +1,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
+import com.dixa.twilio.client.TwilioTestConstants.{testAuthToken, testSid}
+import com.dixa.twilio.client.impl.DefaultApiErrorEntityJsonRep
 import com.dixa.twilio.client.messaging.SmsSendRequestExecutor
 import com.dixa.twilio.client.messaging.SmsSendRequestExecutor.{Response, SmsSendRequest}
 import com.dixa.twilio.client.model.iam.TwilioAccount
@@ -12,36 +14,38 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType
 
-import java.net.URL
+import java.net.{URL, URLEncoder}
+import java.nio.charset.StandardCharsets
 import scala.concurrent.Future
 
 final class MessageSendTest extends TwilioClientTest {
-  private val testSid       = "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  private val testAuthToken = "testAuthToken"
 
   private val pnUtil = PhoneNumberUtil.getInstance()
-  private val pnUS1  = pnUtil.getExampleNumberForType("US", PhoneNumberType.MOBILE)
-  private val pnUS2  = pnUtil.getExampleNumberForType("US", PhoneNumberType.MOBILE)
+  private val pnUS   = pnUtil.getExampleNumberForType("US", PhoneNumberType.MOBILE)
+  private val pnDK   = pnUtil.getExampleNumberForType("DK", PhoneNumberType.MOBILE)
+  private val from = s"+${pnUS.getCountryCode}${pnUS.getNationalNumber}"
+  private val to   = s"+${pnDK.getCountryCode}${pnDK.getNationalNumber}"
 
-  private val from = s"+${pnUS1.getCountryCode}${pnUS1.getNationalNumber}"
-  private val to   = s"+${pnUS2.getCountryCode}${pnUS2.getNationalNumber}"
-
-  private val messageBody = "Hi there"
+  private val messageBody        = "Hi there"
+  private val testStatusCallback = "http://random.com/v1/sms/status"
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val instance: SmsSendRequestExecutor = TwilioClient.defaultImpl().messaging.smsSend
 
-//  private val date = Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.)
-//    Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(date))
+  private def encode(s: String) = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
+  private val encFrom           = encode(from)
+  private val encTo             = encode(to)
+  private val encBody           = encode(messageBody)
+  private val encStatusCallback = encode(testStatusCallback)
 
   private val messageSendTwilioSuccessResponse =
     s"""{
        |  "account_sid": "$testSid",
        |  "api_version": "2010-04-01",
        |  "body": "$messageBody",
-       |  "date_created": "Thu, 30 Jul 2015 20:12:31 +0000",
-       |  "date_sent": "Thu, 30 Jul 2015 20:12:33 +0000",
-       |  "date_updated": "Thu, 30 Jul 2015 20:12:33 +0000",
+       |  "date_created": null,
+       |  "date_sent": null,
+       |  "date_updated": null,
        |  "direction": "outbound-api",
        |  "error_code": null,
        |  "error_message": null,
@@ -61,42 +65,23 @@ final class MessageSendTest extends TwilioClientTest {
        |}""".stripMargin
 
   classOf[SmsSendRequestExecutor].getSimpleName when {
-    "asked to send a message with the org's twilio account" should {
-      "send a message successfully" in {
+    "asked to send a message" should {
+      "successfully authenticate with Twilio and send an sms" in {
+
+        val reqEntity = s"From=$encFrom&To=$encTo&Body=$encBody&StatusCallback=$encStatusCallback"
 
         wireMockServer.stubFor(
           WireMock
             .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$testSid/Messages.json"))
-            .withRequestBody(WireMock.containing(s"From=$from"))
-            .withRequestBody(WireMock.containing(s"To=$to"))
-            .withRequestBody(WireMock.containing(s"Body=$messageBody"))
-            .withRequestBody(WireMock.containing(s"StatusCallback=http://random.com/v1/sms/status"))
+            .withRequestBody(WireMock.containing(reqEntity))
             .withBasicAuth(testSid, testAuthToken)
             .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(201)
                 .withHeader("Content-Type", "application/json")
                 .withBody(messageSendTwilioSuccessResponse)
             )
-        )
-
-        val expected = Response(
-          accountSid = TwilioAccount.Sid(testSid),
-          body = MessageBody(messageBody),
-          dateCreated = null,
-          dateSent = null,
-          dateUpdated = null,
-          direction = MessageDirection.withName("OutboundApi"),
-          from = MessageSender.E164(PhoneNumberE164(from)),
-          messagingServiceSid = null,
-          numMedia = 0,
-          numSegments = MessageNumSegments("1"),
-          price = null,
-          priceUnit = null,
-          sid = MessageSid("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-          status = MessageStatus.withName("Sent"),
-          to = PhoneNumberE164(to)
         )
 
         val messageSendRequest = SmsSendRequest(
@@ -104,7 +89,25 @@ final class MessageSendTest extends TwilioClientTest {
           from = MessageSender.E164(PhoneNumberE164(from)),
           to = PhoneNumberE164(to),
           body = MessageBody(messageBody),
-          statusCallback = StatusCallback(new URL("http://random.com/v1/sms/status"))
+          statusCallback = StatusCallback(new URL(testStatusCallback))
+        )
+
+        val expected = Response(
+          accountSid = TwilioAccount.Sid(testSid),
+          body = MessageBody(messageBody),
+          dateCreated = None,
+          dateSent = None,
+          dateUpdated = None,
+          direction = MessageDirection.withName("OutboundApi"),
+          from = MessageSender.E164(PhoneNumberE164(from)),
+          messagingServiceSid = None,
+          numMedia = 0,
+          numSegments = MessageNumSegments("1"),
+          price = None,
+          priceUnit = None,
+          sid = MessageSid("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+          status = MessageStatus.withName("Sent"),
+          to = PhoneNumberE164(to)
         )
 
         val resultFut: Future[Response] =
@@ -112,17 +115,50 @@ final class MessageSendTest extends TwilioClientTest {
         resultFut.map(result => assert(result === expected))
       }
 
-//      "throw if 'from' number does not support SMS" in {
-//
-//      }
-//
-//      "throw if 'to' number does not support SMS" in {
-//
-//      }
-//
-//      "throw if it fails to retrieve Twilio account" in {
-//
-//      }
+      "fail when the request is incorrect" in {
+
+        val badToNumber = "1234567"
+        val reqEntity =
+          s"From=$encFrom&To=$badToNumber&Body=$encBody&StatusCallback=$encStatusCallback"
+
+        val badRequestBody =
+          """{
+              | "code": "21614",
+              | "message": "'To' number is not a valid mobile number.",
+              | "more_info": "More info: https://www.twilio.com/docs/api/errors/21614",
+              | "status": "400"
+              |}""".stripMargin
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$testSid/Messages.json"))
+            .withRequestBody(WireMock.containing(reqEntity))
+            .withBasicAuth(testSid, testAuthToken)
+            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(badRequestBody)
+            )
+        )
+
+        val messageSendRequestIncorrect = SmsSendRequest(
+          accountSid = TwilioAccount.Sid(testSid),
+          from = MessageSender.E164(PhoneNumberE164(from)),
+          to = PhoneNumberE164.unchecked(badToNumber),
+          body = MessageBody(messageBody),
+          statusCallback = StatusCallback(new URL(testStatusCallback))
+        )
+
+        val resultFut: Future[Response] =
+          instance.unsafeRun(connSettings, messageSendRequestIncorrect)
+
+        import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+        resultFut.value.isDefined shouldBe true
+        resultFut.value.get.isFailure shouldBe true
+        resultFut.value.get.failed.get.getMessage shouldBe "'To' number is not a valid mobile number. More info: https://www.twilio.com/docs/api/errors/21614"
+      }
     }
   }
 }
