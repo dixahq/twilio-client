@@ -19,158 +19,9 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
   classOf[TwilioClientMessaging].getSimpleName when {
 
     "ask to create a Phonenumber" should {
-      "ask twilio to create it (meaning adding it to a service), and return the data it " +
-        "gets back if unsafe variant is called" in {
 
-          val f = new Fixture
-          import f._
+      "ask twilio to create it (meaning adding it to a service), and return the data it gets back" in {
 
-          wireMockServer.stubFor(
-            wireMockBuilderExpectedTwilioRequest
-              .willReturn(
-                aResponse()
-                  .withStatus(200)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponse1)
-              )
-          )
-
-          val expected = TwilioMessagingPhoneNumber(
-            TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
-            TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
-          )
-
-          val resultFut: Future[TwilioMessagingPhoneNumber] =
-            instance.unsafeRun(connSettings, createRequest)
-          resultFut.map(result => assert(result === expected))
-        }
-
-      "ask twilio to create it (meaning adding it to a service), and return the data it " +
-        "gets back if safe variant is called" in {
-
-          val f = new Fixture
-          import f._
-
-          wireMockServer.stubFor(
-            wireMockBuilderExpectedTwilioRequest
-              .willReturn(
-                aResponse()
-                  .withStatus(200)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponse1)
-              )
-          )
-
-          val expected = Right(
-            TwilioMessagingPhoneNumber(
-              TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
-              TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
-            )
-          )
-
-          val resultFut: Future[
-            Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
-          ] =
-            instance.run(connSettings, createRequest)
-          resultFut.map(result => assert(result === expected))
-        }
-
-      "return a failed future if the phone number is already in the specified service, " +
-        "and unsafe variant is called" in {
-          val f = new Fixture
-          import f._
-
-          wireMockServer.stubFor(
-            wireMockBuilderExpectedTwilioRequest
-              .willReturn(
-                aResponse()
-                  .withStatus(409)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAlreadyInMessagingServices)
-              )
-          )
-
-          val resultFut: Future[TwilioMessagingPhoneNumber] =
-            instance.unsafeRun(connSettings, createRequest)
-          resultFut.map(_ => fail("Should have already failed before this.")).recover {
-            case _: PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService =>
-              succeed
-          }
-        }
-
-      "return a failed future if the phone number is already in the specified service, " +
-        "and safe variant is called" in {
-          val f = new Fixture
-          import f._
-
-          wireMockServer.stubFor(
-            wireMockBuilderExpectedTwilioRequest
-              .willReturn(
-                aResponse()
-                  .withStatus(409)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAlreadyInMessagingServices)
-              )
-          )
-
-          val resultFut: Future[
-            Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
-          ] =
-            instance.run(connSettings, createRequest)
-          val expected = Left(new PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService)
-          resultFut.map(res => assert(res === expected))
-        }
-
-      "return a failed future if the phone number is already in another service, " +
-        "and unsafe variant is called" in {
-          val f = new Fixture
-          import f._
-
-          wireMockServer.stubFor(
-            wireMockBuilderExpectedTwilioRequest
-              .willReturn(
-                aResponse()
-                  .withStatus(409)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
-              )
-          )
-
-          val resultFut: Future[TwilioMessagingPhoneNumber] =
-            instance.unsafeRun(connSettings, createRequest)
-
-          resultFut.map(_ => fail("Should have already failed before this")).recover {
-            case _: PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService =>
-              succeed
-          }
-        }
-
-      "return a failed future if the phone number is already in another service, " +
-        "and safe variant is called" in {
-          val f = new Fixture
-          import f._
-
-          wireMockServer.stubFor(
-            wireMockBuilderExpectedTwilioRequest
-              .willReturn(
-                aResponse()
-                  .withStatus(409)
-                  .withHeader("Content-Type", "application/json")
-                  .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
-              )
-          )
-
-          val resultFut: Future[
-            Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
-          ] =
-            instance.run(connSettings, createRequest)
-          val expected =
-            Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
-          resultFut.map(res => assert(res === expected))
-
-        }
-
-      "Return a failed Future if credentials are wrong, and unsafe variant is called" in {
         val f = new Fixture
         import f._
 
@@ -178,23 +29,73 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
           wireMockBuilderExpectedTwilioRequest
             .willReturn(
               aResponse()
-                .withStatus(401)
+                .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(twilioResponseInvalidCredentials)
+                .withBody(twilioResponse1)
             )
         )
 
-        val resultFut: Future[TwilioMessagingPhoneNumber] =
-          instance.unsafeRun(connSettings, createRequest)
+        val expected = Right(
+          TwilioMessagingPhoneNumber(
+            TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
+            TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
+          )
+        )
 
-        resultFut.map(_ => fail("Should have already failed before this")).recover {
-          case PhoneNumberCreateException.Api(cause)
-              if cause == ApiException.AuthenticationException() =>
-            succeed
-        }
+        val resultFut: Future[
+          Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+        ] =
+          instance.run(connSettings, createRequest)
+        resultFut.map(result => assert(result === expected))
       }
 
-      "Return a Left if credentials are wrong, and safe variant is called" in {
+      "return a Left if the phone number is already in the specified service" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(409)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseNumberAlreadyInMessagingServices)
+            )
+        )
+
+        val resultFut: Future[
+          Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+        ] =
+          instance.run(connSettings, createRequest)
+        val expected = Left(new PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService)
+        resultFut.map(res => assert(res === expected))
+      }
+
+      "return a Left if the phone number is already in another service" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(409)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseNumberAssociatedWithOtherMesseginService)
+            )
+        )
+
+        val resultFut: Future[
+          Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+        ] =
+          instance.run(connSettings, createRequest)
+        val expected =
+          Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
+        resultFut.map(res => assert(res === expected))
+
+      }
+
+      "Return a Left if credentials are wrong" in {
         val f = new Fixture
         import f._
 
