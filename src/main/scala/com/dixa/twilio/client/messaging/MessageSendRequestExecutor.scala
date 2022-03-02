@@ -30,7 +30,9 @@ object MessageSendRequestExecutor {
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages
   sealed trait MessageSendException extends RuntimeException
   object MessageSendException {
-    final case class Api(cause: ApiException) extends RuntimeException(cause) with MessageSendException
+    final case class Api(cause: ApiException)
+        extends RuntimeException(cause)
+        with MessageSendException
     final case class PermissionDenied()
         extends IllegalStateException(
           "Account SID and/or AuthToken may be incorrect. More info: https://www.twilio.com/docs/api/errors/20003"
@@ -69,14 +71,10 @@ object MessageSendRequestExecutor {
     }
   }
 
-  /**
-    * Items from the json response not included in this Response:<br>
-    * <ul>
-    * <li>error_code, error_message - the message delivery errors are handled through status callbacks</li>
-    * <li>uri</li>
-    * <li>subresourceUris</li>
-    * </ul>
-    * */
+  /** Items from the json response not included in this Response:<br> <ul> <li>error_code,
+    * error_message - the message delivery errors are handled through status callbacks</li>
+    * <li>uri</li> <li>subresourceUris</li> </ul>
+    */
   final case class Response(
       accountSid: TwilioAccount.Sid,
       body: MessageBody,

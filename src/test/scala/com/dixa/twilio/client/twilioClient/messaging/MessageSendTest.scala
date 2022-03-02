@@ -23,8 +23,8 @@ final class MessageSendTest extends TwilioClientTest {
   private val pnUtil = PhoneNumberUtil.getInstance()
   private val pnUS   = pnUtil.getExampleNumberForType("US", PhoneNumberType.MOBILE)
   private val pnDK   = pnUtil.getExampleNumberForType("DK", PhoneNumberType.MOBILE)
-  private val from = s"+${pnUS.getCountryCode}${pnUS.getNationalNumber}"
-  private val to   = s"+${pnDK.getCountryCode}${pnDK.getNationalNumber}"
+  private val from   = s"+${pnUS.getCountryCode}${pnUS.getNationalNumber}"
+  private val to     = s"+${pnDK.getCountryCode}${pnDK.getNationalNumber}"
 
   private val messageBody        = "Hi there"
   private val testStatusCallback = "http://random.com/v1/sms/status"
@@ -123,11 +123,11 @@ final class MessageSendTest extends TwilioClientTest {
 
         val badRequestBody =
           """{
-              | "code": "21614",
-              | "message": "'To' number is not a valid mobile number.",
-              | "more_info": "More info: https://www.twilio.com/docs/api/errors/21614",
-              | "status": "400"
-              |}""".stripMargin
+            | "code": "21614",
+            | "message": "'To' number is not a valid mobile number.",
+            | "more_info": "More info: https://www.twilio.com/docs/api/errors/21614",
+            | "status": "400"
+            |}""".stripMargin
 
         wireMockServer.stubFor(
           WireMock

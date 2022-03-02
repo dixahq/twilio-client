@@ -6,9 +6,9 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
+  MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
-  MessageSendRequestExecutor,
   TwilioClientMessaging
 }
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService

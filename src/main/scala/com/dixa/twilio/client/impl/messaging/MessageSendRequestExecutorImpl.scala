@@ -4,10 +4,19 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{parseDate, parseMessagingServiceSid, parsePrice, parsePriceUnit}
+import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{
+  parseDate,
+  parseMessagingServiceSid,
+  parsePrice,
+  parsePriceUnit
+}
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
-import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{Response, MessageSendException, MessageSendRequest}
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
+  MessageSendException,
+  MessageSendRequest,
+  Response
+}
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging._
@@ -60,10 +69,10 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   ): UnspecifiedException = MessageSendException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-                                            req: MessageSendRequest,
-                                            httpReq: HttpRequest,
-                                            httpResponse: HttpResponse,
-                                            entity: HttpEntity.Strict
+      req: MessageSendRequest,
+      httpReq: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntity.Strict
   ): Either[MessageSendException, Response] = httpResponse.status match {
     case StatusCodes.Created =>
       buildSuccessResponse(req, entity)
@@ -73,8 +82,8 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   }
 
   private def buildSuccessResponse(
-                                    req: MessageSendRequest,
-                                    entity: HttpEntity.Strict
+      req: MessageSendRequest,
+      entity: HttpEntity.Strict
   ): Either[MessageSendException, Response] = {
     val entityString = HttpEntityString(entity.data.utf8String)
     val decoded      = entityString.parseUnsafe[MessageSendRespJsonRep]()
