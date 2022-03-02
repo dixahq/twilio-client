@@ -67,6 +67,47 @@ final class SingleRequestExecutorTest extends TwilioClientTest {
             assert(result === Right(TestSuccess()))
         }
       }
+
+    "Provide a safe method that async executes the http request the implementation provides, and " +
+      "use the implementations response parsing to get the end result to return, also in cases " +
+      "where it returns an error" in {
+
+        wireMockServer.stubFor(
+          WireMock
+            .get(WireMock.urlPathEqualTo("/test"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "plain/txt")
+                .withBody("ResponseFromTwilio")
+            )
+        )
+
+        val impl = new SingleRequestExecutorTestBaseImplemented {
+
+          override protected def createHttpReq(
+              connSettings: TwilioConnectionSettings,
+              req: TestRequest
+          ): HttpRequest = HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"http://localhost:${wireMockServer.port()}/test"
+          )
+
+          override protected def parseHttpResponse(
+              request: TestRequest,
+              httpRequest: HttpRequest,
+              httpResponse: HttpResponse,
+              entity: HttpEntity.Strict
+          ): Either[AbstractTestException, TestSuccess] = {
+            Left(AbstractTestException.ConcreateTestException())
+          }
+        }
+
+        impl.run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
+          result =>
+            assert(result === Left(AbstractTestException.ConcreateTestException()))
+        }
+      }
   }
 
   private trait SingleRequestExecutorTestBaseImplemented
