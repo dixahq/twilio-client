@@ -4,10 +4,10 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.messaging.SmsSendRequestExecutorImpl.{parseDate, parseMessagingServiceSid, parsePrice, parsePriceUnit}
+import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{parseDate, parseMessagingServiceSid, parsePrice, parsePriceUnit}
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
-import com.dixa.twilio.client.messaging.SmsSendRequestExecutor
-import com.dixa.twilio.client.messaging.SmsSendRequestExecutor.{Response, SmsSendException, SmsSendRequest}
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{Response, MessageSendException, MessageSendRequest}
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging._
@@ -20,19 +20,19 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import scala.concurrent.ExecutionContext
 
-private[impl] final class SmsSendRequestExecutorImpl()(
+private[impl] final class MessageSendRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends SmsSendRequestExecutor {
+) extends MessageSendRequestExecutor {
 
-  override protected type ApiExceptionWrapper = SmsSendException.Api
+  override protected type ApiExceptionWrapper = MessageSendException.Api
 
-  override protected type UnspecifiedException = SmsSendException.Unspecified
+  override protected type UnspecifiedException = MessageSendException.Unspecified
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: SmsSendRequest
+      req: MessageSendRequest
   ): HttpRequest = {
     val reqEntity = FormData(
       Map(
@@ -51,20 +51,20 @@ private[impl] final class SmsSendRequestExecutorImpl()(
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
-    SmsSendException.Api.apply(apiException)
+    MessageSendException.Api.apply(apiException)
 
   /** Create the request specific Unspecified exception. */
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Exception]
-  ): UnspecifiedException = SmsSendException.Unspecified(msg, cause)
+  ): UnspecifiedException = MessageSendException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-      req: SmsSendRequest,
-      httpReq: HttpRequest,
-      httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
-  ): Either[SmsSendException, Response] = httpResponse.status match {
+                                            req: MessageSendRequest,
+                                            httpReq: HttpRequest,
+                                            httpResponse: HttpResponse,
+                                            entity: HttpEntity.Strict
+  ): Either[MessageSendException, Response] = httpResponse.status match {
     case StatusCodes.Created =>
       buildSuccessResponse(req, entity)
     case StatusCodes.BadRequest =>
@@ -73,15 +73,15 @@ private[impl] final class SmsSendRequestExecutorImpl()(
   }
 
   private def buildSuccessResponse(
-      req: SmsSendRequest,
-      entity: HttpEntity.Strict
-  ): Either[SmsSendException, Response] = {
+                                    req: MessageSendRequest,
+                                    entity: HttpEntity.Strict
+  ): Either[MessageSendException, Response] = {
     val entityString = HttpEntityString(entity.data.utf8String)
     val decoded      = entityString.parseUnsafe[MessageSendRespJsonRep]()
     MessageDirection.values.find(_.twilioApiName === decoded.direction) match {
       case None =>
         Left(
-          new SmsSendException.Unspecified(
+          new MessageSendException.Unspecified(
             s"Could not parse MessageDirection, ${decoded.direction} is not part of possible values"
           )
         )
@@ -89,7 +89,7 @@ private[impl] final class SmsSendRequestExecutorImpl()(
         req.from.asString === decoded.from match {
           case false =>
             Left(
-              new SmsSendException.Unspecified(
+              new MessageSendException.Unspecified(
                 s"Could not parse MessageSender, ${req.from.asString} is not the same as ${decoded.from}"
               )
             )
@@ -97,7 +97,7 @@ private[impl] final class SmsSendRequestExecutorImpl()(
             MessageStatus.values.find(_.twilioApiName === decoded.status) match {
               case None =>
                 Left(
-                  new SmsSendException.Unspecified(
+                  new MessageSendException.Unspecified(
                     s"Could not parse MessageStatus, ${decoded.status} is not part of possible values"
                   )
                 )
@@ -129,18 +129,18 @@ private[impl] final class SmsSendRequestExecutorImpl()(
 
   private def buildResultForBadRequestResponse(
       entity: HttpEntity.Strict
-  ): Left[SmsSendException, Nothing] = {
+  ): Left[MessageSendException, Nothing] = {
     val entityString = HttpEntityString(entity.data.utf8String)
     val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
     decoded.code match {
-      case 20003L => Left(SmsSendException.PermissionDenied())
-      case 21606L => Left(SmsSendException.NotMessageCapableNumber())
-      case 21612L => Left(SmsSendException.ToNumberNotReachable())
-      case 21614L => Left(SmsSendException.ToNumberNotValid())
-      case 21617L => Left(SmsSendException.MessageBodyCharLimitExceeded())
+      case 20003L => Left(MessageSendException.PermissionDenied())
+      case 21606L => Left(MessageSendException.NotMessageCapableNumber())
+      case 21612L => Left(MessageSendException.ToNumberNotReachable())
+      case 21614L => Left(MessageSendException.ToNumberNotValid())
+      case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
       case other =>
         Left(
-          new SmsSendException.Unspecified(
+          new MessageSendException.Unspecified(
             s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
               s"$other represents. Full error entity from Twilio: $entityString"
           )
@@ -149,7 +149,7 @@ private[impl] final class SmsSendRequestExecutorImpl()(
   }
 }
 
-private object SmsSendRequestExecutorImpl {
+private object MessageSendRequestExecutorImpl {
   private def parseDate(date: String): Option[Instant] = date match {
     case null => None
     case _    => Some(Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(date)))

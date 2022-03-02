@@ -8,7 +8,7 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
-  SmsSendRequestExecutor,
+  MessageSendRequestExecutor,
   TwilioClientMessaging
 }
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService
@@ -40,5 +40,5 @@ private[client] final class TwilioClientMessagingImpl(
   override val phoneNumberDelete: PhoneNumberDeleteRequestExecutor =
     new PhoneNumberDeleteRequestExecutorImpl()
 
-  override val smsSend: SmsSendRequestExecutor = new SmsSendRequestExecutorImpl()
+  override val smsSend: MessageSendRequestExecutor = new MessageSendRequestExecutorImpl()
 }

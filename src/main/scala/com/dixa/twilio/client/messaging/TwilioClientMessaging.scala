@@ -38,7 +38,7 @@ trait TwilioClientMessaging {
     */
   def phoneNumberDelete: PhoneNumberDeleteRequestExecutor
 
-  def smsSend: SmsSendRequestExecutor
+  def smsSend: MessageSendRequestExecutor
 }
 
 object TwilioClientMessaging {

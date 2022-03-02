@@ -1,25 +1,25 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.client.messaging.SmsSendRequestExecutor.Response
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.Response
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.iam.TwilioAccount.Sid
 import com.dixa.twilio.client.model.messaging._
 import com.dixa.twilio.client.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 
 import java.time.Instant
 
-trait SmsSendRequestExecutor
+trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
-      SmsSendRequestExecutor.SmsSendRequest,
-      SmsSendRequestExecutor.SmsSendException,
+      MessageSendRequestExecutor.MessageSendRequest,
+      MessageSendRequestExecutor.MessageSendException,
       Response
     ]
 
-object SmsSendRequestExecutor {
+object MessageSendRequestExecutor {
 
-  final case class SmsSendRequest(
+  final case class MessageSendRequest(
       accountSid: Sid,
       from: MessageSender,
       to: PhoneNumberE164,
@@ -28,34 +28,34 @@ object SmsSendRequestExecutor {
   )
 
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages
-  sealed trait SmsSendException extends RuntimeException
-  object SmsSendException {
-    final case class Api(cause: ApiException) extends RuntimeException(cause) with SmsSendException
+  sealed trait MessageSendException extends RuntimeException
+  object MessageSendException {
+    final case class Api(cause: ApiException) extends RuntimeException(cause) with MessageSendException
     final case class PermissionDenied()
         extends IllegalStateException(
           "Account SID and/or AuthToken may be incorrect. More info: https://www.twilio.com/docs/api/errors/20003"
         )
-        with SmsSendException
+        with MessageSendException
     final case class NotMessageCapableNumber()
         extends IllegalStateException(
           "Attempt to use a 'From' number which is not capable of sending SMS messages. More info: https://www.twilio.com/docs/api/errors/21606"
         )
-        with SmsSendException
+        with MessageSendException
     final case class ToNumberNotReachable()
         extends IllegalStateException(
           "Destination carrier is not supported or 'To' number is not properly formatted. More info: https://www.twilio.com/docs/api/errors/21612"
         )
-        with SmsSendException
+        with MessageSendException
     final case class ToNumberNotValid()
         extends IllegalStateException(
           "'To' number is not a valid mobile number. More info: https://www.twilio.com/docs/api/errors/21614"
         )
-        with SmsSendException
+        with MessageSendException
     final case class MessageBodyCharLimitExceeded()
         extends IllegalStateException(
           "Concatenated message body exceeds the maximum 1600 character limit. More info: https://www.twilio.com/docs/api/errors/21617"
         )
-        with SmsSendException
+        with MessageSendException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
@@ -63,14 +63,20 @@ object SmsSendRequestExecutor {
           ),
           cause.orNull
         )
-        with SmsSendException {
+        with MessageSendException {
       def this(msg: String) = this(Some(msg), None)
       def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
     }
   }
 
-
-  // TODO add comments here Not included: error_code, error_message, from, to, uri, subresourceUris
+  /**
+    * Items from the json response not included in this Response:<br>
+    * <ul>
+    * <li>error_code, error_message - the message delivery errors are handled through status callbacks</li>
+    * <li>uri</li>
+    * <li>subresourceUris</li>
+    * </ul>
+    * */
   final case class Response(
       accountSid: TwilioAccount.Sid,
       body: MessageBody,

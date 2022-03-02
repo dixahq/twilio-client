@@ -1,9 +1,8 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.TwilioTestConstants.{testAuthToken, testSid}
-import com.dixa.twilio.client.impl.DefaultApiErrorEntityJsonRep
-import com.dixa.twilio.client.messaging.SmsSendRequestExecutor
-import com.dixa.twilio.client.messaging.SmsSendRequestExecutor.{Response, SmsSendRequest}
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{MessageSendRequest, Response}
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging._
 import com.dixa.twilio.client.model.phonenumber.PhoneNumberE164
@@ -13,6 +12,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType
+import org.scalatest.concurrent.Eventually.eventually
 
 import java.net.{URL, URLEncoder}
 import java.nio.charset.StandardCharsets
@@ -30,7 +30,7 @@ final class MessageSendTest extends TwilioClientTest {
   private val testStatusCallback = "http://random.com/v1/sms/status"
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-  private val instance: SmsSendRequestExecutor = TwilioClient.defaultImpl().messaging.smsSend
+  private val instance: MessageSendRequestExecutor = TwilioClient.defaultImpl().messaging.smsSend
 
   private def encode(s: String) = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
   private val encFrom           = encode(from)
@@ -64,7 +64,7 @@ final class MessageSendTest extends TwilioClientTest {
        |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
        |}""".stripMargin
 
-  classOf[SmsSendRequestExecutor].getSimpleName when {
+  classOf[MessageSendRequestExecutor].getSimpleName when {
     "asked to send a message" should {
       "successfully authenticate with Twilio and send an sms" in {
 
@@ -84,7 +84,7 @@ final class MessageSendTest extends TwilioClientTest {
             )
         )
 
-        val messageSendRequest = SmsSendRequest(
+        val messageSendRequest = MessageSendRequest(
           accountSid = TwilioAccount.Sid(testSid),
           from = MessageSender.E164(PhoneNumberE164(from)),
           to = PhoneNumberE164(to),
@@ -143,7 +143,7 @@ final class MessageSendTest extends TwilioClientTest {
             )
         )
 
-        val messageSendRequestIncorrect = SmsSendRequest(
+        val messageSendRequestIncorrect = MessageSendRequest(
           accountSid = TwilioAccount.Sid(testSid),
           from = MessageSender.E164(PhoneNumberE164(from)),
           to = PhoneNumberE164.unchecked(badToNumber),
@@ -155,9 +155,11 @@ final class MessageSendTest extends TwilioClientTest {
           instance.unsafeRun(connSettings, messageSendRequestIncorrect)
 
         import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-        resultFut.value.isDefined shouldBe true
-        resultFut.value.get.isFailure shouldBe true
-        resultFut.value.get.failed.get.getMessage shouldBe "'To' number is not a valid mobile number. More info: https://www.twilio.com/docs/api/errors/21614"
+        eventually {
+          resultFut.value.isDefined shouldBe true
+          resultFut.value.get.isFailure shouldBe true
+          resultFut.value.get.failed.get.getMessage shouldBe "'To' number is not a valid mobile number. More info: https://www.twilio.com/docs/api/errors/21614"
+        }
       }
     }
   }
