@@ -235,8 +235,8 @@ final class SingleRequestExecutorTest extends TwilioClientTest {
           result =>
             assert(result.isLeft)
             result.left.get match {
-              case ue => assert(ue.getCause === toThrow)
-              case _  => fail("Wrong cause in Exception")
+              case ue: AbstractTestException.Undefined => assert(ue.getCause === toThrow)
+              case _                                   => fail("Wrong cause in Exception")
             }
         }
       }
