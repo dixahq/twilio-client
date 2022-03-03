@@ -8,7 +8,14 @@ trait AccountFetchRequestExecutor
       AccountFetchRequestExecutor.AccountFetchRequest,
       AccountFetchRequestExecutor.AccountFetchException,
       TwilioAccount
-    ]
+    ] {
+
+  import AccountFetchRequestExecutor._
+
+  override final protected type ApiExceptionWrapper = AccountFetchException.Api
+
+  override final protected type UnspecifiedException = AccountFetchException.UnspecifiedError
+}
 
 object AccountFetchRequestExecutor {
 
