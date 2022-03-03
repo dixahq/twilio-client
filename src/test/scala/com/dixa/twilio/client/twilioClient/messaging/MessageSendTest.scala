@@ -261,7 +261,7 @@ final class MessageSendTest extends TwilioClientTest {
     val testStatusCallback = "http://example.com/v1/sms/status"
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: MessageSendRequestExecutor = TwilioClient.defaultImpl().messaging.smsSend
+    val instance: MessageSendRequestExecutor = TwilioClient.defaultImpl().messaging.messageSend
 
     private def encode(s: String) = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
     val encFrom                   = encode(from)

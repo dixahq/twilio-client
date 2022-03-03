@@ -3,7 +3,6 @@ package com.dixa.twilio.client.messaging
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.Response
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.iam.TwilioAccount.Sid
 import com.dixa.twilio.client.model.messaging._
 import com.dixa.twilio.client.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
@@ -20,7 +19,7 @@ trait MessageSendRequestExecutor
 object MessageSendRequestExecutor {
 
   final case class MessageSendRequest(
-      accountSid: Sid,
+      accountSid: TwilioAccount.Sid,
       from: MessageSender,
       to: PhoneNumberE164,
       body: MessageBody,
