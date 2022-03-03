@@ -21,7 +21,7 @@ private[impl] final class TwilioClientVoiceImpl()(
   override def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[TwilioConference.Status]
-  ): Flow[TwilioAccount, TwilioConferenceWithParticipants, NotUsed] =
+  ): Flow[TwilioAccount.Sid, TwilioConferenceWithParticipants, NotUsed] =
     FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
 
   override def completeConference(
