@@ -1,11 +1,12 @@
 package com.dixa.twilio.client.impl.messaging
 
+import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import akka.{Done, NotUsed}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
+  MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
   TwilioClientMessaging
@@ -38,4 +39,6 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val phoneNumberDelete: PhoneNumberDeleteRequestExecutor =
     new PhoneNumberDeleteRequestExecutorImpl()
+
+  override val messageSend: MessageSendRequestExecutor = new MessageSendRequestExecutorImpl()
 }
