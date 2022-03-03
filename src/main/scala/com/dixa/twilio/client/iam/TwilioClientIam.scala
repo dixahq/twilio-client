@@ -7,6 +7,8 @@ import com.dixa.twilio.client.model.iam.TwilioAccount
 
 trait TwilioClientIam {
 
+  def accountFetch: AccountFetchRequestExecutor
+
   /** Fetch all Twilio accounts
     *
     * @param connSettings

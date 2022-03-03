@@ -34,9 +34,6 @@ private[impl] object FetchAllAccountsRequest {
       .mapConcat(identity)
   }
 
-  // Only mapped the fields that we actually need for now, there is a lot more
-  // info in these responses, that we could map once needed.
-  private final case class TwilioAccountJsonRep(status: String, friendly_name: String, sid: String)
   private final case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
   private def entityToAccountList(entity: HttpEntityString): Seq[TwilioAccount] = {
     val decoded = entity.parseUnsafe[TwilioAccountsOuterJsonRep]()
@@ -44,7 +41,10 @@ private[impl] object FetchAllAccountsRequest {
       TwilioAccount(
         TwilioAccount.Name(jsonRep.friendly_name),
         TwilioAccount.Sid(jsonRep.sid),
-        TwilioAccount.Status.fromApiName(jsonRep.status)
+        TwilioAccount.Status.fromApiName(jsonRep.status),
+        TwilioAccount.Sid(jsonRep.owner_account_sid),
+        TwilioAccount.AuthToken(jsonRep.auth_token),
+        TwilioAccount.Type.fromTwilioApiName(jsonRep.`type`),
       )
     }
   }
