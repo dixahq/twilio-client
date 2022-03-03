@@ -2,7 +2,7 @@ package com.dixa.twilio.client
 
 /** Represent a Api level exception.
   *
-  * API level = exceptions that is shared and idential in all API calls. Each call should have it's
+  * API level = exceptions that are shared and identical in all API calls. Each call should have its
   * own exception, where one of them should be an ApiException embedding this type.
   *
   * The different implementation of ApiException are all found in the companion object.
