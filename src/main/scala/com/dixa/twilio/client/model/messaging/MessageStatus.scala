@@ -17,6 +17,7 @@ object MessageStatus extends enumeratum.Enum[MessageStatus] {
   case object Undelivered extends MessageStatus("undelivered")
   case object Receiving   extends MessageStatus("receiving")
   case object Received    extends MessageStatus("received")
-  /**  WhatsApp only */
-  case object Read        extends MessageStatus("read")
+
+  /** WhatsApp only */
+  case object Read extends MessageStatus("read")
 }

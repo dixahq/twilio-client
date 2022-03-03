@@ -79,8 +79,7 @@ lazy val `twilio-client` = project
 
         // Test
         "org.scalatest"         %% "scalatest" % Version.ScalatestScalactic % Test,
-        "com.github.tomakehurst" % "wiremock"  % "2.27.2"                   % Test,
-        "com.googlecode.libphonenumber" % "libphonenumber"            % "8.12.42"
+        "com.github.tomakehurst" % "wiremock"  % "2.27.2"                   % Test
       ),
       Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )

@@ -123,7 +123,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                     messagingServiceSid =
                       decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
                     numMedia = decoded.num_media.toInt,
-                    numSegments = MessageNumSegments(decoded.num_segments),
+                    numSegments = MessageNumSegments(decoded.num_segments.toInt),
                     price = decoded.price.flatMap(parsePrice),
                     priceUnit = decoded.price_unit.flatMap(parsePriceUnit),
                     sid = MessageSid(decoded.sid),

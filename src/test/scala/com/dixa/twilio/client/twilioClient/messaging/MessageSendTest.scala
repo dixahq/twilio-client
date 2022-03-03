@@ -14,8 +14,6 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType
 
 import java.net.{URL, URLEncoder}
 import java.nio.charset.StandardCharsets
@@ -80,7 +78,7 @@ final class MessageSendTest extends TwilioClientTest {
             from = MessageSender.E164(PhoneNumberE164(from)),
             messagingServiceSid = None,
             numMedia = 0,
-            numSegments = MessageNumSegments("1"),
+            numSegments = MessageNumSegments(1),
             price = None,
             priceUnit = None,
             sid = MessageSid("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
@@ -251,11 +249,8 @@ final class MessageSendTest extends TwilioClientTest {
 
   // noinspection TypeAnnotation
   final class Fixture {
-    private val pnUtil = PhoneNumberUtil.getInstance()
-    private val pnUS   = pnUtil.getExampleNumberForType("US", PhoneNumberType.MOBILE)
-    private val pnDK   = pnUtil.getExampleNumberForType("DK", PhoneNumberType.MOBILE)
-    val from           = s"+${pnUS.getCountryCode}${pnUS.getNationalNumber}"
-    val to             = s"+${pnDK.getCountryCode}${pnDK.getNationalNumber}"
+    val from = "+12015550123"
+    val to   = "+4532123456"
 
     val messageBody        = "Hi there"
     val testStatusCallback = "http://example.com/v1/sms/status"
