@@ -4,19 +4,10 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{
-  parseDate,
-  parseMessagingServiceSid,
-  parsePrice,
-  parsePriceUnit
-}
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{parseDate, parseMessagingServiceSid, parsePrice, parsePriceUnit}
+import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, Formatter, HttpEntityString}
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
-import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
-  MessageSendException,
-  MessageSendRequest,
-  Response
-}
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{MessageSendException, MessageSendRequest, Response}
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging._
@@ -160,7 +151,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
 private object MessageSendRequestExecutorImpl {
   private def parseDate(date: String): Option[Instant] = date match {
     case null => None
-    case _    => Some(Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(date)))
+    case _    => Some(Instant.from(Formatter.dateTime.parse(date)))
   }
 
   private def parsePrice(price: String): Option[BigDecimal] = price match {
