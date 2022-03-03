@@ -33,24 +33,19 @@ object MessageSendRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with MessageSendException
-    final case class PermissionDenied()
+    final case class ToNumberNotValid()
         extends IllegalStateException(
-          "Account SID and/or AuthToken may be incorrect. More info: https://www.twilio.com/docs/api/errors/20003"
+          "Invalid 'To' Phone Number. More info: https://www.twilio.com/docs/api/errors/21211"
+        )
+        with MessageSendException
+    final case class FromNumberNotValid()
+        extends IllegalStateException(
+          "Invalid From Number. More info: https://www.twilio.com/docs/api/errors/21212"
         )
         with MessageSendException
     final case class NotMessageCapableNumber()
         extends IllegalStateException(
           "Attempt to use a 'From' number which is not capable of sending SMS messages. More info: https://www.twilio.com/docs/api/errors/21606"
-        )
-        with MessageSendException
-    final case class ToNumberNotReachable()
-        extends IllegalStateException(
-          "Destination carrier is not supported or 'To' number is not properly formatted. More info: https://www.twilio.com/docs/api/errors/21612"
-        )
-        with MessageSendException
-    final case class ToNumberNotValid()
-        extends IllegalStateException(
-          "'To' number is not a valid mobile number. More info: https://www.twilio.com/docs/api/errors/21614"
         )
         with MessageSendException
     final case class MessageBodyCharLimitExceeded()
@@ -71,10 +66,9 @@ object MessageSendRequestExecutor {
     }
   }
 
-  /** Items from the json response not included in this Response:
-    * <ul> <li>error_code,
-    * error_message - the message delivery errors are handled through status callbacks</li>
-    * <li>uri</li> <li>subresourceUris</li> </ul>
+  /** Items from the json response not included in this Response: <ul> <li>error_code, error_message
+    * \- the message delivery errors are handled through status callbacks</li> <li>uri</li>
+    * <li>subresourceUris</li> </ul>
     */
   final case class Response(
       accountSid: TwilioAccount.Sid,

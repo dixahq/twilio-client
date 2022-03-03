@@ -23,8 +23,8 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
 
   /** Run the request, with typesafe error handling
     *
-    * Always return a Successful future, and communicate errors of the request as part of the
-    * return type, in form as an Either.
+    * Always return a Successful future, and communicate errors of the request as part of the return
+    * type, in form as an Either.
     *
     * All the Error ADT used in the safe versions, are also exception, so a request would always be
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how

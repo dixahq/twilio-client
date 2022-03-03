@@ -142,10 +142,9 @@ private[impl] final class MessageSendRequestExecutorImpl()(
     val entityString = HttpEntityString(entity.data.utf8String)
     val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
     decoded.code match {
-      case 20003L => Left(MessageSendException.PermissionDenied())
+      case 21211L => Left(MessageSendException.ToNumberNotValid())
+      case 21212L => Left(MessageSendException.FromNumberNotValid())
       case 21606L => Left(MessageSendException.NotMessageCapableNumber())
-      case 21612L => Left(MessageSendException.ToNumberNotReachable())
-      case 21614L => Left(MessageSendException.ToNumberNotValid())
       case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
       case other =>
         Left(
@@ -164,11 +163,15 @@ private object MessageSendRequestExecutorImpl {
     case _    => Some(Instant.from(DateTimeFormatter.RFC_1123_DATE_TIME.parse(date)))
   }
 
-  private def parsePrice(price: String): Option[BigDecimal] =
-    if (price.isBlank) None else Some(BigDecimal(price))
+  private def parsePrice(price: String): Option[BigDecimal] = price match {
+    case null => None
+    case _    => Some(BigDecimal(price))
+  }
 
-  private def parsePriceUnit(priceUnit: String): Option[Iso4127CountryCode] =
-    if (priceUnit.isBlank) None else Some(Iso4127CountryCode(priceUnit))
+  private def parsePriceUnit(priceUnit: String): Option[Iso4127CountryCode] = priceUnit match {
+    case null => None
+    case _    => Some(Iso4127CountryCode(priceUnit))
+  }
 
   private def parseMessagingServiceSid(
       messagingServiceSid: String
