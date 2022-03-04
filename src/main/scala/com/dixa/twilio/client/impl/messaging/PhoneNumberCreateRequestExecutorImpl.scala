@@ -32,10 +32,6 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
 
   import PhoneNumberCreateRequestExecutorImpl._
 
-  override protected type ApiExceptionWrapper = PhoneNumberCreateException.Api
-
-  override protected type UnspecifiedException = PhoneNumberCreateException.Unspecified
-
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberCreateRequest
