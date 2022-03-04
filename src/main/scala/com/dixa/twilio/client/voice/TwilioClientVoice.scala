@@ -13,7 +13,7 @@ trait TwilioClientVoice {
   def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[TwilioConference.Status]
-  ): Flow[TwilioAccount, TwilioConferenceWithParticipants, NotUsed]
+  ): Flow[TwilioAccount.Sid, TwilioConferenceWithParticipants, NotUsed]
 
   def completeConference(
       connSettings: TwilioConnectionSettings,
