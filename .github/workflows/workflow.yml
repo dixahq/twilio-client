@@ -29,8 +29,38 @@ jobs:
       - name: Setup Scala and sbt
         uses: olafurpg/setup-scala@v11
 
-      - name: Run tests
-        run: sbt test
+      - name: Run test wtih coverage
+        run: sbt -Dfile.encoding=utf-8 coverage test coverageReport
+
+      - name: Upload test coverage report
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: Scoverage Report
+          path: service/target/scala*/scoverage-report/scoverage.xml
+
+      - name: Verify test coverage
+        id: test_coverage
+        run: |
+          echo "::set-output name=coverage-minimum::$(grep coverageMinimumStmtTotal build.sbt | cut -d"=" -f 2 | tr -d " " | tr -d ")" | head -n 1)"
+          echo "::set-output name=coverage-actual::$(sed -n 2p target/scala*/scoverage-report/scoverage.xml | sed "s/=/ /g" | cut -d" " -f6 | cut -d"\"" -f2)"
+
+      - name: Report test coverage
+        uses: actions/github-script@0.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const currentTestCov = parseFloat(${{ steps.test_coverage.outputs.coverage-actual }})
+            const minTestCov = parseFloat(${{ steps.test_coverage.outputs.coverage-minimum }})
+            const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
+            if (currentTestCov < minTestCov) {
+              const body = "Insufficient test coverage " + currentTestCov + "%, minimum required of " + minTestCov + "% ❌";
+              await(github.issues.createComment({ issue_number, owner, repo, body }));
+              process.exit(1);
+            } else {
+              const body = "Acceptable test coverage " + currentTestCov + "%, minimum required of " + minTestCov + "% ✅";
+              await(github.issues.createComment({ issue_number, owner, repo, body }));
+            }
 
       # Release and publish modules
       - name: Get the email of the commit author
