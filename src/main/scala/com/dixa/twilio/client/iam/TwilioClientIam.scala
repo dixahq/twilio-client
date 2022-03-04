@@ -11,7 +11,7 @@ trait TwilioClientIam {
     */
   def accountFetch: AccountFetchRequestExecutor
 
-  /** Fetch all Twilio accounts
+  /** Read all Twilio accounts
     *
     * @param connSettings
     *   Connection settings to use. The returned accounts, will be the main account connected to,
@@ -23,7 +23,7 @@ trait TwilioClientIam {
     *   Source of the requested TwilioAccount objects. Twilio does not support streaming, so it will
     *   make multiple request behind the scene.
     */
-  def fetchAllAccounts(
+  def accountRead(
       connSettings: TwilioConnectionSettings,
       status: Option[TwilioAccount.Status] = None
   ): Source[TwilioAccount, NotUsed]

@@ -18,7 +18,7 @@ private[impl] final class TwilioClientIamImpl()(
 
   override def accountFetch: AccountFetchRequestExecutor = new AccountFetchRequestExecutorImpl()
 
-  override def fetchAllAccounts(
+  override def accountRead(
       connSettings: TwilioConnectionSettings,
       status: Option[TwilioAccount.Status] = None
   ): Source[TwilioAccount, NotUsed] = FetchAllAccountsRequest(connSettings, status)

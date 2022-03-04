@@ -53,7 +53,7 @@ final class FetchAllAccountsTest extends TwilioClientTest {
         val connSettings              = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientIam = TwilioClient.defaultImpl().iam
         val resultSource: Source[TwilioAccount, NotUsed] =
-          instance.fetchAllAccounts(connSettings, Some(TwilioAccount.Status.Active))
+          instance.accountRead(connSettings, Some(TwilioAccount.Status.Active))
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
         val expectedValue = Set(
           TwilioAccount(
