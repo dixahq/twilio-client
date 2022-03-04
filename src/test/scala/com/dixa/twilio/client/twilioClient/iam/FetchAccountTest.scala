@@ -72,13 +72,12 @@ final class FetchAccountTest extends TwilioClientTest {
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
-      .post(
+      .get(
         WireMock.urlPathEqualTo(
           "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15.json"
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
-      .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val instance: AccountFetchRequestExecutor =

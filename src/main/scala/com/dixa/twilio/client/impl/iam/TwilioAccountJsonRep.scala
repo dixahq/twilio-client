@@ -1,5 +1,10 @@
 package com.dixa.twilio.client.impl.iam
 
+import com.dixa.twilio.client.impl.Formatter
+import com.dixa.twilio.client.model.iam.TwilioAccount
+
+import java.time.Instant
+
 /** Mimic the JSON Twilio API returns when asked for accounts.
   *
   * Certain fields like all the sub resource urls are omitted, as these are not used in this
@@ -53,4 +58,18 @@ private[iam] final case class TwilioAccountJsonRep(
     sid: String,
     date_created: String,
     `type`: String
-)
+) {
+
+  private[iam] def toModel: TwilioAccount = {
+    TwilioAccount(
+      name = TwilioAccount.Name(friendly_name),
+      sid = TwilioAccount.Sid(sid),
+      status = TwilioAccount.Status.fromApiName(status),
+      ownerAccountSid = TwilioAccount.Sid(owner_account_sid),
+      authToken = TwilioAccount.AuthToken(auth_token),
+      accountType = TwilioAccount.Type.fromTwilioApiName(`type`),
+      timeCreated = Instant.from(Formatter.dateTime.parse(date_created)),
+      timeUpdated = Instant.from(Formatter.dateTime.parse(date_updated))
+    )
+  }
+}
