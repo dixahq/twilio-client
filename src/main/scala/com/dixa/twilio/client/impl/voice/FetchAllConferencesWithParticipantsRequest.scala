@@ -7,7 +7,6 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
 import com.dixa.twilio.client.model.iam.TwilioAccount
@@ -26,16 +25,16 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
       implicit http: HttpExt,
       materializer: Materializer,
       executionContext: ExecutionContext
-  ): Flow[TwilioAccount, TwilioConferenceWithParticipants, NotUsed] = Flow[TwilioAccount]
+  ): Flow[TwilioAccount.Sid, TwilioConferenceWithParticipants, NotUsed] = Flow[TwilioAccount.Sid]
     .flatMapMerge(
       connSettings.parallelFactor.asInt,
-      account =>
+      accountSid =>
         {
           val statusParam = statusFilter.map(f => s"Status=${f.twilioApiStringRep}&").getOrElse("")
           val initPath = TwilioPath(
             ApiSubDomain.Api,
             HttpMethods.GET,
-            s"/2010-04-01/Accounts/${account.sid}/Conferences.json?${statusParam}PageSize=1000"
+            s"/2010-04-01/Accounts/$accountSid/Conferences.json?${statusParam}PageSize=1000"
           )
           TwilioPagingFlow.createPagingSrc(connSettings, initPath)
         }
