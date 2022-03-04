@@ -81,7 +81,7 @@ lazy val `twilio-client` = project
         "org.scalatest"         %% "scalatest" % Version.ScalatestScalactic % Test,
         "com.github.tomakehurst" % "wiremock"  % "2.27.2"                   % Test
       ),
-      coverageMinimumStmtTotal := 72,
+      coverageMinimumStmtTotal := 85,
       coverageFailOnMinimum := false,
       coverageHighlighting  := false,
       Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
