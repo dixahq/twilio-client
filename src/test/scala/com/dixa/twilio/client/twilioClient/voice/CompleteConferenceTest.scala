@@ -12,17 +12,13 @@ import scala.concurrent.Future
 
 final class CompleteConferenceTest extends TwilioClientTest {
 
-  private val account1 = TwilioAccount(
-    TwilioAccount.Name("Test Account 1"),
-    TwilioAccount.Sid("TwilioTestAccount1"),
-    TwilioAccount.Status.Active
-  )
+  private val account1Sid = TwilioAccount.Sid("TwilioTestAccount1")
 
   private val conference1 = TwilioConference(
     sid = TwilioConference.Sid("TwilioTestConference1Sid"),
     status = TwilioConference.Status.InProgress,
     friendlyName = TwilioConference.FriendlyName("Conference1FriendlyName"),
-    accountSid = account1.sid
+    accountSid = account1Sid
   )
 
   private val twilioCompleteConferenceResponseJson =

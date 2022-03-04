@@ -1,0 +1,122 @@
+package com.dixa.twilio.client.twilioClient.iam
+
+import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.{
+  AccountFetchException,
+  AccountFetchRequest
+}
+import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
+import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
+import scala.concurrent.Future
+
+final class FetchAccountTest extends TwilioClientTest {
+
+  classOf[TwilioClientIam].getSimpleName when {
+    "Asked to fetch an account" should {
+
+      "Return the account that it receives from twilio" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponse1)
+            )
+        )
+
+        val expected = Right(
+          TwilioAccount(
+            name = TwilioAccount.Name("account friendly name"),
+            sid = fetchRequest.accountSid,
+            status = TwilioAccount.Status.Active,
+            ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4a56fa29e23a"),
+            authToken = TwilioAccount.AuthToken("AVerySecretValueThatShouldBeXXXX"),
+            accountType = TwilioAccount.Type.Full,
+            timeCreated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2015, 10, 26), LocalTime.of(11, 40, 54)),
+                ZoneOffset.UTC
+              )
+            ),
+            timeUpdated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2022, 2, 23), LocalTime.of(17, 13, 40)),
+                ZoneOffset.UTC
+              )
+            ),
+          )
+        )
+
+        val resultFut: Future[
+          Either[AccountFetchException, TwilioAccount]
+        ] =
+          instance.run(connSettings, fetchRequest)
+        resultFut.map(result => assert(result === expected))
+      }
+    }
+  }
+
+  // noinspection TypeAnnotation
+  final class Fixture {
+    val fetchRequest = AccountFetchRequest(
+      accountSid = TwilioAccount.Sid("ACf6c9aa4f2754c258aa45a6d2637cfa15"),
+    )
+
+    val wireMockBuilderExpectedTwilioRequest = WireMock
+      .get(
+        WireMock.urlPathEqualTo(
+          "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15.json"
+        )
+      )
+      .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+
+    val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+    val instance: AccountFetchRequestExecutor =
+      TwilioClient.defaultImpl().iam.accountFetch
+  }
+
+  private def twilioResponse1 =
+    """{
+      |  "status": "active",
+      |  "date_updated": "Wed, 23 Feb 2022 17:13:40 +0000",
+      |  "auth_token": "AVerySecretValueThatShouldBeXXXX",
+      |  "friendly_name": "account friendly name",
+      |  "owner_account_sid": "AC5fc6c53ce58165d0712d4a56fa29e23a",
+      |  "uri": "/2010-04-01/Accounts/ACf6c9aa4f8756c258be45a6d2637cfa15.json",
+      |  "sid": "ACf6c9aa4f2754c258aa45a6d2637cfa15",
+      |  "date_created": "Mon, 26 Oct 2015 11:40:54 +0000",
+      |  "type": "Full",
+      |  "subresource_uris": {
+      |    "addresses": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Addresses.json",
+      |    "conferences": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Conferences.json",
+      |    "signing_keys": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/SigningKeys.json",
+      |    "transcriptions": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Transcriptions.json",
+      |    "connect_apps": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/ConnectApps.json",
+      |    "sip": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/SIP.json",
+      |    "authorized_connect_apps": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/AuthorizedConnectApps.json",
+      |    "usage": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Usage.json",
+      |    "keys": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Keys.json",
+      |    "applications": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Applications.json",
+      |    "recordings": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Recordings.json",
+      |    "short_codes": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/SMS/ShortCodes.json",
+      |    "calls": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Calls.json",
+      |    "notifications": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Notifications.json",
+      |    "incoming_phone_numbers": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/IncomingPhoneNumbers.json",
+      |    "queues": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Queues.json",
+      |    "messages": "/2010-04-01/Accounts/ACf6c9aa4f2754c258aa45a6d2637cfa15/Messages.json",
+      |    "outgoing_caller_ids": "/2010-04-01/Accounts/ACf6c9aa4f8756c258be45a6d2637cfa15/OutgoingCallerIds.json",
+      |    "available_phone_numbers": "/2010-04-01/Accounts/ACf6c9aa4f8756c258be45a6d2637cfa15/AvailablePhoneNumbers.json",
+      |    "balance": "/2010-04-01/Accounts/ACf6c9aa4f8756c258be45a6d2637cfa15/Balance.json"
+      |  }
+      |}
+      |""".stripMargin
+}

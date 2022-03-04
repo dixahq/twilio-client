@@ -9,8 +9,7 @@ import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-import scala.concurrent.Await
-import scala.concurrent.duration.DurationInt
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 
 final class FetchAllAccountsTest extends TwilioClientTest {
 
@@ -58,19 +57,64 @@ final class FetchAllAccountsTest extends TwilioClientTest {
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
         val expectedValue = Set(
           TwilioAccount(
-            TwilioAccount.Name("Dixa main account"),
-            TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
-            TwilioAccount.Status.Active
+            name = TwilioAccount.Name("Dixa main account"),
+            sid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+            status = TwilioAccount.Status.Active,
+            ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+            authToken = TwilioAccount.AuthToken("go4oYeeShoozahb1ohdahbee6ahtevai"),
+            accountType = TwilioAccount.Type.Full,
+            timeCreated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2015, 9, 16), LocalTime.of(9, 18, 16)),
+                ZoneOffset.UTC
+              )
+            ),
+            timeUpdated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2021, 7, 20), LocalTime.of(9, 54, 32)),
+                ZoneOffset.UTC
+              )
+            )
           ),
           TwilioAccount(
-            TwilioAccount.Name("b1d45851-4ea1-4d28-9513-9fd770166a3e"),
-            TwilioAccount.Sid("AC3183a741f1bab4764dac2492c8d1fd89"),
-            TwilioAccount.Status.Active
+            name = TwilioAccount.Name("b1d45851-4ea1-4d28-9513-9fd770166a3e"),
+            sid = TwilioAccount.Sid("AC3183a741f1bab4764dac2492c8d1fd89"),
+            status = TwilioAccount.Status.Active,
+            ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+            authToken = TwilioAccount.AuthToken("shoos9reiWohzew2HoP7fei3Hoo2lai7"),
+            accountType = TwilioAccount.Type.Full,
+            timeCreated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2021, 9, 27), LocalTime.of(12, 14, 5)),
+                ZoneOffset.UTC
+              )
+            ),
+            timeUpdated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2021, 9, 27), LocalTime.of(12, 14, 5)),
+                ZoneOffset.UTC
+              )
+            )
           ),
           TwilioAccount(
-            TwilioAccount.Name("7f67d27b-6aa8-4a37-9dd4-8992ab3170ea"),
-            TwilioAccount.Sid("AC4e8db239dc8664688a791d7f9cf45740"),
-            TwilioAccount.Status.Active
+            name = TwilioAccount.Name("7f67d27b-6aa8-4a37-9dd4-8992ab3170ea"),
+            sid = TwilioAccount.Sid("AC4e8db239dc8664688a791d7f9cf45740"),
+            status = TwilioAccount.Status.Active,
+            ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+            authToken = TwilioAccount.AuthToken("ith0Zaeghie0phoshiet5eeteengaina"),
+            accountType = TwilioAccount.Type.Full,
+            timeCreated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2021, 9, 23), LocalTime.of(8, 59, 44)),
+                ZoneOffset.UTC
+              )
+            ),
+            timeUpdated = Instant.from(
+              OffsetDateTime.of(
+                LocalDateTime.of(LocalDate.of(2021, 9, 23), LocalTime.of(8, 59, 44)),
+                ZoneOffset.UTC
+              )
+            )
           )
         )
         resultFut.map(result => assert(result.toSet === expectedValue))

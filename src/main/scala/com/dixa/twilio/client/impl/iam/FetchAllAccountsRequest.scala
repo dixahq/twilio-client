@@ -7,9 +7,11 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
+import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import io.circe.generic.auto._
+
+import java.time.Instant
 
 private[impl] object FetchAllAccountsRequest {
 
@@ -34,9 +36,6 @@ private[impl] object FetchAllAccountsRequest {
       .mapConcat(identity)
   }
 
-  // Only mapped the fields that we actually need for now, there is a lot more
-  // info in these responses, that we could map once needed.
-  private final case class TwilioAccountJsonRep(status: String, friendly_name: String, sid: String)
   private final case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
   private def entityToAccountList(entity: HttpEntityString): Seq[TwilioAccount] = {
     val decoded = entity.parseUnsafe[TwilioAccountsOuterJsonRep]()
@@ -44,7 +43,12 @@ private[impl] object FetchAllAccountsRequest {
       TwilioAccount(
         TwilioAccount.Name(jsonRep.friendly_name),
         TwilioAccount.Sid(jsonRep.sid),
-        TwilioAccount.Status.fromApiName(jsonRep.status)
+        TwilioAccount.Status.fromApiName(jsonRep.status),
+        TwilioAccount.Sid(jsonRep.owner_account_sid),
+        TwilioAccount.AuthToken(jsonRep.auth_token),
+        TwilioAccount.Type.fromTwilioApiName(jsonRep.`type`),
+        Instant.from(Formatter.dateTime.parse(jsonRep.date_created)),
+        Instant.from(Formatter.dateTime.parse(jsonRep.date_updated))
       )
     }
   }
