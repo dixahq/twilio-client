@@ -72,4 +72,7 @@ private[iam] final case class TwilioAccountJsonRep(
       timeUpdated = Instant.from(Formatter.dateTime.parse(date_updated))
     )
   }
+
+  override def toString =
+    s"TwilioAccountJsonRep($status, $date_updated, ***, $friendly_name, $owner_account_sid, $sid, $date_created, ${`type`})"
 }
