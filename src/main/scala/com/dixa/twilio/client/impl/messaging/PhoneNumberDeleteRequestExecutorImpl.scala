@@ -20,10 +20,6 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
 
   import PhoneNumberDeleteRequestExecutor._
 
-  override protected type ApiExceptionWrapper = PhoneNumberDeleteException.Api
-
-  override protected type UnspecifiedException = PhoneNumberDeleteException.UnspecifiedError
-
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberDeleteRequest

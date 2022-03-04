@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.Response
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{MessageSendException, Response}
 import com.dixa.twilio.client.model.Iso4127CountryCode
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging._
@@ -14,7 +14,12 @@ trait MessageSendRequestExecutor
       MessageSendRequestExecutor.MessageSendRequest,
       MessageSendRequestExecutor.MessageSendException,
       Response
-    ]
+    ] {
+
+  override protected final type ApiExceptionWrapper = MessageSendException.Api
+
+  override protected final type UnspecifiedException = MessageSendException.Unspecified
+}
 
 object MessageSendRequestExecutor {
 

@@ -40,10 +40,6 @@ private[impl] final class MessageSendRequestExecutorImpl()(
     override protected val executionContext: ExecutionContext
 ) extends MessageSendRequestExecutor {
 
-  override protected type ApiExceptionWrapper = MessageSendException.Api
-
-  override protected type UnspecifiedException = MessageSendException.Unspecified
-
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: MessageSendRequest
