@@ -5,7 +5,11 @@ import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
   PhoneNumberCreateRequest
 }
 import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestExecutor, TwilioClientMessaging}
-import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
+import com.dixa.twilio.client.model.messaging.{
+  ServiceSid,
+  TwilioMessagingPhoneNumber,
+  TwilioMessagingService
+}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
@@ -38,7 +42,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         val expected = Right(
           TwilioMessagingPhoneNumber(
             TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
-            TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
+            ServiceSid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
           )
         )
 
@@ -167,7 +171,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
   // noinspection TypeAnnotation
   final class Fixture {
     val createRequest = PhoneNumberCreateRequest(
-      serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
+      serviceSid = ServiceSid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
       phoneNumberSid = TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
     )
 

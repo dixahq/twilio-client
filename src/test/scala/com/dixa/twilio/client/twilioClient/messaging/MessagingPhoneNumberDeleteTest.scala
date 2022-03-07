@@ -6,7 +6,7 @@ import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.{
   PhoneNumberDeleteException,
   PhoneNumberDeleteRequest
 }
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService
+import com.dixa.twilio.client.model.messaging.{ServiceSid, TwilioMessagingService}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
@@ -103,7 +103,7 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
   // noinspection TypeAnnotation
   final class Fixture {
     val toDelete = PhoneNumberDeleteRequest(
-      serviceSid = TwilioMessagingService.Sid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
+      serviceSid = ServiceSid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
       phoneNumberSid = TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
     )
 

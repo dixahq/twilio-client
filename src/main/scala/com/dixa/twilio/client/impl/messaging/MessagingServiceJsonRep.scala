@@ -49,7 +49,7 @@ private[messaging] final case class MessagingServiceJsonRep(
   }
 
   private[messaging] def toTwilioMessagingService = TwilioMessagingService(
-    TwilioMessagingService.Sid(sid),
+    ServiceSid(sid),
     TwilioAccount.Sid(account_sid),
     TwilioMessagingService.FriendlyName(friendly_name.getOrElse("")),
     toInboundRequestWebhook,
