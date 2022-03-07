@@ -6,17 +6,16 @@ import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.impl.Formatter.dateTime
 import com.dixa.twilio.client.impl.{ApiSubDomain, TwilioPagingFlow}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.messaging.TwilioClientMessaging.MediaResourceReadRequest
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging.MediaResourceUrl.buildMediaResourcePath
-import com.dixa.twilio.client.model.messaging.TwilioMessage.MessageSid
-import com.dixa.twilio.client.model.messaging.{MediaResourceReference, MediaSid}
+import com.dixa.twilio.client.model.messaging.{MediaResourceReference, MediaSid, MessageSid}
 import io.circe.generic.auto._
 
 import java.time.Instant
-import java.time.format.DateTimeFormatter
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
@@ -52,9 +51,6 @@ private[impl] object MediaResourceReadSource {
       page: Int
   )
 
-  private val formatter: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")
-
   private final case class MediaResourcesReferenceJsonRep(
       sid: String,
       account_sid: String,
@@ -70,8 +66,8 @@ private[impl] object MediaResourceReadSource {
         accountSid = TwilioAccount.Sid(account_sid),
         parentSid = MessageSid(parent_sid),
         contentType = content_type,
-        dateCreated = Try(Instant.from(formatter.parse(date_created))).getOrElse(Instant.now),
-        dateUpdated = Try(Instant.from(formatter.parse(date_updated))).getOrElse(Instant.now)
+        dateCreated = Try(Instant.from(dateTime.parse(date_created))).getOrElse(Instant.now),
+        dateUpdated = Try(Instant.from(dateTime.parse(date_updated))).getOrElse(Instant.now)
       )
   }
 }

@@ -3,15 +3,18 @@ package com.dixa.twilio.client.messaging
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.messaging.TwilioMessage.MessageSid
-import com.dixa.twilio.client.model.messaging.{MediaResourceReference, TwilioMessagingService}
+import com.dixa.twilio.client.model.messaging.{
+  MediaResourceReference,
+  MessageSid,
+  StatusCallback,
+  TwilioMessagingService
+}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
   InboundRequestWebhook,
   UseInboundWebhookOnNumber
 }
-import com.dixa.twilio.client.model.messaging.{StatusCallback, TwilioMessagingService}
 
 import scala.concurrent.Future
 

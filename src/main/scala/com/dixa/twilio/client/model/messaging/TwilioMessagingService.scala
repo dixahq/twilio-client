@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.model.messaging
 
-import com.dixa.twilio.client.model.{iam, HttpMethod}
+import com.dixa.twilio.client.model.HttpMethod
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.TwilioMessage.MessageSid
+import com.dixa.twilio.client.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber.findValues
 import enumeratum.{Enum, EnumEntry}
 
 import java.net.URL
@@ -12,10 +12,9 @@ import scala.collection.immutable
   *
   * At time of writing, only some attributes are here. The rest could be added when needed.
   */
-sealed trait TwilioMessagingService {
+trait TwilioMessagingService {
 
   import TwilioMessagingService._
-
   def sid: ServiceSid
   def accountSid: TwilioAccount.Sid
   def friendlyName: FriendlyName

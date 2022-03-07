@@ -4,12 +4,11 @@ import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.model.messaging.MediaResourceUrl.buildMediaResourcePath
-import com.dixa.twilio.client.model.messaging.TwilioMessage.MessageSid
-import com.dixa.twilio.client.model.messaging.{MediaResourceReference, MediaSid, ServiceSid}
+import com.dixa.twilio.client.model.messaging.{MediaResourceReference, MediaSid, MessageSid}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, create}
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
 
 import java.time.Instant

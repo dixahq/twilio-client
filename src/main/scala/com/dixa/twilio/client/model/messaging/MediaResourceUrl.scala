@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.model.messaging
 
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.TwilioMessage.MessageSid
 
+// Url where the twilio media resource is hold.
 final case class MediaResourceUrl(override val toString: String)
 
 object MediaResourceUrl {

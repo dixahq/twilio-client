@@ -2,7 +2,8 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.model.HttpMethod
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.{StatusCallback, TwilioMessagingService}
+import com.dixa.twilio.client.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
+import com.dixa.twilio.client.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
 
 import java.net.URL
 
@@ -55,7 +56,7 @@ private[messaging] final case class MessagingServiceJsonRep(
     toInboundRequestWebhook,
     toFallbackHook,
     toStatusCallback,
-    TwilioMessagingService.UseInboundWebhookOnNumber.fromBoolean(
+    UseInboundWebhookOnNumber.fromBoolean(
       use_inbound_webhook_on_number.getOrElse(false)
     )
   )

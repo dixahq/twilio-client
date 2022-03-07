@@ -3,10 +3,13 @@ package com.dixa.twilio.client.model.messaging
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.TwilioMessage.MessageSid
 
 import java.time.Instant
 
+/** Represents the details/reference that identifies a media resource in twilio.
+  * @see
+  *   https://www.twilio.com/docs/sms/api/media-resource
+  */
 final case class MediaResourceReference(
     sid: MediaSid,
     accountSid: TwilioAccount.Sid,
