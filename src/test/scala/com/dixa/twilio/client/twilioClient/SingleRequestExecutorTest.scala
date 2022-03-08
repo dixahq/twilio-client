@@ -3,6 +3,7 @@ package com.dixa.twilio.client.twilioClient
 import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
+import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.model.iam.TwilioAccount
@@ -264,9 +265,13 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           timeUpdated = timeStamp
         )
 
-        val connSettings = TwilioConnectionSettings(
+        val twilioEndpoint = TwilioEndpoint(
           "noneExistingHost.dixa.com",
-          443,
+          443
+        )
+
+        val connSettings = TwilioConnectionSettings(
+          twilioEndpoint,
           TwilioConnectionSettings.Protocol.Https,
           accountSid,
           accountToken,
