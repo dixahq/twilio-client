@@ -1,6 +1,7 @@
 package com.dixa.twilio.client
 
 import com.dixa.twilio.client
+import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.client.model.iam.TwilioAccount
 import enumeratum.{Enum, EnumEntry}
@@ -14,7 +15,7 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   * @param baseHostName
   *   The base host name to connect to without the sup domain part. The URL to connect to. For
   *   production this would be `twilio.com` and then request would end up being made agains the
-  *   respective sub domains like `api.twilio.com` and `messagin.twilio.com` depending on the
+  *   respective sub domains like `api.twilio.com` and `messaging.twilio.com` depending on the
   *   request. The Exception is localhost or 127.0.0.1, if that is set, then no subdomain will be
   *   added, no matter what the request is. Should be "twilio.com" for the production Twilio API.
   * @param port
@@ -33,8 +34,7 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *   Timeouts to use in the clients.
   */
 final case class TwilioConnectionSettings(
-    baseHostName: String,
-    port: Int,
+    endpoint: TwilioEndpoint,
     protocol: client.TwilioConnectionSettings.Protocol,
     accountSid: TwilioAccount.Sid,
     authToken: TwilioAccount.AuthToken,
@@ -45,7 +45,7 @@ final case class TwilioConnectionSettings(
   /** Return the hostname for a specific API sub domain.
     *
     * Twilio is using different sub domains, for different parts of there API, so the
-    * TwilioConnectionSetting is only setting what base hostname to connect agains, and it then up
+    * TwilioConnectionSetting is only setting what base hostname to connect against, and it then up
     * to each individual request, to specify what sub domain they should use, and use this method
     * for constructing the full hostname.
     *
@@ -54,9 +54,11 @@ final case class TwilioConnectionSettings(
     * Wiremock, where the request should just go to localhost without a subdomain appended.
     */
   private[client] def hostNameFor(subDomain: ApiSubDomain): String = {
-    if (baseHostName === "localhost" || baseHostName === "127.0.0.1") baseHostName
-    else s"$subDomain.$baseHostName"
+    if (endpoint.baseHostName === "localhost" || endpoint.baseHostName === "127.0.0.1")
+      endpoint.baseHostName
+    else s"$subDomain.${endpoint.baseHostName}"
   }
+
 }
 
 object TwilioConnectionSettings {
@@ -93,6 +95,7 @@ object TwilioConnectionSettings {
     */
   final case class Timeouts(requestEntityTimeout: FiniteDuration)
 
+  final case class TwilioEndpoint(baseHostName: String, port: Int)
   object Timeouts {
 
     lazy val default: Timeouts = Timeouts(
