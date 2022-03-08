@@ -29,8 +29,11 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     * All the Error ADT used in the safe versions, are also exception, so a request would always be
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
     * the error is communicated.
+    *
+    * Function can be overridden for the soul purpose of stubbing or mocking by scalatest, should
+    * never be overridden in extended classes.
     */
-  final def run(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]] =
+  def run(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]] =
     Future {
       val httpRequest = createHttpReq(connSettings, req)
       execWithCheckForApiException(httpRequest, connSettings.timeouts).map { apiErrorOrResp =>
@@ -59,8 +62,11 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     * All the Error ADT used in the safe versions, are also exception, so a request would always be
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
     * the error is communicated.
+    *
+    * Function can be overridden for the soul purpose of stubbing or mocking by scalatest, should
+    * never be overridden in extended classes.
     */
-  final def unsafeRun(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
+  def unsafeRun(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
     run(connSettings, req).map(_.fold(e => throw e, res => res))
 
   protected def http: HttpExt

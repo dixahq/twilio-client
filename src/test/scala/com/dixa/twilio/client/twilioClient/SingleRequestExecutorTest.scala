@@ -3,18 +3,24 @@ package com.dixa.twilio.client.twilioClient
 import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
+import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
+import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
+import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.{
   ApiException,
   SingleRequestExecutor,
+  TwilioClient,
   TwilioConnectionSettings,
   TwilioTestConstants
 }
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import org.scalamock.scalatest.AsyncMockFactory
 
-import scala.concurrent.ExecutionContext
+import java.time.Instant
+import scala.concurrent.{ExecutionContext, Future}
 
-final class SingleRequestExecutorTest extends TwilioClientTest {
+final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFactory {
 
   import SingleRequestExecutorTest._
 
@@ -238,6 +244,57 @@ final class SingleRequestExecutorTest extends TwilioClientTest {
               case ue: AbstractTestException.Undefined => assert(ue.getCause === toThrow)
               case _                                   => fail("Wrong cause in Exception")
             }
+        }
+      }
+
+    "SingleRequestExecutor's run methods should be able to be overridden for testing and not throw " +
+      "NoSuchMethodException" in {
+        val ownerAccountSid = TwilioAccount.Sid("TestOwnerAccountSid")
+        val accountSid      = TwilioAccount.Sid("TestAccountSid")
+        val accountToken    = TwilioAccount.AuthToken("TestAuthToken")
+        val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
+        val account = TwilioAccount(
+          name = TwilioAccount.Name("TestAccount"),
+          sid = accountSid,
+          status = TwilioAccount.Status.Active,
+          ownerAccountSid = ownerAccountSid,
+          authToken = accountToken,
+          accountType = TwilioAccount.Type.Full,
+          timeCreated = timeStamp,
+          timeUpdated = timeStamp
+        )
+
+        val connSettings = TwilioConnectionSettings(
+          "noneExistingHost.dixa.com",
+          443,
+          TwilioConnectionSettings.Protocol.Https,
+          accountSid,
+          accountToken,
+          TwilioConnectionSettings.ParallelFactor.halfCpuCores,
+          TwilioConnectionSettings.Timeouts.default
+        )
+
+        val twilioClientIam = stub[TwilioClientIam]
+
+        val client = stub[TwilioClient]
+        (client.iam _).when().returns(twilioClientIam)
+
+        val accountFetchReqExecutor = stub[AccountFetchRequestExecutor]
+        (twilioClientIam.accountFetch _).when().returns(accountFetchReqExecutor)
+
+        val fetchReq = AccountFetchRequest(accountSid = accountSid)
+
+        try {
+          (accountFetchReqExecutor.unsafeRun _)
+            .when(connSettings, fetchReq)
+            .returns(Future.successful(account))
+
+          (accountFetchReqExecutor.run _)
+            .when(connSettings, fetchReq)
+            .returns(Future.successful(Right(account)))
+          succeed
+        } catch {
+          case _: NoSuchMethodException => fail()
         }
       }
   }
