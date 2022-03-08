@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: Scoverage Report
-          path: service/target/scala*/scoverage-report/scoverage.xml
+          path: target/scala*/scoverage-report/scoverage.xml
 
       - name: Verify test coverage
         id: test_coverage
