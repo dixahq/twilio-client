@@ -78,8 +78,9 @@ lazy val `twilio-client` = project
         "com.beachape"  %% "enumeratum" % "1.7.0",
 
         // Test
-        "org.scalatest"         %% "scalatest" % Version.ScalatestScalactic % Test,
-        "com.github.tomakehurst" % "wiremock"  % "2.27.2"                   % Test
+        "org.scalatest"         %% "scalatest"                    % Version.ScalatestScalactic % Test,
+        "org.scalamock"         %% "scalamock-scalatest-support"  % "3.6.0"                    % Test,
+        "com.github.tomakehurst" % "wiremock"                     % "2.27.2"                   % Test
       ),
       Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
