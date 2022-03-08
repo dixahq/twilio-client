@@ -1,8 +1,12 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.PhoneNumberCreateException
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.client.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.PhoneNumberCreateException
+import com.dixa.twilio.client.model.messaging.{
+  ServiceSid,
+  TwilioMessagingPhoneNumber,
+  TwilioMessagingService
+}
 import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 
 trait PhoneNumberCreateRequestExecutor
@@ -20,7 +24,7 @@ trait PhoneNumberCreateRequestExecutor
 object PhoneNumberCreateRequestExecutor {
 
   final case class PhoneNumberCreateRequest(
-      serviceSid: TwilioMessagingService.Sid,
+      serviceSid: ServiceSid,
       phoneNumberSid: TwilioPhoneNumberSid
   )
 

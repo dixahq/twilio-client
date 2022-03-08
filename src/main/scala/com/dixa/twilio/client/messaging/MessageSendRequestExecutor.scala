@@ -82,7 +82,7 @@ object MessageSendRequestExecutor {
       dateUpdated: Option[Instant],
       direction: MessageDirection,
       from: MessageSender,
-      messagingServiceSid: Option[TwilioMessagingService.Sid],
+      messagingServiceSid: Option[ServiceSid],
       numMedia: Int, // number of media files associated with the message
       numSegments: MessageNumSegments,
       price: Option[BigDecimal],

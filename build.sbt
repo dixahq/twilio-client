@@ -82,6 +82,9 @@ lazy val `twilio-client` = project
         "org.scalamock"         %% "scalamock-scalatest-support"  % "3.6.0"                    % Test,
         "com.github.tomakehurst" % "wiremock"                     % "2.27.2"                   % Test
       ),
+      coverageMinimumStmtTotal := 85,
+      coverageFailOnMinimum := false,
+      coverageHighlighting  := false,
       Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )

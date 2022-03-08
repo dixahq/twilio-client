@@ -40,7 +40,7 @@ private[impl] object TwilioUri {
 
     override def createHttpRequest(connSettings: TwilioConnectionSettings): HttpRequest = {
       val hostname = connSettings.hostNameFor(subDomain)
-      val url      = s"${connSettings.protocol}://$hostname:${connSettings.port}$path"
+      val url      = s"${connSettings.protocol}://$hostname:${connSettings.endpoint.port}$path"
       TwilioUrl(method, url, subDomain).createHttpRequest(connSettings)
     }
   }

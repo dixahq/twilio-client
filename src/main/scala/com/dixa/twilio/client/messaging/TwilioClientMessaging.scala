@@ -3,13 +3,18 @@ package com.dixa.twilio.client.messaging
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.model.messaging.{
+  MediaResourceReference,
+  MessageSid,
+  StatusCallback,
+  TwilioMessagingService
+}
 import com.dixa.twilio.client.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
   InboundRequestWebhook,
   UseInboundWebhookOnNumber
 }
-import com.dixa.twilio.client.model.messaging.{StatusCallback, TwilioMessagingService}
 
 import scala.concurrent.Future
 
@@ -39,6 +44,14 @@ trait TwilioClientMessaging {
   def phoneNumberDelete: PhoneNumberDeleteRequestExecutor
 
   def messageSend: MessageSendRequestExecutor
+
+  /** Lists the media resources from a given account and message sid.
+    */
+  def mediaResourceRead(
+      connSettings: TwilioConnectionSettings,
+      req: TwilioClientMessaging.MediaResourceReadRequest
+  ): Source[MediaResourceReference, NotUsed]
+
 }
 
 object TwilioClientMessaging {
@@ -50,4 +63,7 @@ object TwilioClientMessaging {
       statusCallback: Option[StatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   )
+
+  final case class MediaResourceReadRequest(messageSid: MessageSid)
+
 }

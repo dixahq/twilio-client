@@ -1,5 +1,6 @@
 package com.dixa.twilio.client
 
+import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.model.iam.TwilioAccount
 
 object TwilioTestConstants {
@@ -8,8 +9,7 @@ object TwilioTestConstants {
   val testAuthToken = "testPassword"
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
-    baseHostName = "localhost",
-    port = port,
+    TwilioEndpoint(baseHostName = "localhost", port = port),
     protocol = TwilioConnectionSettings.Protocol.Http,
     accountSid = TwilioAccount.Sid(testSid),
     authToken = TwilioAccount.AuthToken(testAuthToken),
