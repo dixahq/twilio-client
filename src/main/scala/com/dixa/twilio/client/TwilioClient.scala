@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import akka.actor.ActorSystem
+import akka.actor.ClassicActorSystemProvider
 import com.dixa.twilio.client.iam.TwilioClientIam
 import com.dixa.twilio.client.impl.TwilioClientImpl
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
@@ -44,6 +44,6 @@ trait TwilioClient {
 
 object TwilioClient {
   def defaultImpl()(
-      implicit actorSystem: ActorSystem
+      implicit actorSystem: ClassicActorSystemProvider
   ): TwilioClient = new TwilioClientImpl()
 }
