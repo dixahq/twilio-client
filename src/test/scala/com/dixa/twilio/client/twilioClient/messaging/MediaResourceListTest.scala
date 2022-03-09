@@ -11,8 +11,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
 
-import java.time.Instant
-import java.time.format.DateTimeFormatter
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 
 final class MediaResourceListTest extends TwilioClientTest with Matchers {
 
@@ -30,11 +29,18 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
   private val createdAt = "Tue, 01 Feb 2022 13:44:20 +0000"
   private val updatedAt = "Wed, 02 Feb 2022 15:42:20 +0000"
 
-  private val formatter: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")
-
-  private val createdAtInstant = Instant.from(formatter.parse(createdAt))
-  private val updatedAtInstant = Instant.from(formatter.parse(updatedAt))
+  private val createdAtInstant = Instant.from(
+    OffsetDateTime.of(
+      LocalDateTime.of(LocalDate.of(2022, 2, 1), LocalTime.of(13, 44, 20)),
+      ZoneOffset.UTC
+    )
+  )
+  private val updatedAtInstant = Instant.from(
+    OffsetDateTime.of(
+      LocalDateTime.of(LocalDate.of(2022, 2, 2), LocalTime.of(15, 42, 20)),
+      ZoneOffset.UTC
+    )
+  )
 
   classOf[TwilioClientMessaging].getSimpleName when {
 
