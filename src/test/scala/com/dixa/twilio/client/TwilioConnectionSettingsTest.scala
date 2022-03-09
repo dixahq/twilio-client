@@ -2,7 +2,6 @@ package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
-import com.dixa.twilio.client.model.iam.TwilioAccount
 import org.scalatest.wordspec.AnyWordSpec
 
 final class TwilioConnectionSettingsTest extends AnyWordSpec {

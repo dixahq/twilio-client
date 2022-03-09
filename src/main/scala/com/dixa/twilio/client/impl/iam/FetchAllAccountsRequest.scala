@@ -8,7 +8,7 @@ import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, TwilioPagingFlow}
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 import io.circe.generic.auto._
 
 import java.time.Instant
@@ -46,7 +46,7 @@ private[impl] object FetchAllAccountsRequest {
         TwilioAccount.Status.fromApiName(jsonRep.status),
         TwilioAccount.Sid(jsonRep.owner_account_sid),
         TwilioAccount.AuthToken(jsonRep.auth_token),
-        TwilioAccount.Type.fromTwilioApiName(jsonRep.`type`),
+        TwilioAccount.Type.fromApiName(jsonRep.`type`),
         Instant.from(Formatter.dateTime.parse(jsonRep.date_created)),
         Instant.from(Formatter.dateTime.parse(jsonRep.date_updated))
       )

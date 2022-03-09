@@ -11,7 +11,7 @@ import com.dixa.twilio.client.messaging.{
   PhoneNumberDeleteRequestExecutor,
   TwilioClientMessaging
 }
-import com.dixa.twilio.client.model.messaging.{MediaResourceReference, TwilioMessagingService}
+import com.dixa.twilio.model.messaging.{MediaResourceReference, TwilioMessagingService}
 
 import scala.concurrent.{ExecutionContext, Future}
 

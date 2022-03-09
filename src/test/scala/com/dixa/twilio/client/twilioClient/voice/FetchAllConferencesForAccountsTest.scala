@@ -2,12 +2,12 @@ package com.dixa.twilio.client.twilioClient.voice
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.voice.{TwilioCallSid, TwilioConference}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.model.voice.{TwilioCallSid, TwilioConference}
 import com.github.tomakehurst.wiremock.client.WireMock
 
 final class FetchAllConferencesForAccountsTest extends TwilioClientTest {

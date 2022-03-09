@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.iam
 
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 
 trait AccountFetchRequestExecutor
     extends SingleRequestExecutor[

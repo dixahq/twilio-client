@@ -6,7 +6,6 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
-import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.{
   ApiException,
   SingleRequestExecutor,
@@ -14,6 +13,7 @@ import com.dixa.twilio.client.{
   TwilioConnectionSettings,
   TwilioTestConstants
 }
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalamock.scalatest.AsyncMockFactory

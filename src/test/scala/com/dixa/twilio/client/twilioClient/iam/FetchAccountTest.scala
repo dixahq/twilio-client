@@ -5,9 +5,9 @@ import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.{
   AccountFetchRequest
 }
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
-import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

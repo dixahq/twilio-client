@@ -6,7 +6,7 @@ import com.dixa.twilio.client.callback.RequestValidator.{
   ValidationStatus,
   XTwilioSignature
 }
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 
 import java.nio.charset.StandardCharsets
 import java.util.Base64

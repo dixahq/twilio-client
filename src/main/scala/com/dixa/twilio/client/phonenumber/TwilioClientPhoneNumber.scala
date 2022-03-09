@@ -3,7 +3,7 @@ package com.dixa.twilio.client.phonenumber
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.phonenumber.{
+import com.dixa.twilio.model.phonenumber.{
   TwilioActivePhoneNumber,
   TwilioIncomingPhoneNumber,
   TwilioPhoneNumberSid
@@ -17,8 +17,7 @@ trait TwilioClientPhoneNumber {
     * communication. Typically also called an ActiveNumber
     *
     * The optional filter will be applied at Twilio side if set. See doc on
-    * [[com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberFilter]] for
-    * details.
+    * [[com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberFilter]] for details.
     */
   def incomingPhoneNumberList(
       connSettings: TwilioConnectionSettings,

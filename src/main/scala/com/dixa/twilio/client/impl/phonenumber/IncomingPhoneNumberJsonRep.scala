@@ -1,13 +1,13 @@
 package com.dixa.twilio.client.impl.phonenumber
 
 import com.dixa.twilio.client.impl.phonenumber.IncomingPhoneNumberJsonRep._
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.phonenumber.{
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.{
   PhoneNumberE164,
   TwilioIncomingPhoneNumber,
   TwilioPhoneNumberSid
 }
-import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
+import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
 
 private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     sid: String,
@@ -21,7 +21,7 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     TwilioPhoneNumberSid(sid),
     TwilioAccount.Sid(account_sid),
     TwilioIncomingPhoneNumber.FriendlyName(friendly_name),
-    PhoneNumberE164.unchecked(phone_number),
+    PhoneNumberE164(phone_number),
     PhoneNumberCapabilitiesSummary(
       capabilities.voice,
       capabilities.sms,

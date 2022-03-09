@@ -3,7 +3,7 @@ package com.dixa.twilio.client
 import com.dixa.twilio.client
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 import enumeratum.{Enum, EnumEntry}
 import org.scalactic.TypeCheckedTripleEquals._
 
@@ -12,14 +12,12 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 /** Connection settings to use when communicating with Twilio
   *
-  * @param baseHostName
-  *   The base host name to connect to without the sup domain part. The URL to connect to. For
-  *   production this would be `twilio.com` and then request would end up being made agains the
-  *   respective sub domains like `api.twilio.com` and `messaging.twilio.com` depending on the
-  *   request. The Exception is localhost or 127.0.0.1, if that is set, then no subdomain will be
-  *   added, no matter what the request is. Should be "twilio.com" for the production Twilio API.
-  * @param port
-  *   TCP port to use for connecting to Twilio Should be 443 for the production Twilio API.
+  * @param endpoint
+  *   The base host name and port to connect to without the sup domain part. For production this
+  *   would be `twilio.com:443` and then request would end up being made against the respective sub
+  *   domains like `api.twilio.com` and `messaging.twilio.com` depending on the request. The
+  *   Exception is localhost or 127.0.0.1, if that is set, then no subdomain will be added, no
+  *   matter what the request is. Should be "twilio.com" for the production Twilio API.
   * @param protocol
   *   Protocol to use for connecting to Twilio. Should be Https for production Twilio API.
   * @param accountSid

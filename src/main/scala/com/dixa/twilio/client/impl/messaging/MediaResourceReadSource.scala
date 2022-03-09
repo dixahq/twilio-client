@@ -10,9 +10,9 @@ import com.dixa.twilio.client.impl.Formatter.dateTime
 import com.dixa.twilio.client.impl.{ApiSubDomain, TwilioPagingFlow}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.messaging.TwilioClientMessaging.MediaResourceReadRequest
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.MediaResourceUrl.buildMediaResourcePath
-import com.dixa.twilio.client.model.messaging.{MediaResourceReference, MediaSid, MessageSid}
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.client.impl.messaging.MediaResourceUrlFactory.buildMediaResourcePath
+import com.dixa.twilio.model.messaging.{MediaResourceReference, MediaSid, MessageSid}
 import io.circe.generic.auto._
 
 import java.time.Instant
@@ -35,8 +35,8 @@ private[impl] object MediaResourceReadSource {
         connSettings,
         TwilioPath(ApiSubDomain.Api, HttpMethods.GET, requestPath)
       )
-      .mapConcat(_.parseUnsafe[MediaResourceListJsonRep].media_list)
-      .map(_.toModel)
+      .mapConcat(_.parseUnsafe[MediaResourceListJsonRep]().media_list)
+      .map(_.toModel(req.messageSid, connSettings))
   }
 
   private final case class MediaResourceListJsonRep(
@@ -60,14 +60,21 @@ private[impl] object MediaResourceReadSource {
       date_updated: String,
       uri: String
   ) {
-    def toModel: MediaResourceReference =
+    def toModel(
+        messageSid: MessageSid,
+        connSettings: TwilioConnectionSettings
+    ): MediaResourceReference = {
+      val accountSid = TwilioAccount.Sid(account_sid)
+      val mediaSid   = MediaSid(sid)
       MediaResourceReference(
-        sid = MediaSid(sid),
-        accountSid = TwilioAccount.Sid(account_sid),
+        sid = mediaSid,
+        accountSid = accountSid,
         parentSid = MessageSid(parent_sid),
         contentType = content_type,
         dateCreated = Try(Instant.from(dateTime.parse(date_created))).getOrElse(Instant.now),
-        dateUpdated = Try(Instant.from(dateTime.parse(date_updated))).getOrElse(Instant.now)
+        dateUpdated = Try(Instant.from(dateTime.parse(date_updated))).getOrElse(Instant.now),
+        MediaResourceUrlFactory.resourceUrl(accountSid, messageSid, mediaSid, connSettings)
       )
+    }
   }
 }

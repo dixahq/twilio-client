@@ -9,7 +9,7 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.phonenumber.ActivePhoneNumberListRequest._
-import com.dixa.twilio.client.model.phonenumber.{TwilioActivePhoneNumber, TwilioPhoneNumberSid}
+import com.dixa.twilio.model.phonenumber.{TwilioActivePhoneNumber, TwilioPhoneNumberSid}
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext

@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.callback
 
 import com.dixa.twilio.client.impl.callback.RequestValidatorImpl
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 
 trait RequestValidator {
 

@@ -9,9 +9,9 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.client.model.voice.{TwilioCallSid, TwilioConference}
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.model.voice.{TwilioCallSid, TwilioConference}
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -30,7 +30,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
       connSettings.parallelFactor.asInt,
       accountSid =>
         {
-          val statusParam = statusFilter.map(f => s"Status=${f.twilioApiStringRep}&").getOrElse("")
+          val statusParam = statusFilter.map(f => s"Status=${f.apiName}&").getOrElse("")
           val initPath = TwilioPath(
             ApiSubDomain.Api,
             HttpMethods.GET,
@@ -85,7 +85,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     decoded.participants.map { jsonRep =>
       TwilioConference.Participant(
         TwilioCallSid(jsonRep.call_sid),
-        TwilioConference.ParticipantStatus.fromTwilioStringStatus(jsonRep.status)
+        TwilioConference.ParticipantStatus.fromApiName(jsonRep.status)
       )
     }
   }

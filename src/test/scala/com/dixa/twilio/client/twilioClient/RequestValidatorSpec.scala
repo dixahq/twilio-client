@@ -2,7 +2,7 @@ package com.dixa.twilio.client.twilioClient
 
 import com.dixa.twilio.client.callback.RequestValidator.{ValidationStatus, XTwilioSignature}
 import com.dixa.twilio.client.impl.callback.RequestValidatorImpl
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

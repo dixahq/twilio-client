@@ -6,7 +6,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import ServiceCreateRequest.createPostParamString
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService
+import com.dixa.twilio.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import org.scalactic.TypeCheckedTripleEquals._

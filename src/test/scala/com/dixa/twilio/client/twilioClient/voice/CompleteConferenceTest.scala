@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.twilioClient.voice
 
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.voice.TwilioConference
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.TwilioConference
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
