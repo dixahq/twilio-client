@@ -95,7 +95,9 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
-          MediaResourceUrl("fixMe")
+          MediaResourceUrl(
+            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid"
+          )
         )
 
         val instance = TwilioClient.defaultImpl().messaging
@@ -134,7 +136,9 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
-          MediaResourceUrl("fixme")
+          MediaResourceUrl(
+            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid"
+          )
         )
 
         val expected2 = MediaResourceReference(
@@ -144,7 +148,9 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
-          MediaResourceUrl("fixme")
+          MediaResourceUrl(
+            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid2"
+          )
         )
 
         val expected3 = MediaResourceReference(
@@ -154,7 +160,9 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
-          MediaResourceUrl("fixme")
+          MediaResourceUrl(
+            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid3"
+          )
         )
 
         val instance = TwilioClient.defaultImpl().messaging

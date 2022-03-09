@@ -32,7 +32,7 @@ private[client] object MediaResourceUrlFactory {
   ): MediaResourceUrl = {
     val basePath: String = buildMediaResourceBasePath(accountSid, messageSid)
     MediaResourceUrl(
-      s"https://${twilioConnSettings.hostNameFor(ApiSubDomain.Api)}$basePath/Media/$sid"
+      s"${twilioConnSettings.protocol}://${twilioConnSettings.hostNameFor(ApiSubDomain.Api)}$basePath/Media/$sid"
     )
   }
 }
