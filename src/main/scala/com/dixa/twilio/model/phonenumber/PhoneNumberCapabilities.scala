@@ -1,8 +1,7 @@
 package com.dixa.twilio.model.phonenumber
 
+import com.dixa.twilio.model.EnumWithApiName
 import com.dixa.twilio.model.phonenumber.PhoneNumberCapabilities._
-import enumeratum.{Enum, EnumEntry}
-import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 
@@ -13,40 +12,24 @@ final case class PhoneNumberCapabilities(
 )
 
 object PhoneNumberCapabilities {
-  sealed abstract class CallerIdPreservation(val apiName: String) extends EnumEntry
+  sealed abstract class CallerIdPreservation(val apiName: String) extends EnumWithApiName.EnumEntry
 
-  object CallerIdPreservation extends Enum[CallerIdPreservation] {
+  object CallerIdPreservation extends EnumWithApiName[CallerIdPreservation] {
     override val values: immutable.IndexedSeq[CallerIdPreservation] = findValues
 
     case object International extends CallerIdPreservation("international")
     case object Domestic      extends CallerIdPreservation("domestic")
     case object None          extends CallerIdPreservation("none")
-
-    def fromApiNameCaseInsensitive(s: String): CallerIdPreservation = values
-      .find(_.apiName.toLowerCase === s.toLowerCase)
-      .getOrElse(
-        throw new IllegalArgumentException(
-          s"$s is not a valid CallerIdPreservation. Valid values are: $values"
-        )
-      )
   }
 
-  sealed abstract class InboundReachability(val apiName: String) extends EnumEntry
+  sealed abstract class InboundReachability(val apiName: String) extends EnumWithApiName.EnumEntry
 
-  object InboundReachability extends Enum[InboundReachability] {
+  object InboundReachability extends EnumWithApiName[InboundReachability] {
     override val values: immutable.IndexedSeq[InboundReachability] = findValues
 
     case object Global   extends InboundReachability("global")
     case object Domestic extends InboundReachability("domestic")
     case object Foreign  extends InboundReachability("foreign")
-
-    def fromApiNameCaseInsensitive(s: String): InboundReachability = values
-      .find(_.apiName.toLowerCase === s.toLowerCase)
-      .getOrElse(
-        throw new IllegalArgumentException(
-          s"$s is not a valid InboundReachability. Valid values are: $values"
-        )
-      )
   }
 
   final case class VoiceCapabilities(

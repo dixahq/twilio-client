@@ -1,8 +1,7 @@
 package com.dixa.twilio.model.voice
 
+import com.dixa.twilio.model.EnumWithApiName
 import com.dixa.twilio.model.iam.TwilioAccount
-import enumeratum.{Enum, EnumEntry}
-import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 
@@ -47,21 +46,13 @@ object TwilioConference {
         * future.
         */
       val isActive: Boolean
-  ) extends EnumEntry
-  object Status extends Enum[Status] {
+  ) extends EnumWithApiName.EnumEntry
+  object Status extends EnumWithApiName[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
 
     case object Init       extends Status("init", isActive = true)
     case object InProgress extends Status("in-progress", isActive = true)
     case object Completed  extends Status("completed", isActive = false)
-
-    def fromApiName(s: String): Status = values
-      .find(_.apiName === s)
-      .getOrElse(
-        throw new IllegalArgumentException(
-          s"$s is not a valid Conference.Status. Allowed values are $values"
-        )
-      )
   }
 
   final case class FriendlyName(override val toString: String)
@@ -75,8 +66,8 @@ object TwilioConference {
         * considered active.
         */
       val isActive: Boolean
-  ) extends EnumEntry
-  object ParticipantStatus extends Enum[ParticipantStatus] {
+  ) extends EnumWithApiName.EnumEntry
+  object ParticipantStatus extends EnumWithApiName[ParticipantStatus] {
     override val values: immutable.IndexedSeq[ParticipantStatus] = findValues
 
     case object Queued     extends ParticipantStatus("queued", isActive = true)
@@ -85,11 +76,6 @@ object TwilioConference {
     case object Connected  extends ParticipantStatus("connected", isActive = true)
     case object Complete   extends ParticipantStatus("complete", isActive = false)
     case object Failed     extends ParticipantStatus("failed", isActive = false)
-
-    def fromApiName(s: String): ParticipantStatus = values
-      .find(_.apiName === s)
-      .getOrElse(throw new IllegalArgumentException(s"$s is not a valid ParticipantStatus"))
-
   }
 
   final case class Participant(callSid: TwilioCallSid, status: ParticipantStatus)

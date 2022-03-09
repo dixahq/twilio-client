@@ -85,7 +85,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     decoded.participants.map { jsonRep =>
       TwilioConference.Participant(
         TwilioCallSid(jsonRep.call_sid),
-        TwilioConference.ParticipantStatus.fromApiName(jsonRep.status)
+        TwilioConference.ParticipantStatus.fromApiNameUnsafe(jsonRep.status)
       )
     }
   }

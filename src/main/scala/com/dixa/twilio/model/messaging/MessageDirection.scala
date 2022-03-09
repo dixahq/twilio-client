@@ -1,9 +1,12 @@
 package com.dixa.twilio.model.messaging
 
+import com.dixa.twilio.model
+import com.dixa.twilio.model.EnumWithApiName
+
 import scala.collection.immutable
 
-sealed abstract class MessageDirection(val twilioApiName: String) extends enumeratum.EnumEntry
-object MessageDirection extends enumeratum.Enum[MessageDirection] {
+sealed abstract class MessageDirection(val apiName: String) extends EnumWithApiName.EnumEntry
+object MessageDirection extends model.EnumWithApiName[MessageDirection] {
   override def values: immutable.IndexedSeq[MessageDirection] = findValues
 
   case object Inbound       extends MessageDirection("inbound")

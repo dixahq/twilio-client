@@ -43,10 +43,10 @@ private[impl] object FetchAllAccountsRequest {
       TwilioAccount(
         TwilioAccount.Name(jsonRep.friendly_name),
         TwilioAccount.Sid(jsonRep.sid),
-        TwilioAccount.Status.fromApiName(jsonRep.status),
+        TwilioAccount.Status.fromApiNameUnsafe(jsonRep.status),
         TwilioAccount.Sid(jsonRep.owner_account_sid),
         TwilioAccount.AuthToken(jsonRep.auth_token),
-        TwilioAccount.Type.fromApiName(jsonRep.`type`),
+        TwilioAccount.Type.fromApiNameUnsafe(jsonRep.`type`),
         Instant.from(Formatter.dateTime.parse(jsonRep.date_created)),
         Instant.from(Formatter.dateTime.parse(jsonRep.date_updated))
       )

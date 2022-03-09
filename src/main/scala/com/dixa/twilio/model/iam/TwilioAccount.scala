@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.iam
 
-import enumeratum.{Enum, EnumEntry}
+import com.dixa.twilio.model.EnumWithApiName
 import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
@@ -32,29 +32,21 @@ object TwilioAccount {
     override def toString: String = authTokenSecretValueString
   }
 
-  sealed abstract class Status(val apiName: String) extends EnumEntry
-  object Status extends Enum[Status] {
+  sealed abstract class Status(val apiName: String) extends EnumWithApiName.EnumEntry
+  object Status extends EnumWithApiName[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
 
     case object Active    extends Status("active")
     case object Suspended extends Status("suspended")
     case object Closed    extends Status("closed")
-
-    def fromApiName(s: String): TwilioAccount.Status = findValues
-      .find(_.apiName === s)
-      .getOrElse(throw new IllegalArgumentException(s"$s is not a valid Twilio account status."))
   }
 
-  sealed abstract class Type(val twilioApiName: String) extends EnumEntry
-  object Type extends Enum[Type] {
-    override def values: immutable.IndexedSeq[Type] = findValues
+  sealed abstract class Type(val apiName: String) extends EnumWithApiName.EnumEntry
+  object Type extends EnumWithApiName[Type] {
+    override val values: immutable.IndexedSeq[Type] = findValues
 
     case object Trail extends Type("Trial")
     case object Full  extends Type("Full")
-
-    def fromApiName(s: String): TwilioAccount.Type = findValues
-      .find(_.twilioApiName === s)
-      .getOrElse(throw new IllegalArgumentException(s"$s is not a valid TwilioAccount.Type"))
   }
 
   private val authTokenSecretValueString = "AuthToken(***)"
