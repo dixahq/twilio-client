@@ -18,7 +18,9 @@ final case class TwilioAccount(
     accountType: TwilioAccount.Type,
     timeCreated: Instant,
     timeUpdated: Instant
-)
+) {
+  def isActive: Boolean = status === TwilioAccount.Status.Active
+}
 
 object TwilioAccount {
 
