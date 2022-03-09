@@ -5,7 +5,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 /** Base trait for a Enum having an apiName value.
   *
-  * Multiple enums in this library, is having a apiName value to represent what the enum entrys
+  * Multiple enums in this library, is having a apiName value to represent what the enum entry's
   * String representation is when communicating with Twilio. This trait works as a base trait for
   * all of these enums, unifies the name of the value and how a enum value can be found from it.
   *
