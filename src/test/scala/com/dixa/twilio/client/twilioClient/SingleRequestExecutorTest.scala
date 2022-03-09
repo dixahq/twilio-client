@@ -310,7 +310,8 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
     override protected implicit def materializer: Materializer = Materializer.matFromSystem
 
-    override protected implicit def executionContext: ExecutionContext = actorSystem.dispatcher
+    override protected implicit def executionContext: ExecutionContext =
+      actorSystemProvider.classicSystem.dispatcher
 
     override protected type ApiExceptionWrapper = AbstractTestException
 
