@@ -5,7 +5,7 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.phonenumber.{
+import com.dixa.twilio.model.phonenumber.{
   TwilioActivePhoneNumber,
   TwilioIncomingPhoneNumber,
   TwilioPhoneNumberSid

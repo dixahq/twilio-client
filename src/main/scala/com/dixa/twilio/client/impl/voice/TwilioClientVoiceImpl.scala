@@ -5,9 +5,9 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.voice.TwilioConference
-import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.TwilioConference
+import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
 import com.dixa.twilio.client.voice.TwilioClientVoice
 
 import scala.concurrent.{ExecutionContext, Future}

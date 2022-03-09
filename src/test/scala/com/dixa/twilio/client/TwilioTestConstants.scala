@@ -1,7 +1,7 @@
 package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 
 object TwilioTestConstants {
 

@@ -7,9 +7,9 @@ import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendRequest,
   Response
 }
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging._
-import com.dixa.twilio.client.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.messaging._
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock

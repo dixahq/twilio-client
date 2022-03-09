@@ -5,14 +5,10 @@ import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
   PhoneNumberCreateRequest
 }
 import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestExecutor, TwilioClientMessaging}
-import com.dixa.twilio.client.model.messaging.{
-  ServiceSid,
-  TwilioMessagingPhoneNumber,
-  TwilioMessagingService
-}
-import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.messaging.{ServiceSid, TwilioMessagingPhoneNumber}
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

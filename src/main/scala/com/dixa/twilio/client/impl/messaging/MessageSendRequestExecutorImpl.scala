@@ -22,16 +22,15 @@ import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendRequest,
   Response
 }
-import com.dixa.twilio.client.model.Iso4127CountryCode
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging._
-import com.dixa.twilio.client.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.Iso4127CountryCode
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.messaging._
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
-import java.time.format.DateTimeFormatter
 import scala.concurrent.ExecutionContext
 
 private[impl] final class MessageSendRequestExecutorImpl()(

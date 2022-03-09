@@ -1,0 +1,97 @@
+package com.dixa.twilio.model.voice
+
+import com.dixa.twilio.model.iam.TwilioAccount
+import enumeratum.{Enum, EnumEntry}
+import org.scalactic.TypeCheckedTripleEquals._
+
+import scala.collection.immutable
+
+sealed trait TwilioConference {
+  def sid: TwilioConference.Sid
+  def status: TwilioConference.Status
+  def friendlyName: TwilioConference.FriendlyName
+  def accountSid: TwilioAccount.Sid
+}
+
+object TwilioConference {
+
+  def apply(
+      sid: Sid,
+      status: Status,
+      friendlyName: FriendlyName,
+      accountSid: TwilioAccount.Sid,
+  ): DefaultImpl = DefaultImpl(sid, status, friendlyName, accountSid)
+
+  final case class DefaultImpl(
+      sid: Sid,
+      status: Status,
+      friendlyName: FriendlyName,
+      accountSid: TwilioAccount.Sid,
+  ) extends TwilioConference
+
+  final case class TwilioConferenceWithParticipants(
+      sid: Sid,
+      status: Status,
+      friendlyName: FriendlyName,
+      accountSid: TwilioAccount.Sid,
+      participants: Vector[Participant]
+  ) extends TwilioConference
+
+  final case class Sid(override val toString: String)
+
+  sealed abstract class Status(
+      val apiName: String,
+      /** Specifies if this conference status is considerd active
+        *
+        * By active is meant a status where it is in progress or will end up in-progress in the
+        * future.
+        */
+      val isActive: Boolean
+  ) extends EnumEntry
+  object Status extends Enum[Status] {
+    override val values: immutable.IndexedSeq[Status] = findValues
+
+    case object Init       extends Status("init", isActive = true)
+    case object InProgress extends Status("in-progress", isActive = true)
+    case object Completed  extends Status("completed", isActive = false)
+
+    def fromApiName(s: String): Status = values
+      .find(_.apiName === s)
+      .getOrElse(
+        throw new IllegalArgumentException(
+          s"$s is not a valid Conference.Status. Allowed values are $values"
+        )
+      )
+  }
+
+  final case class FriendlyName(override val toString: String)
+
+  sealed abstract class ParticipantStatus(
+      val apiName: String,
+      /** Specifies if this status is one, where the participant are considered active
+        *
+        * By active means a state where the participant is either activily part of the conference,
+        * or is expected to be it in the future. So status like queued and connecting is also
+        * considered active.
+        */
+      val isActive: Boolean
+  ) extends EnumEntry
+  object ParticipantStatus extends Enum[ParticipantStatus] {
+    override val values: immutable.IndexedSeq[ParticipantStatus] = findValues
+
+    case object Queued     extends ParticipantStatus("queued", isActive = true)
+    case object Connecting extends ParticipantStatus("connecting", isActive = true)
+    case object Ringing    extends ParticipantStatus("ringing", isActive = true)
+    case object Connected  extends ParticipantStatus("connected", isActive = true)
+    case object Complete   extends ParticipantStatus("complete", isActive = false)
+    case object Failed     extends ParticipantStatus("failed", isActive = false)
+
+    def fromApiName(s: String): ParticipantStatus = values
+      .find(_.apiName === s)
+      .getOrElse(throw new IllegalArgumentException(s"$s is not a valid ParticipantStatus"))
+
+  }
+
+  final case class Participant(callSid: TwilioCallSid, status: ParticipantStatus)
+
+}

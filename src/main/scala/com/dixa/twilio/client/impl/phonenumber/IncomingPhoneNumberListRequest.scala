@@ -9,7 +9,7 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.phonenumber.IncomingPhoneNumberListRequest._
-import com.dixa.twilio.client.model.phonenumber.TwilioIncomingPhoneNumber
+import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber
 import io.circe.generic.auto._
 
 import java.net.URLEncoder

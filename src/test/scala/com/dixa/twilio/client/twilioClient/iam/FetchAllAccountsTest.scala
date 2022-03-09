@@ -3,9 +3,9 @@ package com.dixa.twilio.client.twilioClient.iam
 import akka.NotUsed
 import akka.stream.scaladsl.{Keep, Sink, Source}
 import com.dixa.twilio.client.iam.TwilioClientIam
-import com.dixa.twilio.client.model.iam.TwilioAccount
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

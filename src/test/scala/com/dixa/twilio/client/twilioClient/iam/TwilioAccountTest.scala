@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.iam
 
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 import org.scalatest.wordspec.AnyWordSpec
 
 final class TwilioAccountTest extends AnyWordSpec {

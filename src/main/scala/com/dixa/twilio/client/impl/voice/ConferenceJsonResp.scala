@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.impl.voice
 
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.voice.TwilioConference
-import com.dixa.twilio.client.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.TwilioConference
+import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
 
 private[voice] object ConferenceJsonResp {
 
@@ -33,7 +33,7 @@ private[voice] object ConferenceJsonResp {
     ): TwilioConferenceWithParticipants = {
       TwilioConferenceWithParticipants(
         TwilioConference.Sid(sid),
-        TwilioConference.Status.fromTwilioStringStatus(status),
+        TwilioConference.Status.fromApiName(status),
         TwilioConference.FriendlyName(friendly_name),
         TwilioAccount.Sid(account_sid),
         participants.toVector
@@ -43,7 +43,7 @@ private[voice] object ConferenceJsonResp {
     private[voice] def toModel: TwilioConference.DefaultImpl = {
       TwilioConference(
         TwilioConference.Sid(sid),
-        TwilioConference.Status.fromTwilioStringStatus(status),
+        TwilioConference.Status.fromApiName(status),
         TwilioConference.FriendlyName(friendly_name),
         TwilioAccount.Sid(account_sid)
       )

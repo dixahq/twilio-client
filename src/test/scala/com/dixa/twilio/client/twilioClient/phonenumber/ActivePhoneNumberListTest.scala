@@ -1,14 +1,14 @@
 package com.dixa.twilio.client.twilioClient.phonenumber
 
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.phonenumber._
-import com.dixa.twilio.client.model.phonenumber.PhoneNumberCapabilities._
-import com.dixa.twilio.client.model.phonenumber.PhoneNumberRegulatoryRequirement.AddressRequirementType
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.PhoneNumberCapabilities._
+import com.dixa.twilio.model.phonenumber.PhoneNumberRegulatoryRequirement.AddressRequirementType
+import com.dixa.twilio.model.phonenumber._
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.neovisionaries.i18n.CountryCode

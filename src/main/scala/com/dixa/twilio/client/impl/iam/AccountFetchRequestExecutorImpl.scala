@@ -7,7 +7,7 @@ import com.dixa.twilio.client.iam.AccountFetchRequestExecutor
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchException
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import io.circe.generic.auto._
 import scala.concurrent.ExecutionContext

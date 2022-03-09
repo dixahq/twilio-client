@@ -6,10 +6,10 @@ import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.{
   PhoneNumberDeleteException,
   PhoneNumberDeleteRequest
 }
-import com.dixa.twilio.client.model.messaging.{ServiceSid, TwilioMessagingService}
-import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.messaging.ServiceSid
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

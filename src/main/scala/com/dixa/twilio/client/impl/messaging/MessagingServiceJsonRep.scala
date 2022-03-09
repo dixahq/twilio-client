@@ -1,9 +1,9 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.model.HttpMethod
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
-import com.dixa.twilio.client.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
+import com.dixa.twilio.client.HttpMethod
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
+import com.dixa.twilio.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
 
 import java.net.URL
 

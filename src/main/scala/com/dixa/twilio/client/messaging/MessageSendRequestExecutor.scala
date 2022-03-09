@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{MessageSendException, Response}
-import com.dixa.twilio.client.model.Iso4127CountryCode
-import com.dixa.twilio.client.model.iam.TwilioAccount
-import com.dixa.twilio.client.model.messaging._
-import com.dixa.twilio.client.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.Iso4127CountryCode
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.messaging._
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 
 import java.time.Instant

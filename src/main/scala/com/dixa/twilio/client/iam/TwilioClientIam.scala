@@ -3,7 +3,7 @@ package com.dixa.twilio.client.iam
 import akka.NotUsed
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 
 trait TwilioClientIam {
 

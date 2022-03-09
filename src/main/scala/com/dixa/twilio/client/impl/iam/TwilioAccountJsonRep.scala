@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.iam
 
 import com.dixa.twilio.client.impl.Formatter
-import com.dixa.twilio.client.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.TwilioAccount
 
 import java.time.Instant
 
@@ -67,7 +67,7 @@ private[iam] final case class TwilioAccountJsonRep(
       status = TwilioAccount.Status.fromApiName(status),
       ownerAccountSid = TwilioAccount.Sid(owner_account_sid),
       authToken = TwilioAccount.AuthToken(auth_token),
-      accountType = TwilioAccount.Type.fromTwilioApiName(`type`),
+      accountType = TwilioAccount.Type.fromApiName(`type`),
       timeCreated = Instant.from(Formatter.dateTime.parse(date_created)),
       timeUpdated = Instant.from(Formatter.dateTime.parse(date_updated))
     )

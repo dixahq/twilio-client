@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.messaging
 
 import akka.Done
-import com.dixa.twilio.client.model.messaging.{ServiceSid, TwilioMessagingService}
-import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteException
-import com.dixa.twilio.client.model.phonenumber.TwilioPhoneNumberSid
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.messaging.ServiceSid
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 
 trait PhoneNumberDeleteRequestExecutor
     extends SingleRequestExecutor[
