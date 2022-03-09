@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.twilioClient.iam
 
+import com.dixa.twilio.CommonFixtures
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.{
   AccountFetchException,
   AccountFetchRequest
@@ -33,28 +34,7 @@ final class FetchAccountTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(
-          TwilioAccount(
-            name = TwilioAccount.Name("account friendly name"),
-            sid = fetchRequest.accountSid,
-            status = TwilioAccount.Status.Active,
-            ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4a56fa29e23a"),
-            authToken = TwilioAccount.AuthToken("AVerySecretValueThatShouldBeXXXX"),
-            accountType = TwilioAccount.Type.Full,
-            timeCreated = Instant.from(
-              OffsetDateTime.of(
-                LocalDateTime.of(LocalDate.of(2015, 10, 26), LocalTime.of(11, 40, 54)),
-                ZoneOffset.UTC
-              )
-            ),
-            timeUpdated = Instant.from(
-              OffsetDateTime.of(
-                LocalDateTime.of(LocalDate.of(2022, 2, 23), LocalTime.of(17, 13, 40)),
-                ZoneOffset.UTC
-              )
-            ),
-          )
-        )
+        val expected = Right(account1)
 
         val resultFut: Future[
           Either[AccountFetchException, TwilioAccount]
@@ -66,9 +46,9 @@ final class FetchAccountTest extends TwilioClientTest {
   }
 
   // noinspection TypeAnnotation
-  final class Fixture {
+  final class Fixture extends CommonFixtures.Account {
     val fetchRequest = AccountFetchRequest(
-      accountSid = TwilioAccount.Sid("ACf6c9aa4f2754c258aa45a6d2637cfa15"),
+      accountSid = accountSid1,
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
@@ -89,7 +69,7 @@ final class FetchAccountTest extends TwilioClientTest {
       |  "status": "active",
       |  "date_updated": "Wed, 23 Feb 2022 17:13:40 +0000",
       |  "auth_token": "AVerySecretValueThatShouldBeXXXX",
-      |  "friendly_name": "account friendly name",
+      |  "friendly_name": "CommonFixtures.Account.account1 friendly name",
       |  "owner_account_sid": "AC5fc6c53ce58165d0712d4a56fa29e23a",
       |  "uri": "/2010-04-01/Accounts/ACf6c9aa4f8756c258be45a6d2637cfa15.json",
       |  "sid": "ACf6c9aa4f2754c258aa45a6d2637cfa15",
