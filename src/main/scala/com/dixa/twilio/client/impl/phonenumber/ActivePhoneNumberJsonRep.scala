@@ -2,9 +2,9 @@ package com.dixa.twilio.client.impl.phonenumber
 
 import com.dixa.twilio.client.impl.phonenumber.ActivePhoneNumberJsonRep._
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.phonenumber._
 import com.dixa.twilio.model.phonenumber.PhoneNumberCapabilities._
 import com.dixa.twilio.model.phonenumber.PhoneNumberRegulatoryRequirement.AddressRequirementType
+import com.dixa.twilio.model.phonenumber._
 import com.neovisionaries.i18n.CountryCode
 
 private[phonenumber] final case class ActivePhoneNumberJsonRep(
@@ -24,8 +24,8 @@ private[phonenumber] final case class ActivePhoneNumberJsonRep(
     TwilioPhoneNumberSid(sid),
     TwilioAccount.Sid(account_sid),
     PhoneNumberE164(phone_number),
-    PhoneNumberType.fromApiNameCaseInsensitive(`type`),
-    PhoneNumberLifecycle.fromApiNameCaseInsensitive(lifecycle),
+    PhoneNumberType.fromTwilioStringCaseInsensitiveUnsafe(`type`),
+    PhoneNumberLifecycle.fromTwilioStringCaseInsensitiveUnsafe(lifecycle),
     PhoneNumberCapabilities(
       voice = VoiceCapabilities(
         capabilities.voice.inbound_connectivity,
@@ -38,31 +38,37 @@ private[phonenumber] final case class ActivePhoneNumberJsonRep(
         capabilities.voice.inbound_called_dtmf,
         capabilities.voice.inbound_caller_dtmf,
         capabilities.voice.sip_trunking,
-        CallerIdPreservation.fromApiNameCaseInsensitive(
+        CallerIdPreservation.fromTwilioStringCaseInsensitiveUnsafe(
           capabilities.voice.inbound_caller_id_preservation
         ),
-        InboundReachability.fromApiNameCaseInsensitive(capabilities.voice.inbound_reachability),
+        InboundReachability.fromTwilioStringCaseInsensitiveUnsafe(
+          capabilities.voice.inbound_reachability
+        ),
       ),
       sms = SmsCapabilities(
         capabilities.sms.inbound_connectivity,
         capabilities.sms.outbound_connectivity,
         capabilities.sms.gsm7,
         capabilities.sms.ucs2,
-        CallerIdPreservation.fromApiNameCaseInsensitive(
+        CallerIdPreservation.fromTwilioStringCaseInsensitiveUnsafe(
           capabilities.sms.inbound_sender_id_preservation
         ),
-        InboundReachability.fromApiNameCaseInsensitive(capabilities.sms.inbound_reachability),
+        InboundReachability.fromTwilioStringCaseInsensitiveUnsafe(
+          capabilities.sms.inbound_reachability
+        ),
         capabilities.sms.inbound_mps,
       ),
       mms = MmsCapabilities(
         capabilities.mms.inbound_connectivity,
         capabilities.mms.outbound_connectivity,
-        InboundReachability.fromApiNameCaseInsensitive(capabilities.mms.inbound_reachability),
+        InboundReachability.fromTwilioStringCaseInsensitiveUnsafe(
+          capabilities.mms.inbound_reachability
+        ),
         capabilities.mms.inbound_mps,
       ),
     ),
     PhoneNumberRegulatoryRequirement(
-      AddressRequirementType.fromApiNameCaseInsensitive(regulatory.address_requirements)
+      AddressRequirementType.fromTwilioStringCaseInsensitiveUnsafe(regulatory.address_requirements)
     ),
     PhoneNumberGeography(
       CountryCode.getByCode(geography.iso_country),

@@ -30,7 +30,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
       connSettings.parallelFactor.asInt,
       accountSid =>
         {
-          val statusParam = statusFilter.map(f => s"Status=${f.apiName}&").getOrElse("")
+          val statusParam = statusFilter.map(f => s"Status=${f.twilioString}&").getOrElse("")
           val initPath = TwilioPath(
             ApiSubDomain.Api,
             HttpMethods.GET,
@@ -85,7 +85,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     decoded.participants.map { jsonRep =>
       TwilioConference.Participant(
         TwilioCallSid(jsonRep.call_sid),
-        TwilioConference.ParticipantStatus.fromApiName(jsonRep.status)
+        TwilioConference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
       )
     }
   }

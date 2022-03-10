@@ -22,7 +22,7 @@ private[impl] object FetchAllAccountsRequest {
       implicit httpExt: HttpExt,
       materializer: Materializer
   ): Source[TwilioAccount, NotUsed] = {
-    val statusParam = status.map(s => s"&Status=${s.apiName}").getOrElse("")
+    val statusParam = status.map(s => s"&Status=${s.twilioString}").getOrElse("")
     TwilioPagingFlow
       .createPagingSrc(
         connSettings,
@@ -43,10 +43,10 @@ private[impl] object FetchAllAccountsRequest {
       TwilioAccount(
         TwilioAccount.Name(jsonRep.friendly_name),
         TwilioAccount.Sid(jsonRep.sid),
-        TwilioAccount.Status.fromApiName(jsonRep.status),
+        TwilioAccount.Status.fromTwilioStringUnsafe(jsonRep.status),
         TwilioAccount.Sid(jsonRep.owner_account_sid),
         TwilioAccount.AuthToken(jsonRep.auth_token),
-        TwilioAccount.Type.fromApiName(jsonRep.`type`),
+        TwilioAccount.Type.fromTwilioStringUnsafe(jsonRep.`type`),
         Instant.from(Formatter.dateTime.parse(jsonRep.date_created)),
         Instant.from(Formatter.dateTime.parse(jsonRep.date_updated))
       )
