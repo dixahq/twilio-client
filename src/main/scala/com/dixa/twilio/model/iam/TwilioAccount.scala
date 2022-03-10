@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.iam
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
@@ -32,8 +32,8 @@ object TwilioAccount {
     override def toString: String = authTokenSecretValueString
   }
 
-  sealed abstract class Status(val apiName: String) extends EnumWithApiName.EnumEntry
-  object Status extends EnumWithApiName[Status] {
+  sealed abstract class Status(val twilioString: String) extends EnumWithTwilioString.EnumEntry
+  object Status extends EnumWithTwilioString[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
 
     case object Active    extends Status("active")
@@ -41,8 +41,8 @@ object TwilioAccount {
     case object Closed    extends Status("closed")
   }
 
-  sealed abstract class Type(val apiName: String) extends EnumWithApiName.EnumEntry
-  object Type extends EnumWithApiName[Type] {
+  sealed abstract class Type(val twilioString: String) extends EnumWithTwilioString.EnumEntry
+  object Type extends EnumWithTwilioString[Type] {
     override val values: immutable.IndexedSeq[Type] = findValues
 
     case object Trail extends Type("Trial")

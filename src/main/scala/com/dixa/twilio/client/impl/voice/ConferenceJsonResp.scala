@@ -33,7 +33,7 @@ private[voice] object ConferenceJsonResp {
     ): TwilioConferenceWithParticipants = {
       TwilioConferenceWithParticipants(
         TwilioConference.Sid(sid),
-        TwilioConference.Status.fromApiNameUnsafe(status),
+        TwilioConference.Status.fromTwilioStringUnsafe(status),
         TwilioConference.FriendlyName(friendly_name),
         TwilioAccount.Sid(account_sid),
         participants.toVector
@@ -43,7 +43,7 @@ private[voice] object ConferenceJsonResp {
     private[voice] def toModel: TwilioConference.DefaultImpl = {
       TwilioConference(
         TwilioConference.Sid(sid),
-        TwilioConference.Status.fromApiNameUnsafe(status),
+        TwilioConference.Status.fromTwilioStringUnsafe(status),
         TwilioConference.FriendlyName(friendly_name),
         TwilioAccount.Sid(account_sid)
       )

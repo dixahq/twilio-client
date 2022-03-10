@@ -87,7 +87,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   ): Either[MessageSendException, Response] = {
     val entityString = HttpEntityString(entity.data.utf8String)
     val decoded      = entityString.parseUnsafe[MessageSendRespJsonRep]()
-    MessageDirection.values.find(_.apiName === decoded.direction) match {
+    MessageDirection.values.find(_.twilioString === decoded.direction) match {
       case None =>
         Left(
           new MessageSendException.Unspecified(
@@ -103,7 +103,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
               )
             )
           case true =>
-            MessageStatus.values.find(_.apiName === decoded.status) match {
+            MessageStatus.values.find(_.twilioString === decoded.status) match {
               case None =>
                 Left(
                   new MessageSendException.Unspecified(

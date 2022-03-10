@@ -1,11 +1,11 @@
 package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 
 import scala.collection.immutable
 
-sealed abstract class MessageStatus(val apiName: String) extends EnumWithApiName.EnumEntry
-object MessageStatus extends EnumWithApiName[MessageStatus] {
+sealed abstract class MessageStatus(val twilioString: String) extends EnumWithTwilioString.EnumEntry
+object MessageStatus extends EnumWithTwilioString[MessageStatus] {
   override val values: immutable.IndexedSeq[MessageStatus] = findValues
 
   case object Accepted    extends MessageStatus("accepted")

@@ -1,14 +1,15 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 import enumeratum.{Enum, EnumEntry}
 import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 
-sealed abstract class PhoneNumberType(val apiName: String) extends EnumWithApiName.EnumEntry
+sealed abstract class PhoneNumberType(val twilioString: String)
+    extends EnumWithTwilioString.EnumEntry
 
-object PhoneNumberType extends EnumWithApiName[PhoneNumberType] {
+object PhoneNumberType extends EnumWithTwilioString[PhoneNumberType] {
   override val values: immutable.IndexedSeq[PhoneNumberType] = findValues
 
   case object Local     extends PhoneNumberType("local")

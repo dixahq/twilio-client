@@ -1,12 +1,13 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 
 import scala.collection.immutable
 
-sealed abstract class PhoneNumberLifecycle(val apiName: String) extends EnumWithApiName.EnumEntry
+sealed abstract class PhoneNumberLifecycle(val twilioString: String)
+    extends EnumWithTwilioString.EnumEntry
 
-object PhoneNumberLifecycle extends EnumWithApiName[PhoneNumberLifecycle] {
+object PhoneNumberLifecycle extends EnumWithTwilioString[PhoneNumberLifecycle] {
   override val values: immutable.IndexedSeq[PhoneNumberLifecycle] = findValues
 
   case object Beta               extends PhoneNumberLifecycle("beta")

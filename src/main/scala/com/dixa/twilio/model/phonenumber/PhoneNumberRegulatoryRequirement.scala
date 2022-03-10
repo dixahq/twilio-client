@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.phonenumber.PhoneNumberRegulatoryRequirement._
 
 import scala.collection.immutable
@@ -10,10 +10,10 @@ final case class PhoneNumberRegulatoryRequirement(
 )
 
 object PhoneNumberRegulatoryRequirement {
-  sealed abstract class AddressRequirementType(val apiName: String)
-      extends EnumWithApiName.EnumEntry
+  sealed abstract class AddressRequirementType(val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
 
-  object AddressRequirementType extends EnumWithApiName[AddressRequirementType] {
+  object AddressRequirementType extends EnumWithTwilioString[AddressRequirementType] {
     override val values: immutable.IndexedSeq[AddressRequirementType] = findValues
 
     case object Any     extends AddressRequirementType("any")

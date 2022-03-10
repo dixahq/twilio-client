@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.phonenumber.PhoneNumberCapabilities._
 
 import scala.collection.immutable
@@ -12,9 +12,10 @@ final case class PhoneNumberCapabilities(
 )
 
 object PhoneNumberCapabilities {
-  sealed abstract class CallerIdPreservation(val apiName: String) extends EnumWithApiName.EnumEntry
+  sealed abstract class CallerIdPreservation(val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
 
-  object CallerIdPreservation extends EnumWithApiName[CallerIdPreservation] {
+  object CallerIdPreservation extends EnumWithTwilioString[CallerIdPreservation] {
     override val values: immutable.IndexedSeq[CallerIdPreservation] = findValues
 
     case object International extends CallerIdPreservation("international")
@@ -22,9 +23,10 @@ object PhoneNumberCapabilities {
     case object None          extends CallerIdPreservation("none")
   }
 
-  sealed abstract class InboundReachability(val apiName: String) extends EnumWithApiName.EnumEntry
+  sealed abstract class InboundReachability(val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
 
-  object InboundReachability extends EnumWithApiName[InboundReachability] {
+  object InboundReachability extends EnumWithTwilioString[InboundReachability] {
     override val values: immutable.IndexedSeq[InboundReachability] = findValues
 
     case object Global   extends InboundReachability("global")

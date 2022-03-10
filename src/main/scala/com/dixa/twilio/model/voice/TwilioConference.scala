@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.voice
 
-import com.dixa.twilio.model.EnumWithApiName
+import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import scala.collection.immutable
@@ -39,15 +39,15 @@ object TwilioConference {
   final case class Sid(override val toString: String)
 
   sealed abstract class Status(
-      val apiName: String,
+      val twilioString: String,
       /** Specifies if this conference status is considerd active
         *
         * By active is meant a status where it is in progress or will end up in-progress in the
         * future.
         */
       val isActive: Boolean
-  ) extends EnumWithApiName.EnumEntry
-  object Status extends EnumWithApiName[Status] {
+  ) extends EnumWithTwilioString.EnumEntry
+  object Status extends EnumWithTwilioString[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
 
     case object Init       extends Status("init", isActive = true)
@@ -58,7 +58,7 @@ object TwilioConference {
   final case class FriendlyName(override val toString: String)
 
   sealed abstract class ParticipantStatus(
-      val apiName: String,
+      val twilioString: String,
       /** Specifies if this status is one, where the participant are considered active
         *
         * By active means a state where the participant is either activily part of the conference,
@@ -66,8 +66,8 @@ object TwilioConference {
         * considered active.
         */
       val isActive: Boolean
-  ) extends EnumWithApiName.EnumEntry
-  object ParticipantStatus extends EnumWithApiName[ParticipantStatus] {
+  ) extends EnumWithTwilioString.EnumEntry
+  object ParticipantStatus extends EnumWithTwilioString[ParticipantStatus] {
     override val values: immutable.IndexedSeq[ParticipantStatus] = findValues
 
     case object Queued     extends ParticipantStatus("queued", isActive = true)

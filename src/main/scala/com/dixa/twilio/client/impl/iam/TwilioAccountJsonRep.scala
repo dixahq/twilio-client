@@ -64,10 +64,10 @@ private[iam] final case class TwilioAccountJsonRep(
     TwilioAccount(
       name = TwilioAccount.Name(friendly_name),
       sid = TwilioAccount.Sid(sid),
-      status = TwilioAccount.Status.fromApiNameUnsafe(status),
+      status = TwilioAccount.Status.fromTwilioStringUnsafe(status),
       ownerAccountSid = TwilioAccount.Sid(owner_account_sid),
       authToken = TwilioAccount.AuthToken(auth_token),
-      accountType = TwilioAccount.Type.fromApiNameUnsafe(`type`),
+      accountType = TwilioAccount.Type.fromTwilioStringUnsafe(`type`),
       timeCreated = Instant.from(Formatter.dateTime.parse(date_created)),
       timeUpdated = Instant.from(Formatter.dateTime.parse(date_updated))
     )
