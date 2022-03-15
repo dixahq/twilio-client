@@ -19,11 +19,48 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
   classOf[PhoneNumberDeleteRequestExecutor].getSimpleName when {
 
     "run" should {
-      "ask twilio to delete it (meaning removing it from a service)" in {
+      "ask twilio to delete it (meaning removing it from a service), and accept twilio responding with 200" in {
+        // Actually twilio do send back a 204 in this case, but let us also support 200, in case they change
+        // there mind
         val f = new Fixture
         import f._
 
-        wiremockStubForSuccess()
+        wireMockServer.stubFor(
+          WireMock
+            .delete(
+              WireMock.urlPathEqualTo(
+                "/v1/Services/MG777c6a32c5b17bc426e7fff6a0f67aa0/PhoneNumbers/PNa2ab2f57a0ffca3a3fa907a4ce305477"
+              )
+            )
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+            )
+        )
+
+        val resultFut: Future[Either[PhoneNumberDeleteException, Done]] =
+          instance.run(connSettings, toDelete)
+        resultFut.map(result => assert(result === Right(Done)))
+      }
+
+      "ask twilio to delete it (meaning removing it from a service), and accept twilio responding with 204" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          WireMock
+            .delete(
+              WireMock.urlPathEqualTo(
+                "/v1/Services/MG777c6a32c5b17bc426e7fff6a0f67aa0/PhoneNumbers/PNa2ab2f57a0ffca3a3fa907a4ce305477"
+              )
+            )
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+            .willReturn(
+              aResponse()
+                .withStatus(204)
+            )
+        )
 
         val resultFut: Future[Either[PhoneNumberDeleteException, Done]] =
           instance.run(connSettings, toDelete)
@@ -109,21 +146,5 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val instance     = TwilioClient.defaultImpl().messaging.phoneNumberDelete
-
-    def wiremockStubForSuccess(): Unit = {
-      wireMockServer.stubFor(
-        WireMock
-          .delete(
-            WireMock.urlPathEqualTo(
-              "/v1/Services/MG777c6a32c5b17bc426e7fff6a0f67aa0/PhoneNumbers/PNa2ab2f57a0ffca3a3fa907a4ce305477"
-            )
-          )
-          .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
-          .willReturn(
-            aResponse()
-              .withStatus(200)
-          )
-      )
-    }
   }
 }
