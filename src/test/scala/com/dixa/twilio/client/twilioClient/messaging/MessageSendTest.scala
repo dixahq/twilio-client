@@ -4,8 +4,7 @@ import com.dixa.twilio.client.TwilioTestConstants.{testAuthToken, testSid}
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendException,
-  MessageSendRequest,
-  Response
+  MessageSendRequest
 }
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
@@ -68,7 +67,7 @@ final class MessageSendTest extends TwilioClientTest {
         )
 
         val expected = Right(
-          Response(
+          MessageResource(
             accountSid = TwilioAccount.Sid(testSid),
             body = MessageBody(messageBody),
             dateCreated = None,
@@ -80,15 +79,15 @@ final class MessageSendTest extends TwilioClientTest {
             numMedia = 0,
             numSegments = MessageNumSegments(1),
             price = None,
-            priceUnit = None,
             sid = MessageSid("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             status = MessageStatus.withName("Sent"),
-            to = PhoneNumberE164(to)
+            to = PhoneNumberE164(to),
+            error = None
           )
         )
 
         val resultFut: Future[
-          Either[MessageSendException, Response]
+          Either[MessageSendException, MessageResource]
         ] =
           instance.run(connSettings, messageSendRequest)
         resultFut.map(result => assert(result === expected))
@@ -109,7 +108,7 @@ final class MessageSendTest extends TwilioClientTest {
         )
 
         val resultFut: Future[
-          Either[MessageSendException, Response]
+          Either[MessageSendException, MessageResource]
         ] =
           instance.run(connSettings, messageSendRequest)
         val expected = Left(new MessageSendException.ToNumberNotValid)
@@ -131,7 +130,7 @@ final class MessageSendTest extends TwilioClientTest {
         )
 
         val resultFut: Future[
-          Either[MessageSendException, Response]
+          Either[MessageSendException, MessageResource]
         ] =
           instance.run(connSettings, messageSendRequest)
         val expected = Left(new MessageSendException.FromNumberNotValid)
@@ -153,7 +152,7 @@ final class MessageSendTest extends TwilioClientTest {
         )
 
         val resultFut: Future[
-          Either[MessageSendException, Response]
+          Either[MessageSendException, MessageResource]
         ] =
           instance.run(connSettings, messageSendRequest)
         val expected = Left(new MessageSendException.NotMessageCapableNumber)
@@ -175,7 +174,7 @@ final class MessageSendTest extends TwilioClientTest {
         )
 
         val resultFut: Future[
-          Either[MessageSendException, Response]
+          Either[MessageSendException, MessageResource]
         ] =
           instance.run(connSettings, messageSendRequest)
         val expected = Left(new MessageSendException.MessageBodyCharLimitExceeded)
@@ -197,7 +196,7 @@ final class MessageSendTest extends TwilioClientTest {
         )
 
         val resultFut: Future[
-          Either[MessageSendException, Response]
+          Either[MessageSendException, MessageResource]
         ] =
           instance.run(connSettings, messageSendRequest)
         val expected = Left(MessageSendException.Api(ApiException.AuthenticationException()))

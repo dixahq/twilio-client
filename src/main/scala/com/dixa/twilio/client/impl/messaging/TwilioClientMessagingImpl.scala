@@ -11,7 +11,11 @@ import com.dixa.twilio.client.messaging.{
   PhoneNumberDeleteRequestExecutor,
   TwilioClientMessaging
 }
-import com.dixa.twilio.model.messaging.{MediaResourceReference, TwilioMessagingService}
+import com.dixa.twilio.model.messaging.{
+  MediaResourceReference,
+  MessageResource,
+  TwilioMessagingService
+}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -47,5 +51,12 @@ private[client] final class TwilioClientMessagingImpl(
       req: TwilioClientMessaging.MediaResourceReadRequest
   ): Source[MediaResourceReference, NotUsed] = {
     MediaResourceReadSource(connSettings, req)
+  }
+
+  override def messageResourceRead(
+      connSettings: TwilioConnectionSettings,
+      req: TwilioClientMessaging.MessageResourceReadRequest
+  ): Source[MessageResource, NotUsed] = {
+    MessageResourceReadSourceImpl(connSettings, req)
   }
 }
