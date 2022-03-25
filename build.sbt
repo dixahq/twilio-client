@@ -8,7 +8,7 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Akka     = "2.6.18"
+  val Akka     = "2.6.19"
   val AkkaHttp = "10.2.9"
   val Circe    = "0.14.1"
 
@@ -78,14 +78,14 @@ lazy val `twilio-client` = project
         "com.beachape"  %% "enumeratum" % "1.7.0",
 
         // Test
-        "org.scalatest"         %% "scalatest"                    % Version.ScalatestScalactic % Test,
-        "org.scalamock"         %% "scalamock-scalatest-support"  % "3.6.0"                    % Test,
-        "com.github.tomakehurst" % "wiremock"                     % "2.27.2"                   % Test
+        "org.scalatest" %% "scalatest"                   % Version.ScalatestScalactic % Test,
+        "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0"                    % Test,
+        "com.github.tomakehurst" % "wiremock" % "2.27.2" % Test
       ),
       coverageMinimumStmtTotal := 85,
-      coverageFailOnMinimum := false,
-      coverageHighlighting  := false,
-      Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
+      coverageFailOnMinimum    := false,
+      coverageHighlighting     := false,
+      Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
   .enablePlugins(
