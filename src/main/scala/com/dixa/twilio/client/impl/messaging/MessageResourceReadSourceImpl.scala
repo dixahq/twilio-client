@@ -1,24 +1,37 @@
 package com.dixa.twilio.client.impl.messaging
 
-import akka.NotUsed
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{FormData, HttpEntity, HttpMethods, HttpRequest, Uri}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
 import akka.stream.Materializer
-import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.messaging.MessageResourceReadSourceImpl.parseDate
-import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, ListJsonRep, PagingStyle, TwilioPagingFlow, TwilioResponseNextPageJsonRep, TwilioUri}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  Formatter,
+  HttpEntityString,
+  ListJsonRep,
+  TwilioResponseNextPageJsonRep,
+  TwilioUri
+}
 import com.dixa.twilio.client.messaging.MessageResourceReadSource
 import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
-import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
-import com.dixa.twilio.model.{EnumWithTwilioString, Iso4127CountryCode}
+import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{MessageBody, MessageDirection, MessageError, MessageNumSegments, MessagePrice, MessageResource, MessageSender, MessageSid, MessageStatus, ServiceSid}
+import com.dixa.twilio.model.messaging.{
+  MessageBody,
+  MessageDirection,
+  MessageError,
+  MessageNumSegments,
+  MessagePrice,
+  MessageResource,
+  MessageSender,
+  MessageSid,
+  MessageStatus,
+  ServiceSid
+}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import io.circe.generic.auto._
-import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext

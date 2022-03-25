@@ -16,9 +16,6 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
   def source(
       connSettings: TwilioConnectionSettings,
       req: Req,
-  )(
-      implicit materializer: Materializer,
-      http: HttpExt
   ): Source[Either[Err, Success], NotUsed] = {
     Source
       .fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -47,7 +44,14 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
       .via { parseHttpEntityFlow(connSettings, req) }
   }
 
-//  def unsafeSource: Source[Success, NotUsed] =
+  def unsafeSource(
+      connSettings: TwilioConnectionSettings,
+      req: Req,
+  ): Source[Success, NotUsed] =
+    source(connSettings, req).map {
+      case Left(value)  => throw value
+      case Right(value) => value
+    }
 
   protected def http: HttpExt
 
@@ -124,7 +128,7 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
       request: Req,
       httpRequest: HttpRequest,
       responseEntity: HttpEntityString
-  ): Seq[Either[Err, Success]]
+  ): List[Either[Err, Success]]
 
   /** Detect uri for next page in the entity and build optional http request dependent on uri is
     * present or not

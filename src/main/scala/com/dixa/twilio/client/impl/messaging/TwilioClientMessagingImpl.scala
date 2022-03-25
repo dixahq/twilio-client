@@ -8,8 +8,18 @@ import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.HttpEntityString
 import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
-import com.dixa.twilio.client.messaging.{MessageResourceReadSource, MessageSendRequestExecutor, PhoneNumberCreateRequestExecutor, PhoneNumberDeleteRequestExecutor, TwilioClientMessaging}
-import com.dixa.twilio.model.messaging.{MediaResourceReference, MessageResource, TwilioMessagingService}
+import com.dixa.twilio.client.messaging.{
+  MessageResourceReadSource,
+  MessageSendRequestExecutor,
+  PhoneNumberCreateRequestExecutor,
+  PhoneNumberDeleteRequestExecutor,
+  TwilioClientMessaging
+}
+import com.dixa.twilio.model.messaging.{
+  MediaResourceReference,
+  MessageResource,
+  TwilioMessagingService
+}
 
 import scala.concurrent.{ExecutionContext, Future}
 

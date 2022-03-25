@@ -2,8 +2,7 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.http.scaladsl.model.DateTime
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.client.messaging.TwilioClientMessaging
-import com.dixa.twilio.client.messaging.TwilioClientMessaging.MessageResourcesReadRequestFilter
+import com.dixa.twilio.client.messaging.{MessageResourceReadSource, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -45,7 +44,7 @@ final class MessageResourceReadTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.messageResourceRead(connSettings, req).runWith(Sink.seq)
+          instance.messageResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.isEmpty shouldBe true
         }
@@ -126,18 +125,9 @@ final class MessageResourceReadTest extends TwilioClientTest with Matchers {
     val toPhoneNumber   = PhoneNumberE164("+18182008801")
     val fromPhoneNumber = PhoneNumberE164("+12019235161")
 
-    val dateSent = DateTime(year = 2020, month = 4, day = 1)
-
-    val req = TwilioClientMessaging.MessageResourceReadRequest(
-      accountSid = accountSid,
-      filter = MessageResourcesReadRequestFilter(
-        to = Some(toPhoneNumber),
-        from = Some(fromPhoneNumber),
-        dateSent = Some(dateSent),
-      )
-    )
     val createdAt = "Tue, 01 Feb 2022 13:44:20 +0000"
     val updatedAt = "Wed, 02 Feb 2022 15:42:20 +0000"
+    val dateSent  = "01 Apr 2022 15:15:15 +0000"
 
     val createdAtInstant = Instant.from(
       OffsetDateTime.of(
@@ -149,6 +139,22 @@ final class MessageResourceReadTest extends TwilioClientTest with Matchers {
       OffsetDateTime.of(
         LocalDateTime.of(LocalDate.of(2022, 2, 2), LocalTime.of(15, 42, 20)),
         ZoneOffset.UTC
+      )
+    )
+
+    val dateSentInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2022, 4, 1), LocalTime.of(15, 15, 15)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val req = MessageResourceReadSource.MessageResourceReadRequest(
+      accountSid = accountSid,
+      filter = MessageResourceReadSource.MessageResourcesReadRequestFilter(
+        to = Some(toPhoneNumber),
+        from = Some(fromPhoneNumber),
+        dateSentAfter = Some(dateSentInstant),
       )
     )
   }

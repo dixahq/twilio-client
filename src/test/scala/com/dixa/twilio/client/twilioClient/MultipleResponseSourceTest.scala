@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.twilioClient
 
+import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
 import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, Uri}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
@@ -8,7 +9,9 @@ import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client._
-import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.impl.messaging.MessageJsonRep
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, ListJsonRep}
+import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, matching}
@@ -51,29 +54,15 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
-              reponseEntity: HttpEntity.Strict
-          ): Either[AbstractTestException, TestSuccess] = {
-            val entityAsString = reponseEntity.data.utf8String
-            try {
-              Right(
-                HttpEntityString(entityAsString).parseUnsafe[TestResponseNextPageJsonRep]().test
-              )
-            } catch {
-              case _: Exception =>
-                Left(
-                  AbstractTestException.Undefined(
-                    Some(s"Wrong entity given to implementation: $entityAsString"),
-                    None
-                  )
-                )
-            }
-          }
+              responseEntity: HttpEntityString
+          ): List[Either[AbstractTestException, TestSuccess]] =
+            sharedHttpParser(responseEntity)
 
-          override protected def detectNextPage(entityString: HttpEntityString): Option[Uri] =
-            detectNextPageImpl(entityString)
-
-          override protected def nextPageHttpRequestBuilder(uri: Uri): HttpRequest =
-            nextPageHttpRequestBuilderImpl(uri)
+          override protected def nextPageHttpRequestBuilder(
+              connectionSettings: TwilioConnectionSettings,
+              entityString: HttpEntityString
+          ): Option[HttpRequest] =
+            sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
         }
 
         impl
@@ -129,29 +118,35 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
-              reponseEntity: HttpEntity.Strict
-          ): Either[AbstractTestException, TestSuccess] = {
-            val entityAsString = reponseEntity.data.utf8String
-            try {
-              Right(
-                HttpEntityString(entityAsString).parseUnsafe[TestResponseNextPageJsonRep]().test
-              )
-            } catch {
-              case _: Exception =>
-                Left(
-                  AbstractTestException.Undefined(
-                    Some(s"Wrong entity given to implementation: $entityAsString"),
-                    None
+              responseEntity: HttpEntityString
+          ): List[Either[AbstractTestException, TestSuccess]] = {
+            responseEntity
+              .parse[ListJsonRep[TestSuccessJsonRep]]() match {
+              case Left(ex) =>
+                List(
+                  Left(
+                    AbstractTestException.Undefined(
+                      Some(s"Wrong entity given to implementation: ${ex.cause.getMessage}"),
+                      None
+                    )
                   )
                 )
+              case Right(listJsonRep) =>
+                listJsonRep.successes
+                  .map {
+                    toModel
+                  }
+                  .map {
+                    Right(_)
+                  }
             }
           }
 
-          override protected def detectNextPage(entityString: HttpEntityString): Option[Uri] =
-            detectNextPageImpl(entityString)
-
-          override protected def nextPageHttpRequestBuilder(uri: Uri): HttpRequest =
-            nextPageHttpRequestBuilderImpl(uri)
+          override protected def nextPageHttpRequestBuilder(
+              connectionSettings: TwilioConnectionSettings,
+              entityString: HttpEntityString
+          ): Option[HttpRequest] =
+            sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
         }
 
         impl
@@ -193,15 +188,14 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
         override protected def parseHttpResponse(
             request: TestRequest,
             httpRequest: HttpRequest,
-            reponseEntity: HttpEntity.Strict
-        ): Either[AbstractTestException, TestSuccess] =
+            reponseEntity: HttpEntityString
+        ): List[Either[AbstractTestException, TestSuccess]] =
           sharedHttpParser(reponseEntity)
 
-        override protected def detectNextPage(entityString: HttpEntityString): Option[Uri] =
-          detectNextPageImpl(entityString)
-
-        override protected def nextPageHttpRequestBuilder(uri: Uri): HttpRequest =
-          nextPageHttpRequestBuilderImpl(uri)
+        override protected def nextPageHttpRequestBuilder(
+            connectionSettings: TwilioConnectionSettings,
+            entityString: HttpEntityString
+        ): Option[HttpRequest] = sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
       }
 
       impl
@@ -238,16 +232,14 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
         override protected def parseHttpResponse(
             request: TestRequest,
             httpRequest: HttpRequest,
-            reponseEntity: HttpEntity.Strict
-        ): Either[AbstractTestException, TestSuccess] = {
-          Left(AbstractTestException.ConcreateTestException())
-        }
+            reponseEntity: HttpEntityString
+        ): List[Either[AbstractTestException, TestSuccess]] =
+          List(Left(AbstractTestException.ConcreateTestException()))
 
-        override protected def detectNextPage(entityString: HttpEntityString): Option[Uri] =
-          detectNextPageImpl(entityString)
-
-        override protected def nextPageHttpRequestBuilder(uri: Uri): HttpRequest =
-          nextPageHttpRequestBuilderImpl(uri)
+        override protected def nextPageHttpRequestBuilder(
+            connectionSettings: TwilioConnectionSettings,
+            entityString: HttpEntityString
+        ): Option[HttpRequest] = sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
       }
 
       impl
@@ -277,6 +269,8 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
 
         val impl = new MultipleResponseSourceTestBaseImplemented {
 
+          override protected def http: HttpExt = Http()
+
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
@@ -288,14 +282,15 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
-              reponseEntity: HttpEntity.Strict
-          ): Either[AbstractTestException, TestSuccess] = throw toThrow
+              reponseEntity: HttpEntityString
+          ): List[Either[AbstractTestException, TestSuccess]] =
+            List(Left(AbstractTestException.Undefined(Some(toThrow.getMessage), Some(toThrow))))
 
-          override protected def detectNextPage(entityString: HttpEntityString): Option[Uri] =
-            detectNextPageImpl(entityString)
-
-          override protected def nextPageHttpRequestBuilder(uri: Uri): HttpRequest =
-            nextPageHttpRequestBuilderImpl(uri)
+          override protected def nextPageHttpRequestBuilder(
+              connectionSettings: TwilioConnectionSettings,
+              entityString: HttpEntityString
+          ): Option[HttpRequest] =
+            sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
         }
 
         impl
@@ -404,38 +399,64 @@ private object MultipleResponseSourceTest {
 
   final case class TestSuccess(body: String = "")
 
+  final case class TestSuccessJsonRep(body: String)
+
+  final case class ListJsonRep[A](successes: List[A])
+
   final case class TestResponseNextPageJsonRep(next_page_uri: Option[String], test: TestSuccess)
 
-  def detectNextPageImpl(entityString: HttpEntityString): Option[Uri] =
-    entityString.parseUnsafe[TestResponseNextPageJsonRep]().next_page_uri.map(s => Uri(s))
-
-  def nextPageHttpRequestBuilderImpl(uri: Uri): HttpRequest =
-    HttpRequest(uri = uri)
+  def sharedNextPageHttpRequestBuilder(
+      connectionSettings: TwilioConnectionSettings,
+      entityString: HttpEntityString
+  ): Option[HttpRequest] =
+    entityString
+      .parseUnsafe[TestResponseNextPageJsonRep]()
+      .next_page_uri
+      .map(s => {
+        val hostname = connectionSettings.hostNameFor(ApiSubDomain.Api)
+        val url =
+          s"${connectionSettings.protocol}://$hostname:${connectionSettings.endpoint.port}$s"
+        HttpRequest(HttpMethods.GET, url).addHeader(
+          Authorization(
+            BasicHttpCredentials(
+              connectionSettings.accountSid.toString,
+              connectionSettings.authToken.asString
+            )
+          )
+        )
+      })
 
   def buildPagingBody(nextPageUri: Option[String], bodyText: String) =
     s"""
        |{
        |  "next_page_uri":${nextPageUri.map { string => s""""$string"""" }.getOrElse("null")},
-       |  "test":{
-       |    "body":"$bodyText"
-       |  }
+       |  "successes": [
+       |    {
+       |      "body":"$bodyText"
+       |    },
+       |    {
+       |      "body":"${bodyText}second"
+       |    }
+       |  ]
        |}
        |""".stripMargin
 
-  def sharedHttpParser(responseEntity: HttpEntity.Strict) = {
-    val entityAsString = responseEntity.data.utf8String
-    try {
-      Right(
-        HttpEntityString(entityAsString).parseUnsafe[TestResponseNextPageJsonRep]().test
-      )
-    } catch {
-      case _: Exception =>
-        Left(
-          AbstractTestException.Undefined(
-            Some(s"Wrong entity given to implementation: $entityAsString"),
-            None
+  def toModel(jsonRep: TestSuccessJsonRep): TestSuccess =
+    TestSuccess(jsonRep.body)
+
+  def sharedHttpParser(
+      responseEntity: HttpEntityString
+  ): List[Either[AbstractTestException, TestSuccess]] = {
+    responseEntity
+      .parse[ListJsonRep[TestSuccessJsonRep]]() match {
+      case Left(ex) =>
+        List(
+          Left(
+            AbstractTestException.Undefined(Some(ex.cause.getMessage), Some(ex.cause))
           )
         )
+      case Right(listJsonRep) =>
+        listJsonRep.successes.map { toModel }.map { Right(_) }
     }
   }
 }

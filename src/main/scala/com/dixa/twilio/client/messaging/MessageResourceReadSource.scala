@@ -6,7 +6,6 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
-
 import java.time.Instant
 
 trait MessageResourceReadSource
