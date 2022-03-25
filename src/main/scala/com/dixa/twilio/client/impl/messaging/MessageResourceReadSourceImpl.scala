@@ -2,109 +2,171 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.Uri.Query
+import akka.http.scaladsl.model.{FormData, HttpEntity, HttpMethods, HttpRequest, Uri}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, TwilioPagingFlow}
-import com.dixa.twilio.client.messaging.TwilioClientMessaging.MessageResourceReadRequest
-import com.dixa.twilio.model.Iso4127CountryCode
+import com.dixa.twilio.client.impl.messaging.MessageResourceReadSourceImpl.parseDate
+import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, ListJsonRep, PagingStyle, TwilioPagingFlow, TwilioResponseNextPageJsonRep, TwilioUri}
+import com.dixa.twilio.client.messaging.MessageResourceReadSource
+import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
+import com.dixa.twilio.model.{EnumWithTwilioString, Iso4127CountryCode}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{
-  MessageBody,
-  MessageDirection,
-  MessageError,
-  MessageNumSegments,
-  MessagePrice,
-  MessageResource,
-  MessageSender,
-  MessageSid,
-  MessageStatus,
-  ServiceSid
-}
+import com.dixa.twilio.model.messaging.{MessageBody, MessageDirection, MessageError, MessageNumSegments, MessagePrice, MessageResource, MessageSender, MessageSid, MessageStatus, ServiceSid}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import io.circe.generic.auto._
+import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
+import scala.concurrent.ExecutionContext
 
-private[impl] object MessageResourceReadSourceImpl {
+private[impl] final class MessageResourceReadSourceImpl()(
+    implicit override protected val http: HttpExt,
+    override protected val materializer: Materializer,
+    override protected val executionContext: ExecutionContext
+) extends MessageResourceReadSource {
 
-  def apply(
+  import MessageResourceReadSourceImpl._
+
+  override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: MessageResourceReadRequest
-  )(
-      implicit httpExt: HttpExt,
-      materializer: Materializer
-      // TODO: msf - define exception and find where to implement it
-  ): Source[MessageResource, NotUsed] = {
-    val query = req.filter.buildFilterQuery.toString
-    TwilioPagingFlow
-      .createPagingSrc(
-        connSettings,
-        TwilioPath(
-          ApiSubDomain.Api,
-          HttpMethods.GET,
-          s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?$query"
-        )
-      )
-      .map(entityToMessageList)
-      .mapConcat(identity)
-  }
-
-  private final case class TwilioMessagesOuterJsonRep(messages: Vector[MessageJsonRep])
-  private def entityToMessageList(entity: HttpEntityString): Seq[MessageResource] = {
-    val decoded = entity.parseUnsafe[TwilioMessagesOuterJsonRep]()
-    decoded.messages.map { jsonRep =>
-      val dateSent = jsonRep.date_sent.map { string =>
-        Instant.from(Formatter.dateTime.parse(string))
+      req: MessageResourceReadSource.MessageResourceReadRequest
+  ): HttpRequest = {
+    val query = {
+      val dateSentAfterParameter: Option[(String, String)] = req.filter.dateSentAfter.map { date =>
+        "DateSent>" -> date.toString
       }
-      val dateCreated = jsonRep.date_created.map { string =>
-        Instant.from(Formatter.dateTime.parse(string))
+      val dateSentBeforeParameter: Option[(String, String)] = req.filter.dateSentBefore.map {
+        date =>
+          "DateSent<" -> date.toString
       }
-      val dateUpdated = jsonRep.date_updated.map { string =>
-        Instant.from(Formatter.dateTime.parse(string))
+      val toParameter: Option[(String, String)] = req.filter.to.map { number =>
+        "To" -> number.toString
       }
-      val direction = MessageDirection
-        .fromTwilioString(jsonRep.direction)
-        .getOrElse(
-          throw new RuntimeException(
-            s"Could not parse MessageDirection, ${jsonRep.direction} is not part of possible values"
-          )
-        )
-      val price = (jsonRep.price, jsonRep.price_unit) match {
-        case (Some(amount), Some(currency)) =>
-          Some(MessagePrice(BigDecimal(amount), Iso4127CountryCode(currency)))
-        case _ => None
+      val fromParameter: Option[(String, String)] = req.filter.from.map { number =>
+        "From=" -> number.toString
       }
-      val messageError = (jsonRep.error_code, jsonRep.error_message) match {
-        case (Some(code), Some(message)) => Some(MessageError(code, message))
-        case _                           => None
-      }
-      val status = MessageStatus
-        .fromTwilioString(jsonRep.status)
-        .getOrElse(
-          throw new RuntimeException(
-            s"Could not parse MessageStatus, ${jsonRep.status} is not part of possible values"
-          )
-        )
-      MessageResource(
-        sid = MessageSid(jsonRep.sid),
-        body = MessageBody(jsonRep.body),
-        accountSid = TwilioAccount.Sid(jsonRep.account_sid),
-        dateCreated = dateCreated,
-        dateSent = dateSent,
-        dateUpdated = dateUpdated,
-        numSegments = MessageNumSegments(jsonRep.num_segments.toInt),
-        direction = direction,
-        from = MessageSender.Alphanumeric(jsonRep.from),
-        to = PhoneNumberE164(jsonRep.to),
-        price = price,
-        error = messageError,
-        numMedia = jsonRep.num_media.toInt,
-        status = status,
-        messagingServiceSid = jsonRep.messaging_service_sid.map { ServiceSid }
+      Query(
+        Map("PageSize" -> req.filter.pageSize.toString) ++
+          List(
+            dateSentAfterParameter,
+            dateSentBeforeParameter,
+            toParameter,
+            fromParameter
+          ).flatten.toMap
       )
     }
+
+    TwilioPath(
+      ApiSubDomain.Api,
+      HttpMethods.GET,
+      s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString()}"
+    ).createHttpRequest(connSettings)
+  }
+
+  override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
+    MessageResourceReadException.Api.apply(apiException)
+
+  override protected def createUnspecifiedException(
+      msg: Option[String],
+      cause: Option[Exception]
+  ): UnspecifiedException = MessageResourceReadException.Unspecified(msg, cause)
+
+  override protected def parseHttpResponse(
+      request: MessageResourceReadSource.MessageResourceReadRequest,
+      httpRequest: HttpRequest,
+      responseEntity: HttpEntityString
+  ): List[Either[MessageResourceReadSource.MessageResourceReadException, MessageResource]] = {
+    responseEntity
+      .parse[ListJsonRep[MessageJsonRep]]() match {
+      case Left(ex) =>
+        List(
+          Left(
+            MessageResourceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
+          )
+        )
+      case Right(listJsonRep) =>
+        listJsonRep.messages.map { toModel }
+    }
+  }
+
+  private def toModel(
+      jsonRep: MessageJsonRep
+  ): Either[MessageResourceReadException, MessageResource] = {
+    val accountSid = TwilioAccount.Sid(jsonRep.account_sid)
+    val messageSid = MessageSid(jsonRep.sid)
+    for {
+      messageDirection <- MessageDirection.fromTwilioStringEither(jsonRep.direction).left.map {
+        err =>
+          new MessageResourceReadException.Unspecified(err.msg)
+      }
+      messageStatus <- MessageStatus.fromTwilioStringEither(jsonRep.status).left.map { err =>
+        new MessageResourceReadException.Unspecified(err.msg)
+      }
+      messageResource = MessageResource(
+        sid = messageSid,
+        dateCreated = jsonRep.date_created.flatMap(parseDate),
+        dateUpdated = jsonRep.date_updated.flatMap(parseDate),
+        dateSent = jsonRep.date_sent.flatMap(parseDate),
+        accountSid = accountSid,
+        to = PhoneNumberE164(jsonRep.to),
+        from = MessageSender.E164(PhoneNumberE164(jsonRep.from)),
+        messagingServiceSid = jsonRep.messaging_service_sid.flatMap(parseMessagingServiceSid),
+        body = MessageBody(jsonRep.body),
+        status = messageStatus,
+        numSegments = MessageNumSegments(jsonRep.num_segments.toInt),
+        numMedia = jsonRep.num_media.toInt,
+        direction = messageDirection,
+        price = parsePrice(jsonRep.price, jsonRep.price_unit),
+        error = parseError(jsonRep.error_code, jsonRep.error_message)
+      )
+    } yield messageResource
+  }
+
+  /** Build http request for next page based on a uri */
+  override protected def nextPageHttpRequestBuilder(
+      connectionSettings: TwilioConnectionSettings,
+      entityString: HttpEntityString
+  ): Option[HttpRequest] = {
+    entityString
+      .parseUnsafe[TwilioResponseNextPageJsonRep]()
+      .next_page_uri
+      .map(s =>
+        TwilioUri
+          .autoDetect(s, HttpMethods.GET, ApiSubDomain.Api)
+          .createHttpRequest(connectionSettings)
+      )
+  }
+}
+
+private object MessageResourceReadSourceImpl {
+  private def parseDate(date: String): Option[Instant] = date match {
+    case null => None
+    case _    => Some(Instant.from(Formatter.dateTime.parse(date)))
+  }
+
+  private def parseError(code: Option[Int], message: Option[String]): Option[MessageError] = {
+    (code, message) match {
+      case (Some(c), Some(m)) => Some(MessageError(m, c))
+      case _                  => None
+    }
+  }
+
+  private def parsePrice(price: Option[String], unit: Option[String]): Option[MessagePrice] = {
+    (price, unit) match {
+      case (Some(amount), Some(currency)) =>
+        Some(MessagePrice(BigDecimal(amount), Iso4127CountryCode(currency)))
+      case _ => None
+    }
+  }
+
+  private def parseMessagingServiceSid(
+      messagingServiceSid: String
+  ): Option[ServiceSid] = messagingServiceSid match {
+    case null => None
+    case _    => Some(ServiceSid(messagingServiceSid))
   }
 }

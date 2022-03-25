@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient
 
-import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, ResponseEntity, Uri}
+import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, Uri}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
@@ -24,7 +24,7 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
 
   classOf[MultipleResponseSource[_, _, _]].getSimpleName should {
 
-    "Provide a run method that async executes the http request the implementation provides, and " +
+    "Provide a source method that executes the http initial request the implementation provides, and " +
       "use the implementations response parsing to get the end result to return" in {
 
         wireMockServer.stubFor(

@@ -2,20 +2,14 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model.HttpRequest
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.messaging.{
-  MessageSendRequestExecutor,
-  PhoneNumberCreateRequestExecutor,
-  PhoneNumberDeleteRequestExecutor,
-  TwilioClientMessaging
-}
-import com.dixa.twilio.model.messaging.{
-  MediaResourceReference,
-  MessageResource,
-  TwilioMessagingService
-}
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.client.messaging.{MessageResourceReadSource, MessageSendRequestExecutor, PhoneNumberCreateRequestExecutor, PhoneNumberDeleteRequestExecutor, TwilioClientMessaging}
+import com.dixa.twilio.model.messaging.{MediaResourceReference, MessageResource, TwilioMessagingService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -53,10 +47,6 @@ private[client] final class TwilioClientMessagingImpl(
     MediaResourceReadSource(connSettings, req)
   }
 
-  override def messageResourceRead(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.MessageResourceReadRequest
-  ): Source[MessageResource, NotUsed] = {
-    MessageResourceReadSourceImpl(connSettings, req)
-  }
+  override val messageResourceRead: MessageResourceReadSource =
+    new MessageResourceReadSourceImpl()
 }

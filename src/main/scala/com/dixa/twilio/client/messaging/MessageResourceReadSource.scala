@@ -1,58 +1,67 @@
 package com.dixa.twilio.client.messaging
 
-import akka.NotUsed
-import akka.http.scaladsl.HttpExt
-import akka.stream.Materializer
-import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceException
-import com.dixa.twilio.client.messaging.TwilioClientMessaging.MessageResourceReadRequest
+import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
+import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
-import scala.concurrent.Future
 
-trait MessageResourceReadSource {
+import java.time.Instant
 
-  def source(): Source[Either[MessageResourceException, MessageResource], NotUsed]
-  def semisafeSource(): Future[Either[MessageResourceException, Source[MessageResource, NotUsed]]]
-  def unsafeSource(): Source[MessageResource, NotUsed]
+trait MessageResourceReadSource
+    extends MultipleResponseSource[
+      MessageResourceReadSource.MessageResourceReadRequest,
+      MessageResourceReadSource.MessageResourceReadException,
+      MessageResource
+    ] {
 
-  def apply(
-      connSettings: TwilioConnectionSettings,
-      req: MessageResourceReadRequest
-  )(
-      implicit httpExt: HttpExt,
-      materializer: Materializer
-  ): Source[Either[MessageResourceException, MessageResource], NotUsed]
+  override protected type ApiExceptionWrapper = MessageResourceReadException.Api
 
+  override protected type UnspecifiedException = MessageResourceReadException.Unspecified
 }
 
 object MessageResourceReadSource {
-  sealed trait MessageResourceException extends RuntimeException
-  object MessageResourceException {
+
+  final case class MessageResourceReadRequest(
+      accountSid: TwilioAccount.Sid,
+      filter: MessageResourcesReadRequestFilter = MessageResourcesReadRequestFilter()
+  )
+
+  final case class MessageResourcesReadRequestFilter(
+      to: Option[PhoneNumberE164] = None,
+      from: Option[PhoneNumberE164] = None,
+      dateSentAfter: Option[Instant] = None,
+      dateSentBefore: Option[Instant] = None,
+      pageSize: Int = 20
+  )
+
+  // TODO: msf - Figure out is Exceptions are valid for this request
+  sealed trait MessageResourceReadException extends RuntimeException
+  object MessageResourceReadException {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
-        with MessageResourceException
+        with MessageResourceReadException
     final case class ToNumberNotValid()
         extends IllegalStateException(
           "Invalid 'To' Phone Number. More info: https://www.twilio.com/docs/api/errors/21211"
         )
-        with MessageResourceException
+        with MessageResourceReadException
     final case class FromNumberNotValid()
         extends IllegalStateException(
           "Invalid From Number. More info: https://www.twilio.com/docs/api/errors/21212"
         )
-        with MessageResourceException
+        with MessageResourceReadException
     final case class NotMessageCapableNumber()
         extends IllegalStateException(
           "Attempt to use a 'From' number which is not capable of sending SMS messages. More info: https://www.twilio.com/docs/api/errors/21606"
         )
-        with MessageResourceException
+        with MessageResourceReadException
     final case class MessageBodyCharLimitExceeded()
         extends IllegalStateException(
           "Concatenated message body exceeds the maximum 1600 character limit. More info: https://www.twilio.com/docs/api/errors/21617"
         )
-        with MessageResourceException
+        with MessageResourceReadException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
@@ -60,7 +69,7 @@ object MessageResourceReadSource {
           ),
           cause.orNull
         )
-        with MessageResourceException {
+        with MessageResourceReadException {
       def this(msg: String) = this(Some(msg), None)
       def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
     }

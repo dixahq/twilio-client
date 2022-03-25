@@ -114,7 +114,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                   case _ => None
                 }
                 val messageError = (decoded.error_code, decoded.error_message) match {
-                  case (Some(code), Some(message)) => Some(MessageError(code, message))
+                  case (Some(code), Some(message)) => Some(MessageError(message, code))
                   case _                           => None
                 }
                 Right(

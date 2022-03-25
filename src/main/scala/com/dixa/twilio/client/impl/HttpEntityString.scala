@@ -18,6 +18,13 @@ private[client] final case class HttpEntityString(override val toString: String)
     }
     .toTry
     .get
+
+  /** Parse this entity into Specified type using Circe, throwing exception on error.
+    */
+  def parse[A: ClassTag: Decoder](): Either[JsonParsingException, A] = decode[A](this.toString)
+    .leftMap { error =>
+      JsonParsingException(classTag[A], this, error)
+    }
 }
 
 private[client] object HttpEntityString {

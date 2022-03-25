@@ -2,106 +2,52 @@ package com.dixa.twilio.client
 
 import akka.NotUsed
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes, Uri}
-import akka.stream.{FlowShape, Materializer}
+import akka.http.scaladsl.model._
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
-import com.dixa.twilio.client.impl.HttpEntityString
+import akka.stream.{FlowShape, Materializer, SourceShape}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
+import scala.util.Failure
 
-/** Base trait for an source builder that is able and ready to fire a specific request in different
-  * ways, that returns multiple elements of a resource.
-  *
-  * Different users have different preferences when it comes to error handling. So an instance of
-  * this, is ready to perform a specific request, but allows the user to decide how he prefers the
-  * response.
-  *
-  * @tparam Req
-  *   The Request type that is ready to be executed by this instance.
-  * @tparam Err
-  *   The Err type that the request might produce.
-  * @tparam Success
-  *   The type of a successfully response.
-  */
 trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
 
-  /** Run the request, with typesafe error handling
-    *
-    * Always return a Successful future, and communicate errors of the request as part of the return
-    * type, in form as an Either.
-    *
-    * All the Error ADT used in the safe versions, are also exception, so a request would always be
-    * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
-    * the error is communicated.
-    *
-    * Function can be overridden for the soul purpose of stubbing or mocking by scalatest, should
-    * never be overridden in extended classes.
-    */
-  def unsafeSource(
-      connSettings: TwilioConnectionSettings,
-      req: Req
-  ): Source[Success, NotUsed] = {
-    val httpRequest = createHttpReq(connSettings, req)
-    Source
-      .future[HttpResponse] {
-        http
-          .singleRequest(httpRequest)
-          .map { evaluateResponse }
-          .map {
-            case Left(value)  => throw value
-            case Right(value) => value
-          }
-      }
-      .via(buildUnsafePagingFlow(connSettings))
-      .via { unsafeParseHttpEntityFlow(connSettings, req) }
-  }
-
-  /** Run the request, returning failed Future on errors.
-    *
-    * All the Error ADT used in the safe versions, are also exception, so a request would always be
-    * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
-    * the error is communicated.
-    *
-    * Function can be overridden for the soul purpose of stubbing or mocking by scalatest, should
-    * never be overridden in extended classes.
-    */
   def source(
       connSettings: TwilioConnectionSettings,
-      req: Req
+      req: Req,
+  )(
+      implicit materializer: Materializer,
+      http: HttpExt
   ): Source[Either[Err, Success], NotUsed] = {
-    val httpRequest = createHttpReq(connSettings, req)
     Source
-      .future[Either[Err, HttpResponse]] {
-        http
-          .singleRequest(httpRequest)
-          .map {
-            evaluateResponse
-          }
-      }
-      .via(buildPagingFlow(connSettings))
+      .fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
+        import GraphDSL.Implicits._
+
+        val starter =
+          Source.single[Either[Err, HttpRequest]](Right(createHttpReq(connSettings, req)))
+
+        val httpReqMerge = builder.add(Merge[Either[Err, HttpRequest]](2))
+
+        val httpFlow            = requestFlow
+        val httpResponseHandler = responseHandlerFlow(connSettings)
+
+        val httpEntityBroadcast = builder.add(Broadcast[Either[Err, HttpEntityString]](2))
+
+        val nextPageHttpRequestBuild = nextPageHttpRequestBuildFlow(connSettings)
+
+
+      // format: off
+      starter ~> httpReqMerge.in(0)
+      httpReqMerge ~> httpFlow ~> httpResponseHandler ~> httpEntityBroadcast
+      httpReqMerge.in(1) <~ nextPageHttpRequestBuild <~ httpEntityBroadcast.out(0)
+      // format: on
+        SourceShape(httpEntityBroadcast.out(1))
+      })
       .via { parseHttpEntityFlow(connSettings, req) }
   }
 
-  def semisafeSource(
-      connSettings: TwilioConnectionSettings,
-      req: Req
-  ): Future[Either[Err, Source[Success, NotUsed]]] = {
-    val httpRequest = createHttpReq(connSettings, req)
-    for {
-      httpResponse <- http.singleRequest(httpRequest)
-      evaluatedResponse = evaluateResponse(httpResponse)
-      eitherResult = evaluatedResponse.map { response =>
-        Source
-          .single(response)
-          .via(buildUnsafePagingFlow(connSettings))
-          .via {
-            unsafeParseHttpEntityFlow(connSettings, req)
-          }
-      }
-    } yield eitherResult
-  }
+//  def unsafeSource: Source[Success, NotUsed] =
 
   protected def http: HttpExt
 
@@ -125,27 +71,6 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
     */
   protected type UnspecifiedException <: Err
 
-  /** TODO: msf - describe
-    *
-    * @return
-    */
-  protected def detectNextPage(entityString: HttpEntityString): Option[Uri]
-
-  private val detectNextPageFlow: Flow[HttpEntityString, Uri, NotUsed] =
-    Flow[HttpEntityString]
-      .map { detectNextPage }
-      .takeWhile(_.isDefined)
-      .map(_.get)
-
-  /** TODO: msf - describe
-    *
-    * @return
-    */
-  protected def nextPageHttpRequestBuilder(uri: Uri): HttpRequest
-
-  private val nextPageHttpRequestBuildFlow: Flow[Uri, HttpRequest, NotUsed] =
-    Flow[Uri].map { nextPageHttpRequestBuilder }
-
   /** Build the http request.
     *
     * Implementations should provide this for building the HttpRequest for the request represented
@@ -153,7 +78,9 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
     */
   protected def createHttpReq(connSettings: TwilioConnectionSettings, req: Req): HttpRequest
 
-  /** Convert an ApiException into the request specific Exception. */
+  /** TODO: msf: figure out if this is needed here Convert an ApiException into the request specific
+    * Exception.
+    */
   protected def mapApiException(apiException: ApiException): ApiExceptionWrapper
 
   /** Create the request specific Unspecified exception. */
@@ -196,88 +123,64 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
   protected def parseHttpResponse(
       request: Req,
       httpRequest: HttpRequest,
-      responseEntity: HttpEntity.Strict
-  ): Either[Err, Success]
+      responseEntity: HttpEntityString
+  ): Seq[Either[Err, Success]]
 
-  /** Helper method for creating a response to cases where we have no support for handling a
-    * Responese.
+  /** Detect uri for next page in the entity and build optional http request dependent on uri is
+    * present or not
     */
-  protected def buildResultForUnhandledResponse(
-      request: Req,
-      httpRequest: HttpRequest,
-      httpResponse: HttpResponse,
-      entityString: String
-  ): Either[Err, Success] = {
-    val msg =
-      s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
-        s"after firing $httpRequest. Full entity of response is: $entityString"
-    Left(createUnspecifiedException(Some(msg), None))
+  protected def nextPageHttpRequestBuilder(
+      connectionSettings: TwilioConnectionSettings,
+      entityString: HttpEntityString
+  ): Option[HttpRequest]
+
+  private val requestFlow: Flow[Either[Err, HttpRequest], Either[Err, HttpResponse], NotUsed] = {
+    Flow.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
+      import GraphDSL.Implicits._
+
+      val eitherBroadcast = builder.add(Broadcast[Either[Err, HttpRequest]](2))
+
+      val eitherMerge = builder.add(Merge[Either[Err, HttpResponse]](2))
+
+      val requestFilter = builder.add(
+        Flow[Either[Err, HttpRequest]]
+          .takeWhile(_.isRight)
+          .map { either =>
+            (either.right.get, NotUsed)
+          }
+      )
+
+      val errFilter = builder.add(
+        Flow[Either[Err, HttpRequest]]
+          .takeWhile(_.isLeft)
+          .map[Either[Err, HttpResponse]] { either =>
+            Left(either.left.get)
+          }
+      )
+
+      val requestExecutorFlow: FlowShape[(HttpRequest, NotUsed), Either[Err, HttpResponse]] =
+        builder.add(
+          http
+            .superPool[NotUsed]()
+            .map(
+              _._1 match {
+                case Failure(exception: RuntimeException) =>
+                  Left(createUnspecifiedException(Some(exception.getMessage), Some(exception)))
+                case Failure(throwable: Throwable) =>
+                  Left(createUnspecifiedException(Some(throwable.getMessage), None))
+                case util.Success(value) => Right(value)
+              }
+            )
+        )
+
+      eitherBroadcast.out(0) ~> requestFilter ~> requestExecutorFlow ~> eitherMerge.in(0)
+
+      eitherBroadcast.out(1) ~> errFilter ~> eitherMerge.in(1)
+
+      FlowShape(eitherBroadcast.in, eitherMerge.out)
+    })
   }
 
-  private def parseHttpEntityFlow(
-      connectionSettings: TwilioConnectionSettings,
-      req: Req
-  ): Flow[Either[Err, HttpEntityString], Either[Err, Success], NotUsed] =
-    Flow[Either[Err, HttpEntityString]]
-      .map {
-        case Left(value) => Left(value)
-        case Right(value) =>
-          try {
-            parseHttpResponse(
-              req,
-              createHttpReq(connectionSettings, req),
-              value.toString
-            )
-          } catch {
-            case e: Exception =>
-              Left(
-                createUnspecifiedException(
-                  Some(s"Uncaught Exception thrown when parsing httpResponse for request: $req"),
-                  Some(e)
-                )
-              )
-          }
-      }
-
-  private def unsafeParseHttpEntityFlow(
-      connectionSettings: TwilioConnectionSettings,
-      req: Req
-  ): Flow[HttpEntityString, Success, NotUsed] =
-    Flow[HttpEntityString]
-      .map { entity =>
-        parseHttpResponse(
-          req,
-          createHttpReq(connectionSettings, req),
-          entity.toString
-        ) match {
-          case Left(value)  => throw value
-          case Right(value) => value
-        }
-      }
-
-  /** TODO: msf - describe and implement handling of api errors
-    *
-    * @return
-    */
-  private def unsafeResponseHandlerFlow(
-      connectionSettings: TwilioConnectionSettings
-  ): Flow[Try[HttpResponse], HttpEntityString, NotUsed] =
-    Flow[Try[HttpResponse]]
-      .mapAsync(1) { tryResp =>
-        val resp = tryResp.get
-        evaluateResponse(resp) match {
-          case Left(value) => throw value
-          case Right(value) =>
-            value.entity
-              .toStrict(connectionSettings.timeouts.requestEntityTimeout)
-              .map(entityStrict => HttpEntityString(entityStrict.data.utf8String))
-        }
-      }
-
-  /** TODO: msf - describe and implement handling of api errors
-    *
-    * @return
-    */
   private def responseHandlerFlow(
       connectionSettings: TwilioConnectionSettings
   ): Flow[Either[Err, HttpResponse], Either[Err, HttpEntityString], NotUsed] =
@@ -309,76 +212,50 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
     Right(resp)
   }
 
-  private def buildPagingFlow(
-      connSettings: TwilioConnectionSettings
-  ): Flow[Either[Err, HttpResponse], Either[Err, HttpEntityString], NotUsed] = {
-    Flow
-      .fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
-        import GraphDSL.Implicits._
+  private def nextPageHttpRequestBuildFlow(
+      connectionSettings: TwilioConnectionSettings
+  ): Flow[Either[Err, HttpEntityString], Either[Err, HttpRequest], NotUsed] =
+    Flow[Either[Err, HttpEntityString]]
+      .map {
+        case Left(value) => Left(value)
+        case Right(value) =>
+          try {
+            Right(nextPageHttpRequestBuilder(connectionSettings, value))
+          } catch {
+            case e: Exception =>
+              Left(createUnspecifiedException(Some(e.getMessage), Some(e)))
+          }
+      }
+      .takeWhile(_.isRight)
+      .takeWhile(_.right.get.isDefined)
+      .map { either =>
+        Right(either.right.get.get)
+      }
 
-        val httpResponseMerge = builder.add(Merge[Either[Err, HttpResponse]](2))
-
-        val httpResponseTupler = Flow[Either[Err, HttpResponse]].map((_, NotUsed))
-
-        val requestExecutorFlowBuilder = builder.add(requestExecutorFlow)
-
-        val httpResponseHandler = builder.add(
-          responseHandlerFlow(connSettings)
-        )
-        val httpEntityBroadcast = builder.add(Broadcast[Either[Err, HttpEntityString]](2))
-
-        val parseOnlyRightFlowBuilder = builder.add(
-          Flow[Either[Err, HttpEntityString]].filter(_.isRight).map(_.right.get)
-        )
-
-        val wrapInEitherFlowBuilder = builder.add(
-          Flow[HttpResponse].map(Right(_))
-        )
-
-        // format: off
-        httpResponseMerge ~> httpResponseHandler ~> httpEntityBroadcast
-        httpEntityBroadcast.out(0) ~> parseOnlyRightFlowBuilder ~>
-        requestExecutorFlowBuilder ~> wrapInEitherFlowBuilder ~> httpResponseMerge.in(1)
-
-        // format: on
-        FlowShape(httpResponseMerge.in(0), httpEntityBroadcast.out(1))
-      })
-  }
-
-  private def buildUnsafePagingFlow(
-      connSettings: TwilioConnectionSettings
-  ): Flow[HttpResponse, HttpEntityString, NotUsed] = {
-    Flow
-      .fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
-        import GraphDSL.Implicits._
-
-        val httpResponseMerge = builder.add(Merge[HttpResponse](2))
-
-        val wrapInTryFlowBuilder = builder.add(
-          Flow[HttpResponse].map(Try(_))
-        )
-
-        val requestExecutorFlowBuilder = builder.add(requestExecutorFlow)
-
-        val httpResponseHandler = builder.add(
-          unsafeResponseHandlerFlow(connSettings)
-        )
-        val httpEntityBroadcast = builder.add(Broadcast[HttpEntityString](2))
-        
-        // format: off
-        httpResponseMerge ~> wrapInTryFlowBuilder ~> httpResponseHandler ~> httpEntityBroadcast
-        httpEntityBroadcast.out(0) ~> requestExecutorFlowBuilder ~> httpResponseMerge.in(1)
-
-        // format: on
-        FlowShape(httpResponseMerge.in(0), httpEntityBroadcast.out(1))
-      })
-  }
-
-  private val requestExecutorFlow: Flow[HttpEntityString, HttpResponse, NotUsed] =
-    Flow[HttpEntityString]
-      .via(detectNextPageFlow)
-      .via(nextPageHttpRequestBuildFlow)
-      .map((_, NotUsed))
-      .via(http.superPool[NotUsed]())
-      .map(_._1.get)
+  private def parseHttpEntityFlow(
+      connectionSettings: TwilioConnectionSettings,
+      req: Req
+  ): Flow[Either[Err, HttpEntityString], Either[Err, Success], NotUsed] =
+    Flow[Either[Err, HttpEntityString]]
+      .mapConcat {
+        case Left(value) => Seq(Left(value))
+        case Right(value) =>
+          try {
+            parseHttpResponse(
+              req,
+              createHttpReq(connectionSettings, req),
+              value
+            )
+          } catch {
+            case e: Exception =>
+              List(
+                Left(
+                  createUnspecifiedException(
+                    Some(s"Uncaught Exception thrown when parsing httpResponse for request: $req"),
+                    Some(e)
+                  )
+                )
+              )
+          }
+      }
 }

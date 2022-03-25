@@ -62,11 +62,7 @@ trait TwilioClientMessaging {
   /** Returns a Source of messages from a given account, can be filtered based on to and/or from
     * phone number and sent date
     */
-  def messageResourceRead(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.MessageResourceReadRequest
-  ): Source[MessageResource, NotUsed]
-
+  def messageResourceRead: MessageResourceReadSource
 }
 
 object TwilioClientMessaging {
@@ -81,30 +77,30 @@ object TwilioClientMessaging {
 
   final case class MediaResourceReadRequest(messageSid: MessageSid)
 
-  final case class MessageResourceReadRequest(
-      accountSid: TwilioAccount.Sid,
-      filter: MessageResourcesReadRequestFilter = MessageResourcesReadRequestFilter()
-  )
-
-  final case class MessageResourcesReadRequestFilter(
-      to: Option[PhoneNumberE164] = None,
-      from: Option[PhoneNumberE164] = None,
-      dateSent: Option[DateTime] = None,
-      pageSize: Int = 20
-  ) {
-    def buildFilterQuery: Query = {
-      val dateSentParameter: Option[(String, String)] = dateSent.map { date =>
-        "DateSent" -> date.toString
-      }
-      val toParameter: Option[(String, String)] = to.map { number => "To" -> number.toString }
-      val fromParameter: Option[(String, String)] = from.map { number =>
-        "From=" -> number.toString
-      }
-
-      Query(
-        Map("PageSize" -> pageSize.toString) ++
-          List(dateSentParameter, toParameter, fromParameter).flatten.toMap
-      )
-    }
-  }
+//  final case class MessageResourceReadRequest(
+//      accountSid: TwilioAccount.Sid,
+//      filter: MessageResourcesReadRequestFilter = MessageResourcesReadRequestFilter()
+//  )
+//
+//  final case class MessageResourcesReadRequestFilter(
+//      to: Option[PhoneNumberE164] = None,
+//      from: Option[PhoneNumberE164] = None,
+//      dateSent: Option[DateTime] = None,
+//      pageSize: Int = 20
+//  ) {
+//    def buildFilterQuery: Query = {
+//      val dateSentParameter: Option[(String, String)] = dateSent.map { date =>
+//        "DateSent" -> date.toString
+//      }
+//      val toParameter: Option[(String, String)] = to.map { number => "To" -> number.toString }
+//      val fromParameter: Option[(String, String)] = from.map { number =>
+//        "From=" -> number.toString
+//      }
+//
+//      Query(
+//        Map("PageSize" -> pageSize.toString) ++
+//          List(dateSentParameter, toParameter, fromParameter).flatten.toMap
+//      )
+//    }
+//  }
 }

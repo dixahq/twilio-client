@@ -19,7 +19,7 @@ private[messaging] final case class MessageJsonRep(
     api_version: String,
     price: Option[String],
     price_unit: Option[String],
-    error_code: Option[String],
+    error_code: Option[Int],
     error_message: Option[String],
     uri: String,
     subresource_uris: SubresourceUris
