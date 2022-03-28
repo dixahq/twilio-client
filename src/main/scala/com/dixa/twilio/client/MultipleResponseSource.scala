@@ -5,7 +5,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{FlowShape, Materializer, SourceShape}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.HttpEntityString
 import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.concurrent.{ExecutionContext, Future}
