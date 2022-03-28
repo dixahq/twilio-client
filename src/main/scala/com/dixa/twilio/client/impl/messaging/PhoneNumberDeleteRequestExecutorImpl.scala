@@ -46,7 +46,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
       httpResponse: HttpResponse,
       entity: HttpEntity.Strict
   ): Either[PhoneNumberDeleteException, Done] = httpResponse.status match {
-    case StatusCodes.OK =>
+    case StatusCodes.OK | StatusCodes.NoContent =>
       Right(Done)
     case StatusCodes.NotFound =>
       buildResultForNotFoundResponse(entity)
