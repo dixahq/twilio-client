@@ -2,7 +2,7 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
@@ -91,6 +91,7 @@ private[impl] final class MessageResourceReadSourceImpl()(
   override protected def parseHttpResponse(
       request: MessageResourceReadSource.MessageResourceReadRequest,
       httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
       responseEntity: HttpEntityString
   ): List[Either[MessageResourceReadSource.MessageResourceReadException, MessageResource]] = {
     responseEntity

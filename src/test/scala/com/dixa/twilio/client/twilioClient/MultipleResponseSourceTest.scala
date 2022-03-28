@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient
 
 import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
-import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, Uri}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
@@ -9,12 +9,12 @@ import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client._
-import com.dixa.twilio.client.impl.messaging.MessageJsonRep
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, ListJsonRep}
-import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, matching}
+import io.circe.CursorOp.{DownArray, DownField}
+import io.circe.DecodingFailure
 import org.scalamock.scalatest.AsyncMockFactory
 import io.circe.generic.auto._
 
@@ -27,55 +27,9 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
 
   classOf[MultipleResponseSource[_, _, _]].getSimpleName should {
 
-    "Provide a source method that executes the http initial request the implementation provides, and " +
-      "use the implementations response parsing to get the end result to return" in {
-
-        wireMockServer.stubFor(
-          WireMock
-            .get(WireMock.urlPathEqualTo("/test"))
-            .willReturn(
-              aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "plain/txt")
-                .withBody(buildPagingBody(None, "ResponseFromTwilio"))
-            )
-        )
-
-        val impl = new MultipleResponseSourceTestBaseImplemented {
-
-          override protected def createHttpReq(
-              connSettings: TwilioConnectionSettings,
-              req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
-          )
-
-          override protected def parseHttpResponse(
-              request: TestRequest,
-              httpRequest: HttpRequest,
-              responseEntity: HttpEntityString
-          ): List[Either[AbstractTestException, TestSuccess]] =
-            sharedHttpParser(responseEntity)
-
-          override protected def nextPageHttpRequestBuilder(
-              connectionSettings: TwilioConnectionSettings,
-              entityString: HttpEntityString
-          ): Option[HttpRequest] =
-            sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
-        }
-
-        impl
-          .source(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
-          .runWith(Sink.seq)
-          .map { result =>
-            assert(result === Seq(Right(TestSuccess("ResponseFromTwilio"))))
-          }
-      }
-
-    "Provide a run method that async executes the http request the implementation provides, and " +
-      "use the implementations response parsing to get the end result to return, also in cases " +
-      "where it returns an error" in {
+    "Provide a source method that executes the initial http request the implementation provides, " +
+      "and use the implementations response parsing to get the end result " +
+      "while flattening the API's paging logic, to return result as a Source model objects" in {
 
         wireMockServer.stubFor(
           WireMock
@@ -118,6 +72,7 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
+              httpResponse: HttpResponse,
               responseEntity: HttpEntityString
           ): List[Either[AbstractTestException, TestSuccess]] = {
             responseEntity
@@ -126,18 +81,15 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
                 List(
                   Left(
                     AbstractTestException.Undefined(
-                      Some(s"Wrong entity given to implementation: ${ex.cause.getMessage}"),
+                      Some(s"Wrong entity given to implementation"),
                       None
                     )
                   )
                 )
               case Right(listJsonRep) =>
                 listJsonRep.successes
-                  .map {
-                    toModel
-                  }
-                  .map {
-                    Right(_)
+                  .map { item =>
+                    Right(toModel(item))
                   }
             }
           }
@@ -145,8 +97,9 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
           override protected def nextPageHttpRequestBuilder(
               connectionSettings: TwilioConnectionSettings,
               entityString: HttpEntityString
-          ): Option[HttpRequest] =
+          ): Option[HttpRequest] = {
             sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
+          }
         }
 
         impl
@@ -156,100 +109,13 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
             assert(
               result === Seq(
                 Right(TestSuccess("ResponseFromTwilio")),
-                Right(TestSuccess("ResponseFromTwilioMore"))
+                Right(TestSuccess("ResponseFromTwilioSecond")),
+                Right(TestSuccess("ResponseFromTwilioMore")),
+                Right(TestSuccess("ResponseFromTwilioMoreSecond")),
               )
             )
           }
       }
-
-    "Provide a unsafeRun that does the same as the run method that returns result not wrapped in an either" in {
-
-      wireMockServer.stubFor(
-        WireMock
-          .get(WireMock.urlPathEqualTo("/test"))
-          .willReturn(
-            aResponse()
-              .withStatus(200)
-              .withHeader("Content-Type", "plain/txt")
-              .withBody(buildPagingBody(None, "ResponseFromTwilio"))
-          )
-      )
-
-      val impl = new MultipleResponseSourceTestBaseImplemented {
-
-        override protected def createHttpReq(
-            connSettings: TwilioConnectionSettings,
-            req: TestRequest
-        ): HttpRequest = HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"http://localhost:${wireMockServer.port()}/test"
-        )
-
-        override protected def parseHttpResponse(
-            request: TestRequest,
-            httpRequest: HttpRequest,
-            reponseEntity: HttpEntityString
-        ): List[Either[AbstractTestException, TestSuccess]] =
-          sharedHttpParser(reponseEntity)
-
-        override protected def nextPageHttpRequestBuilder(
-            connectionSettings: TwilioConnectionSettings,
-            entityString: HttpEntityString
-        ): Option[HttpRequest] = sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
-      }
-
-      impl
-        .unsafeSource(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
-        .runWith(Sink.seq)
-        .map { result =>
-          assert(result === Seq(TestSuccess("ResponseFromTwilio")))
-        }
-    }
-
-    "Provide a unsafeRun that does the same as the run method but returns failures as a failed Future" in {
-
-      wireMockServer.stubFor(
-        WireMock
-          .get(WireMock.urlPathEqualTo("/test"))
-          .willReturn(
-            aResponse()
-              .withStatus(200)
-              .withHeader("Content-Type", "plain/txt")
-              .withBody(buildPagingBody(None, "ResponseFromTwilio"))
-          )
-      )
-
-      val impl = new MultipleResponseSourceTestBaseImplemented {
-
-        override protected def createHttpReq(
-            connSettings: TwilioConnectionSettings,
-            req: TestRequest
-        ): HttpRequest = HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"http://localhost:${wireMockServer.port()}/test"
-        )
-
-        override protected def parseHttpResponse(
-            request: TestRequest,
-            httpRequest: HttpRequest,
-            reponseEntity: HttpEntityString
-        ): List[Either[AbstractTestException, TestSuccess]] =
-          List(Left(AbstractTestException.ConcreateTestException()))
-
-        override protected def nextPageHttpRequestBuilder(
-            connectionSettings: TwilioConnectionSettings,
-            entityString: HttpEntityString
-        ): Option[HttpRequest] = sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
-      }
-
-      impl
-        .unsafeSource(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
-        .runWith(Sink.seq)
-        .map(_ => fail("Should have gotten an exception by know"))
-        .recover { case AbstractTestException.ConcreateTestException() =>
-          succeed
-        }
-    }
 
     "Catch potential thrown exception by the implementations parseHttpResponse method, and " +
       "convert them into a Undefined Error" in {
@@ -282,9 +148,11 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
+              httpResponse: HttpResponse,
               reponseEntity: HttpEntityString
-          ): List[Either[AbstractTestException, TestSuccess]] =
-            List(Left(AbstractTestException.Undefined(Some(toThrow.getMessage), Some(toThrow))))
+          ): List[Either[AbstractTestException, TestSuccess]] = {
+            throw toThrow
+          }
 
           override protected def nextPageHttpRequestBuilder(
               connectionSettings: TwilioConnectionSettings,
@@ -304,62 +172,67 @@ final class MultipleResponseSourceTest extends TwilioClientTest with AsyncMockFa
             }
           }
       }
-  }
 
-  "SingleRequestExecutor's run methods should be able to be overridden for testing and not throw " +
-    "NoSuchMethodException" in {
-      val ownerAccountSid = TwilioAccount.Sid("TestOwnerAccountSid")
-      val accountSid      = TwilioAccount.Sid("TestAccountSid")
-      val accountToken    = TwilioAccount.AuthToken("TestAuthToken")
-      val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
-      val account = TwilioAccount(
-        name = TwilioAccount.Name("TestAccount"),
-        sid = accountSid,
-        status = TwilioAccount.Status.Active,
-        ownerAccountSid = ownerAccountSid,
-        authToken = accountToken,
-        accountType = TwilioAccount.Type.Full,
-        timeCreated = timeStamp,
-        timeUpdated = timeStamp
-      )
+    "Catch potential thrown exception when parsing unexpected json body, and " +
+      "convert them into a Undefined Error" in {
 
-      val twilioEndpoint = TwilioEndpoint(
-        "noneExistingHost.dixa.com",
-        443
-      )
+        wireMockServer.stubFor(
+          WireMock
+            .get(WireMock.urlPathEqualTo("/test"))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "plain/txt")
+                .withBody(buildFailingPagingBody(None))
+            )
+        )
 
-      val connSettings = TwilioConnectionSettings(
-        twilioEndpoint,
-        TwilioConnectionSettings.Protocol.Https,
-        accountSid,
-        accountToken,
-        TwilioConnectionSettings.ParallelFactor.halfCpuCores,
-        TwilioConnectionSettings.Timeouts.default
-      )
+        val impl = new MultipleResponseSourceTestBaseImplemented {
 
-      val twilioClientIam = stub[TwilioClientIam]
+          override protected def http: HttpExt = Http()
 
-      val client = stub[TwilioClient]
-      (client.iam _).when().returns(twilioClientIam)
+          override protected def createHttpReq(
+              connSettings: TwilioConnectionSettings,
+              req: TestRequest
+          ): HttpRequest = HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"http://localhost:${wireMockServer.port()}/test"
+          )
 
-      val accountFetchReqExecutor = stub[AccountFetchRequestExecutor]
-      (twilioClientIam.accountFetch _).when().returns(accountFetchReqExecutor)
+          override protected def parseHttpResponse(
+              request: TestRequest,
+              httpRequest: HttpRequest,
+              httpResponse: HttpResponse,
+              reponseEntity: HttpEntityString
+          ): List[Either[AbstractTestException, TestSuccess]] = {
+            sharedHttpParser(reponseEntity)
+          }
 
-      val fetchReq = AccountFetchRequest(accountSid = accountSid)
+          override protected def nextPageHttpRequestBuilder(
+              connectionSettings: TwilioConnectionSettings,
+              entityString: HttpEntityString
+          ): Option[HttpRequest] =
+            sharedNextPageHttpRequestBuilder(connectionSettings, entityString)
+        }
 
-      try {
-        (accountFetchReqExecutor.unsafeRun _)
-          .when(connSettings, fetchReq)
-          .returns(Future.successful(account))
-
-        (accountFetchReqExecutor.run _)
-          .when(connSettings, fetchReq)
-          .returns(Future.successful(Right(account)))
-        succeed
-      } catch {
-        case _: NoSuchMethodException => fail()
+        impl
+          .source(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
+          .runWith(Sink.seq)
+          .map { seq =>
+            assert(seq.length === 1)
+            seq.filter(_.isLeft).head.left.get match {
+              case ue: AbstractTestException.Undefined =>
+                assert(
+                  ue.getCause === DecodingFailure(
+                    "Attempt to decode value on failed cursor",
+                    List(DownField("body"), DownArray, DownField("successes"))
+                  )
+                )
+              case _ => fail("Wrong cause in Exception")
+            }
+          }
       }
-    }
+  }
 
   private trait MultipleResponseSourceTestBaseImplemented
       extends MultipleResponseSource[TestRequest, AbstractTestException, TestSuccess] {
@@ -403,7 +276,10 @@ private object MultipleResponseSourceTest {
 
   final case class ListJsonRep[A](successes: List[A])
 
-  final case class TestResponseNextPageJsonRep(next_page_uri: Option[String], test: TestSuccess)
+  final case class TestResponseNextPageJsonRep(
+      next_page_uri: Option[String],
+      successes: List[TestSuccess]
+  )
 
   def sharedNextPageHttpRequestBuilder(
       connectionSettings: TwilioConnectionSettings,
@@ -413,10 +289,7 @@ private object MultipleResponseSourceTest {
       .parseUnsafe[TestResponseNextPageJsonRep]()
       .next_page_uri
       .map(s => {
-        val hostname = connectionSettings.hostNameFor(ApiSubDomain.Api)
-        val url =
-          s"${connectionSettings.protocol}://$hostname:${connectionSettings.endpoint.port}$s"
-        HttpRequest(HttpMethods.GET, url).addHeader(
+        HttpRequest(HttpMethods.GET, s).addHeader(
           Authorization(
             BasicHttpCredentials(
               connectionSettings.accountSid.toString,
@@ -425,6 +298,18 @@ private object MultipleResponseSourceTest {
           )
         )
       })
+
+  def buildFailingPagingBody(nextPageUri: Option[String]) =
+    s"""
+       |{
+       |  "next_page_uri":${nextPageUri.map { string => s""""$string"""" }.getOrElse("null")},
+       |  "successes": [
+       |    {
+       |      "failingObjectAttribute":"kaBOOOOOM"
+       |    }
+       |  ]
+       |}
+       |""".stripMargin
 
   def buildPagingBody(nextPageUri: Option[String], bodyText: String) =
     s"""
@@ -435,7 +320,7 @@ private object MultipleResponseSourceTest {
        |      "body":"$bodyText"
        |    },
        |    {
-       |      "body":"${bodyText}second"
+       |      "body":"${bodyText}Second"
        |    }
        |  ]
        |}

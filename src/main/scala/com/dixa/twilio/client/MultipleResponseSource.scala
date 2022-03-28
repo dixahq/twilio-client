@@ -29,7 +29,8 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
         val httpFlow            = requestFlow
         val httpResponseHandler = responseHandlerFlow(connSettings)
 
-        val httpEntityBroadcast = builder.add(Broadcast[Either[Err, HttpEntityString]](2))
+        val httpEntityBroadcast =
+          builder.add(Broadcast[Either[Err, (HttpResponse, HttpEntityString)]](2))
 
         val nextPageHttpRequestBuild = nextPageHttpRequestBuildFlow(connSettings)
 
@@ -62,14 +63,14 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
 
   /** Type for the request specific wrapper for an ApiException.
     *
-    * All implementations is expected to have there own Exception ADT, where one one of the possible
+    * All implementations is expected to have there own Exception ADT, where one of the possible
     * values should be a ApiException wrapper
     */
   protected type ApiExceptionWrapper <: Err
 
   /** Type for the request specific UnspecifiedException.
     *
-    * All implementations is expected to have there own Exception ADT, where one one of the possible
+    * All implementations is expected to have there own Exception ADT, where one of the possible
     * values should be a UnspecifiedException for representing all the error cases, that does not
     * have it own type for representing it.
     */
@@ -109,8 +110,8 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
     * discard it in the first place.
     *
     * It should try to return all possible errors as a Left, but in case it slips, and ends up
-    * throwing an Exception, then SingleRequestExecutor will make sure to map the exception into the
-    * UndefinedException type of the request.
+    * throwing an Exception, then MultipleResponseSource will make sure to map the exception into
+    * the UndefinedException type of the request.
     *
     * When looking for errors, the [[buildResultForUnhandledResponse]] is an easy way to create a
     * willcard for the cases not handled.
@@ -121,12 +122,15 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
     *   The Req instance that that the HttpRequest was build upon
     * @param httpRequest
     *   The HttpRequest that the httpResponse is a response to
+    * @param httpResponse
+    *   The HttpResponse to parse (Entity has already been read to a Strict)
     * @param responseEntity
     *   The Strict version of the Http entity.
     */
   protected def parseHttpResponse(
       request: Req,
       httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
       responseEntity: HttpEntityString
   ): List[Either[Err, Success]]
 
@@ -137,6 +141,22 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
       connectionSettings: TwilioConnectionSettings,
       entityString: HttpEntityString
   ): Option[HttpRequest]
+
+  /** Helper method for creating a response to cases where we have no support for handling a
+    * Responese.
+    */
+  protected def buildResultForUnhandledResponse(
+      request: Req,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntity.Strict
+  ): Either[Err, Success] = {
+    val entityAsString = entity.data.utf8String
+    val msg =
+      s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
+        s"after firing $httpRequest. Full entity of response is: $entityAsString"
+    Left(createUnspecifiedException(Some(msg), None))
+  }
 
   private val requestFlow: Flow[Either[Err, HttpRequest], Either[Err, HttpResponse], NotUsed] = {
     Flow.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
@@ -187,17 +207,19 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
 
   private def responseHandlerFlow(
       connectionSettings: TwilioConnectionSettings
-  ): Flow[Either[Err, HttpResponse], Either[Err, HttpEntityString], NotUsed] =
+  ): Flow[Either[Err, HttpResponse], Either[Err, (HttpResponse, HttpEntityString)], NotUsed] =
     Flow[Either[Err, HttpResponse]]
       .mapAsync(1) {
         case Left(value) => Future.successful(Left(value))
-        case Right(value) =>
-          evaluateResponse(value) match {
+        case Right(response) =>
+          evaluateResponse(response) match {
             case Left(value) => Future.successful(Left(value))
-            case Right(value) =>
-              value.entity
+            case Right(evaluatedResponse) =>
+              evaluatedResponse.entity
                 .toStrict(connectionSettings.timeouts.requestEntityTimeout)
-                .map(entityStrict => Right(HttpEntityString(entityStrict.data.utf8String)))
+                .map(entityStrict =>
+                  Right((evaluatedResponse, HttpEntityString(entityStrict.data.utf8String)))
+                )
           }
       }
 
@@ -218,13 +240,13 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
 
   private def nextPageHttpRequestBuildFlow(
       connectionSettings: TwilioConnectionSettings
-  ): Flow[Either[Err, HttpEntityString], Either[Err, HttpRequest], NotUsed] =
-    Flow[Either[Err, HttpEntityString]]
+  ): Flow[Either[Err, (HttpResponse, HttpEntityString)], Either[Err, HttpRequest], NotUsed] =
+    Flow[Either[Err, (HttpResponse, HttpEntityString)]]
       .map {
         case Left(value) => Left(value)
         case Right(value) =>
           try {
-            Right(nextPageHttpRequestBuilder(connectionSettings, value))
+            Right(nextPageHttpRequestBuilder(connectionSettings, value._2))
           } catch {
             case e: Exception =>
               Left(createUnspecifiedException(Some(e.getMessage), Some(e)))
@@ -239,8 +261,8 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
   private def parseHttpEntityFlow(
       connectionSettings: TwilioConnectionSettings,
       req: Req
-  ): Flow[Either[Err, HttpEntityString], Either[Err, Success], NotUsed] =
-    Flow[Either[Err, HttpEntityString]]
+  ): Flow[Either[Err, (HttpResponse, HttpEntityString)], Either[Err, Success], NotUsed] =
+    Flow[Either[Err, (HttpResponse, HttpEntityString)]]
       .mapConcat {
         case Left(value) => Seq(Left(value))
         case Right(value) =>
@@ -248,7 +270,8 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success] {
             parseHttpResponse(
               req,
               createHttpReq(connectionSettings, req),
-              value
+              value._1,
+              value._2
             )
           } catch {
             case e: Exception =>
