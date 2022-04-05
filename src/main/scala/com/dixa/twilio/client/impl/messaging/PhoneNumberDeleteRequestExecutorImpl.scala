@@ -54,9 +54,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
   }
 
   private def buildResultForNotFoundResponse(entity: HttpEntityString) = {
-    val msg = entity
-      .parse[DefaultApiErrorEntityJsonRep]()
-      .fold(_.getMessage, _.message)
+    val msg = entity.parse[DefaultApiErrorEntityJsonRep]().fold(_.getMessage, _.message)
     Left(PhoneNumberDeleteException.NotFound(msg))
   }
 }
