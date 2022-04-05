@@ -47,7 +47,7 @@ private object ActivePhoneNumberListRequest {
   private final case class OuterJsonRep(items: List[ActivePhoneNumberJsonRep])
 
   private def entityToModel(entity: HttpEntityString): List[TwilioActivePhoneNumber] = {
-    val decoded = entity.parseUnsafe[OuterJsonRep]()
+    val decoded = entity.parse[OuterJsonRep]().toTry.get
     decoded.items.map(_.toModel)
   }
 }

@@ -64,7 +64,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
   )
 
   private def entityToConferenceJsonRep(entity: HttpEntityString): Seq[TwilioConferenceJsonResp] = {
-    val decoded = entity.parseUnsafe[TwilioConferenceOuterJsonRep]()
+    val decoded = entity.parse[TwilioConferenceOuterJsonRep]().toTry.get
     decoded.conferences
   }
 
@@ -81,8 +81,8 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
   private def entityToParticipantList(
       entity: HttpEntityString
   ): Seq[TwilioConference.Participant] = {
-    val decoded = entity.parseUnsafe[TwilioConferenceParticipantOuterJsonRep]()
-    decoded.participants.map { jsonRep =>
+    val decoded = entity.parse[TwilioConferenceParticipantOuterJsonRep]()
+    decoded.toTry.get.participants.map { jsonRep =>
       TwilioConference.Participant(
         TwilioCallSid(jsonRep.call_sid),
         TwilioConference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
