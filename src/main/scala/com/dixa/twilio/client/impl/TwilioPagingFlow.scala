@@ -110,9 +110,9 @@ private[impl] object TwilioPagingFlow {
   ): Option[TwilioUri] = {
     val optionalUri = apiSubDomain.pagingStyle match {
       case PagingStyle.PagingAttributesInRootJson =>
-        in.parseUnsafe[TwilioResponseNextPageJsonRep]().next_page_uri
+        in.parse[TwilioResponseNextPageJsonRep]().toTry.get.next_page_uri
       case PagingStyle.MetaObject =>
-        in.parseUnsafe[MetaRootJsonResp]().meta.next_page_url
+        in.parse[MetaRootJsonResp]().toTry.get.meta.next_page_url
     }
     optionalUri.map(s => TwilioUri.autoDetect(s, HttpMethods.GET, apiSubDomain))
   }

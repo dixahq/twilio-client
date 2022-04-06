@@ -3,8 +3,11 @@ package com.dixa.twilio.client
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
+import com.dixa.twilio.client.impl.HttpEntityString
+import io.circe.Decoder
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 /** Base trait for an executor that is able and ready to fire a specific request in different ways.
   *
@@ -44,7 +47,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
               req,
               HttpReqRespAndEntity._1,
               HttpReqRespAndEntity._2,
-              HttpReqRespAndEntity._3
+              HttpEntityString(HttpReqRespAndEntity._3.data.utf8String)
             )
           )
       }
@@ -138,13 +141,13 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     * @param httpResponse
     *   The HttpResponse to parse (Entity has already been read to a Strict)
     * @param entity
-    *   The Strict version of the Http entity.
+    *   The entity parsed as a String using UTF-8
     */
   protected def parseHttpResponse(
       request: Req,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[Err, Success]
 
   private def execWithCheckForApiException(
@@ -165,16 +168,22 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
   /** Helper method for creating a response to cases where we have no support for handling a
     * Responese.
     */
-  protected def buildResultForUnhandledResponse(
+  protected final def buildResultForUnhandledResponse(
       request: Req,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[Err, Success] = {
-    val entityAsString = entity.data.utf8String
     val msg =
       s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
-        s"after firing $httpRequest. Full entity of response is: $entityAsString"
+        s"after firing $httpRequest. Full entity of response is: $entity"
     Left(createUnspecifiedException(Some(msg), None))
+  }
+
+  /** Helper method for parsing entity as Json, wrapping errors in UnspecifiedException. */
+  protected final def parseEntityAs[A: ClassTag: Decoder](
+      entity: HttpEntityString
+  ): Either[UnspecifiedException, A] = {
+    entity.parse[A]().left.map(e => createUnspecifiedException(None, Some(e)))
   }
 }

@@ -38,7 +38,7 @@ private[impl] object CompleteConferenceRequest {
       }
       resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
-        val decoded      = entityString.parseUnsafe[TwilioConferenceJsonResp]()
+        val decoded      = entityString.parse[TwilioConferenceJsonResp]().toTry.get
         decoded.toModel
       }
     }

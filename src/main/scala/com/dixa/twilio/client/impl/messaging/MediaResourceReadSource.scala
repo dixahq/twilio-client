@@ -35,7 +35,7 @@ private[impl] object MediaResourceReadSource {
         connSettings,
         TwilioPath(ApiSubDomain.Api, HttpMethods.GET, requestPath)
       )
-      .mapConcat(_.parseUnsafe[MediaResourceListJsonRep]().media_list)
+      .mapConcat(_.parse[MediaResourceListJsonRep]().toTry.get.media_list)
       .map(_.toModel(req.messageSid, connSettings))
   }
 

@@ -36,7 +36,7 @@ private object ServicesReadRequest {
   private final case class OuterJsonRep(services: List[MessagingServiceJsonRep])
 
   private def entityToServiceList(entity: HttpEntityString) = {
-    val decoded = entity.parseUnsafe[OuterJsonRep]()
+    val decoded = entity.parse[OuterJsonRep]().toTry.get
     decoded.services.map(_.toTwilioMessagingService)
   }
 }
