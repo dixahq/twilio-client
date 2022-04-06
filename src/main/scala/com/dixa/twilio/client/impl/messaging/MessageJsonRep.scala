@@ -22,6 +22,6 @@ private[messaging] final case class MessageJsonRep(
     error_code: Option[Int],
     error_message: Option[String],
     uri: String,
-    subresource_uris: SubresourceUris
+//    subresource_uris: SubresourceUris
 )
-private[messaging] final case class SubresourceUris(media: String)
+//private[messaging] final case class SubresourceUris(media: String)

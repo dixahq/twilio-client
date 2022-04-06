@@ -1,6 +1,5 @@
 package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
