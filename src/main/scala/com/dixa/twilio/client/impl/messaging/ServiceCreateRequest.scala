@@ -41,7 +41,7 @@ private[impl] final class ServiceCreateRequest()(
       }
       httpResp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
-        val decoded      = entityString.parseUnsafe[MessagingServiceJsonRep]()
+        val decoded      = entityString.parse[MessagingServiceJsonRep]().toTry.get
         decoded.toTwilioMessagingService
       }
     }

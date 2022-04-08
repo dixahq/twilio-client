@@ -72,7 +72,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       req: MessageSendRequest,
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[MessageSendException, Response] = httpResponse.status match {
     case StatusCodes.Created =>
       buildSuccessResponse(req, entity)
@@ -83,76 +83,76 @@ private[impl] final class MessageSendRequestExecutorImpl()(
 
   private def buildSuccessResponse(
       req: MessageSendRequest,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[MessageSendException, Response] = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[MessageSendRespJsonRep]()
-    MessageDirection.values.find(_.twilioString === decoded.direction) match {
-      case None =>
-        Left(
-          new MessageSendException.Unspecified(
-            s"Could not parse MessageDirection, ${decoded.direction} is not part of possible values"
-          )
-        )
-      case Some(direction) =>
-        req.from.asString === decoded.from match {
-          case false =>
-            Left(
-              new MessageSendException.Unspecified(
-                s"Could not parse MessageSender, ${req.from.asString} is not the same as ${decoded.from}"
-              )
+    parseEntityAs[MessageSendRespJsonRep](entity).flatMap { decoded =>
+      MessageDirection.values.find(_.twilioString === decoded.direction) match {
+        case None =>
+          Left(
+            new MessageSendException.Unspecified(
+              s"Could not parse MessageDirection, ${decoded.direction} is not part of possible values"
             )
-          case true =>
-            MessageStatus.values.find(_.twilioString === decoded.status) match {
-              case None =>
-                Left(
-                  new MessageSendException.Unspecified(
-                    s"Could not parse MessageStatus, ${decoded.status} is not part of possible values"
-                  )
+          )
+        case Some(direction) =>
+          req.from.asString === decoded.from match {
+            case false =>
+              Left(
+                new MessageSendException.Unspecified(
+                  s"Could not parse MessageSender, ${req.from.asString} is not the same as ${decoded.from}"
                 )
-              case Some(status) =>
-                Right(
-                  Response(
-                    accountSid = TwilioAccount.Sid(decoded.account_sid),
-                    body = MessageBody(decoded.body),
-                    dateCreated = decoded.date_created.flatMap(parseDate),
-                    dateSent = decoded.date_sent.flatMap(parseDate),
-                    dateUpdated = decoded.date_updated.flatMap(parseDate),
-                    direction = direction,
-                    from = MessageSender.E164(PhoneNumberE164(decoded.from)),
-                    messagingServiceSid =
-                      decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
-                    numMedia = decoded.num_media.toInt,
-                    numSegments = MessageNumSegments(decoded.num_segments.toInt),
-                    price = decoded.price.flatMap(parsePrice),
-                    priceUnit = decoded.price_unit.flatMap(parsePriceUnit),
-                    sid = MessageSid(decoded.sid),
-                    status = status,
-                    to = PhoneNumberE164(decoded.to)
+              )
+            case true =>
+              MessageStatus.values.find(_.twilioString === decoded.status) match {
+                case None =>
+                  Left(
+                    new MessageSendException.Unspecified(
+                      s"Could not parse MessageStatus, ${decoded.status} is not part of possible values"
+                    )
                   )
-                )
-            }
-        }
+                case Some(status) =>
+                  Right(
+                    Response(
+                      accountSid = TwilioAccount.Sid(decoded.account_sid),
+                      body = MessageBody(decoded.body),
+                      dateCreated = decoded.date_created.flatMap(parseDate),
+                      dateSent = decoded.date_sent.flatMap(parseDate),
+                      dateUpdated = decoded.date_updated.flatMap(parseDate),
+                      direction = direction,
+                      from = MessageSender.E164(PhoneNumberE164(decoded.from)),
+                      messagingServiceSid =
+                        decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
+                      numMedia = decoded.num_media.toInt,
+                      numSegments = MessageNumSegments(decoded.num_segments.toInt),
+                      price = decoded.price.flatMap(parsePrice),
+                      priceUnit = decoded.price_unit.flatMap(parsePriceUnit),
+                      sid = MessageSid(decoded.sid),
+                      status = status,
+                      to = PhoneNumberE164(decoded.to)
+                    )
+                  )
+              }
+          }
+      }
     }
   }
 
   private def buildResultForBadRequestResponse(
-      entity: HttpEntity.Strict
-  ): Left[MessageSendException, Nothing] = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
-    decoded.code match {
-      case 21211L => Left(MessageSendException.ToNumberNotValid())
-      case 21212L => Left(MessageSendException.FromNumberNotValid())
-      case 21606L => Left(MessageSendException.NotMessageCapableNumber())
-      case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
-      case other =>
-        Left(
-          new MessageSendException.Unspecified(
-            s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
-              s"$other represents. Full error entity from Twilio: $entityString"
+      entity: HttpEntityString
+  ) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).flatMap { decoded =>
+      decoded.code match {
+        case 21211L => Left(MessageSendException.ToNumberNotValid())
+        case 21212L => Left(MessageSendException.FromNumberNotValid())
+        case 21606L => Left(MessageSendException.NotMessageCapableNumber())
+        case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
+        case other =>
+          Left(
+            new MessageSendException.Unspecified(
+              s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                s"$other represents. Full error entity from Twilio: $entity"
+            )
           )
-        )
+      }
     }
   }
 }

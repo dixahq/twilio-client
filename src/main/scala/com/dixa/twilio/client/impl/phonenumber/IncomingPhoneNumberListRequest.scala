@@ -47,7 +47,7 @@ private object IncomingPhoneNumberListRequest {
   private final case class OuterJsonRep(incoming_phone_numbers: List[IncomingPhoneNumberJsonRep])
 
   private def entityToIncomingPhoneNumberSeq(entity: HttpEntityString) = {
-    val decoded = entity.parseUnsafe[OuterJsonRep]()
+    val decoded = entity.parse[OuterJsonRep]().toTry.get
     decoded.incoming_phone_numbers.map(_.toModel)
   }
 }

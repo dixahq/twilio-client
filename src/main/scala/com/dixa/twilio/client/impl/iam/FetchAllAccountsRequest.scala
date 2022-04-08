@@ -38,7 +38,7 @@ private[impl] object FetchAllAccountsRequest {
 
   private final case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
   private def entityToAccountList(entity: HttpEntityString): Seq[TwilioAccount] = {
-    val decoded = entity.parseUnsafe[TwilioAccountsOuterJsonRep]()
+    val decoded = entity.parse[TwilioAccountsOuterJsonRep]().toTry.get
     decoded.accounts.map { jsonRep =>
       TwilioAccount(
         TwilioAccount.Name(jsonRep.friendly_name),
