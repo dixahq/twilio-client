@@ -5,14 +5,14 @@ import com.dixa.twilio.model.iam.TwilioAccount
 
 import scala.collection.immutable
 
-sealed trait TwilioConference {
-  def sid: TwilioConference.Sid
-  def status: TwilioConference.Status
-  def friendlyName: TwilioConference.FriendlyName
+sealed trait Conference {
+  def sid: Conference.Sid
+  def status: Conference.Status
+  def friendlyName: Conference.FriendlyName
   def accountSid: TwilioAccount.Sid
 }
 
-object TwilioConference {
+object Conference {
 
   def apply(
       sid: Sid,
@@ -26,15 +26,15 @@ object TwilioConference {
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
-  ) extends TwilioConference
+  ) extends Conference
 
-  final case class TwilioConferenceWithParticipants(
+  final case class ConferenceWithParticipants(
       sid: Sid,
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
       participants: Vector[Participant]
-  ) extends TwilioConference
+  ) extends Conference
 
   final case class Sid(override val toString: String)
 

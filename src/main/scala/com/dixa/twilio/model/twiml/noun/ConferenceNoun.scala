@@ -1,23 +1,25 @@
-package com.dixa.twilio.model.twiml
+package com.dixa.twilio.model.twiml.noun
 
-import com.dixa.twilio.model.voice.TwilioConference
+import com.dixa.twilio.model.twiml.verb.DialVerb
+import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
+import com.dixa.twilio.model.voice.Conference
 
 /** Represent the Conference noun in TwiML
   *
   * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
   * trait.
   */
-sealed trait Conference extends TwimlElement.Noun with Dial.DialNoun {}
+sealed trait ConferenceNoun extends TwimlElement.Noun with DialVerb.DialNoun {}
 
-object Conference {
+object ConferenceNoun {
 
-  final class Builder[B <: PhantomTypes.Buildable] private[Conference] (
-      beep: Option[TwilioConference.Beep],
+  final class Builder[B <: PhantomTypes.Buildable] private[ConferenceNoun] (
+      beep: Option[Conference.Beep],
       waitUrl: Option[String],
-      conferenceFriendlyName: TwilioConference.FriendlyName
+      conferenceFriendlyName: Conference.FriendlyName
   ) {
 
-    def withBeep(beep: TwilioConference.Beep): Builder[B] =
+    def withBeep(beep: Conference.Beep): Builder[B] =
       new Builder[B](Some(beep), waitUrl, conferenceFriendlyName)
 
     /** Set a empty wait URL. Note that this is not the same, as not setting it.
@@ -32,7 +34,7 @@ object Conference {
     // relative paths. So I have not included it, as I do not need it at time of writing this.
 
     def withConferenceFriendlyName(
-        name: TwilioConference.FriendlyName
+        name: Conference.FriendlyName
     ): Builder[PhantomTypes.BuildableTrue] =
       new Builder[PhantomTypes.BuildableTrue](beep, waitUrl, name)
 
@@ -41,22 +43,22 @@ object Conference {
 
     def build()(
         implicit evb: B =:= PhantomTypes.BuildableTrue
-    ): Conference = ConferenceImpl(beep, waitUrl, conferenceFriendlyName)
+    ): ConferenceNoun = ConferenceNounImpl(beep, waitUrl, conferenceFriendlyName)
 
   }
 
   type BuilderStartState = Builder[PhantomTypes.BuildableFalse]
-  type BuildFunction     = BuilderStartState => Conference
+  type BuildFunction     = BuilderStartState => ConferenceNoun
 
-  def build(fun: BuildFunction): Conference = fun(
-    new BuilderStartState(None, None, TwilioConference.FriendlyName(""))
+  def build(fun: BuildFunction): ConferenceNoun = fun(
+    new BuilderStartState(None, None, Conference.FriendlyName(""))
   )
 
-  private final case class ConferenceImpl(
-      beep: Option[TwilioConference.Beep],
+  private final case class ConferenceNounImpl(
+      beep: Option[Conference.Beep],
       waitUrl: Option[String],
-      conferenceFriendlyName: TwilioConference.FriendlyName
-  ) extends Conference {
+      conferenceFriendlyName: Conference.FriendlyName
+  ) extends ConferenceNoun {
     override val xmlCompact: String = {
       val beepAtt    = beep.map(x => s""" beep="${x.twilioString}"""").getOrElse("")
       val waitUrlAtt = waitUrl.map(x => s""" waitUrl="$x"""").getOrElse("")

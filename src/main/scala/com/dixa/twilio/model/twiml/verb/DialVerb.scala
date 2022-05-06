@@ -1,4 +1,4 @@
-package com.dixa.twilio.model.twiml
+package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -10,15 +10,17 @@ import com.dixa.twilio.model.twiml.PhantomTypes.{
   HasSingleAllowedValueAlreadyFalse,
   HasSingleAllowedValueAlreadyTrue
 }
+import com.dixa.twilio.model.twiml.noun.ConferenceNoun
+import com.dixa.twilio.model.twiml.{Response, TwimlElement}
 
 /** Represent the Dial verb in TwiML
   *
   * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
   * trait.
   */
-trait Dial extends TwimlElement.Verb
+trait DialVerb extends TwimlElement.Verb
 
-object Dial {
+object DialVerb {
 
   /** Trait that should be mixed in by Noun traits that are supported in the Dial verb. */
   trait DialNoun extends TwimlElement.Noun
@@ -33,29 +35,29 @@ object Dial {
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] =
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValuePhoneNumber(pn))
 
-    def withConference(fun: Conference.BuildFunction)(
+    def withConference(fun: ConferenceNoun.BuildFunction)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] = {
-      val conference = Conference.build(fun)
+      val conference = ConferenceNoun.build(fun)
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValueNoun(conference))
     }
 
     def build()(
         implicit evB: B =:= BuildableTrue
-    ): Dial = DialImpl(value)
+    ): DialVerb = DialVerbImpl(value)
   }
 
   type BuilderStartState = Builder[BuildableFalse, HasSingleAllowedValueAlreadyFalse]
-  type BuildFunction     = BuilderStartState => Dial
+  type BuildFunction     = BuilderStartState => DialVerb
 
-  def build(fun: BuildFunction): Dial = fun(new BuilderStartState(NotSetValue))
+  def build(fun: BuildFunction): DialVerb = fun(new BuilderStartState(NotSetValue))
 
   private sealed abstract class ValueToUse
   private object NotSetValue                                     extends ValueToUse
   private final case class ValuePhoneNumber(pn: PhoneNumberE164) extends ValueToUse
   private final case class ValueNoun(noun: DialNoun)             extends ValueToUse
 
-  private final case class DialImpl(value: ValueToUse) extends Dial {
+  private final case class DialVerbImpl(value: ValueToUse) extends DialVerb {
     override def xmlCompact: String = {
       val valueAsString = value match {
         case ValuePhoneNumber(pn) => pn.asString

@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.twiml
 
-import com.dixa.twilio.model.voice.TwilioConference
+import com.dixa.twilio.model.voice.Conference
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.annotation.nowarn
@@ -88,13 +88,13 @@ final class ResponseTest extends AnyWordSpec {
 
       "Be able to nest a conference within the dial" in {
 
-        val conferenceFriendlyName = TwilioConference.FriendlyName("Test_conference")
+        val conferenceFriendlyName = Conference.FriendlyName("Test_conference")
 
         val result: Response.Verified = Response.build { responseBuilder =>
           responseBuilder.addDial { dialBuilder =>
             dialBuilder.withConference { conferenceBuilder =>
               conferenceBuilder
-                .withBeep(TwilioConference.Beep.False)
+                .withBeep(Conference.Beep.False)
                 .withWaitUrlEmpty()
                 .withConferenceFriendlyName(conferenceFriendlyName)
                 .build

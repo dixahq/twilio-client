@@ -4,19 +4,19 @@ import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.TwilioConference
-import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.model.voice.Conference
+import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 
 import scala.concurrent.Future
 
 trait TwilioClientVoice {
   def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
-      statusFilter: Option[TwilioConference.Status]
-  ): Flow[TwilioAccount.Sid, TwilioConferenceWithParticipants, NotUsed]
+      statusFilter: Option[Conference.Status]
+  ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed]
 
   def completeConference(
       connSettings: TwilioConnectionSettings,
-      conference: TwilioConference
-  ): Future[TwilioConference]
+      conference: Conference
+  ): Future[Conference]
 }

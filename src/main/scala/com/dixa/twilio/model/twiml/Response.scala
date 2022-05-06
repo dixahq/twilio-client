@@ -1,6 +1,7 @@
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.StringUtil
+import com.dixa.twilio.model.twiml.verb.{DialVerb, SayVerb}
 
 // format: off
 /** Class represent the TwiML Response element (the root element of TwiML)
@@ -112,11 +113,11 @@ object Response {
       verbs: Vector[TwimlElement.Verb]
   ) {
 
-    def addDial(fun: Dial.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ Dial.build(fun))
+    def addDial(fun: DialVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
+      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ DialVerb.build(fun))
 
-    def addSay(fun: Say.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ Say.build(fun))
+    def addSay(fun: SayVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
+      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ SayVerb.build(fun))
 
     /** A a custom Verb to the builder (not recommended)
       *
