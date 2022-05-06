@@ -1,5 +1,6 @@
 package com.dixa.twilio.model.twiml
 
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.model.voice.Conference
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -116,6 +117,33 @@ final class ResponseTest extends AnyWordSpec {
         // format: off
         val expectedCompactXml = 
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Conference beep="false" waitUrl="">$conferenceFriendlyName</Conference></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to nest a plain phonenumber within the dial" in {
+
+        val pn = "+4533442255"
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder.addDial { dialBuilder =>
+            dialBuilder.withPhoneNumber(PhoneNumberE164(pn)).build
+          }.buildVerified
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Dial>
+             |    $pn
+             |  </Dial>
+             |</Response>""".stripMargin
+
+        println(result.xmlPretty)
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial>$pn</Dial></Response>"""
         // format: on
         assert(result.xmlCompact == expectedCompactXml)
       }
