@@ -17,10 +17,10 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, SayVerb}
   * [[https://plantuml.cirque-udv.dk/svg/oymhIIrAIqnELGXABIx8pojEvKfCAYufIamkKN0hoi_rpKz9pU5ApaaiBbO8IotAJCjCJU7AX6iApIk32KBK80JGTQFA19SKPUQbSt71R5MmgT7LHR8Hpe98mAr6qu1aFnU2ZIw7qrXiIWYO0t4u0000]]
   *
   * It is strongly recommended, that you build you Response instance, by using the
-  * [[Response.build]] method, and avoid adding customVerbs to it, so you are allowed to call
+  * [[Response.build]] method, and avoid adding custom Verbs to it, so you are allowed to call
   * [[Response.Builder.buildVerified]] on the builder, to retrieve a [[Response.Verified]] instance.
-  * Doing so you can garenty compile time, that you Response instance will produce valid TwiML. You
-  * can do so by doing:
+  * Doing so you can check compile time, that you Response instance will produce valid formatted TwiML. 
+  * You can do so by doing:
   * {{{
   *    val result: Response.Verified = Response.build { responseBuilder =>
   *      responseBuilder
@@ -33,10 +33,10 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, SayVerb}
   * [[Response.Builder.buildVerified]] can only be called, as long as you have not called
   * [[Response.Builder.addCustomVerb]]. If you find you self building official TwiML, but still
   * need to use a custom Verb, or create a Response from a String, then please contribute to
-  * this library instead, and make the it support building the needed TwiMl in a typesafe way.
+  * this library instead, and make it support building the needed TwiMl in a typesafe way.
   * 
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
-  * provides the builder to. But as many of the things added to the builder, are them self objects 
+  * provides the builder to. But as many of the things added to the builder are them self objects 
   * that needs to be build using another builder, I found that this was what provided the most
   * pleasant syntax for clients. Instead of them needing to find the correct builder to create 
   * and provide, you can just provide a function, give the argument (the builder) a name, and
