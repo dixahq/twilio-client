@@ -1,5 +1,10 @@
 package com.dixa.twilio.model.twiml
 
+/** Representation of the Say Verb from TwiML
+  *
+  * Creating a [[Response]] via the [[Response.build]] method, is the prefered way to use this
+  * trait.
+  */
 sealed trait Say extends TwimlElement.Verb {}
 
 object Say {
