@@ -25,6 +25,20 @@ final class ResponseTest extends AnyWordSpec {
 
     "constructed from a builder but including a custome verb" should {
 
+      "not allow to call buildVerified" in {
+        assertTypeError(
+          """final class TestCustomVerb extends TwimlElement.Verb {
+            |          override def xmlCompact: String = "<CustomVerb>Hello<CustomVerb>"
+            |          override def xmlPretty: String  = xmlCompact
+            |}
+            |
+            |Response.build { responseBuilder =>
+            |          responseBuilder.addCustomVerb(new TestCustomVerb).buildVerified()
+            |}
+            |""".stripMargin
+        )
+      }
+
       "return a instance that is both FromModel and Unverified" in {
         final class TestCustomVerb extends TwimlElement.Verb {
           override def xmlCompact: String = """<CustomVerb>Hello<CustomVerb>"""
