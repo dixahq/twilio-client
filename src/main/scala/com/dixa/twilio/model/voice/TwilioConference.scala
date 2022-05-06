@@ -80,4 +80,14 @@ object TwilioConference {
 
   final case class Participant(callSid: TwilioCallSid, status: ParticipantStatus)
 
+  sealed abstract class Beep(val twilioString: String) extends EnumWithTwilioString.EnumEntry
+
+  object Beep extends EnumWithTwilioString[Beep] {
+    case object True    extends Beep("true")
+    case object False   extends Beep("false")
+    case object OnEnter extends Beep("onEnter")
+    case object OnExit  extends Beep("onExit")
+
+    override def values: immutable.IndexedSeq[Beep] = findValues
+  }
 }

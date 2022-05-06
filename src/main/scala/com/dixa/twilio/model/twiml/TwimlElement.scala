@@ -9,4 +9,5 @@ trait TwimlElement {
 
 object TwimlElement {
   trait Verb extends TwimlElement
+  trait Noun extends TwimlElement
 }

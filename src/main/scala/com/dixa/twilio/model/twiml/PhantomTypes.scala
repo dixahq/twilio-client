@@ -16,4 +16,8 @@ object PhantomTypes {
   sealed trait Verified
   sealed trait VerifiedTrue  extends Verified
   sealed trait VerifiedFalse extends Verified
+
+  sealed trait HasSingleAllowedValueAlready
+  sealed trait HasSingleAllowedValueAlreadyTrue  extends HasSingleAllowedValueAlready
+  sealed trait HasSingleAllowedValueAlreadyFalse extends HasSingleAllowedValueAlready
 }

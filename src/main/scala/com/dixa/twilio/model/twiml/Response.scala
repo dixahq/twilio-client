@@ -1,5 +1,7 @@
 package com.dixa.twilio.model.twiml
 
+import com.dixa.twilio.model.StringUtil
+
 // format: off
 /** Class represent the TwiML Response element (the root element of TwiML)
   *
@@ -71,11 +73,13 @@ object Response {
       }</Response>"""
     // format: on
 
-    override def xmlPretty: String =
+    override def xmlPretty: String = {
+      val verbsAsXmlList = verbs.map(v => StringUtil.indentEveryLineWith2Spaces(v.xmlPretty))
       s"""<?xml version="1.0" encoding="UTF-8"?>
          |<Response>
-         |${verbs.map(v => s"  ${v.xmlPretty}").mkString(System.lineSeparator())}
+         |${verbsAsXmlList.mkString(System.lineSeparator())}
          |</Response>""".stripMargin
+    }
   }
 
   final class Verified private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
@@ -107,6 +111,9 @@ object Response {
   final class Builder[B <: PhantomTypes.Buildable, V <: PhantomTypes.Verified] private[Response] (
       verbs: Vector[TwimlElement.Verb]
   ) {
+
+    def addDial(fun: Dial.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
+      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ Dial.build(fun))
 
     def addSay(fun: Say.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
       new Builder[PhantomTypes.BuildableTrue, V](verbs :+ Say.build(fun))

@@ -1,8 +1,10 @@
 package com.dixa.twilio.model.twiml
 
+import com.dixa.twilio.model.voice.TwilioConference
 import org.scalatest.wordspec.AnyWordSpec
 
-//noinspection ComparingUnrelatedTypes
+import scala.annotation.nowarn
+
 final class ResponseTest extends AnyWordSpec {
 
   s"${classOf[Response].getSimpleName}" when {
@@ -17,7 +19,6 @@ final class ResponseTest extends AnyWordSpec {
              |</Response>""".stripMargin
         val result: Response.UnverifiedFromString = Response.fromString(expectedXmlPretty)
         assert(result.isInstanceOf[Response.Unverified])
-        assert(!result.isInstanceOf[Response.Verified])
         assert(result.xmlPretty === expectedXmlPretty)
         assert(result.xmlCompact === expectedXmlPretty)
       }
@@ -48,7 +49,6 @@ final class ResponseTest extends AnyWordSpec {
           responseBuilder.addCustomVerb(new TestCustomVerb).buildUnverified()
         }
         assert(result.isInstanceOf[Response.FromModel])
-        assert(!result.isInstanceOf[Response.Verified])
         assert(result.xmlPretty == s"""<?xml version="1.0" encoding="UTF-8"?>
                                       |<Response>
                                       |  <CustomVerb>Hello<CustomVerb>
@@ -81,6 +81,43 @@ final class ResponseTest extends AnyWordSpec {
              |  <Say>$textToSay</Say>
              |</Response>""".stripMargin
         assert(xmlPretty === expectedXmlPretty)
+      }
+    }
+
+    "constructing a respnse with Dial" should {
+
+      "Be able to nest a conference within the dial" in {
+
+        val conferenceFriendlyName = TwilioConference.FriendlyName("Test_conference")
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder.addDial { dialBuilder =>
+            dialBuilder.withConference { conferenceBuilder =>
+              conferenceBuilder
+                .withBeep(TwilioConference.Beep.False)
+                .withWaitUrlEmpty()
+                .withConferenceFriendlyName(conferenceFriendlyName)
+                .build
+            }.build
+          }.buildVerified
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Dial>
+             |    <Conference beep="false" waitUrl="">$conferenceFriendlyName</Conference>
+             |  </Dial>
+             |</Response>""".stripMargin
+
+        println(result.xmlPretty)
+        assert(result.xmlPretty === expectedPrettyXml)
+        
+        // format: off
+        val expectedCompactXml = 
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Conference beep="false" waitUrl="">$conferenceFriendlyName</Conference></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
       }
     }
 
