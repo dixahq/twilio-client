@@ -39,6 +39,8 @@ object Response {
   final class Verified private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
   sealed trait Unverified                                            extends Response
 
+  final class UnverifiedFromModel private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
+
   final class UnverifiedFromString private[Response] (val suppliedTwiml: String)
       extends Unverified() {
 
@@ -67,10 +69,20 @@ object Response {
     def addSay(fun: Say.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
       new Builder[PhantomTypes.BuildableTrue, V](verbs :+ Say.build(fun))
 
+    def addCustomVerb(
+        verb: TwimlElement.Verb
+    ): Builder[PhantomTypes.BuildableTrue, PhantomTypes.VerifiedFalse] =
+      new Builder[PhantomTypes.BuildableTrue, PhantomTypes.VerifiedFalse](verbs :+ verb)
+
     def buildVerified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
         evV: V =:= PhantomTypes.VerifiedTrue
     ): Response.Verified = new Verified(verbs)
+
+    def buildUnverified()(
+        implicit evB: B =:= PhantomTypes.BuildableTrue,
+        evV: V =:= PhantomTypes.VerifiedFalse
+    ): Response.UnverifiedFromModel = new UnverifiedFromModel(verbs)
   }
 
   type BuilderStartState = Builder[PhantomTypes.BuildableFalse, PhantomTypes.VerifiedTrue]

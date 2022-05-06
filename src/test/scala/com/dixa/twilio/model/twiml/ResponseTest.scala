@@ -2,6 +2,7 @@ package com.dixa.twilio.model.twiml
 
 import org.scalatest.wordspec.AnyWordSpec
 
+//noinspection ComparingUnrelatedTypes
 final class ResponseTest extends AnyWordSpec {
 
   s"${classOf[Response].getSimpleName}" when {
@@ -16,8 +17,28 @@ final class ResponseTest extends AnyWordSpec {
              |</Response>""".stripMargin
         val result: Response.UnverifiedFromString = Response.fromString(expectedXmlPretty)
         assert(result.isInstanceOf[Response.Unverified])
+        assert(!result.isInstanceOf[Response.Verified])
         assert(result.xmlPretty === expectedXmlPretty)
         assert(result.xmlCompact === expectedXmlPretty)
+      }
+    }
+
+    "constructed from a builder but including a custome verb" should {
+
+      "return a instance that is both FromModel and Unverified" in {
+        final class TestCustomVerb extends TwimlElement.Verb {
+          override def xmlCompact: String = """<CustomVerb>Hello<CustomVerb>"""
+          override def xmlPretty: String  = xmlCompact
+        }
+        val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
+          responseBuilder.addCustomVerb(new TestCustomVerb).buildUnverified()
+        }
+        assert(result.isInstanceOf[Response.FromModel])
+        assert(!result.isInstanceOf[Response.Verified])
+        assert(result.xmlPretty == s"""<?xml version="1.0" encoding="UTF-8"?>
+                                      |<Response>
+                                      |  <CustomVerb>Hello<CustomVerb>
+                                      |</Response>""".stripMargin)
       }
     }
 
