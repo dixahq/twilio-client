@@ -20,7 +20,8 @@ import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.{
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Call
 import io.circe.generic.auto._
-
+import org.scalactic.TypeCheckedTripleEquals._
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 
 private[client] class CallUpdateRequestExecutorImpl()(
@@ -33,7 +34,14 @@ private[client] class CallUpdateRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: CallUpdateRequestExecutor.CallUpdateRequest
   ): HttpRequest = {
-    val postParam = s"Twiml=${req.twiml.xmlCompact}"
+    val postParamBuilder = new mutable.StringBuilder()
+    req.twiml.foreach(twiml => postParamBuilder.append(s"Twiml=${twiml.xmlCompact}&"))
+    req.url.foreach(url => postParamBuilder.append(s"Url=$url&"))
+    val postParamLastCharIndex = postParamBuilder.length - 1
+    if (postParamBuilder.charAt(postParamLastCharIndex) === '&')
+      postParamBuilder.deleteCharAt(postParamLastCharIndex)
+    val postParam = postParamBuilder.toString()
+
     TwilioPath(
       ApiSubDomain.Api,
       HttpMethods.POST,

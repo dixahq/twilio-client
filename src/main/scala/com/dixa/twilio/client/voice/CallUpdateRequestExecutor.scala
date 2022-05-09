@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.{Call, TwilioCallSid}
@@ -21,12 +22,79 @@ trait CallUpdateRequestExecutor
 
 object CallUpdateRequestExecutor {
 
-  final case class CallUpdateRequest(
+  sealed trait CallUpdateRequest {
+    def accountSid: TwilioAccount.Sid
+    def callSid: TwilioCallSid
+    def twiml: Option[Response.Verified]
+    def url: Option[CallbackUrl]
+    // API support a lot more fields, that could be added when needed.
+  }
+
+  private final case class CallUpdateRequestImpl(
       accountSid: TwilioAccount.Sid,
       callSid: TwilioCallSid,
-      twiml: Response.Verified
+      twiml: Option[Response.Verified],
+      url: Option[CallbackUrl]
       // API support a lot more fields, that could be added when needed.
-  )
+  ) extends CallUpdateRequest
+
+  object CallUpdateRequest {
+
+    sealed trait RequestAttribute
+    sealed trait RequestAccountSidAttribute extends RequestAttribute
+    sealed trait RequestCallSidAttribute    extends RequestAttribute
+
+    sealed trait HasTwimlOrUrlSetAlready      extends RequestAttribute
+    sealed trait HasTwimlOrUrlSetAlreadyTrue  extends HasTwimlOrUrlSetAlready
+    sealed trait HasTwimlOrUrlSetAlreadyFalse extends HasTwimlOrUrlSetAlready
+
+    type RequestRequiredAttributes = RequestAttribute
+      with RequestAccountSidAttribute
+      with RequestCallSidAttribute
+      with HasTwimlOrUrlSetAlreadyTrue
+
+    type BuilderStartState = Builder[RequestAttribute, HasTwimlOrUrlSetAlreadyFalse]
+
+    final class Builder[
+        Attributes <: RequestAttribute,
+        TwimlOrUrl <: HasTwimlOrUrlSetAlready
+    ] private[CallUpdateRequest] (
+        accountSid: Option[TwilioAccount.Sid],
+        callSid: Option[TwilioCallSid],
+        twiml: Option[Response.Verified],
+        url: Option[CallbackUrl]
+    ) {
+
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[Attributes with RequestAccountSidAttribute, TwimlOrUrl] =
+        new Builder(Some(accountSid), callSid, twiml, url)
+
+      def withCallSid(
+          callSid: TwilioCallSid
+      ): Builder[Attributes with RequestCallSidAttribute, TwimlOrUrl] =
+        new Builder(accountSid, Some(callSid), twiml, url)
+
+      def withTwiml(twiml: Response.Verified)(
+          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetAlreadyFalse
+      ): Builder[Attributes with HasTwimlOrUrlSetAlreadyTrue, HasTwimlOrUrlSetAlreadyTrue] =
+        new Builder(accountSid, callSid, Some(twiml), url)
+
+      def withUrl(url: CallbackUrl)(
+          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetAlreadyFalse
+      ): Builder[Attributes with HasTwimlOrUrlSetAlreadyTrue, HasTwimlOrUrlSetAlreadyTrue] =
+        new Builder(accountSid, callSid, twiml, Some(url))
+
+      def build()(
+          implicit ev: Attributes =:= RequestRequiredAttributes
+      ): CallUpdateRequest =
+        CallUpdateRequestImpl(accountSid.get, callSid.get, twiml, url)
+    }
+
+    def build(fun: BuilderStartState => CallUpdateRequest): CallUpdateRequest =
+      fun(new BuilderStartState(None, None, None, None))
+
+  }
 
   sealed trait CallUpdateException extends RuntimeException
   object CallUpdateException {

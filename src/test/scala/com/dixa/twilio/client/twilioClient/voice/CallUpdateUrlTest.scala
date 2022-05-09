@@ -3,7 +3,8 @@ package com.dixa.twilio.client.twilioClient.voice
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateException
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
-import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.client.{ApiException, HttpMethod, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.{Call, TwilioCallSid}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -11,13 +12,13 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class CallUpdateTest extends TwilioClientTest {
+final class CallUpdateUrlTest extends TwilioClientTest {
 
   classOf[TwilioClientVoice].getSimpleName when {
 
     "ask to update a call" should {
 
-      "Support sending new TwiML to the call" in {
+      "Support sending callback URL to the call" in {
 
         val f = new Fixture
         import f._
@@ -156,10 +157,11 @@ final class CallUpdateTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = TwilioCallSid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = CallUpdateRequestExecutor.CallUpdateRequest(
-      accountSid = connSettings.accountSid,
-      callSid = callSid,
-      twiml = Response.build { _.addSay(_.withText("Ahoy there").build()).buildVerified() }
+    val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
+      _.withAccountSid(connSettings.accountSid)
+        .withCallSid(callSid)
+        .withUrl(CallbackUrl("http://demo.twilio.com/docs/voice.xml"))
+        .build
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
@@ -170,7 +172,7 @@ final class CallUpdateTest extends TwilioClientTest {
       )
       .withRequestBody(
         WireMock.containing(
-          """Twiml=<?xml version="1.0" encoding="UTF-8"?><Response><Say>Ahoy there</Say></Response>"""
+          """Url=http://demo.twilio.com/docs/voice.xml"""
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
