@@ -1,5 +1,6 @@
 package com.dixa.twilio.model.twiml.noun
 
+import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.twiml.verb.DialVerb
 import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
 import com.dixa.twilio.model.voice.Conference
@@ -60,9 +61,10 @@ object ConferenceNoun {
       conferenceFriendlyName: Conference.FriendlyName
   ) extends ConferenceNoun {
     override val xmlCompact: String = {
-      val beepAtt    = beep.map(x => s""" beep="${x.twilioString}"""").getOrElse("")
-      val waitUrlAtt = waitUrl.map(x => s""" waitUrl="$x"""").getOrElse("")
-      s"""<Conference$beepAtt$waitUrlAtt>$conferenceFriendlyName</Conference>"""
+      val beepAtt             = beep.map(x => s""" beep="${x.twilioString}"""").getOrElse("")
+      val waitUrlAtt          = waitUrl.map(x => s""" waitUrl="$x"""").getOrElse("")
+      val escapedFriendlyName = StringUtil.xmlEscape(conferenceFriendlyName.toString)
+      s"""<Conference$beepAtt$waitUrlAtt>$escapedFriendlyName</Conference>"""
     }
 
     override def xmlPretty: String = xmlCompact

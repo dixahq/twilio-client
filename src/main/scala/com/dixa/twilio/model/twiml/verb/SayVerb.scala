@@ -1,5 +1,6 @@
 package com.dixa.twilio.model.twiml.verb
 
+import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
 
 /** Representation of the Say Verb from TwiML
@@ -28,7 +29,7 @@ object SayVerb {
   )
 
   private final case class SayVerbImpl(text: String) extends SayVerb {
-    override val xmlCompact: String = s"""<Say>$text</Say>"""
+    override val xmlCompact: String = s"""<Say>${StringUtil.xmlEscape(text)}</Say>"""
 
     override def xmlPretty: String = xmlCompact
   }

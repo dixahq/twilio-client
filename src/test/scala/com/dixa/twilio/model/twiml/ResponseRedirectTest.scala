@@ -2,7 +2,6 @@ package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.voice.Conference
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ResponseRedirectTest extends AnyWordSpec {
@@ -54,6 +53,30 @@ final class ResponseRedirectTest extends AnyWordSpec {
       // format: off
       val expectedCompactXml =
         s"""<?xml version="1.0" encoding="UTF-8"?><Response><Redirect method="GET">relative/url</Redirect></Response>"""
+      // format: on
+      assert(result.xmlCompact == expectedCompactXml)
+    }
+
+    "Be able to handle redirects with query parameters (including xml reserved & char" in {
+      val callbackUrl           = CallbackUrl("relative/url$key1=value1&key2=value2")
+      val callbackUrlXmlEscaped = "relative/url$key1=value1&amp;key2=value2"
+
+      val result: Response.Verified = Response.build { responseBuilder =>
+        responseBuilder.addRedirect { redirectBuilder =>
+          redirectBuilder.withCallbackUrl(callbackUrl).build
+        }.buildVerified
+      }
+
+      val expectedPrettyXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?>
+           |<Response>
+           |  <Redirect>$callbackUrlXmlEscaped</Redirect>
+           |</Response>""".stripMargin
+      assert(result.xmlPretty === expectedPrettyXml)
+
+      // format: off
+      val expectedCompactXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?><Response><Redirect>$callbackUrlXmlEscaped</Redirect></Response>"""
       // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }

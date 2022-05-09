@@ -174,5 +174,37 @@ final class ResponseDialTest extends AnyWordSpec {
       }
     }
 
+    "Be able to nest a conference within the dial with conference name including reserved XML chars" in {
+
+      val conferenceFriendlyName = Conference.FriendlyName("Test_\"'<>&_conference")
+      val conferenceEscapedName  = "Test_&quot;&apos;&lt;&gt;&amp;_conference"
+
+      val result: Response.Verified = Response.build { responseBuilder =>
+        responseBuilder.addDial { dialBuilder =>
+          dialBuilder.withConference { conferenceBuilder =>
+            conferenceBuilder
+              .withConferenceFriendlyName(conferenceFriendlyName)
+              .build
+          }.build
+        }.buildVerified
+      }
+
+      val expectedPrettyXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?>
+           |<Response>
+           |  <Dial>
+           |    <Conference>$conferenceEscapedName</Conference>
+           |  </Dial>
+           |</Response>""".stripMargin
+
+      println(result.xmlPretty)
+      assert(result.xmlPretty === expectedPrettyXml)
+
+      // format: off
+      val expectedCompactXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Conference>$conferenceEscapedName</Conference></Dial></Response>"""
+      // format: on
+      assert(result.xmlCompact == expectedCompactXml)
+    }
   }
 }

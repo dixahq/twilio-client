@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.{HttpMethod, StringUtil}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
 
@@ -41,7 +41,7 @@ object RedirectVerb {
 
     override val xmlCompact: String = {
       val methodAtt = method.map(m => s""" method="$m"""").getOrElse("")
-      s"""<Redirect$methodAtt>$callbackUrl</Redirect>"""
+      s"""<Redirect$methodAtt>${StringUtil.xmlEscape(callbackUrl.toString)}</Redirect>"""
     }
 
     override def xmlPretty: String = xmlCompact

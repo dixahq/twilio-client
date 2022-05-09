@@ -7,30 +7,33 @@ final class ResponseSayTest extends AnyWordSpec {
 
     "Constructing responses with Say directives" should {
 
-      "Be able to construct a response with a simple Say directive in a typesafe manner" in {
+      "Be able to construct a response with a simple Say directive in a typesafe manner," +
+        " even when text includes reserved xml chars" in {
 
-        val textToSay = "Say something Twilio"
-        val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder
-            .addSay { sayBuilder =>
-              sayBuilder.withText(textToSay).build
-            }
-            .buildVerified()
+          val textToSay = """Twilio can you pronounce these reserved XML chars: "'<>&"""
+          val textToSayEscaped =
+            "Twilio can you pronounce these reserved XML chars: &quot;&apos;&lt;&gt;&amp;"
+          val result: Response.Verified = Response.build { responseBuilder =>
+            responseBuilder
+              .addSay { sayBuilder =>
+                sayBuilder.withText(textToSay).build
+              }
+              .buildVerified()
+          }
+
+          val xmlCompact = result.xmlCompact
+          val expectedXmlCompact =
+            s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say>$textToSayEscaped</Say></Response>"""
+          assert(xmlCompact == expectedXmlCompact)
+
+          val xmlPretty = result.xmlPretty
+          val expectedXmlPretty =
+            s"""<?xml version="1.0" encoding="UTF-8"?>
+               |<Response>
+               |  <Say>$textToSayEscaped</Say>
+               |</Response>""".stripMargin
+          assert(xmlPretty === expectedXmlPretty)
         }
-
-        val xmlCompact = result.xmlCompact
-        val expectedXmlCompact =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say>$textToSay</Say></Response>"""
-        assert(xmlCompact == expectedXmlCompact)
-
-        val xmlPretty = result.xmlPretty
-        val expectedXmlPretty =
-          s"""<?xml version="1.0" encoding="UTF-8"?>
-             |<Response>
-             |  <Say>$textToSay</Say>
-             |</Response>""".stripMargin
-        assert(xmlPretty === expectedXmlPretty)
-      }
     }
   }
 }
