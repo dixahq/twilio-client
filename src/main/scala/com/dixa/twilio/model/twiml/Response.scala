@@ -1,7 +1,7 @@
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.StringUtil
-import com.dixa.twilio.model.twiml.verb.{DialVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
 
 // format: off
 /** Class represent the TwiML Response element (the root element of TwiML)
@@ -113,6 +113,9 @@ object Response {
 
     def addDial(fun: DialVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
       new Builder[PhantomTypes.BuildableTrue, V](verbs :+ DialVerb.build(fun))
+
+    def addRedirect(fun: RedirectVerb.BuildFunction) =
+      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ RedirectVerb.build(fun))
 
     def addSay(fun: SayVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
       new Builder[PhantomTypes.BuildableTrue, V](verbs :+ SayVerb.build(fun))
