@@ -68,13 +68,11 @@ object Response {
     override def toString = s"Response.${getClass.getSimpleName}($verbs)"
 
     // format: off
-    override def xmlCompact: String =
-      s"""<?xml version="1.0" encoding="UTF-8"?><Response>${
-        verbs.map(_.xmlCompact).mkString("")
-      }</Response>"""
+    override lazy val xmlCompact: String =
+      s"""<?xml version="1.0" encoding="UTF-8"?><Response>${verbs.map(_.xmlCompact).mkString("")}</Response>"""
     // format: on
 
-    override def xmlPretty: String = {
+    override lazy val xmlPretty: String = {
       val verbsAsXmlList = verbs.map(v => StringUtil.indentEveryLineWith2Spaces(v.xmlPretty))
       s"""<?xml version="1.0" encoding="UTF-8"?>
          |<Response>

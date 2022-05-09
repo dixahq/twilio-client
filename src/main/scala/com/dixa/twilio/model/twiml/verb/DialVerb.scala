@@ -58,7 +58,7 @@ object DialVerb {
   private final case class ValueNoun(noun: DialNoun)             extends ValueToUse
 
   private final case class DialVerbImpl(value: ValueToUse) extends DialVerb {
-    override def xmlCompact: String = {
+    override lazy val xmlCompact: String = {
       val valueAsString = value match {
         case ValuePhoneNumber(pn) => pn.asString
         case ValueNoun(noun)      => noun.xmlCompact
@@ -67,7 +67,7 @@ object DialVerb {
       s"""<Dial>$valueAsString</Dial>"""
     }
 
-    override def xmlPretty: String = {
+    override lazy val xmlPretty: String = {
       val valueAsString = value match {
         case ValuePhoneNumber(pn) => pn.asString
         case ValueNoun(noun)      => noun.xmlPretty
