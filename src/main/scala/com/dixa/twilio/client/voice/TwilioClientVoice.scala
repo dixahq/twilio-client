@@ -10,6 +10,9 @@ import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import scala.concurrent.Future
 
 trait TwilioClientVoice {
+
+  def callUpdate: CallUpdateRequestExecutor
+
   def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[Conference.Status]

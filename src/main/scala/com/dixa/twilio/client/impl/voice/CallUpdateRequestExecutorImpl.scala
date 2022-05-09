@@ -1,0 +1,82 @@
+package com.dixa.twilio.client.impl.voice
+
+import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model.{
+  ContentTypes,
+  HttpEntity,
+  HttpMethods,
+  HttpRequest,
+  HttpResponse,
+  StatusCodes
+}
+import akka.stream.Materializer
+import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
+import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.voice.CallUpdateRequestExecutor
+import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.{
+  CallUpdateException,
+  CallUpdateRequest
+}
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.voice.Call
+import io.circe.generic.auto._
+
+import scala.concurrent.ExecutionContext
+
+private[client] class CallUpdateRequestExecutorImpl()(
+    implicit override protected val http: HttpExt,
+    override protected val materializer: Materializer,
+    override protected val executionContext: ExecutionContext
+) extends CallUpdateRequestExecutor {
+
+  override protected def createHttpReq(
+      connSettings: TwilioConnectionSettings,
+      req: CallUpdateRequestExecutor.CallUpdateRequest
+  ): HttpRequest = {
+    val postParam = s"Twiml=${req.twiml.xmlCompact}"
+    TwilioPath(
+      ApiSubDomain.Api,
+      HttpMethods.POST,
+      s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json"
+    )
+      .createHttpRequest(connSettings)
+      .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
+  }
+
+  override protected def mapApiException(apiException: ApiException): CallUpdateException.Api =
+    CallUpdateException.Api(apiException)
+
+  override protected def createUnspecifiedException(
+      msg: Option[String],
+      cause: Option[Exception]
+  ): CallUpdateException.Unspecified = CallUpdateException.Unspecified(msg, cause)
+
+  override protected def parseHttpResponse(
+      req: CallUpdateRequest,
+      httpReq: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntityString
+  ): Either[CallUpdateException, Call] = httpResponse.status match {
+    case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
+    case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
+    case _                    => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
+  }
+
+  private def buildResultForNotFoundResponse(req: CallUpdateRequest, entity: HttpEntityString) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+      .map(e => CallUpdateException.Unspecified(None, Some(e)))
+      .flatMap { decoded =>
+        decoded.code match {
+          case 20404L =>
+            Left(CallUpdateException.CallNotFound(req.accountSid, req.callSid))
+          case other =>
+            Left(
+              new CallUpdateException.Unspecified(
+                s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                  s"$other represent. Full error entity from Twilio: $entity"
+              )
+            )
+        }
+      }
+  }
+}
