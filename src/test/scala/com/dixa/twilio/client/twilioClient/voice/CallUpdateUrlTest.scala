@@ -3,9 +3,8 @@ package com.dixa.twilio.client.twilioClient.voice
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateException
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
-import com.dixa.twilio.client.{ApiException, HttpMethod, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.{Call, TwilioCallSid}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
