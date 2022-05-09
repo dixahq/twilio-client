@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.client.HttpMethod
+import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
 import enumeratum.{Enum, EnumEntry}
 
