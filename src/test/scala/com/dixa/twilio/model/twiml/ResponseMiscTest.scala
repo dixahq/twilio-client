@@ -20,14 +20,32 @@ final class ResponseMiscTest extends AnyWordSpec {
       }
 
       "not allow clients to create a instance without using the fromString method" in {
-        assertTypeError(
+        assertDoesNotCompile(
           """val createdFromConstructor = new Response.UnverifiedFromString("input")"""
         )
-        assertTypeError("""val createdFromApplyMethod = Response.UnverifiedFromString("input")""")
+        assertDoesNotCompile(
+          """val createdFromApplyMethod = Response.UnverifiedFromString("input")"""
+        )
       }
     }
 
+    "not allow clients to create a Verified instance directly" in {
+      assertDoesNotCompile(
+        """val createdFromConstructor = new Response.Verified(Seq.empty)"""
+      )
+      assertDoesNotCompile("""val createdFromApplyMethod = Response.Verified(Seq.empty)""")
+    }
+
     "constructed from a builder but including a custome verb" should {
+
+      "not allow clients to create a UnverifiedFromModel instance directly" in {
+        assertDoesNotCompile(
+          """val createdFromConstructor = new Response.UnverifiedFromModel(Seq.empty)"""
+        )
+        assertDoesNotCompile(
+          """val createdFromApplyMethod = Response.UnverifiedFromModel(Seq.empty)"""
+        )
+      }
 
       "not allow to call buildVerified" in {
         assertTypeError(

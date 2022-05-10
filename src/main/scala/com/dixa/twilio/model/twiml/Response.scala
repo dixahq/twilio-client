@@ -49,23 +49,11 @@ sealed trait Response extends TwimlElement
 
 object Response {
 
-  sealed abstract class FromModel(val verbs: Seq[TwimlElement.Verb]) extends TwimlElement {
+  sealed trait FromModel extends TwimlElement {
 
-    def canEqual(other: Any): Boolean = other.isInstanceOf[FromModel]
+    def verbs: Seq[TwimlElement.Verb]
 
-    override def equals(other: Any): Boolean = other match {
-      case that: FromModel =>
-        (that canEqual this) &&
-        verbs == that.verbs
-      case _ => false
-    }
-
-    override def hashCode(): Int = {
-      val state = Seq(verbs)
-      state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-    }
-
-    override def toString = s"Response.${getClass.getSimpleName}($verbs)"
+    override final def toString = s"Response.${getClass.getSimpleName}($verbs)"
 
     // format: off
     override lazy val xmlCompact: String =
@@ -81,10 +69,22 @@ object Response {
     }
   }
 
-  final class Verified private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
-  sealed trait Unverified                                            extends Response
+  final case class Verified private[Response] (override val verbs: Seq[TwimlElement.Verb])
+      extends FromModel
 
-  final class UnverifiedFromModel private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
+  object Verified {
+    private[Response] def apply(verbs: Seq[TwimlElement.Verb]): Verified = new Verified(verbs)
+  }
+
+  sealed trait Unverified extends Response
+
+  final case class UnverifiedFromModel private[Response] (
+      override val verbs: Seq[TwimlElement.Verb]
+  ) extends FromModel
+
+  object UnverifiedFromModel {
+    private[Response] def apply(verbs: Seq[TwimlElement.Verb]) = new UnverifiedFromModel(verbs)
+  }
 
   final case class UnverifiedFromString private[Response] (suppliedTwiml: String)
       extends Unverified() {
@@ -136,7 +136,7 @@ object Response {
     def buildVerified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
         evV: V =:= PhantomTypes.VerifiedTrue
-    ): Response.Verified = new Verified(verbs)
+    ): Response.Verified = Verified(verbs)
 
     /** Build a unverified [[Response]]
       *
@@ -148,7 +148,7 @@ object Response {
     def buildUnverified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
         evV: V =:= PhantomTypes.VerifiedFalse
-    ): Response.UnverifiedFromModel = new UnverifiedFromModel(verbs)
+    ): Response.UnverifiedFromModel = UnverifiedFromModel(verbs)
   }
 
   type BuilderStartState = Builder[PhantomTypes.BuildableFalse, PhantomTypes.VerifiedTrue]
