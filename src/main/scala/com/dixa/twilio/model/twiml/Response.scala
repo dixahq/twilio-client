@@ -79,36 +79,32 @@ object Response {
     }
   }
 
-  final case class Verified private[Response] (override val verbs: Seq[TwimlElement.Verb])
-      extends FromModel
+  sealed trait Verified extends FromModel
 
-  object Verified {
-    private[Response] def apply(verbs: Seq[TwimlElement.Verb]): Verified = new Verified(verbs)
-  }
+  private final case class VerifiedImpl(
+      override val verbs: Seq[TwimlElement.Verb]
+  ) extends Verified
 
   sealed trait Unverified extends Response
 
-  final case class UnverifiedFromModel private[Response] (
-      override val verbs: Seq[TwimlElement.Verb]
-  ) extends FromModel
+  sealed trait UnverifiedFromModel extends FromModel with Unverified
 
-  object UnverifiedFromModel {
-    private[Response] def apply(verbs: Seq[TwimlElement.Verb]) = new UnverifiedFromModel(verbs)
+  private final case class UnverifiedFromModelImpl(
+      override val verbs: Seq[TwimlElement.Verb]
+  ) extends UnverifiedFromModel
+
+  sealed trait UnverifiedFromString extends Unverified {
+    def suppliedTwiml: String
   }
 
-  final case class UnverifiedFromString private[Response] (suppliedTwiml: String)
-      extends Unverified() {
+  private final case class UnverifiedFromStringImpl(suppliedTwiml: String)
+      extends UnverifiedFromString() {
 
     override def toString = s"Response.${getClass.getSimpleName}($suppliedTwiml)"
 
     override def xmlCompact: String = suppliedTwiml
 
     override def xmlPretty: String = suppliedTwiml
-  }
-
-  object UnverifiedFromString {
-    private[Response] def apply(suppliedTwiml: String): UnverifiedFromString =
-      new UnverifiedFromString(suppliedTwiml)
   }
 
   final class Builder[
@@ -165,7 +161,7 @@ object Response {
     def buildVerified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
         evV: V =:= PhantomTypes.VerifiedTrue
-    ): Response.Verified = Verified(verbs)
+    ): Response.Verified = VerifiedImpl(verbs)
 
     /** Build a unverified [[Response]]
       *
@@ -178,7 +174,7 @@ object Response {
     def buildUnverified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
         evV: V =:= PhantomTypes.VerifiedFalse
-    ): Response.UnverifiedFromModel = UnverifiedFromModel(verbs)
+    ): Response.UnverifiedFromModel = UnverifiedFromModelImpl(verbs)
   }
 
   type BuilderStartState =
@@ -200,7 +196,7 @@ object Response {
     * There will be no manipulation of the supplied TwiML. So returned Response will return it
     * exactly as is, both when `xmlCompact` and `xmlCompact` is called.
     */
-  def fromString(suppliedTwiml: String): UnverifiedFromString = new UnverifiedFromString(
+  def fromString(suppliedTwiml: String): UnverifiedFromString = UnverifiedFromStringImpl(
     suppliedTwiml
   )
 
