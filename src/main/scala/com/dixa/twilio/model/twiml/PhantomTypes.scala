@@ -20,4 +20,8 @@ object PhantomTypes {
   sealed trait HasSingleAllowedValueAlready
   sealed trait HasSingleAllowedValueAlreadyTrue  extends HasSingleAllowedValueAlready
   sealed trait HasSingleAllowedValueAlreadyFalse extends HasSingleAllowedValueAlready
+
+  sealed trait LastAddedVerbProhibitMoreVerbs
+  sealed trait LastAddedVerbProhibitMoreVerbsTrue  extends LastAddedVerbProhibitMoreVerbs
+  sealed trait LastAddedVerbProhibitMoreVerbsFalse extends LastAddedVerbProhibitMoreVerbs
 }

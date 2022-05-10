@@ -1,6 +1,16 @@
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.StringUtil
+import com.dixa.twilio.model.twiml.PhantomTypes.{
+  Buildable,
+  BuildableFalse,
+  BuildableTrue,
+  LastAddedVerbProhibitMoreVerbs,
+  LastAddedVerbProhibitMoreVerbsFalse,
+  LastAddedVerbProhibitMoreVerbsTrue,
+  VerifiedFalse,
+  VerifiedTrue
+}
 import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
 
 // format: off
@@ -101,18 +111,33 @@ object Response {
       new UnverifiedFromString(suppliedTwiml)
   }
 
-  final class Builder[B <: PhantomTypes.Buildable, V <: PhantomTypes.Verified] private[Response] (
+  final class Builder[
+      B <: Buildable,
+      V <: PhantomTypes.Verified,
+      L <: LastAddedVerbProhibitMoreVerbs
+  ] private[Response] (
       verbs: Vector[TwimlElement.Verb]
   ) {
 
-    def addDial(fun: DialVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ DialVerb.build(fun))
+    def addDial(fun: DialVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ DialVerb.build(fun))
 
-    def addRedirect(fun: RedirectVerb.BuildFunction) =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ RedirectVerb.build(fun))
+    /** Adds a redirect verb
+      *
+      * Calling this, will prevent you from adding more verbs to builder, as it makes no sense to
+      * have anything after a redirect in TwiML.
+      */
+    def addRedirect(fun: RedirectVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
+      new Builder(verbs :+ RedirectVerb.build(fun))
 
-    def addSay(fun: SayVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ SayVerb.build(fun))
+    def addSay(fun: SayVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ SayVerb.build(fun))
 
     /** A a custom Verb to the builder (not recommended)
       *
@@ -123,8 +148,10 @@ object Response {
       */
     def addCustomVerb(
         verb: TwimlElement.Verb
-    ): Builder[PhantomTypes.BuildableTrue, PhantomTypes.VerifiedFalse] =
-      new Builder[PhantomTypes.BuildableTrue, PhantomTypes.VerifiedFalse](verbs :+ verb)
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, VerifiedFalse, L] =
+      new Builder(verbs :+ verb)
 
     /** Build a verified [[Response]]
       *
@@ -154,7 +181,8 @@ object Response {
     ): Response.UnverifiedFromModel = UnverifiedFromModel(verbs)
   }
 
-  type BuilderStartState = Builder[PhantomTypes.BuildableFalse, PhantomTypes.VerifiedTrue]
+  type BuilderStartState =
+    Builder[BuildableFalse, VerifiedTrue, LastAddedVerbProhibitMoreVerbsFalse]
   type BuildFunction[A <: FromModel] = BuilderStartState => A
 
   /** Build an instance of a Response using builder.
