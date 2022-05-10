@@ -20,6 +20,7 @@ object ConferenceNoun {
       conferenceFriendlyName: Conference.FriendlyName
   ) {
 
+    /** See documentation on [[com.dixa.twilio.model.voice.Conference.Beep]] for details. */
     def withBeep(beep: Conference.Beep): Builder[B] =
       new Builder[B](Some(beep), waitUrl, conferenceFriendlyName)
 
@@ -27,6 +28,9 @@ object ConferenceNoun {
       *
       * By default if we omit the wait url, Twilio will play default waiting music, but by explicit
       * setting it to a empty value, no waiting music will be played.
+      *
+      * Twilio documentation:
+      * [[https://www.twilio.com/docs/voice/twiml/conference#attributes-waitUrl]]
       */
     def withWaitUrlEmpty(): Builder[B] = new Builder[B](beep, Some(""), conferenceFriendlyName)
 
