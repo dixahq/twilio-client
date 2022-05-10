@@ -18,6 +18,13 @@ final class ResponseMiscTest extends AnyWordSpec {
         assert(result.xmlPretty === expectedXmlPretty)
         assert(result.xmlCompact === expectedXmlPretty)
       }
+
+      "not allow clients to create a instance without using the fromString method" in {
+        assertTypeError(
+          """val createdFromConstructor = new Response.UnverifiedFromString("input")"""
+        )
+        assertTypeError("""val createdFromApplyMethod = Response.UnverifiedFromString("input")""")
+      }
     }
 
     "constructed from a builder but including a custome verb" should {

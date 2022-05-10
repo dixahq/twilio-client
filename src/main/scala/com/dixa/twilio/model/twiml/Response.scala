@@ -86,7 +86,7 @@ object Response {
 
   final class UnverifiedFromModel private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
 
-  final class UnverifiedFromString private[Response] (val suppliedTwiml: String)
+  final case class UnverifiedFromString private[Response] (suppliedTwiml: String)
       extends Unverified() {
 
     override def toString = s"Response.${getClass.getSimpleName}($suppliedTwiml)"
@@ -94,17 +94,11 @@ object Response {
     override def xmlCompact: String = suppliedTwiml
 
     override def xmlPretty: String = suppliedTwiml
+  }
 
-    override def equals(other: Any): Boolean = other match {
-      case that: UnverifiedFromString =>
-        suppliedTwiml == that.suppliedTwiml
-      case _ => false
-    }
-
-    override def hashCode(): Int = {
-      val state = Seq(suppliedTwiml)
-      state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-    }
+  object UnverifiedFromString {
+    private[Response] def apply(suppliedTwiml: String): UnverifiedFromString =
+      new UnverifiedFromString(suppliedTwiml)
   }
 
   final class Builder[B <: PhantomTypes.Buildable, V <: PhantomTypes.Verified] private[Response] (
