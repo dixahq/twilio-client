@@ -1,7 +1,7 @@
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.StringUtil
-import com.dixa.twilio.model.twiml.PhantomTypes.{
+import com.dixa.twilio.model.twiml.TwimlConstraints.{
   Buildable,
   BuildableFalse,
   BuildableTrue,
@@ -109,7 +109,7 @@ object Response {
 
   final class Builder[
       B <: Buildable,
-      V <: PhantomTypes.Verified,
+      V <: TwimlConstraints.Verified,
       L <: LastAddedVerbProhibitMoreVerbs
   ] private[Response] (
       verbs: Vector[TwimlElement.Verb]
@@ -159,8 +159,8 @@ object Response {
       *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
       */
     def buildVerified()(
-        implicit evB: B =:= PhantomTypes.BuildableTrue,
-        evV: V =:= PhantomTypes.VerifiedTrue
+        implicit evB: B =:= TwimlConstraints.BuildableTrue,
+        evV: V =:= TwimlConstraints.VerifiedTrue
     ): Response.Verified = VerifiedImpl(verbs)
 
     /** Build a unverified [[Response]]
@@ -172,8 +172,8 @@ object Response {
       *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
       */
     def buildUnverified()(
-        implicit evB: B =:= PhantomTypes.BuildableTrue,
-        evV: V =:= PhantomTypes.VerifiedFalse
+        implicit evB: B =:= TwimlConstraints.BuildableTrue,
+        evV: V =:= TwimlConstraints.VerifiedFalse
     ): Response.UnverifiedFromModel = UnverifiedFromModelImpl(verbs)
   }
 

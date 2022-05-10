@@ -2,7 +2,7 @@ package com.dixa.twilio.model.twiml.noun
 
 import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.twiml.verb.DialVerb
-import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
+import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
 import com.dixa.twilio.model.voice.Conference
 
 /** Represent the Conference noun in TwiML
@@ -14,7 +14,7 @@ sealed trait ConferenceNoun extends TwimlElement.Noun with DialVerb.DialNoun {}
 
 object ConferenceNoun {
 
-  final class Builder[B <: PhantomTypes.Buildable] private[ConferenceNoun] (
+  final class Builder[B <: TwimlConstraints.Buildable] private[ConferenceNoun] (
       beep: Option[Conference.Beep],
       waitUrl: Option[String],
       conferenceFriendlyName: Conference.FriendlyName
@@ -40,19 +40,19 @@ object ConferenceNoun {
 
     def withConferenceFriendlyName(
         name: Conference.FriendlyName
-    ): Builder[PhantomTypes.BuildableTrue] =
-      new Builder[PhantomTypes.BuildableTrue](beep, waitUrl, name)
+    ): Builder[TwimlConstraints.BuildableTrue] =
+      new Builder[TwimlConstraints.BuildableTrue](beep, waitUrl, name)
 
     // At time of writing, there is still a huge list of attribute that can be used, but
     // this class is missing support for. So add then when needed.
 
     def build()(
-        implicit evb: B =:= PhantomTypes.BuildableTrue
+        implicit evb: B =:= TwimlConstraints.BuildableTrue
     ): ConferenceNoun = ConferenceNounImpl(beep, waitUrl, conferenceFriendlyName)
 
   }
 
-  type BuilderStartState = Builder[PhantomTypes.BuildableFalse]
+  type BuilderStartState = Builder[TwimlConstraints.BuildableFalse]
   type BuildFunction     = BuilderStartState => ConferenceNoun
 
   def build(fun: BuildFunction): ConferenceNoun = fun(

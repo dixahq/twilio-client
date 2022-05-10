@@ -8,7 +8,7 @@ package com.dixa.twilio.model.twiml
   * The types are placed in this object, as some of them are shared by multiple TwimlElement
   * implementations.
   */
-object PhantomTypes {
+object TwimlConstraints {
   sealed trait Buildable
   sealed trait BuildableTrue  extends Buildable
   sealed trait BuildableFalse extends Buildable

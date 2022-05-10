@@ -2,7 +2,7 @@ package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import com.dixa.twilio.model.twiml.PhantomTypes.{
+import com.dixa.twilio.model.twiml.TwimlConstraints.{
   Buildable,
   BuildableFalse,
   BuildableTrue,

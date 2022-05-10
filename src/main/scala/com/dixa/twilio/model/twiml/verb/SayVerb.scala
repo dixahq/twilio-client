@@ -1,7 +1,7 @@
 package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.StringUtil
-import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
+import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
 
 /** Representation of the Say Verb from TwiML
   *
@@ -12,16 +12,16 @@ sealed trait SayVerb extends TwimlElement.Verb {}
 
 object SayVerb {
 
-  final class Builder[B <: PhantomTypes.Buildable] private[SayVerb] (text: String) {
+  final class Builder[B <: TwimlConstraints.Buildable] private[SayVerb] (text: String) {
 
-    def withText(text: String): Builder[PhantomTypes.BuildableTrue] =
-      new Builder[PhantomTypes.BuildableTrue](text = text)
+    def withText(text: String): Builder[TwimlConstraints.BuildableTrue] =
+      new Builder[TwimlConstraints.BuildableTrue](text = text)
 
     def build()(
-        implicit ev: B =:= PhantomTypes.BuildableTrue
+        implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): SayVerb = SayVerbImpl(text)
   }
-  type BuilderStartState = Builder[PhantomTypes.BuildableFalse]
+  type BuilderStartState = Builder[TwimlConstraints.BuildableFalse]
   type BuildFunction     = BuilderStartState => SayVerb
 
   def build(fun: BuildFunction): SayVerb = fun(
