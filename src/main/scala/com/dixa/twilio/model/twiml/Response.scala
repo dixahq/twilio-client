@@ -171,6 +171,9 @@ object Response {
   /** Build a Response element out of the supplied String
     *
     * It is highly recommended to use [[Response.build]] instead.
+    *
+    * There will be no manipulation of the supplied TwiML. So returned Response will return it
+    * exactly as is, both when `xmlCompact` and `xmlCompact` is called.
     */
   def fromString(suppliedTwiml: String): UnverifiedFromString = new UnverifiedFromString(
     suppliedTwiml
