@@ -18,9 +18,9 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
   *
   * There are multiple subtypes to this trait, used to make a distinction between:
   *
-  *   1. TwiML that guarantied to be correct (verified) vs TwiML that we cannot prove correct at
+  *   - TwiML that guarantied to be correct (verified) vs TwiML that we cannot prove correct at
   *      compile time.
-  *   1. TwiML that is build using the moddeling system provided for it vs TwiML that was just
+  *   - TwiML that is build using the moddeling system provided for it vs TwiML that was just
   *      constructed from a String
   *
   * This is modelled by having the classes that can be seen in this diagram:
@@ -47,9 +47,9 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
   * 
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
   * provides the builder to. But as many of the things added to the builder are them self objects 
-  * that needs to be build using another builder, I found that this was what provided the most
-  * pleasant syntax for clients. Instead of them needing to find the correct builder to create 
-  * and provide, you can just provide a function, give the argument (the builder) a name, and
+  * that needs to be build using another builder, which provides a pleasant syntax for clients.
+  * Instead of them needing to find the correct builder to create 
+  * and provide, they can just provide a function, give the argument (the builder) a name, and
   * start using it. This works really well with autocompletion in editors, after calling
   * [[Response.build]], autocompletion can show all of the possibilities, without clients needing
   * to look up anything elsewhere.
