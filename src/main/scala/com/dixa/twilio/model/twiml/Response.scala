@@ -128,10 +128,12 @@ object Response {
 
     /** Build a verified [[Response]]
       *
-      * By verified we mean an instance of a [[Response]], that is garentied to produce valid TwiML.
+      * By verified we mean an instance of a [[Response]], that is guaranteed to produce valid
+      * TwiML.
       *
-      * This method cannot be called, if you have added custom verbs to the builder via
-      * [[Response.Builder.addCustomVerb]]
+      * To call this method you must have:
+      *   1. Added at least one verb.
+      *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
       */
     def buildVerified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
@@ -140,10 +142,11 @@ object Response {
 
     /** Build a unverified [[Response]]
       *
-      * By unverified we mean, that we cannot garenty it to produce valid TwiML.
+      * By unverified we mean, that we cannot guaranteed it to produce valid TwiML.
       *
-      * This method can only be called, if you have added custom verbs to the builder via
-      * [[Response.Builder.addCustomVerb]]
+      * To call this method you must have:
+      *   1. Added at least one verb
+      *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
       */
     def buildUnverified()(
         implicit evB: B =:= PhantomTypes.BuildableTrue,
