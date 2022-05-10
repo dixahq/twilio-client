@@ -13,7 +13,7 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
   *   1. TwiML that is build using the moddeling system provided for it vs TwiML that was just
   *      constructed from a String
   *
-  * This is moddeling by having the classes that can be seen in this diagram:
+  * This is modelled by having the classes that can be seen in this diagram:
   * [[https://plantuml.cirque-udv.dk/svg/oymhIIrAIqnELGXABIx8pojEvKfCAYufIamkKN0hoi_rpKz9pU5ApaaiBbO8IotAJCjCJU7AX6iApIk32KBK80JGTQFA19SKPUQbSt71R5MmgT7LHR8Hpe98mAr6qu1aFnU2ZIw7qrXiIWYO0t4u0000]]
   *
   * It is strongly recommended, that you build you Response instance, by using the
