@@ -55,11 +55,11 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
   * to look up anything elsewhere.
   */
 // format: on
-sealed trait Response extends TwimlElement
+sealed trait Response extends TwimlElement.Root
 
 object Response {
 
-  sealed trait FromModel extends TwimlElement {
+  sealed trait FromModel extends Response {
 
     def verbs: Seq[TwimlElement.Verb]
 
