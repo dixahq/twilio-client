@@ -2,10 +2,10 @@ package com.dixa.twilio.model
 
 private[model] object StringUtil {
 
-  private val twoSpaecs = "  "
+  private val twoSpaces = "  "
 
   private[model] def indentEveryLineWith2Spaces(input: String): String =
-    input.lines.map(twoSpaecs + _).mkString(System.lineSeparator())
+    input.lines.map(twoSpaces + _).mkString(System.lineSeparator())
 
   /** Escape all the XML special chars from this string.
     *

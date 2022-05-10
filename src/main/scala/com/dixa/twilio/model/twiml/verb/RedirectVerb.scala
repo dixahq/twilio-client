@@ -2,7 +2,7 @@ package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.{HttpMethod, StringUtil}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
+import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
 
 /** Representation of the Redirect Verb from TwiML
   *
@@ -13,23 +13,23 @@ sealed trait RedirectVerb extends TwimlElement.Verb {}
 
 object RedirectVerb {
 
-  final class Builder[B <: PhantomTypes.Buildable] private[RedirectVerb] (
+  final class Builder[B <: TwimlConstraints.Buildable] private[RedirectVerb] (
       callbackUrl: Option[CallbackUrl],
       method: Option[HttpMethod]
   ) {
 
-    def withCallbackUrl(callbackUrl: CallbackUrl): Builder[PhantomTypes.BuildableTrue] =
+    def withCallbackUrl(callbackUrl: CallbackUrl): Builder[TwimlConstraints.BuildableTrue] =
       new Builder(Some(callbackUrl), method)
 
     def withMethod(method: HttpMethod): Builder[B] = new Builder(callbackUrl, Some(method))
 
     def build()(
-        implicit ev: B =:= PhantomTypes.BuildableTrue
+        implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): RedirectVerb =
       RedirectVerbImpl(callbackUrl.get, method)
   }
 
-  type BuilderStartState = Builder[PhantomTypes.BuildableFalse]
+  type BuilderStartState = Builder[TwimlConstraints.BuildableFalse]
   type BuildFunction     = BuilderStartState => RedirectVerb
 
   def build(fun: BuildFunction): RedirectVerb = fun(

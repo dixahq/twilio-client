@@ -1,6 +1,16 @@
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.StringUtil
+import com.dixa.twilio.model.twiml.TwimlConstraints.{
+  Buildable,
+  BuildableFalse,
+  BuildableTrue,
+  LastAddedVerbProhibitMoreVerbs,
+  LastAddedVerbProhibitMoreVerbsFalse,
+  LastAddedVerbProhibitMoreVerbsTrue,
+  VerifiedFalse,
+  VerifiedTrue
+}
 import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
 
 // format: off
@@ -8,12 +18,12 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
   *
   * There are multiple subtypes to this trait, used to make a distinction between:
   *
-  *   1. TwiML that guarantied to be correct (verified) vs TwiML that we cannot prove correct at
+  *   - TwiML that guarantied to be correct (verified) vs TwiML that we cannot prove correct at
   *      compile time.
-  *   1. TwiML that is build using the moddeling system provided for it vs TwiML that was just
+  *   - TwiML that is build using the moddeling system provided for it vs TwiML that was just
   *      constructed from a String
   *
-  * This is moddeling by having the classes that can be seen in this diagram:
+  * This is modelled by having the classes that can be seen in this diagram:
   * [[https://plantuml.cirque-udv.dk/svg/oymhIIrAIqnELGXABIx8pojEvKfCAYufIamkKN0hoi_rpKz9pU5ApaaiBbO8IotAJCjCJU7AX6iApIk32KBK80JGTQFA19SKPUQbSt71R5MmgT7LHR8Hpe98mAr6qu1aFnU2ZIw7qrXiIWYO0t4u0000]]
   *
   * It is strongly recommended, that you build you Response instance, by using the
@@ -37,35 +47,23 @@ import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
   * 
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
   * provides the builder to. But as many of the things added to the builder are them self objects 
-  * that needs to be build using another builder, I found that this was what provided the most
-  * pleasant syntax for clients. Instead of them needing to find the correct builder to create 
-  * and provide, you can just provide a function, give the argument (the builder) a name, and
+  * that needs to be build using another builder, which provides a pleasant syntax for clients.
+  * Instead of them needing to find the correct builder to create 
+  * and provide, they can just provide a function, give the argument (the builder) a name, and
   * start using it. This works really well with autocompletion in editors, after calling
   * [[Response.build]], autocompletion can show all of the possibilities, without clients needing
   * to look up anything elsewhere.
   */
 // format: on
-sealed trait Response extends TwimlElement
+sealed trait Response extends TwimlElement.Root
 
 object Response {
 
-  sealed abstract class FromModel(val verbs: Seq[TwimlElement.Verb]) extends TwimlElement {
+  sealed trait FromModel extends Response {
 
-    def canEqual(other: Any): Boolean = other.isInstanceOf[FromModel]
+    def verbs: Seq[TwimlElement.Verb]
 
-    override def equals(other: Any): Boolean = other match {
-      case that: FromModel =>
-        (that canEqual this) &&
-        verbs == that.verbs
-      case _ => false
-    }
-
-    override def hashCode(): Int = {
-      val state = Seq(verbs)
-      state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-    }
-
-    override def toString = s"Response.${getClass.getSimpleName}($verbs)"
+    override final def toString = s"Response.${getClass.getSimpleName}($verbs)"
 
     // format: off
     override lazy val xmlCompact: String =
@@ -81,44 +79,61 @@ object Response {
     }
   }
 
-  final class Verified private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
-  sealed trait Unverified                                            extends Response
+  sealed trait Verified extends FromModel
 
-  final class UnverifiedFromModel private[Response] (v: Seq[TwimlElement.Verb]) extends FromModel(v)
+  private final case class VerifiedImpl(
+      override val verbs: Seq[TwimlElement.Verb]
+  ) extends Verified
 
-  final class UnverifiedFromString private[Response] (val suppliedTwiml: String)
-      extends Unverified() {
+  sealed trait Unverified extends Response
+
+  sealed trait UnverifiedFromModel extends FromModel with Unverified
+
+  private final case class UnverifiedFromModelImpl(
+      override val verbs: Seq[TwimlElement.Verb]
+  ) extends UnverifiedFromModel
+
+  sealed trait UnverifiedFromString extends Unverified {
+    def suppliedTwiml: String
+  }
+
+  private final case class UnverifiedFromStringImpl(suppliedTwiml: String)
+      extends UnverifiedFromString() {
 
     override def toString = s"Response.${getClass.getSimpleName}($suppliedTwiml)"
 
     override def xmlCompact: String = suppliedTwiml
 
     override def xmlPretty: String = suppliedTwiml
-
-    override def equals(other: Any): Boolean = other match {
-      case that: UnverifiedFromString =>
-        suppliedTwiml == that.suppliedTwiml
-      case _ => false
-    }
-
-    override def hashCode(): Int = {
-      val state = Seq(suppliedTwiml)
-      state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
-    }
   }
 
-  final class Builder[B <: PhantomTypes.Buildable, V <: PhantomTypes.Verified] private[Response] (
+  final class Builder[
+      B <: Buildable,
+      V <: TwimlConstraints.Verified,
+      L <: LastAddedVerbProhibitMoreVerbs
+  ] private[Response] (
       verbs: Vector[TwimlElement.Verb]
   ) {
 
-    def addDial(fun: DialVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ DialVerb.build(fun))
+    def addDial(fun: DialVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ DialVerb.build(fun))
 
-    def addRedirect(fun: RedirectVerb.BuildFunction) =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ RedirectVerb.build(fun))
+    /** Adds a redirect verb
+      *
+      * Calling this, will prevent you from adding more verbs to builder, as it makes no sense to
+      * have anything after a redirect in TwiML.
+      */
+    def addRedirect(fun: RedirectVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
+      new Builder(verbs :+ RedirectVerb.build(fun))
 
-    def addSay(fun: SayVerb.BuildFunction): Builder[PhantomTypes.BuildableTrue, V] =
-      new Builder[PhantomTypes.BuildableTrue, V](verbs :+ SayVerb.build(fun))
+    def addSay(fun: SayVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ SayVerb.build(fun))
 
     /** A a custom Verb to the builder (not recommended)
       *
@@ -129,35 +144,41 @@ object Response {
       */
     def addCustomVerb(
         verb: TwimlElement.Verb
-    ): Builder[PhantomTypes.BuildableTrue, PhantomTypes.VerifiedFalse] =
-      new Builder[PhantomTypes.BuildableTrue, PhantomTypes.VerifiedFalse](verbs :+ verb)
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, VerifiedFalse, L] =
+      new Builder(verbs :+ verb)
 
     /** Build a verified [[Response]]
       *
-      * By verified we mean an instance of a [[Response]], that is garentied to produce valid TwiML.
+      * By verified we mean an instance of a [[Response]], that is guaranteed to produce valid
+      * TwiML.
       *
-      * This method cannot be called, if you have added custom verbs to the builder via
-      * [[Response.Builder.addCustomVerb]]
+      * To call this method you must have:
+      *   1. Added at least one verb.
+      *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
       */
     def buildVerified()(
-        implicit evB: B =:= PhantomTypes.BuildableTrue,
-        evV: V =:= PhantomTypes.VerifiedTrue
-    ): Response.Verified = new Verified(verbs)
+        implicit evB: B =:= TwimlConstraints.BuildableTrue,
+        evV: V =:= TwimlConstraints.VerifiedTrue
+    ): Response.Verified = VerifiedImpl(verbs)
 
     /** Build a unverified [[Response]]
       *
-      * By unverified we mean, that we cannot garenty it to produce valid TwiML.
+      * By unverified we mean, that we cannot guaranteed it to produce valid TwiML.
       *
-      * This method can only be called, if you have added custom verbs to the builder via
-      * [[Response.Builder.addCustomVerb]]
+      * To call this method you must have:
+      *   1. Added at least one verb
+      *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
       */
     def buildUnverified()(
-        implicit evB: B =:= PhantomTypes.BuildableTrue,
-        evV: V =:= PhantomTypes.VerifiedFalse
-    ): Response.UnverifiedFromModel = new UnverifiedFromModel(verbs)
+        implicit evB: B =:= TwimlConstraints.BuildableTrue,
+        evV: V =:= TwimlConstraints.VerifiedFalse
+    ): Response.UnverifiedFromModel = UnverifiedFromModelImpl(verbs)
   }
 
-  type BuilderStartState = Builder[PhantomTypes.BuildableFalse, PhantomTypes.VerifiedTrue]
+  type BuilderStartState =
+    Builder[BuildableFalse, VerifiedTrue, LastAddedVerbProhibitMoreVerbsFalse]
   type BuildFunction[A <: FromModel] = BuilderStartState => A
 
   /** Build an instance of a Response using builder.
@@ -171,8 +192,11 @@ object Response {
   /** Build a Response element out of the supplied String
     *
     * It is highly recommended to use [[Response.build]] instead.
+    *
+    * There will be no manipulation of the supplied TwiML. So returned Response will return it
+    * exactly as is, both when `xmlCompact` and `xmlCompact` is called.
     */
-  def fromString(suppliedTwiml: String): UnverifiedFromString = new UnverifiedFromString(
+  def fromString(suppliedTwiml: String): UnverifiedFromString = UnverifiedFromStringImpl(
     suppliedTwiml
   )
 

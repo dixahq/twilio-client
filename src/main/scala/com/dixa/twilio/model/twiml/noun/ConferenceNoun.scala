@@ -2,7 +2,7 @@ package com.dixa.twilio.model.twiml.noun
 
 import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.twiml.verb.DialVerb
-import com.dixa.twilio.model.twiml.{PhantomTypes, Response, TwimlElement}
+import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
 import com.dixa.twilio.model.voice.Conference
 
 /** Represent the Conference noun in TwiML
@@ -14,12 +14,13 @@ sealed trait ConferenceNoun extends TwimlElement.Noun with DialVerb.DialNoun {}
 
 object ConferenceNoun {
 
-  final class Builder[B <: PhantomTypes.Buildable] private[ConferenceNoun] (
+  final class Builder[B <: TwimlConstraints.Buildable] private[ConferenceNoun] (
       beep: Option[Conference.Beep],
       waitUrl: Option[String],
       conferenceFriendlyName: Conference.FriendlyName
   ) {
 
+    /** See documentation on [[com.dixa.twilio.model.voice.Conference.Beep]] for details. */
     def withBeep(beep: Conference.Beep): Builder[B] =
       new Builder[B](Some(beep), waitUrl, conferenceFriendlyName)
 
@@ -27,6 +28,9 @@ object ConferenceNoun {
       *
       * By default if we omit the wait url, Twilio will play default waiting music, but by explicit
       * setting it to a empty value, no waiting music will be played.
+      *
+      * Twilio documentation:
+      * [[https://www.twilio.com/docs/voice/twiml/conference#attributes-waitUrl]]
       */
     def withWaitUrlEmpty(): Builder[B] = new Builder[B](beep, Some(""), conferenceFriendlyName)
 
@@ -36,19 +40,19 @@ object ConferenceNoun {
 
     def withConferenceFriendlyName(
         name: Conference.FriendlyName
-    ): Builder[PhantomTypes.BuildableTrue] =
-      new Builder[PhantomTypes.BuildableTrue](beep, waitUrl, name)
+    ): Builder[TwimlConstraints.BuildableTrue] =
+      new Builder[TwimlConstraints.BuildableTrue](beep, waitUrl, name)
 
     // At time of writing, there is still a huge list of attribute that can be used, but
     // this class is missing support for. So add then when needed.
 
     def build()(
-        implicit evb: B =:= PhantomTypes.BuildableTrue
+        implicit evb: B =:= TwimlConstraints.BuildableTrue
     ): ConferenceNoun = ConferenceNounImpl(beep, waitUrl, conferenceFriendlyName)
 
   }
 
-  type BuilderStartState = Builder[PhantomTypes.BuildableFalse]
+  type BuilderStartState = Builder[TwimlConstraints.BuildableFalse]
   type BuildFunction     = BuilderStartState => ConferenceNoun
 
   def build(fun: BuildFunction): ConferenceNoun = fun(

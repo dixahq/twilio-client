@@ -80,6 +80,18 @@ object Conference {
 
   final case class Participant(callSid: TwilioCallSid, status: ParticipantStatus)
 
+  /** Represent the Beep attribute of an conference.
+    *
+    *   - true = Plays a beep both when a participant joins and when a participant leaves.
+    *   - false = Disables beeps for when participants both join and exit.
+    *   - onEnter = Only plays a beep when a participant joins. The beep will not be played when the
+    *     participant exits.
+    *   - onExit = Will not play a beep when a participant joins; only plays a beep when the
+    *     participant exits.
+    *
+    * This attribute is set when creating a conference via TwiML dial verb:
+    * [[https://www.twilio.com/docs/voice/twiml/conference#attributes-beep]]
+    */
   sealed abstract class Beep(val twilioString: String) extends EnumWithTwilioString.EnumEntry
 
   object Beep extends EnumWithTwilioString[Beep] {
