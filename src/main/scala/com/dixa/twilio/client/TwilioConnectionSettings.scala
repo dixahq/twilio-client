@@ -86,6 +86,24 @@ object TwilioConnectionSettings {
     }
   }
 
+  final case class TwilioEndpoint private (baseHostName: String, port: Int)
+
+  object TwilioEndpoint {
+
+    /** The default endpoint for Twilio - twilio.com:443 */
+    val default: TwilioEndpoint = new TwilioEndpoint("twilio.com", 443)
+
+    def apply(baseHostName: String, port: Int): TwilioEndpoint = {
+      // return already existing default instance if settings match the default settings.
+      // Minor optimization that will save to identical object from existing, in the cases
+      // where clients read settings from config, or for some other reason end up constructing
+      // this object manually with default settings. And default settings is what would
+      // end up being used in almost any other case than tests.
+      if (baseHostName == default.baseHostName && port == default.port) default
+      else new TwilioEndpoint(baseHostName, port)
+    }
+  }
+
   /** Specify the different timeouts to be used by this client.
     *
     * @param requestEntityTimeout
@@ -93,7 +111,6 @@ object TwilioConnectionSettings {
     */
   final case class Timeouts(requestEntityTimeout: FiniteDuration)
 
-  final case class TwilioEndpoint(baseHostName: String, port: Int)
   object Timeouts {
 
     lazy val default: Timeouts = Timeouts(
