@@ -8,7 +8,23 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
 
   s"${classOf[TwilioConnectionSettings].getSimpleName}" when {
 
-    "ask to build a hostnaem for a subdomain" should {
+    "TwilioEndpoints are constructed" should {
+
+      "return the reused default object, if clients try to manually create a new instance with default values" in {
+        val result = TwilioEndpoint("twilio.com", 443)
+        assert(result eq TwilioEndpoint.default)
+        assert(result.baseHostName == "twilio.com")
+        assert(result.port == 443)
+      }
+
+      "being able to return a instance with custom settings" in {
+        val result = TwilioEndpoint("localhost", 4355)
+        assert(result.baseHostName == "localhost")
+        assert(result.port == 4355)
+      }
+    }
+
+    "ask to build a hostname for a subdomain" should {
 
       "work with the Api sub domain" in {
         val instance = createInstance("twilio.com")
