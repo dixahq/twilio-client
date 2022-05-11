@@ -10,7 +10,7 @@ final class ResponseRedirectTest extends AnyWordSpec {
 
     "constructing a response with Redirect" should {
 
-      "Be able to create the redirect with defuault method attribute" in {
+      "be able to create the redirect with defuault method attribute" in {
         val callbackUrl = CallbackUrl("relative/url")
 
         val result: Response.Verified = Response.build { responseBuilder =>
@@ -34,7 +34,7 @@ final class ResponseRedirectTest extends AnyWordSpec {
       }
     }
 
-    "Be able to create the redirect with explicit method attribute" in {
+    "be able to create the redirect with explicit method attribute" in {
       val callbackUrl = CallbackUrl("relative/url")
 
       val result: Response.Verified = Response.build { responseBuilder =>
@@ -57,7 +57,7 @@ final class ResponseRedirectTest extends AnyWordSpec {
       assert(result.xmlCompact == expectedCompactXml)
     }
 
-    "Be able to handle redirects with query parameters (including xml reserved & char" in {
+    "be able to handle redirects with query parameters (including xml reserved & char" in {
       val callbackUrl           = CallbackUrl("relative/url$key1=value1&key2=value2")
       val callbackUrlXmlEscaped = "relative/url$key1=value1&amp;key2=value2"
 
@@ -81,7 +81,7 @@ final class ResponseRedirectTest extends AnyWordSpec {
       assert(result.xmlCompact == expectedCompactXml)
     }
 
-    "should not allow more verbs to be added to the response after a redirect" in {
+    "not allow more verbs to be added to the response after a redirect" in {
       assertTypeError(
         """val callbackUrl = CallbackUrl("relative/url")
           |      
