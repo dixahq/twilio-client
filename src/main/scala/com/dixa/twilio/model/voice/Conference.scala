@@ -5,14 +5,14 @@ import com.dixa.twilio.model.iam.TwilioAccount
 
 import scala.collection.immutable
 
-sealed trait TwilioConference {
-  def sid: TwilioConference.Sid
-  def status: TwilioConference.Status
-  def friendlyName: TwilioConference.FriendlyName
+sealed trait Conference {
+  def sid: Conference.Sid
+  def status: Conference.Status
+  def friendlyName: Conference.FriendlyName
   def accountSid: TwilioAccount.Sid
 }
 
-object TwilioConference {
+object Conference {
 
   def apply(
       sid: Sid,
@@ -26,15 +26,15 @@ object TwilioConference {
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
-  ) extends TwilioConference
+  ) extends Conference
 
-  final case class TwilioConferenceWithParticipants(
+  final case class ConferenceWithParticipants(
       sid: Sid,
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
       participants: Vector[Participant]
-  ) extends TwilioConference
+  ) extends Conference
 
   final case class Sid(override val toString: String)
 
@@ -80,4 +80,26 @@ object TwilioConference {
 
   final case class Participant(callSid: TwilioCallSid, status: ParticipantStatus)
 
+  /** Represent the Beep attribute of an conference.
+    *
+    *   - true = Plays a beep both when a participant joins and when a participant leaves.
+    *   - false = Disables beeps for when participants both join and exit.
+    *   - onEnter = Only plays a beep when a participant joins. The beep will not be played when the
+    *     participant exits.
+    *   - onExit = Will not play a beep when a participant joins; only plays a beep when the
+    *     participant exits.
+    *
+    * This attribute is set when creating a conference via TwiML dial verb:
+    * [[https://www.twilio.com/docs/voice/twiml/conference#attributes-beep]]
+    */
+  sealed abstract class Beep(val twilioString: String) extends EnumWithTwilioString.EnumEntry
+
+  object Beep extends EnumWithTwilioString[Beep] {
+    case object True    extends Beep("true")
+    case object False   extends Beep("false")
+    case object OnEnter extends Beep("onEnter")
+    case object OnExit  extends Beep("onExit")
+
+    override def values: immutable.IndexedSeq[Beep] = findValues
+  }
 }

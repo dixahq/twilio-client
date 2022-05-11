@@ -10,8 +10,8 @@ import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.model.voice.{TwilioCallSid, TwilioConference}
+import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
+import com.dixa.twilio.model.voice.{Conference, TwilioCallSid}
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -20,12 +20,12 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
 
   def apply(
       connSettings: TwilioConnectionSettings,
-      statusFilter: Option[TwilioConference.Status]
+      statusFilter: Option[Conference.Status]
   )(
       implicit http: HttpExt,
       materializer: Materializer,
       executionContext: ExecutionContext
-  ): Flow[TwilioAccount.Sid, TwilioConferenceWithParticipants, NotUsed] = Flow[TwilioAccount.Sid]
+  ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] = Flow[TwilioAccount.Sid]
     .flatMapMerge(
       connSettings.parallelFactor.asInt,
       accountSid =>
@@ -80,12 +80,12 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
 
   private def entityToParticipantList(
       entity: HttpEntityString
-  ): Seq[TwilioConference.Participant] = {
+  ): Seq[Conference.Participant] = {
     val decoded = entity.parse[TwilioConferenceParticipantOuterJsonRep]()
     decoded.toTry.get.participants.map { jsonRep =>
-      TwilioConference.Participant(
+      Conference.Participant(
         TwilioCallSid(jsonRep.call_sid),
-        TwilioConference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
+        Conference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
       )
     }
   }

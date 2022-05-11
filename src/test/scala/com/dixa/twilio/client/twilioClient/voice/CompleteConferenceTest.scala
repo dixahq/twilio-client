@@ -4,7 +4,7 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.TwilioConference
+import com.dixa.twilio.model.voice.Conference
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -14,10 +14,10 @@ final class CompleteConferenceTest extends TwilioClientTest {
 
   private val account1Sid = TwilioAccount.Sid("TwilioTestAccount1")
 
-  private val conference1 = TwilioConference(
-    sid = TwilioConference.Sid("TwilioTestConference1Sid"),
-    status = TwilioConference.Status.InProgress,
-    friendlyName = TwilioConference.FriendlyName("Conference1FriendlyName"),
+  private val conference1 = Conference(
+    sid = Conference.Sid("TwilioTestConference1Sid"),
+    status = Conference.Status.InProgress,
+    friendlyName = Conference.FriendlyName("Conference1FriendlyName"),
     accountSid = account1Sid
   )
 
@@ -66,10 +66,10 @@ final class CompleteConferenceTest extends TwilioClientTest {
 
         val connSettings                = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
-        val resultFut: Future[TwilioConference] =
+        val resultFut: Future[Conference] =
           instance.completeConference(connSettings, conference1)
         val expectedValue = conference1.copy(
-          status = TwilioConference.Status.Completed
+          status = Conference.Status.Completed
         )
         resultFut.map(result => assert(result === expectedValue))
       }

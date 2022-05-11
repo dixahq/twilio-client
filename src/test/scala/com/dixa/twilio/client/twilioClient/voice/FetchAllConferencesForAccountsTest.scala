@@ -6,8 +6,8 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
-import com.dixa.twilio.model.voice.{TwilioCallSid, TwilioConference}
+import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
+import com.dixa.twilio.model.voice.{Conference, TwilioCallSid}
 import com.github.tomakehurst.wiremock.client.WireMock
 
 final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
@@ -160,83 +160,83 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
         val twilioConnectionSetting     = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
 
-        val resultFlow: Flow[TwilioAccount.Sid, TwilioConference, NotUsed] =
+        val resultFlow: Flow[TwilioAccount.Sid, Conference, NotUsed] =
           instance.fetchAllConferencesWithParticipants(
             twilioConnectionSetting,
-            statusFilter = Some(TwilioConference.Status.InProgress)
+            statusFilter = Some(Conference.Status.InProgress)
           )
         val resultFut =
           Source(List(account1Sid, account2Sid)).via(resultFlow).toMat(Sink.seq)(Keep.right).run()
 
         val expectedValue = Set(
           // 3 conferences for the 1. account (so that we can test pagination
-          TwilioConferenceWithParticipants(
-            sid = TwilioConference.Sid("TwilioTestConference1Sid"),
-            status = TwilioConference.Status.InProgress,
-            friendlyName = TwilioConference.FriendlyName("Conference1FriendlyName"),
+          ConferenceWithParticipants(
+            sid = Conference.Sid("TwilioTestConference1Sid"),
+            status = Conference.Status.InProgress,
+            friendlyName = Conference.FriendlyName("Conference1FriendlyName"),
             accountSid = account1Sid,
             participants = Vector(
               // 3 participants in this conference, so we can test pagination of fetching participants
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference1Participant1CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               ),
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference1Participant2CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               ),
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference1Participant3CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               )
             )
           ),
-          TwilioConferenceWithParticipants(
-            sid = TwilioConference.Sid("TwilioTestConference2Sid"),
-            status = TwilioConference.Status.InProgress,
-            friendlyName = TwilioConference.FriendlyName("Conference2FriendlyName"),
+          ConferenceWithParticipants(
+            sid = Conference.Sid("TwilioTestConference2Sid"),
+            status = Conference.Status.InProgress,
+            friendlyName = Conference.FriendlyName("Conference2FriendlyName"),
             accountSid = account1Sid,
             participants = Vector(
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference2Participant1CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               ),
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference2Participant2CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               )
             )
           ),
-          TwilioConferenceWithParticipants(
-            sid = TwilioConference.Sid("TwilioTestConference3Sid"),
-            status = TwilioConference.Status.InProgress,
-            friendlyName = TwilioConference.FriendlyName("Conference3FriendlyName"),
+          ConferenceWithParticipants(
+            sid = Conference.Sid("TwilioTestConference3Sid"),
+            status = Conference.Status.InProgress,
+            friendlyName = Conference.FriendlyName("Conference3FriendlyName"),
             accountSid = account1Sid,
             participants = Vector(
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference3Participant1CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               ),
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference3Participant2CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               )
             )
           ),
           // One conference for the second account
-          TwilioConferenceWithParticipants(
-            sid = TwilioConference.Sid("TwilioTestConference4Sid"),
-            status = TwilioConference.Status.InProgress,
-            friendlyName = TwilioConference.FriendlyName("Conference4FriendlyName"),
+          ConferenceWithParticipants(
+            sid = Conference.Sid("TwilioTestConference4Sid"),
+            status = Conference.Status.InProgress,
+            friendlyName = Conference.FriendlyName("Conference4FriendlyName"),
             accountSid = account2Sid,
             participants = Vector(
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference4Participant1CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               ),
-              TwilioConference.Participant(
+              Conference.Participant(
                 callSid = TwilioCallSid("TestConference4Participant2CallSid"),
-                status = TwilioConference.ParticipantStatus.Connected
+                status = Conference.ParticipantStatus.Connected
               )
             )
           )

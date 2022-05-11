@@ -13,7 +13,7 @@ val Version = new AnyRef {
   val Circe    = "0.14.1"
 
   // test
-  val ScalatestScalactic = "3.2.11"
+  val ScalatestScalactic = "3.2.12"
 }
 
 lazy val `twilio-client` = project
@@ -82,7 +82,7 @@ lazy val `twilio-client` = project
         "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0"                    % Test,
         "com.github.tomakehurst" % "wiremock" % "2.27.2" % Test
       ),
-      coverageMinimumStmtTotal := 84,
+      coverageMinimumStmtTotal := 83,
       coverageFailOnMinimum    := false,
       coverageHighlighting     := false,
       Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
