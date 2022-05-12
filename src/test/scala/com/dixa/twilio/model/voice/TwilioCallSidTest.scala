@@ -6,8 +6,8 @@ class TwilioCallSidTest extends AnyWordSpec {
 
   s"${classOf[TwilioCallSid].getSimpleName}" should {
 
-    // It looks like call sids are always CA and then 32 HEX charectors. But the
-    // official documentations says nothing else than:
+    // It looks like call sids are always CA and then 32 HEX characters. But the
+    // official documentation says nothing else than:
     // "It is a 34 character string that starts with CA"
     // So lets enforce exactly that.
     // https://support.twilio.com/hc/en-us/articles/223180488-What-is-a-Call-SID-
