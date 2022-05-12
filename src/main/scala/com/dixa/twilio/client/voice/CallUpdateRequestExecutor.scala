@@ -44,20 +44,20 @@ object CallUpdateRequestExecutor {
     sealed trait RequestAccountSidAttribute extends RequestAttribute
     sealed trait RequestCallSidAttribute    extends RequestAttribute
 
-    sealed trait HasTwimlOrUrlSetAlready      extends RequestAttribute
-    sealed trait HasTwimlOrUrlSetAlreadyTrue  extends HasTwimlOrUrlSetAlready
-    sealed trait HasTwimlOrUrlSetAlreadyFalse extends HasTwimlOrUrlSetAlready
+    sealed trait HasTwimlOrUrlSet      extends RequestAttribute
+    sealed trait HasTwimlOrUrlSetTrue  extends HasTwimlOrUrlSet
+    sealed trait HasTwimlOrUrlSetFalse extends HasTwimlOrUrlSet
 
     type RequestRequiredAttributes = RequestAttribute
       with RequestAccountSidAttribute
       with RequestCallSidAttribute
-      with HasTwimlOrUrlSetAlreadyTrue
+      with HasTwimlOrUrlSetTrue
 
-    type BuilderStartState = Builder[RequestAttribute, HasTwimlOrUrlSetAlreadyFalse]
+    type BuilderStartState = Builder[RequestAttribute, HasTwimlOrUrlSetFalse]
 
     final class Builder[
         Attributes <: RequestAttribute,
-        TwimlOrUrl <: HasTwimlOrUrlSetAlready
+        TwimlOrUrl <: HasTwimlOrUrlSet
     ] private[CallUpdateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         callSid: Option[TwilioCallSid],
@@ -76,13 +76,13 @@ object CallUpdateRequestExecutor {
         new Builder(accountSid, Some(callSid), twiml, url)
 
       def withTwiml(twiml: Response.Verified)(
-          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetAlreadyFalse
-      ): Builder[Attributes with HasTwimlOrUrlSetAlreadyTrue, HasTwimlOrUrlSetAlreadyTrue] =
+          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
+      ): Builder[Attributes with HasTwimlOrUrlSetTrue, HasTwimlOrUrlSetTrue] =
         new Builder(accountSid, callSid, Some(twiml), url)
 
       def withUrl(url: CallbackUrl)(
-          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetAlreadyFalse
-      ): Builder[Attributes with HasTwimlOrUrlSetAlreadyTrue, HasTwimlOrUrlSetAlreadyTrue] =
+          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
+      ): Builder[Attributes with HasTwimlOrUrlSetTrue, HasTwimlOrUrlSetTrue] =
         new Builder(accountSid, callSid, twiml, Some(url))
 
       def build()(
