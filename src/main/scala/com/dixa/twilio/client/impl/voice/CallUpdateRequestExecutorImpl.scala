@@ -72,14 +72,14 @@ private[client] class CallUpdateRequestExecutorImpl()(
 
   private def buildResultForNotFoundResponse(req: CallUpdateRequest, entity: HttpEntityString) = {
     parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
-      .map(e => CallUpdateException.Unspecified(None, Some(e)))
+      .map(e => CallUpdateException.Unspecified(e))
       .flatMap { decoded =>
         decoded.code match {
           case 20404L =>
             Left(CallUpdateException.CallNotFound(req.accountSid, req.callSid))
           case other =>
             Left(
-              new CallUpdateException.Unspecified(
+              CallUpdateException.Unspecified(
                 s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
                   s"$other represent. Full error entity from Twilio: $entity"
               )

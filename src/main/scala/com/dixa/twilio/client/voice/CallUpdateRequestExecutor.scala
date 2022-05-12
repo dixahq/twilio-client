@@ -111,9 +111,10 @@ object CallUpdateRequestExecutor {
           ),
           cause.orNull
         )
-        with CallUpdateException {
-      def this(msg: String) = this(Some(msg), None)
-      def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
+        with CallUpdateException
+    object Unspecified {
+      def apply(msg: String)      = new Unspecified(Some(msg), None)
+      def apply(cause: Throwable) = new Unspecified(Option(cause.getMessage), Some(cause))
     }
   }
 }
