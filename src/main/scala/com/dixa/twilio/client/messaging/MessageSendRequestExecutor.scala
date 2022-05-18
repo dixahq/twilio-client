@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{MessageSendException, Response}
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{MessageSendException, MessageSendResponse}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
@@ -13,7 +13,7 @@ trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
       MessageSendRequestExecutor.MessageSendRequest,
       MessageSendRequestExecutor.MessageSendException,
-      Response
+      MessageSendResponse
     ] {
 
   override protected final type ApiExceptionWrapper = MessageSendException.Api
@@ -74,7 +74,7 @@ object MessageSendRequestExecutor {
     * \- the message delivery errors are handled through status callbacks</li> <li>uri</li>
     * <li>subresourceUris</li> </ul>
     */
-  final case class Response(
+  final case class MessageSendResponse(
       accountSid: TwilioAccount.Sid,
       body: MessageBody,
       dateCreated: Option[Instant],
