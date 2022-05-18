@@ -4,7 +4,7 @@ import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.twiml.Response
-import com.dixa.twilio.model.voice.{Call, TwilioCallSid}
+import com.dixa.twilio.model.voice.Call
 
 trait CallUpdateRequestExecutor
     extends SingleRequestExecutor[
@@ -24,7 +24,7 @@ object CallUpdateRequestExecutor {
 
   sealed trait CallUpdateRequest {
     def accountSid: TwilioAccount.Sid
-    def callSid: TwilioCallSid
+    def callSid: Call.Sid
     def twiml: Option[Response.Verified]
     def url: Option[CallbackUrl]
     // API support a lot more fields, that could be added when needed.
@@ -32,7 +32,7 @@ object CallUpdateRequestExecutor {
 
   private final case class CallUpdateRequestImpl(
       accountSid: TwilioAccount.Sid,
-      callSid: TwilioCallSid,
+      callSid: Call.Sid,
       twiml: Option[Response.Verified],
       url: Option[CallbackUrl]
       // API support a lot more fields, that could be added when needed.
@@ -60,7 +60,7 @@ object CallUpdateRequestExecutor {
         TwimlOrUrl <: HasTwimlOrUrlSet
     ] private[CallUpdateRequest] (
         accountSid: Option[TwilioAccount.Sid],
-        callSid: Option[TwilioCallSid],
+        callSid: Option[Call.Sid],
         twiml: Option[Response.Verified],
         url: Option[CallbackUrl]
     ) {
@@ -71,7 +71,7 @@ object CallUpdateRequestExecutor {
         new Builder(Some(accountSid), callSid, twiml, url)
 
       def withCallSid(
-          callSid: TwilioCallSid
+          callSid: Call.Sid
       ): Builder[Attributes with RequestCallSidAttribute, TwimlOrUrl] =
         new Builder(accountSid, Some(callSid), twiml, url)
 
@@ -101,7 +101,7 @@ object CallUpdateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with CallUpdateException
-    final case class CallNotFound(accountSid: TwilioAccount.Sid, callSid: TwilioCallSid)
+    final case class CallNotFound(accountSid: TwilioAccount.Sid, callSid: Call.Sid)
         extends RuntimeException(s"Call with sid $callSid was not found in account: $accountSid")
         with CallUpdateException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])

@@ -5,7 +5,7 @@ import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateExceptio
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.twiml.Response
-import com.dixa.twilio.model.voice.{Call, TwilioCallSid}
+import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -34,7 +34,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
 
         val expected = Right(
           Call(
-            sid = TwilioCallSid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             accountSid = connSettings.accountSid
           )
         )
@@ -155,7 +155,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
   final class Fixture {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val callSid      = TwilioCallSid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    val callSid      = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)

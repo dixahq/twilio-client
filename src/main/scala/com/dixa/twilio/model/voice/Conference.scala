@@ -78,7 +78,7 @@ object Conference {
     case object Failed     extends ParticipantStatus("failed", isActive = false)
   }
 
-  final case class Participant(callSid: TwilioCallSid, status: ParticipantStatus)
+  final case class Participant(callSid: Call.Sid, status: ParticipantStatus)
 
   /** Represent the Beep attribute of an conference.
     *
