@@ -16,26 +16,34 @@ object Call {
 
   /** Represent a Twilio Call SID
     *
-    * Input must apply to the format Twilio what Twilio specify as a Call SID: "It is a 34 character
-    * string that starts with CA"
+    * Input must apply to the format that Twilio specify as a Call SID: "It is a 34 character string
+    * that starts with CA"
     *
     * The twilio documentation about it can be found here:
     * https://support.twilio.com/hc/en-us/articles/223180488-What-is-a-Call-SID-
     */
   final case class Sid(override val toString: String) {
+    if (toString.isEmpty) throw Sid.ArgumentEmptyException()
+    if (!toString.startsWith("CA")) throw Sid.ArgumentMissingCaPrefixException(toString)
+    if (toString.length != 34) throw Sid.ArgumentLengthException(toString)
+  }
 
-    require(
-      toString.nonEmpty,
-      "A Call SID is not allowed to be a empty String. It should always be: A 34 character string that starts with CA"
-    )
-    require(
-      toString.startsWith("CA"),
-      s"$toString does not start with CA. A Call SID should always be: A 34 character string that starts with CA"
-    )
-    require(
-      toString.length == 34,
-      s"$toString is not 34 characters. A Call SID should always be: A 34 character string that starts with CA"
-    )
+  object Sid {
+    private val conformToString = "Callsid is a 34 character string that starts with CA"
+
+    final case class ArgumentEmptyException()
+        extends IllegalArgumentException(s"Empty string does not conform to: $conformToString")
+
+    final case class ArgumentMissingCaPrefixException(argument: String)
+        extends IllegalArgumentException(
+          s"$conformToString does not start with CA and therefor not conform to: $conformToString"
+        )
+
+    final case class ArgumentLengthException(argument: String)
+        extends IllegalArgumentException(
+          s"$argument has length not conforming to: $conformToString"
+        )
+
   }
 
 }
