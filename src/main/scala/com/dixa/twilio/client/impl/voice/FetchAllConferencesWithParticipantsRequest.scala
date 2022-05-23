@@ -11,7 +11,7 @@ import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJson
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
-import com.dixa.twilio.model.voice.{Conference, TwilioCallSid}
+import com.dixa.twilio.model.voice.{Call, Conference}
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -84,7 +84,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     val decoded = entity.parse[TwilioConferenceParticipantOuterJsonRep]()
     decoded.toTry.get.participants.map { jsonRep =>
       Conference.Participant(
-        TwilioCallSid(jsonRep.call_sid),
+        Call.Sid(jsonRep.call_sid),
         Conference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
       )
     }

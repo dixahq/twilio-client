@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.voice
 
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.{Call, TwilioCallSid}
+import com.dixa.twilio.model.voice.Call
 
 /** Json representation of a Call */
 private[impl] case class CallJsonRep(
@@ -11,7 +11,7 @@ private[impl] case class CallJsonRep(
 ) {
 
   def toModel: Call = Call(
-    TwilioCallSid(sid),
+    Call.Sid(sid),
     TwilioAccount.Sid(account_sid)
   )
 }
