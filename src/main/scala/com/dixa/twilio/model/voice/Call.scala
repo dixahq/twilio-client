@@ -43,7 +43,7 @@ object Call {
 
     final case class ArgumentMissingCaPrefixException(argument: String)
         extends IllegalArgumentException(
-          s"$conformToString does not start with CA and therefor not conform to: $conformToString"
+          s"$conformToString does not start with CA and therefore not conform to: $conformToString"
         )
         with CreationException
 
