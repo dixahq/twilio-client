@@ -20,7 +20,7 @@ import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendException,
   MessageSendRequest,
-  Response
+  MessageSendResponse
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
@@ -73,7 +73,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[MessageSendException, Response] = httpResponse.status match {
+  ): Either[MessageSendException, MessageSendResponse] = httpResponse.status match {
     case StatusCodes.Created =>
       buildSuccessResponse(req, entity)
     case StatusCodes.BadRequest =>
@@ -84,7 +84,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   private def buildSuccessResponse(
       req: MessageSendRequest,
       entity: HttpEntityString
-  ): Either[MessageSendException, Response] = {
+  ): Either[MessageSendException, MessageSendResponse] = {
     parseEntityAs[MessageSendRespJsonRep](entity).flatMap { decoded =>
       MessageDirection.values.find(_.twilioString === decoded.direction) match {
         case None =>
@@ -111,7 +111,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                   )
                 case Some(status) =>
                   Right(
-                    Response(
+                    MessageSendResponse(
                       accountSid = TwilioAccount.Sid(decoded.account_sid),
                       body = MessageBody(decoded.body),
                       dateCreated = decoded.date_created.flatMap(parseDate),
