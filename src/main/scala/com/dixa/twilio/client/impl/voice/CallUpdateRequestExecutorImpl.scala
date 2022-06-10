@@ -33,7 +33,7 @@ private[client] class CallUpdateRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: CallUpdateRequestExecutor.CallUpdateRequest
-  ): HttpRequest = {
+  ): Either[CallUpdateException, HttpRequest] = {
     val postParamBuilder = new mutable.StringBuilder()
     req.twiml.foreach(twiml => postParamBuilder.append(s"Twiml=${twiml.xmlCompact}&"))
     req.url.foreach(url => postParamBuilder.append(s"Url=$url&"))
@@ -42,13 +42,15 @@ private[client] class CallUpdateRequestExecutorImpl()(
       postParamBuilder.deleteCharAt(postParamLastCharIndex)
     val postParam = postParamBuilder.toString()
 
-    TwilioPath(
-      ApiSubDomain.Api,
-      HttpMethods.POST,
-      s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json"
+    Right(
+      TwilioPath(
+        ApiSubDomain.Api,
+        HttpMethods.POST,
+        s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json"
+      )
+        .createHttpRequest(connSettings)
+        .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
     )
-      .createHttpRequest(connSettings)
-      .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
   }
 
   override protected def mapApiException(apiException: ApiException): CallUpdateException.Api =

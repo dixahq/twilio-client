@@ -22,13 +22,15 @@ private[iam] final class AccountFetchRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: AccountFetchRequestExecutor.AccountFetchRequest
-  ): HttpRequest = {
-    TwilioPath(
-      ApiSubDomain.Api,
-      HttpMethods.GET,
-      s"/2010-04-01/Accounts/${req.accountSid}.json"
+  ): Either[AccountFetchException, HttpRequest] = {
+    Right(
+      TwilioPath(
+        ApiSubDomain.Api,
+        HttpMethods.GET,
+        s"/2010-04-01/Accounts/${req.accountSid}.json"
+      )
+        .createHttpRequest(connSettings)
     )
-      .createHttpRequest(connSettings)
   }
 
   override protected def mapApiException(apiException: ApiException): AccountFetchException.Api =

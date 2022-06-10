@@ -23,13 +23,15 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberDeleteRequest
-  ): HttpRequest = {
-    TwilioPath(
-      ApiSubDomain.Messaging,
-      HttpMethods.DELETE,
-      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
+  ): Either[PhoneNumberDeleteException, HttpRequest] = {
+    Right(
+      TwilioPath(
+        ApiSubDomain.Messaging,
+        HttpMethods.DELETE,
+        s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
+      )
+        .createHttpRequest(connSettings)
     )
-      .createHttpRequest(connSettings)
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =

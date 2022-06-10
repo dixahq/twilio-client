@@ -42,7 +42,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: MessageSendRequest
-  ): HttpRequest = {
+  ): Either[MessageSendException, HttpRequest] = {
     val reqEntity = FormData(
       Map(
         "From"           -> req.from.asString,
@@ -52,11 +52,13 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       )
     ).toEntity
 
-    TwilioPath(
-      ApiSubDomain.Api,
-      HttpMethods.POST,
-      s"/2010-04-01/Accounts/${req.accountSid}/Messages.json"
-    ).createHttpRequest(connSettings).withEntity(reqEntity)
+    Right(
+      TwilioPath(
+        ApiSubDomain.Api,
+        HttpMethods.POST,
+        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json"
+      ).createHttpRequest(connSettings).withEntity(reqEntity)
+    )
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =

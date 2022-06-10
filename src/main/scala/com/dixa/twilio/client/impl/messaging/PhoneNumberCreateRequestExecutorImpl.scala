@@ -35,15 +35,17 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberCreateRequest
-  ): HttpRequest = {
+  ): Either[PhoneNumberCreateException, HttpRequest] = {
     val postParam = s"PhoneNumberSid=${req.phoneNumberSid}"
-    TwilioPath(
-      ApiSubDomain.Messaging,
-      HttpMethods.POST,
-      s"/v1/Services/${req.serviceSid}/PhoneNumbers"
+    Right(
+      TwilioPath(
+        ApiSubDomain.Messaging,
+        HttpMethods.POST,
+        s"/v1/Services/${req.serviceSid}/PhoneNumbers"
+      )
+        .createHttpRequest(connSettings)
+        .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
     )
-      .createHttpRequest(connSettings)
-      .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
