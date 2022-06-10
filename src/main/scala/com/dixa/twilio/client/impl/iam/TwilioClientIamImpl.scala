@@ -22,7 +22,7 @@ private[impl] final class TwilioClientIamImpl()(
 
   override def accountFetch: AccountFetchRequestExecutor = new AccountFetchRequestExecutorImpl()
 
-  @deprecated("Use accountReadV2 instead", "0.10.2")
+  @deprecated("Use accountReadV2 instead", "0.11.0")
   override def accountRead(
       connSettings: TwilioConnectionSettings,
       status: Option[TwilioAccount.Status] = None
