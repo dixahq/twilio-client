@@ -29,7 +29,7 @@ object MessageResourceReadRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Exception])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to fetch message resources"
+            "Unspecified error happened trying to read message resources"
           ),
           cause.orNull
         )

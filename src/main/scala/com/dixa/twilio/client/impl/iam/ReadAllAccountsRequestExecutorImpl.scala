@@ -9,21 +9,15 @@ import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.{
   ReadAllAccountsRequest
 }
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  Formatter,
-  HttpEntityString,
-  PagingStyle,
-  TwilioUri
-}
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, TwilioUri}
+import com.dixa.twilio.client.{iam, ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
 import io.circe.generic.auto._
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
 
-class ReadAllAccountsRequestExecutorImpl(
+private[impl] class ReadAllAccountsRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
@@ -67,18 +61,7 @@ class ReadAllAccountsRequestExecutorImpl(
         )
       case Right(decoded: TwilioAccountsOuterJsonRep) =>
         decoded.accounts.map { jsonRep =>
-          Right(
-            TwilioAccount(
-              TwilioAccount.Name(jsonRep.friendly_name),
-              TwilioAccount.Sid(jsonRep.sid),
-              TwilioAccount.Status.fromTwilioStringUnsafe(jsonRep.status),
-              TwilioAccount.Sid(jsonRep.owner_account_sid),
-              TwilioAccount.AuthToken(jsonRep.auth_token),
-              TwilioAccount.Type.fromTwilioStringUnsafe(jsonRep.`type`),
-              Instant.from(Formatter.dateTime.parse(jsonRep.date_created)),
-              Instant.from(Formatter.dateTime.parse(jsonRep.date_updated))
-            )
-          )
+          Right(jsonRep.toModel)
         }.toList
     }
   }

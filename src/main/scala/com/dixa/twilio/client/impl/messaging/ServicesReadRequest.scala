@@ -11,6 +11,9 @@ import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPaging
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 import io.circe.generic.auto._
 
+import scala.annotation.nowarn
+
+@deprecated("Use ServicesReadRequestExecutor instead", "0.11.0")
 private[impl] final class ServicesReadRequest()(
     implicit httpExt: HttpExt,
     materializer: Materializer

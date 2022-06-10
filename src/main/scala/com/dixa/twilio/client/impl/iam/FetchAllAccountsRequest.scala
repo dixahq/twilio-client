@@ -12,6 +12,7 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import io.circe.generic.auto._
 
 import java.time.Instant
+import scala.annotation.nowarn
 
 @deprecated("Use FetchAllAccountsRequestExecutorImpl instead", "0.11.0")
 private[impl] object FetchAllAccountsRequest {

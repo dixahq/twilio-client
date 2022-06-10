@@ -21,7 +21,7 @@ import java.time.Instant
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
-class MessageResourceReadRequestExecutorImpl(
+private[impl] class MessageResourceReadRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext

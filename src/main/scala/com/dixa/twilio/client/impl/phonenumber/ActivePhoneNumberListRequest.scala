@@ -20,6 +20,7 @@ import scala.concurrent.ExecutionContext
   * See
   * https://www.twilio.com/docs/phone-numbers/global-catalog/api/active-numbers?code-sample=code-get-activenumbers-instance&code-language=curl&code-sdk-version=default
   */
+@deprecated("Use mediaResourceReadV2 instead", "0.11.0")
 private[impl] final class ActivePhoneNumberListRequest()(
     implicit http: HttpExt,
     materializer: Materializer,

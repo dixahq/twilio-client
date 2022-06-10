@@ -10,6 +10,7 @@ import com.dixa.twilio.client.messaging.{
   MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
+  ServicesReadRequestExecutor,
   TwilioClientMessaging
 }
 import com.dixa.twilio.model.messaging.{MediaResourceReference, TwilioMessagingService}
@@ -22,11 +23,14 @@ private[client] final class TwilioClientMessagingImpl(
     executionContext: ExecutionContext
 ) extends TwilioClientMessaging {
 
+  @deprecated("Use mediaResourceReadV2 instead", "0.11.0")
   override def servicesRead(
       connSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed] = {
     new ServicesReadRequest().apply(connSettings)
   }
+
+  override val servicesReadV2: ServicesReadRequestExecutor = new ServicesReadRequestExecutorImpl()
 
   override def serviceCreate(
       connSettings: TwilioConnectionSettings,
@@ -43,6 +47,7 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val messageSend: MessageSendRequestExecutor = new MessageSendRequestExecutorImpl()
 
+  @deprecated("Use mediaResourceReadV2 instead", "0.11.0")
   override def mediaResourceRead(
       connSettings: TwilioConnectionSettings,
       req: TwilioClientMessaging.MediaResourceReadRequest

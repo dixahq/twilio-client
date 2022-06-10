@@ -20,9 +20,12 @@ import scala.concurrent.Future
 
 trait TwilioClientMessaging {
 
+  @deprecated("Use mediaResourceReadV2 instead", "0.11.0")
   def servicesRead(
       connSettings: TwilioConnectionSettings
   ): Source[TwilioMessagingService, NotUsed]
+
+  val servicesReadV2: ServicesReadRequestExecutor
 
   def serviceCreate(
       connSettings: TwilioConnectionSettings,

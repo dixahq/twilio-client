@@ -19,6 +19,7 @@ import java.time.Instant
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
+@deprecated("Use MessageResourceReadRequestExecutorImpl instead", "0.11.0")
 private[impl] object MediaResourceReadSource {
 
   def apply(
