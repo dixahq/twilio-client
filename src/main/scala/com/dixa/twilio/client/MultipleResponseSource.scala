@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{FlowShape, SourceShape}
-import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 
 import scala.concurrent.Future
 import scala.util.Failure
@@ -137,6 +137,7 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success]
     *   The Strict version of the Http entity.
     */
   protected def parseHttpResponse(
+      connectionSettings: TwilioConnectionSettings,
       request: Req,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
@@ -275,6 +276,7 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success]
               case Left(value) => Seq(Left(value))
               case Right(httpRequest) =>
                 parseHttpResponse(
+                  connectionSettings,
                   req,
                   httpRequest,
                   value._1,

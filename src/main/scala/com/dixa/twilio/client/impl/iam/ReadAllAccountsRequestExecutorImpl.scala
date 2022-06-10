@@ -4,7 +4,10 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
 import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor
-import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.ReadAllAccountsException
+import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.{
+  ReadAllAccountsException,
+  ReadAllAccountsRequest
+}
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,
@@ -51,11 +54,12 @@ class ReadAllAccountsRequestExecutorImpl(
   private final case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
 
   override protected def parseHttpResponse(
-      request: ReadAllAccountsRequestExecutor.ReadAllAccountsRequest,
+      connectionSettings: TwilioConnectionSettings,
+      request: ReadAllAccountsRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
-  ): List[Either[ReadAllAccountsRequestExecutor.ReadAllAccountsException, TwilioAccount]] = {
+  ): List[Either[ReadAllAccountsException, TwilioAccount]] = {
     responseEntity.parse[TwilioAccountsOuterJsonRep]() match {
       case Left(ex) =>
         List(

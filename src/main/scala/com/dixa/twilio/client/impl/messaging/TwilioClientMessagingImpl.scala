@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
+  MessageResourceReadRequestExecutor,
   MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
@@ -48,4 +49,7 @@ private[client] final class TwilioClientMessagingImpl(
   ): Source[MediaResourceReference, NotUsed] = {
     MediaResourceReadSource(connSettings, req)
   }
+
+  override val mediaResourceReadV2: MessageResourceReadRequestExecutor =
+    new MessageResourceReadRequestExecutorImpl()
 }

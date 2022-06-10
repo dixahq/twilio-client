@@ -27,6 +27,7 @@ trait TwilioClientIam {
     *   Source of the requested TwilioAccount objects. Twilio does not support streaming, so it will
     *   make multiple request behind the scene.
     */
+  @deprecated("Use accountReadV2 instead", "0.11.0")
   def accountRead(
       connSettings: TwilioConnectionSettings,
       status: Option[TwilioAccount.Status] = None
