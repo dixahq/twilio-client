@@ -13,7 +13,7 @@ import io.circe.generic.auto._
 
 import java.time.Instant
 
-@deprecated("Use FetchAllAccountsRequestExecutorImpl instead", "0.10.2")
+@deprecated("Use FetchAllAccountsRequestExecutorImpl instead", "0.11.0")
 private[impl] object FetchAllAccountsRequest {
 
   def apply(

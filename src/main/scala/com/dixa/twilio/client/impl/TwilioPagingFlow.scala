@@ -11,7 +11,7 @@ import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.util.Try
 
-@deprecated("Implement extension of MultipleResponseSource instead", "0.10.2")
+@deprecated("Implement extension of MultipleResponseSource instead", "0.11.0")
 private[impl] object TwilioPagingFlow {
 
   /** Creates a flow, running paging GET request agains Twilio as a stream.
