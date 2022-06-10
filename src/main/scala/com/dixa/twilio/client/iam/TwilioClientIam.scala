@@ -11,6 +11,10 @@ trait TwilioClientIam {
     */
   def accountFetch: AccountFetchRequestExecutor
 
+  /** Fetch accounts with optional status filter
+    */
+  def accountReadV2: ReadAllAccountsRequestExecutor
+
   /** Read all Twilio accounts
     *
     * @param connSettings
