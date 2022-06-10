@@ -106,9 +106,9 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success]
   /** Parse the response of the http request.
     *
     * Some parsing will already have happened before this method is called, as the response will
-    * already have been checked for the common errors that all DIDWW APIs can return, and if one was
-    * found, this method would not be called at all. Instead the [[mapApiException]] method will be
-    * used to map it into an Err.
+    * already have been checked for the common errors that all Twilio APIs can return, and if one
+    * was found, this method would not be called at all. Instead the [[mapApiException]] method will
+    * be used to map it into an Err.
     *
     * The implementation of this method, should still check for errors, but it would only have to
     * check for errors specific to the request.
