@@ -17,6 +17,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
 
 import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
+import scala.annotation.nowarn
 
 final class MediaResourceListTest extends TwilioClientTest with Matchers {
 
@@ -67,6 +68,7 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().messaging
+        @nowarn // Test to support deprecated method stays until method is removed
         val result =
           instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
         result.map { result =>
@@ -101,6 +103,7 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().messaging
+        @nowarn // Test to support deprecated method stays until method is removed
         val result =
           instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
         result.map { result =>
@@ -166,6 +169,7 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().messaging
+        @nowarn // Test to support deprecated method stays until method is removed
         val result =
           instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
         result.map { result =>

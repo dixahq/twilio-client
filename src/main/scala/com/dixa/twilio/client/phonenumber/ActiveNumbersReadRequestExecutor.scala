@@ -2,7 +2,7 @@ package com.dixa.twilio.client.phonenumber
 
 import com.dixa.twilio.client.phonenumber.ActiveNumbersReadRequestExecutor.ActiveNumbersReadException
 import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
-import com.dixa.twilio.model.phonenumber.TwilioActivePhoneNumber
+import com.dixa.twilio.model.phonenumber.{TwilioActivePhoneNumber, TwilioPhoneNumberSid}
 
 trait ActiveNumbersReadRequestExecutor
     extends MultipleResponseSource[
@@ -17,7 +17,9 @@ trait ActiveNumbersReadRequestExecutor
 }
 
 object ActiveNumbersReadRequestExecutor {
-  final case class ActiveNumbersReadRequest()
+  final case class ActiveNumbersReadRequest(
+      phoneNumberSid: Option[TwilioPhoneNumberSid]
+  )
 
   sealed trait ActiveNumbersReadException extends RuntimeException
   object ActiveNumbersReadException {

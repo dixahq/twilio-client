@@ -49,7 +49,7 @@ private[impl] class MessageResourceReadRequestExecutorImpl(
       cause: Option[Exception]
   ): UnspecifiedException = MessageResourceReadException.Unspecified(msg, cause)
 
-  private final case class MediaResourceListJsonRep(
+  private case class MediaResourceListJsonRep(
       first_page_uri: String,
       end: Int,
       media_list: List[MediaResourcesReferenceJsonRep],
@@ -61,7 +61,7 @@ private[impl] class MessageResourceReadRequestExecutorImpl(
       page: Int
   )
 
-  private final case class MediaResourcesReferenceJsonRep(
+  private case class MediaResourcesReferenceJsonRep(
       sid: String,
       account_sid: String,
       parent_sid: String,
@@ -107,7 +107,7 @@ private[impl] class MessageResourceReadRequestExecutorImpl(
     }
   }
 
-  private final case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
+  private case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
 
   override protected def nextPageHttpRequestBuilder(
       connectionSettings: TwilioConnectionSettings,

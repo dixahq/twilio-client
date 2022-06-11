@@ -14,10 +14,12 @@ import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.model.voice.{Call, Conference}
 import io.circe.generic.auto._
 
+import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext
 
 private[impl] object FetchAllConferencesWithParticipantsRequest {
 
+  @nowarn // Haven's figured out how to handel this like a MultipleRequestExecutor
   def apply(
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[Conference.Status]
@@ -44,6 +46,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     // Just fetch all participants into memory. In most cases there will only be 2, and Twilios
     // max is 250, so it should be no problem fitting them all into memory at the same time
     .mapAsync(connSettings.parallelFactor.asInt) { confJs =>
+      @nowarn // Haven's figured out how to handel this like a MultipleRequestExecutor
       val fut = TwilioPagingFlow
         .createPagingSrc(
           connSettings,

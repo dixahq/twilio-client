@@ -15,6 +15,7 @@ import io.circe.generic.auto._
 import java.net.URLEncoder
 import scala.concurrent.ExecutionContext
 
+@deprecated("Use IncomingNumbersReadRequestExecutorImpl instead", "0.11.0")
 private[impl] final class IncomingPhoneNumberListRequest()(
     implicit http: HttpExt,
     materializer: Materializer,

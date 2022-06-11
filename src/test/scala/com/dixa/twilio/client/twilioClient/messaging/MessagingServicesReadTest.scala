@@ -12,6 +12,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import java.net.URL
+import scala.annotation.nowarn
 
 final class MessagingServicesReadTest extends TwilioClientTest {
 
@@ -54,6 +55,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientMessaging = TwilioClient.defaultImpl().messaging
 
+        @nowarn // Test to support deprecated method stays until method is removed
         val resultSource: Source[TwilioMessagingService, NotUsed] =
           instance.servicesRead(twilioConnectionSetting)
         val resultFut =

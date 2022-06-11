@@ -10,6 +10,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
+import scala.annotation.nowarn
 
 final class FetchAllAccountsTest extends TwilioClientTest {
 
@@ -52,6 +53,7 @@ final class FetchAllAccountsTest extends TwilioClientTest {
 
         val connSettings              = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientIam = TwilioClient.defaultImpl().iam
+        @nowarn // Test to support deprecated method stays until method is removed
         val resultSource: Source[TwilioAccount, NotUsed] =
           instance.accountRead(connSettings, Some(TwilioAccount.Status.Active))
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()

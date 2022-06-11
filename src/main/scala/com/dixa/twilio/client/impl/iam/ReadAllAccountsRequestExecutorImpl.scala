@@ -45,7 +45,7 @@ private[impl] class ReadAllAccountsRequestExecutorImpl(
       cause: Option[Exception]
   ): UnspecifiedException = ReadAllAccountsException.Unspecified(msg, cause)
 
-  private final case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
+  private case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,
@@ -66,7 +66,7 @@ private[impl] class ReadAllAccountsRequestExecutorImpl(
     }
   }
 
-  private final case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
+  private case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
 
   override protected def nextPageHttpRequestBuilder(
       connectionSettings: TwilioConnectionSettings,
