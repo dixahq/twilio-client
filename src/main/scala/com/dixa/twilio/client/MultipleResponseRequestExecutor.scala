@@ -4,11 +4,10 @@ import akka.NotUsed
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{FlowShape, SourceShape}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.HttpEntityString
 
 import scala.concurrent.Future
 import scala.util.Failure
-import io.circe.generic.auto._
 
 /** Base trait for an executor that is able and ready to fire a specific request in different ways.
   *
