@@ -11,14 +11,14 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
   HasSingleAllowedValueAlreadyTrue
 }
 import com.dixa.twilio.model.twiml.noun.ConferenceNoun
-import com.dixa.twilio.model.twiml.{Response, TwimlElement}
+import com.dixa.twilio.model.twiml.TwimlElement
 
 import scala.annotation.nowarn
 
 /** Represent the Dial verb in TwiML
   *
-  * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
-  * trait.
+  * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
+  * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
 trait DialVerb extends TwimlElement.Verb
 
