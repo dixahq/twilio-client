@@ -6,6 +6,8 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.Call
 
+import scala.annotation.nowarn
+
 trait CallUpdateRequestExecutor
     extends SingleRequestExecutor[
       CallUpdateRequestExecutor.CallUpdateRequest,
@@ -75,16 +77,19 @@ object CallUpdateRequestExecutor {
       ): Builder[Attributes with RequestCallSidAttribute, TwimlOrUrl] =
         new Builder(accountSid, Some(callSid), twiml, url)
 
+      @nowarn
       def withTwiml(twiml: Response.Verified)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
       ): Builder[Attributes with HasTwimlOrUrlSetTrue, HasTwimlOrUrlSetTrue] =
         new Builder(accountSid, callSid, Some(twiml), url)
 
+      @nowarn
       def withUrl(url: CallbackUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
       ): Builder[Attributes with HasTwimlOrUrlSetTrue, HasTwimlOrUrlSetTrue] =
         new Builder(accountSid, callSid, twiml, Some(url))
 
+      @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): CallUpdateRequest =

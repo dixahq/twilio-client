@@ -5,6 +5,8 @@ import com.dixa.twilio.model.twiml.verb.DialVerb
 import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
 import com.dixa.twilio.model.voice.Conference
 
+import scala.annotation.nowarn
+
 /** Represent the Conference noun in TwiML
   *
   * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
@@ -46,6 +48,7 @@ object ConferenceNoun {
     // At time of writing, there is still a huge list of attribute that can be used, but
     // this class is missing support for. So add then when needed.
 
+    @nowarn
     def build()(
         implicit evb: B =:= TwimlConstraints.BuildableTrue
     ): ConferenceNoun = ConferenceNounImpl(beep, waitUrl, conferenceFriendlyName)

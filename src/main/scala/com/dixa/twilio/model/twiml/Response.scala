@@ -13,6 +13,8 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
 }
 import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
 
+import scala.annotation.nowarn
+
 // format: off
 /** Class represent the TwiML Response element (the root element of TwiML)
   *
@@ -115,6 +117,7 @@ object Response {
       verbs: Vector[TwimlElement.Verb]
   ) {
 
+    @nowarn
     def addDial(fun: DialVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -125,11 +128,13 @@ object Response {
       * Calling this, will prevent you from adding more verbs to builder, as it makes no sense to
       * have anything after a redirect in TwiML.
       */
+    @nowarn
     def addRedirect(fun: RedirectVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
       new Builder(verbs :+ RedirectVerb.build(fun))
 
+    @nowarn
     def addSay(fun: SayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -142,6 +147,7 @@ object Response {
       * such the generated [[Response]] may generate TwiML that is not valid, without detecting it
       * compile time.
       */
+    @nowarn
     def addCustomVerb(
         verb: TwimlElement.Verb
     )(
@@ -158,6 +164,7 @@ object Response {
       *   1. Added at least one verb.
       *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
       */
+    @nowarn
     def buildVerified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedTrue
@@ -171,6 +178,7 @@ object Response {
       *   1. Added at least one verb
       *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
       */
+    @nowarn
     def buildUnverified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedFalse

@@ -3,6 +3,8 @@ package com.dixa.twilio.model.twiml.verb
 import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
 
+import scala.annotation.nowarn
+
 /** Representation of the Say Verb from TwiML
   *
   * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
@@ -17,6 +19,7 @@ object SayVerb {
     def withText(text: String): Builder[TwimlConstraints.BuildableTrue] =
       new Builder[TwimlConstraints.BuildableTrue](text = text)
 
+    @nowarn
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): SayVerb = SayVerbImpl(text)
