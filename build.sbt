@@ -46,7 +46,7 @@ lazy val `twilio-client` = project
         "-encoding",
         "utf8",
         "-Xlint",
-//        "-Xfatal-warnings",
+        "-Xfatal-warnings",
         "-language:postfixOps",
         "-language:implicitConversions",
         "-language:higherKinds",
