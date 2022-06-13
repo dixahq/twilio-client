@@ -24,23 +24,9 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
     executionContext: ExecutionContext
 ) extends TwilioClientPhoneNumber {
 
-  @deprecated("Use incomingPhoneNumberListV2 instead", "0.11.0")
-  override def incomingPhoneNumberList(
-      connSettings: TwilioConnectionSettings,
-      filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
-  ): Source[TwilioIncomingPhoneNumber, NotUsed] =
-    new IncomingPhoneNumberListRequest().apply(connSettings, filter)
-
-  @deprecated("Use mediaResourceReadV2 instead", "0.11.0")
-  override def activePhoneNumberList(
-      connSettings: TwilioConnectionSettings,
-      phoneNumber: Option[TwilioPhoneNumberSid] = None
-  ): Source[TwilioActivePhoneNumber, NotUsed] =
-    new ActivePhoneNumberListRequest().apply(connSettings, phoneNumber)
-
-  override val activePhoneNumberListV2: ActiveNumbersReadRequestExecutor =
-    new ActiveNumbersReadRequestExecutorImpl()
-
-  override val incomingPhoneNumberListV2: IncomingNumbersReadRequestExecutor =
+  override val incomingPhoneNumberList: IncomingNumbersReadRequestExecutor =
     new IncomingNumbersReadRequestExecutorImpl()
+
+  override val activePhoneNumberList: ActiveNumbersReadRequestExecutor =
+    new ActiveNumbersReadRequestExecutorImpl()
 }

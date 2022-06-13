@@ -2,6 +2,7 @@ package com.dixa.twilio.client.twilioClient.phonenumber
 
 import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
+import com.dixa.twilio.client.phonenumber.ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
@@ -14,13 +15,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.neovisionaries.i18n.CountryCode
 import org.scalatest.matchers.should.Matchers
 
-import scala.annotation.nowarn
-
 final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
   classOf[TwilioClientMessaging].getSimpleName when {
 
     "activePhoneNumberList" should {
-      "lists a single number when filter applied" in {
+      "safely lists a single number when filter applied" in {
         wireMockServer.stubFor(
           WireMock
             .get(
@@ -37,12 +36,13 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
 
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
+        val req =
+          ActiveNumbersReadRequest(Some(TwilioPhoneNumberSid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")))
 
-        @nowarn // Test to support deprecated method stays until method is removed
-        val resultFut = instance
-          .activePhoneNumberList(
+        val resultFut = instance.activePhoneNumberList
+          .source(
             twilioConnectionSetting,
-            Some(TwilioPhoneNumberSid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"))
+            req
           )
           .runWith(Sink.seq)
 
@@ -50,7 +50,7 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
           genAvailableNumber("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
         )
 
-        resultFut.map(res => res.toSet shouldBe expected.toSet)
+        resultFut.map(res => res.toSet shouldBe expected.map(Right(_)).toSet)
       }
 
       "lists multiple pages of numbers" in {
@@ -87,9 +87,8 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
 
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
-
-        @nowarn // Test to support deprecated method stays until method is removed
-        val resultSource = instance.activePhoneNumberList(twilioConnectionSetting)
+        val req                               = ActiveNumbersReadRequest(None)
+        val resultSource = instance.activePhoneNumberList.source(twilioConnectionSetting, req)
         val resultFut    = resultSource.runWith(Sink.seq)
 
         val expected = Seq(
@@ -97,7 +96,7 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
           genAvailableNumber("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
         )
 
-        resultFut.map(res => res.toSet shouldBe expected.toSet)
+        resultFut.map(res => res.toSet shouldBe expected.map(Right(_)).toSet)
       }
     }
   }

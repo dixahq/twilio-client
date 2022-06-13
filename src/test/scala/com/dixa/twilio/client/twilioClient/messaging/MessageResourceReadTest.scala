@@ -68,7 +68,7 @@ final class MessageResourceReadTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.mediaResourceReadV2.source(connSettings, req).runWith(Sink.seq)
+          instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.isEmpty shouldBe true
         }
@@ -102,7 +102,7 @@ final class MessageResourceReadTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.mediaResourceReadV2.source(connSettings, req).runWith(Sink.seq)
+          instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 1
           assert(result.head.isRight)
@@ -168,7 +168,7 @@ final class MessageResourceReadTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.mediaResourceReadV2.source(connSettings, req).runWith(Sink.seq)
+          instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 3
           result should contain theSameElementsAs List(expected, expected2, expected3).map(Right(_))

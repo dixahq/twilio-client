@@ -22,12 +22,6 @@ private[impl] final class TwilioClientIamImpl()(
 
   override val accountFetch: AccountFetchRequestExecutor = new AccountFetchRequestExecutorImpl()
 
-  @deprecated("Use accountReadV2 instead", "0.11.0")
-  override def accountRead(
-      connSettings: TwilioConnectionSettings,
-      status: Option[TwilioAccount.Status] = None
-  ): Source[TwilioAccount, NotUsed] = FetchAllAccountsRequest.apply(connSettings, status)
-
-  override val accountReadV2: ReadAllAccountsRequestExecutor =
+  override val accountRead: ReadAllAccountsRequestExecutor =
     new ReadAllAccountsRequestExecutorImpl()
 }

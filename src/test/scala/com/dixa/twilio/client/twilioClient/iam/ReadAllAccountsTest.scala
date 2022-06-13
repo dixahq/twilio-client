@@ -58,7 +58,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           Either[ReadAllAccountsRequestExecutor.ReadAllAccountsException, TwilioAccount],
           NotUsed
         ] =
-          instance.accountReadV2.source(connSettings, req)
+          instance.accountRead.source(connSettings, req)
         val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
         val expectedValue = Set(
           Right(

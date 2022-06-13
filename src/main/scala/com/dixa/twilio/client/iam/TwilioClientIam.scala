@@ -11,10 +11,6 @@ trait TwilioClientIam {
     */
   def accountFetch: AccountFetchRequestExecutor
 
-  /** Fetch accounts with optional status filter
-    */
-  def accountReadV2: ReadAllAccountsRequestExecutor
-
   /** Read all Twilio accounts
     *
     * @param connSettings
@@ -27,9 +23,5 @@ trait TwilioClientIam {
     *   Source of the requested TwilioAccount objects. Twilio does not support streaming, so it will
     *   make multiple request behind the scene.
     */
-  @deprecated("Use accountReadV2 instead", "0.11.0")
-  def accountRead(
-      connSettings: TwilioConnectionSettings,
-      status: Option[TwilioAccount.Status] = None
-  ): Source[TwilioAccount, NotUsed]
+  val accountRead: ReadAllAccountsRequestExecutor
 }
