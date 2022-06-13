@@ -1,11 +1,11 @@
 package com.dixa.twilio.client.iam
 
 import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.ReadAllAccountsException
-import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 trait ReadAllAccountsRequestExecutor
-    extends MultipleResponseSource[
+    extends MultipleResponseRequestExecutor[
       ReadAllAccountsRequestExecutor.ReadAllAccountsRequest,
       ReadAllAccountsRequestExecutor.ReadAllAccountsException,
       TwilioAccount

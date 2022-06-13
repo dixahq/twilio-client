@@ -1,11 +1,11 @@
 package com.dixa.twilio.client.phonenumber
 
-import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.IncomingNumbersReadException
 import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber
 
 trait IncomingNumbersReadRequestExecutor
-    extends MultipleResponseSource[
+    extends MultipleResponseRequestExecutor[
       IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest,
       IncomingNumbersReadRequestExecutor.IncomingNumbersReadException,
       TwilioIncomingPhoneNumber

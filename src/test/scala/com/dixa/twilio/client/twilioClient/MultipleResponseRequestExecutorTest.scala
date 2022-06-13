@@ -9,7 +9,7 @@ import com.dixa.twilio.CommonFixtures
 import com.dixa.twilio.client.impl.HttpEntityString
 import com.dixa.twilio.client.{
   ApiException,
-  MultipleResponseSource,
+  MultipleResponseRequestExecutor,
   TestActorSystem,
   TwilioConnectionSettings,
   TwilioTestConstants
@@ -24,15 +24,15 @@ import org.scalatest.wordspec.AsyncWordSpec
 
 import scala.concurrent.ExecutionContext
 
-final class MultipleResponseSourceTest
+final class MultipleResponseRequestExecutorTest
     extends AsyncWordSpec
     with WireMockTest
     with AsyncMockFactory
     with TestActorSystem {
 
-  import MultipleResponseSourceTest._
+  import MultipleResponseRequestExecutorTest._
 
-  classOf[MultipleResponseSource[_, _, _]].getSimpleName should {
+  classOf[MultipleResponseRequestExecutor[_, _, _]].getSimpleName should {
 
     "Provide a source method that executes the initial http request the implementation provides, " +
       "and use the implementations response parsing to get the end result " +
@@ -66,7 +66,7 @@ final class MultipleResponseSourceTest
             )
         )
 
-        val impl = new MultipleResponseSourceTestBaseImplemented {
+        val impl = new MultipleResponseRequestExecutorTestBaseImplemented {
 
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
@@ -145,7 +145,7 @@ final class MultipleResponseSourceTest
 
         val toThrow = new NullPointerException("Booom")
 
-        val impl = new MultipleResponseSourceTestBaseImplemented {
+        val impl = new MultipleResponseRequestExecutorTestBaseImplemented {
 
           override protected def http: HttpExt = Http()
 
@@ -207,7 +207,7 @@ final class MultipleResponseSourceTest
             )
         )
 
-        val impl = new MultipleResponseSourceTestBaseImplemented {
+        val impl = new MultipleResponseRequestExecutorTestBaseImplemented {
 
           override protected def http: HttpExt = Http()
 
@@ -264,8 +264,8 @@ final class MultipleResponseSourceTest
       }
   }
 
-  private trait MultipleResponseSourceTestBaseImplemented
-      extends MultipleResponseSource[TestRequest, AbstractTestException, TestSuccess] {
+  private trait MultipleResponseRequestExecutorTestBaseImplemented
+      extends MultipleResponseRequestExecutor[TestRequest, AbstractTestException, TestSuccess] {
     override protected def http: HttpExt = Http()
 
     override protected implicit def materializer: Materializer = Materializer.matFromSystem
@@ -287,7 +287,7 @@ final class MultipleResponseSourceTest
   }
 }
 
-private object MultipleResponseSourceTest {
+private object MultipleResponseRequestExecutorTest {
 
   final case class TestRequest()
 

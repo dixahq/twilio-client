@@ -38,7 +38,7 @@ import io.circe.generic.auto._
   * @tparam Success
   *   The type of a successfully response.
   */
-trait MultipleResponseSource[Req, Err <: RuntimeException, Success]
+trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
     extends RequestExecutor[Req, Err] {
 
   /** Run the request, with typesafe error handling
@@ -85,7 +85,7 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success]
       .via { parseHttpEntityFlow(connSettings, req) }
   }
 
-  /** Run the request, returning failed Future on errors.
+  /** Run the request, returning failed Source on errors.
     *
     * All the Error ADT used in the safe versions, are also exception, so a request would always be
     * failed with the same error, no matter if you run safe or unsafe, it is only a matter of how
@@ -226,7 +226,7 @@ trait MultipleResponseSource[Req, Err <: RuntimeException, Success]
       connectionSettings: TwilioConnectionSettings
   ): Flow[Either[Err, HttpResponse], Either[Err, (HttpResponse, HttpEntityString)], NotUsed] =
     Flow[Either[Err, HttpResponse]]
-      .mapAsync(1) {
+      .mapAsync(connectionSettings.parallelFactor.asInt) {
         case Left(value) => Future.successful(Left(value))
         case Right(response) =>
           response.entity

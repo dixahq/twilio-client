@@ -1,11 +1,11 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor.ServicesReadException
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 
 trait ServicesReadRequestExecutor
-    extends MultipleResponseSource[
+    extends MultipleResponseRequestExecutor[
       ServicesReadRequestExecutor.ServicesReadRequest,
       ServicesReadRequestExecutor.ServicesReadException,
       TwilioMessagingService

@@ -1,11 +1,11 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
-import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.messaging.{MediaResourceReference, MessageSid}
 
 trait MessageResourceReadRequestExecutor
-    extends MultipleResponseSource[
+    extends MultipleResponseRequestExecutor[
       MessageResourceReadRequestExecutor.MessageResourceReadRequest,
       MessageResourceReadRequestExecutor.MessageResourceReadException,
       MediaResourceReference
