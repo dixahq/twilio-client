@@ -47,9 +47,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
+          ): Either[AbstractTestException, HttpRequest] = Right(
+            HttpRequest(
+              method = HttpMethods.GET,
+              uri = s"http://localhost:${wireMockServer.port()}/test"
+            )
           )
 
           override protected def parseHttpResponse(
@@ -95,9 +97,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
+          ): Either[AbstractTestException, HttpRequest] = Right(
+            HttpRequest(
+              method = HttpMethods.GET,
+              uri = s"http://localhost:${wireMockServer.port()}/test"
+            )
           )
 
           override protected def parseHttpResponse(
@@ -134,9 +138,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         override protected def createHttpReq(
             connSettings: TwilioConnectionSettings,
             req: TestRequest
-        ): HttpRequest = HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"http://localhost:${wireMockServer.port()}/test"
+        ): Either[AbstractTestException, HttpRequest] = Right(
+          HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"http://localhost:${wireMockServer.port()}/test"
+          )
         )
 
         override protected def parseHttpResponse(
@@ -180,9 +186,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         override protected def createHttpReq(
             connSettings: TwilioConnectionSettings,
             req: TestRequest
-        ): HttpRequest = HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"http://localhost:${wireMockServer.port()}/test"
+        ): Either[AbstractTestException, HttpRequest] = Right(
+          HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"http://localhost:${wireMockServer.port()}/test"
+          )
         )
 
         override protected def parseHttpResponse(
@@ -224,9 +232,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
+          ): Either[AbstractTestException, HttpRequest] = Right(
+            HttpRequest(
+              method = HttpMethods.GET,
+              uri = s"http://localhost:${wireMockServer.port()}/test"
+            )
           )
 
           override protected def parseHttpResponse(

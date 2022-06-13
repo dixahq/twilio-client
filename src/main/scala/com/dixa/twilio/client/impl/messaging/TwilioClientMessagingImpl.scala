@@ -6,9 +6,11 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
+  MessageResourceReadRequestExecutor,
   MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
+  ServicesReadRequestExecutor,
   TwilioClientMessaging
 }
 import com.dixa.twilio.model.messaging.{MediaResourceReference, TwilioMessagingService}
@@ -21,11 +23,7 @@ private[client] final class TwilioClientMessagingImpl(
     executionContext: ExecutionContext
 ) extends TwilioClientMessaging {
 
-  override def servicesRead(
-      connSettings: TwilioConnectionSettings
-  ): Source[TwilioMessagingService, NotUsed] = {
-    new ServicesReadRequest().apply(connSettings)
-  }
+  override val servicesRead: ServicesReadRequestExecutor = new ServicesReadRequestExecutorImpl()
 
   override def serviceCreate(
       connSettings: TwilioConnectionSettings,
@@ -42,10 +40,6 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val messageSend: MessageSendRequestExecutor = new MessageSendRequestExecutorImpl()
 
-  override def mediaResourceRead(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.MediaResourceReadRequest
-  ): Source[MediaResourceReference, NotUsed] = {
-    MediaResourceReadSource(connSettings, req)
-  }
+  override val mediaResourceRead: MessageResourceReadRequestExecutor =
+    new MessageResourceReadRequestExecutorImpl()
 }

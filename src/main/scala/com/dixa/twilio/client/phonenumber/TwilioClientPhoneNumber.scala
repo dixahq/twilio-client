@@ -1,14 +1,5 @@
 package com.dixa.twilio.client.phonenumber
 
-import akka.NotUsed
-import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.model.phonenumber.{
-  TwilioActivePhoneNumber,
-  TwilioIncomingPhoneNumber,
-  TwilioPhoneNumberSid
-}
-
 trait TwilioClientPhoneNumber {
 
   /** List all incoming phonenumbers as a Source.
@@ -19,10 +10,7 @@ trait TwilioClientPhoneNumber {
     * The optional filter will be applied at Twilio side if set. See doc on
     * [[com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberFilter]] for details.
     */
-  def incomingPhoneNumberList(
-      connSettings: TwilioConnectionSettings,
-      filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
-  ): Source[TwilioIncomingPhoneNumber, NotUsed]
+  val incomingPhoneNumberList: IncomingNumbersReadRequestExecutor
 
   /** Lists active phone numbers for a particular Twilio subaccount as a Source.
     *
@@ -31,8 +19,5 @@ trait TwilioClientPhoneNumber {
     *
     * The optional filter will be applied at Twilio side if set.
     */
-  def activePhoneNumberList(
-      connSettings: TwilioConnectionSettings,
-      phoneNumber: Option[TwilioPhoneNumberSid] = None
-  ): Source[TwilioActivePhoneNumber, NotUsed]
+  val activePhoneNumberList: ActiveNumbersReadRequestExecutor
 }

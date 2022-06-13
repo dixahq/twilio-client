@@ -20,9 +20,7 @@ import scala.concurrent.Future
 
 trait TwilioClientMessaging {
 
-  def servicesRead(
-      connSettings: TwilioConnectionSettings
-  ): Source[TwilioMessagingService, NotUsed]
+  val servicesRead: ServicesReadRequestExecutor
 
   def serviceCreate(
       connSettings: TwilioConnectionSettings,
@@ -47,10 +45,7 @@ trait TwilioClientMessaging {
 
   /** Lists the media resources from a given account and message sid.
     */
-  def mediaResourceRead(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.MediaResourceReadRequest
-  ): Source[MediaResourceReference, NotUsed]
+  val mediaResourceRead: MessageResourceReadRequestExecutor
 
 }
 

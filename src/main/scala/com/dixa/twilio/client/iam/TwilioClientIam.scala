@@ -23,8 +23,5 @@ trait TwilioClientIam {
     *   Source of the requested TwilioAccount objects. Twilio does not support streaming, so it will
     *   make multiple request behind the scene.
     */
-  def accountRead(
-      connSettings: TwilioConnectionSettings,
-      status: Option[TwilioAccount.Status] = None
-  ): Source[TwilioAccount, NotUsed]
+  val accountRead: ReadAllAccountsRequestExecutor
 }
