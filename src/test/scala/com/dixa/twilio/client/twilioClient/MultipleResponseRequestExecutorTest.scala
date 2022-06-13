@@ -5,7 +5,6 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.CommonFixtures
 import com.dixa.twilio.client.impl.HttpEntityString
 import com.dixa.twilio.client.{
   ApiException,
