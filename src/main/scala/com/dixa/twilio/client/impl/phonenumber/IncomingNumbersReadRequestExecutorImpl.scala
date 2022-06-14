@@ -11,7 +11,7 @@ import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
   IncomingNumbersReadRequest
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.phonenumber.{TwilioActivePhoneNumber, TwilioIncomingPhoneNumber}
+import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber
 import io.circe.generic.auto._
 
 import java.net.URLEncoder

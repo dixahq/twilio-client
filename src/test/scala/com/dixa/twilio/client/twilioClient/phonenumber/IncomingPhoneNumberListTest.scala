@@ -7,10 +7,7 @@ import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
   IncomingNumbersReadException,
   IncomingNumbersReadRequest
 }
-import com.dixa.twilio.client.phonenumber.{
-  IncomingNumbersReadRequestExecutor,
-  TwilioClientPhoneNumber
-}
+import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount

@@ -1,8 +1,6 @@
 package com.dixa.twilio.model.phonenumber
 
 import com.dixa.twilio.model.EnumWithTwilioString
-import enumeratum.{Enum, EnumEntry}
-import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 

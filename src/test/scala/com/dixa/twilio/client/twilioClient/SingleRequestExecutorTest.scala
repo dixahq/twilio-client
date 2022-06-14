@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient
 
-import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
