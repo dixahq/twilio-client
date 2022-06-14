@@ -91,6 +91,7 @@ private[impl] final class MessageResourceReadSourceImpl()(
   ): UnspecifiedException = MessageResourceReadException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
+      connectionSettings: TwilioConnectionSettings,
       request: MessageResourceReadSource.MessageResourceReadRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
