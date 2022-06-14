@@ -9,7 +9,7 @@ import com.dixa.twilio.client.voice.TwilioClientVoice
 
 /** Main entry point for communicating with twilio.
   *
-  * You can get an instance of this via [[com.dixa.twilio.client.TwilioClient.defaultImpl()]]
+  * You can get an instance of this via [[TwilioClient.defaultImpl]]
   *
   * It does not in itself provide any twilio calls directly, but instead provide access to a sub
   * client for each of Twilios sub APIs.
@@ -18,8 +18,7 @@ import com.dixa.twilio.client.voice.TwilioClientVoice
   * two different types:
   *
   * 1) A standard request. A method for this will return an implementation of
-  * [[com.dixa.twilio.client.SingleRequestExecutor]]. Look at the documentation of that trait for
-  * more details.
+  * [[SingleRequestExecutor]]. Look at the documentation of that trait for more details.
   *
   * 2) A paging request. At time of writing, we have build a proper abstraction for representing
   * these, but for now they just return a Source[ResponseType, NotUser]. But this is subject to

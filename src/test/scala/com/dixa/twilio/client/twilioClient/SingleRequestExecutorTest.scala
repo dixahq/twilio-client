@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
+import com.dixa.twilio.client.impl.HttpEntityString
 import com.dixa.twilio.client.{
   ApiException,
   SingleRequestExecutor,
@@ -46,23 +47,24 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
+          ): Either[AbstractTestException, HttpRequest] = Right(
+            HttpRequest(
+              method = HttpMethods.GET,
+              uri = s"http://localhost:${wireMockServer.port()}/test"
+            )
           )
 
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
               httpResponse: HttpResponse,
-              entity: HttpEntity.Strict
+              entity: HttpEntityString
           ): Either[AbstractTestException, TestSuccess] = {
-            val entityAsString = entity.data.utf8String
-            if (entityAsString == "ResponseFromTwilio") Right(TestSuccess())
+            if (entity.toString == "ResponseFromTwilio") Right(TestSuccess())
             else
               Left(
                 AbstractTestException.Undefined(
-                  Some(s"Wrong entity given to implementation: $entityAsString"),
+                  Some(s"Wrong entity given to implementation: $entity"),
                   None
                 )
               )
@@ -95,16 +97,18 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
+          ): Either[AbstractTestException, HttpRequest] = Right(
+            HttpRequest(
+              method = HttpMethods.GET,
+              uri = s"http://localhost:${wireMockServer.port()}/test"
+            )
           )
 
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
               httpResponse: HttpResponse,
-              entity: HttpEntity.Strict
+              entity: HttpEntityString
           ): Either[AbstractTestException, TestSuccess] = {
             Left(AbstractTestException.ConcreateTestException())
           }
@@ -134,23 +138,24 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         override protected def createHttpReq(
             connSettings: TwilioConnectionSettings,
             req: TestRequest
-        ): HttpRequest = HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"http://localhost:${wireMockServer.port()}/test"
+        ): Either[AbstractTestException, HttpRequest] = Right(
+          HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"http://localhost:${wireMockServer.port()}/test"
+          )
         )
 
         override protected def parseHttpResponse(
             request: TestRequest,
             httpRequest: HttpRequest,
             httpResponse: HttpResponse,
-            entity: HttpEntity.Strict
+            entity: HttpEntityString
         ): Either[AbstractTestException, TestSuccess] = {
-          val entityAsString = entity.data.utf8String
-          if (entityAsString == "ResponseFromTwilio") Right(TestSuccess())
+          if (entity.toString == "ResponseFromTwilio") Right(TestSuccess())
           else
             Left(
               AbstractTestException.Undefined(
-                Some(s"Wrong entity given to implementation: $entityAsString"),
+                Some(s"Wrong entity given to implementation: $entity"),
                 None
               )
             )
@@ -181,16 +186,18 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         override protected def createHttpReq(
             connSettings: TwilioConnectionSettings,
             req: TestRequest
-        ): HttpRequest = HttpRequest(
-          method = HttpMethods.GET,
-          uri = s"http://localhost:${wireMockServer.port()}/test"
+        ): Either[AbstractTestException, HttpRequest] = Right(
+          HttpRequest(
+            method = HttpMethods.GET,
+            uri = s"http://localhost:${wireMockServer.port()}/test"
+          )
         )
 
         override protected def parseHttpResponse(
             request: TestRequest,
             httpRequest: HttpRequest,
             httpResponse: HttpResponse,
-            entity: HttpEntity.Strict
+            entity: HttpEntityString
         ): Either[AbstractTestException, TestSuccess] = {
           Left(AbstractTestException.ConcreateTestException())
         }
@@ -225,16 +232,18 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
-          ): HttpRequest = HttpRequest(
-            method = HttpMethods.GET,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
+          ): Either[AbstractTestException, HttpRequest] = Right(
+            HttpRequest(
+              method = HttpMethods.GET,
+              uri = s"http://localhost:${wireMockServer.port()}/test"
+            )
           )
 
           override protected def parseHttpResponse(
               request: TestRequest,
               httpRequest: HttpRequest,
               httpResponse: HttpResponse,
-              entity: HttpEntity.Strict
+              entity: HttpEntityString
           ): Either[AbstractTestException, TestSuccess] = throw toThrow
         }
 

@@ -10,7 +10,11 @@ import com.dixa.twilio.model.phonenumber.{
   TwilioIncomingPhoneNumber,
   TwilioPhoneNumberSid
 }
-import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
+import com.dixa.twilio.client.phonenumber.{
+  ActiveNumbersReadRequestExecutor,
+  IncomingNumbersReadRequestExecutor,
+  TwilioClientPhoneNumber
+}
 
 import scala.concurrent.ExecutionContext
 
@@ -20,15 +24,9 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
     executionContext: ExecutionContext
 ) extends TwilioClientPhoneNumber {
 
-  override def incomingPhoneNumberList(
-      connSettings: TwilioConnectionSettings,
-      filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
-  ): Source[TwilioIncomingPhoneNumber, NotUsed] =
-    new IncomingPhoneNumberListRequest().apply(connSettings, filter)
+  override val incomingPhoneNumberList: IncomingNumbersReadRequestExecutor =
+    new IncomingNumbersReadRequestExecutorImpl()
 
-  override def activePhoneNumberList(
-      connSettings: TwilioConnectionSettings,
-      phoneNumber: Option[TwilioPhoneNumberSid] = None
-  ): Source[TwilioActivePhoneNumber, NotUsed] =
-    new ActivePhoneNumberListRequest().apply(connSettings, phoneNumber)
+  override val activePhoneNumberList: ActiveNumbersReadRequestExecutor =
+    new ActiveNumbersReadRequestExecutorImpl()
 }

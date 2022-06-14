@@ -3,7 +3,14 @@ package com.dixa.twilio.client.twilioClient.phonenumber
 import akka.NotUsed
 import akka.stream.scaladsl.{Sink, Source}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
-import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
+import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
+  IncomingNumbersReadException,
+  IncomingNumbersReadRequest
+}
+import com.dixa.twilio.client.phonenumber.{
+  IncomingNumbersReadRequestExecutor,
+  TwilioClientPhoneNumber
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -21,7 +28,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
 
     "asked to list incoming phone numbers" should {
 
-      "delegate to twilio and apply supplied text filter" in {
+      "delegate safely to twilio and apply supplied text filter" in {
 
         wireMockServer.stubFor(
           WireMock
@@ -63,11 +70,14 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
 
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
-
-        val resultSource: Source[TwilioIncomingPhoneNumber, NotUsed] =
-          instance.incomingPhoneNumberList(
+        val req = IncomingNumbersReadRequest(
+          Some(TwilioIncomingPhoneNumber.PhoneNumberFilter("+45"))
+        )
+        val resultSource
+            : Source[Either[IncomingNumbersReadException, TwilioIncomingPhoneNumber], NotUsed] =
+          instance.incomingPhoneNumberList.source(
             twilioConnectionSetting,
-            Some(TwilioIncomingPhoneNumber.PhoneNumberFilter("+45"))
+            req
           )
         val resultFut =
           resultSource.runWith(Sink.seq)
@@ -96,7 +106,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
           )
         )
 
-        resultFut.map(res => assert(res === expected))
+        resultFut.map(res => assert(res === expected.map(Right(_))))
       }
     }
   }

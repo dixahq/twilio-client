@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.impl.voice
 
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.TwilioConference
-import com.dixa.twilio.model.voice.TwilioConference.TwilioConferenceWithParticipants
+import com.dixa.twilio.model.voice.Conference
+import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 
 private[voice] object ConferenceJsonResp {
 
@@ -29,22 +29,22 @@ private[voice] object ConferenceJsonResp {
       subresource_uris: TwilioConferenceSubUrisRep
   ) {
     private[voice] def toModel(
-        participants: Seq[TwilioConference.Participant]
-    ): TwilioConferenceWithParticipants = {
-      TwilioConferenceWithParticipants(
-        TwilioConference.Sid(sid),
-        TwilioConference.Status.fromTwilioStringUnsafe(status),
-        TwilioConference.FriendlyName(friendly_name),
+        participants: Seq[Conference.Participant]
+    ): ConferenceWithParticipants = {
+      ConferenceWithParticipants(
+        Conference.Sid(sid),
+        Conference.Status.fromTwilioStringUnsafe(status),
+        Conference.FriendlyName(friendly_name),
         TwilioAccount.Sid(account_sid),
         participants.toVector
       )
     }
 
-    private[voice] def toModel: TwilioConference.DefaultImpl = {
-      TwilioConference(
-        TwilioConference.Sid(sid),
-        TwilioConference.Status.fromTwilioStringUnsafe(status),
-        TwilioConference.FriendlyName(friendly_name),
+    private[voice] def toModel: Conference.DefaultImpl = {
+      Conference(
+        Conference.Sid(sid),
+        Conference.Status.fromTwilioStringUnsafe(status),
+        Conference.FriendlyName(friendly_name),
         TwilioAccount.Sid(account_sid)
       )
     }

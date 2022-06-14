@@ -9,10 +9,12 @@ import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.HttpEntityString
 import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
 import com.dixa.twilio.client.messaging.{
+  MessageResourceReadRequestExecutor,
   MessageResourceReadSource,
   MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
+  ServicesReadRequestExecutor,
   TwilioClientMessaging
 }
 import com.dixa.twilio.model.messaging.{
@@ -29,11 +31,7 @@ private[client] final class TwilioClientMessagingImpl(
     executionContext: ExecutionContext
 ) extends TwilioClientMessaging {
 
-  override def servicesRead(
-      connSettings: TwilioConnectionSettings
-  ): Source[TwilioMessagingService, NotUsed] = {
-    new ServicesReadRequest().apply(connSettings)
-  }
+  override val servicesRead: ServicesReadRequestExecutor = new ServicesReadRequestExecutorImpl()
 
   override def serviceCreate(
       connSettings: TwilioConnectionSettings,
@@ -50,13 +48,8 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val messageSend: MessageSendRequestExecutor = new MessageSendRequestExecutorImpl()
 
-  override def mediaResourceRead(
-      connSettings: TwilioConnectionSettings,
-      req: TwilioClientMessaging.MediaResourceReadRequest
-  ): Source[MediaResourceReference, NotUsed] = {
-    MediaResourceReadSource(connSettings, req)
-  }
-
   override val messageResourceRead: MessageResourceReadSource =
     new MessageResourceReadSourceImpl()
+  override val mediaResourceRead: MessageResourceReadRequestExecutor =
+    new MessageResourceReadRequestExecutorImpl()
 }

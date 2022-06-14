@@ -35,15 +35,17 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberCreateRequest
-  ): HttpRequest = {
+  ): Either[PhoneNumberCreateException, HttpRequest] = {
     val postParam = s"PhoneNumberSid=${req.phoneNumberSid}"
-    TwilioPath(
-      ApiSubDomain.Messaging,
-      HttpMethods.POST,
-      s"/v1/Services/${req.serviceSid}/PhoneNumbers"
+    Right(
+      TwilioPath(
+        ApiSubDomain.Messaging,
+        HttpMethods.POST,
+        s"/v1/Services/${req.serviceSid}/PhoneNumbers"
+      )
+        .createHttpRequest(connSettings)
+        .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
     )
-      .createHttpRequest(connSettings)
-      .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
@@ -59,36 +61,32 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
       req: PhoneNumberCreateRequest,
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber] = httpResponse.status match {
-    case StatusCodes.OK => buildSuccessResponse(entity)
+    case StatusCodes.OK => parseEntityAs[MessagingPhoneNumberJsonRep](entity).map(_.toModel)
     case StatusCodes.Conflict =>
       buildResultForConflictResponse(entity)
     case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
   }
 
-  private def buildSuccessResponse(entity: HttpEntity.Strict) = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[MessagingPhoneNumberJsonRep]()
-    Right(decoded.toModel)
-  }
-
-  private def buildResultForConflictResponse(entity: HttpEntity.Strict) = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
-    decoded.code match {
-      case 21710L =>
-        Left(PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
-      case 21712L =>
-        Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
-      case other =>
-        Left(
-          new PhoneNumberCreateException.Unspecified(
-            s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
-              s"$other represent. Full error entity from Twilio: $entityString"
-          )
-        )
-    }
+  private def buildResultForConflictResponse(entity: HttpEntityString) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+      .map(e => PhoneNumberCreateException.Unspecified(None, Some(e)))
+      .flatMap { decoded =>
+        decoded.code match {
+          case 21710L =>
+            Left(PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
+          case 21712L =>
+            Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
+          case other =>
+            Left(
+              new PhoneNumberCreateException.Unspecified(
+                s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                  s"$other represent. Full error entity from Twilio: $entity"
+              )
+            )
+        }
+      }
   }
 }
 

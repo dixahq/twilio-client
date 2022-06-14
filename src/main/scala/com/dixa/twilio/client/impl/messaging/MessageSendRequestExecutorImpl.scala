@@ -6,7 +6,9 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{
   parseDate,
-  parseMessagingServiceSid
+  parseMessagingServiceSid,
+  parsePrice,
+  parsePriceUnit
 }
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,
@@ -17,7 +19,8 @@ import com.dixa.twilio.client.impl.{
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendException,
-  MessageSendRequest
+  MessageSendRequest,
+  MessageSendResponse
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
@@ -39,7 +42,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: MessageSendRequest
-  ): HttpRequest = {
+  ): Either[MessageSendException, HttpRequest] = {
     val reqEntity = FormData(
       Map(
         "From"           -> req.from.asString,
@@ -49,11 +52,13 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       )
     ).toEntity
 
-    TwilioPath(
-      ApiSubDomain.Api,
-      HttpMethods.POST,
-      s"/2010-04-01/Accounts/${req.accountSid}/Messages.json"
-    ).createHttpRequest(connSettings).withEntity(reqEntity)
+    Right(
+      TwilioPath(
+        ApiSubDomain.Api,
+        HttpMethods.POST,
+        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json"
+      ).createHttpRequest(connSettings).withEntity(reqEntity)
+    )
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
@@ -69,8 +74,8 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       req: MessageSendRequest,
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
-  ): Either[MessageSendException, MessageResource] = httpResponse.status match {
+      entity: HttpEntityString
+  ): Either[MessageSendException, MessageSendResponse] = httpResponse.status match {
     case StatusCodes.Created =>
       buildSuccessResponse(req, entity)
     case StatusCodes.BadRequest =>
@@ -80,85 +85,76 @@ private[impl] final class MessageSendRequestExecutorImpl()(
 
   private def buildSuccessResponse(
       req: MessageSendRequest,
-      entity: HttpEntity.Strict
-  ): Either[MessageSendException, MessageResource] = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[MessageJsonRep]()
-    MessageDirection.values.find(_.twilioString === decoded.direction) match {
-      case None =>
-        Left(
-          new MessageSendException.Unspecified(
-            s"Could not parse MessageDirection, ${decoded.direction} is not part of possible values"
-          )
-        )
-      case Some(direction) =>
-        req.from.asString === decoded.from match {
-          case false =>
-            Left(
-              new MessageSendException.Unspecified(
-                s"Could not parse MessageSender, ${req.from.asString} is not the same as ${decoded.from}"
-              )
+      entity: HttpEntityString
+  ): Either[MessageSendException, MessageSendResponse] = {
+    parseEntityAs[MessageJsonRep](entity).flatMap { decoded =>
+      MessageDirection.values.find(_.twilioString === decoded.direction) match {
+        case None =>
+          Left(
+            new MessageSendException.Unspecified(
+              s"Could not parse MessageDirection, ${decoded.direction} is not part of possible values"
             )
-          case true =>
-            MessageStatus.values.find(_.twilioString === decoded.status) match {
-              case None =>
-                Left(
-                  new MessageSendException.Unspecified(
-                    s"Could not parse MessageStatus, ${decoded.status} is not part of possible values"
-                  )
+          )
+        case Some(direction) =>
+          req.from.asString === decoded.from match {
+            case false =>
+              Left(
+                new MessageSendException.Unspecified(
+                  s"Could not parse MessageSender, ${req.from.asString} is not the same as ${decoded.from}"
                 )
-              case Some(status) =>
-                val price = (decoded.price, decoded.price_unit) match {
-                  case (Some(amount), Some(currency)) =>
-                    Some(MessagePrice(BigDecimal(amount), Iso4127CountryCode(currency)))
-                  case _ => None
-                }
-                val messageError = (decoded.error_code, decoded.error_message) match {
-                  case (Some(code), Some(message)) => Some(MessageError(message, code))
-                  case _                           => None
-                }
-                Right(
-                  MessageResource(
-                    accountSid = TwilioAccount.Sid(decoded.account_sid),
-                    body = MessageBody(decoded.body),
-                    dateCreated = decoded.date_created.flatMap(parseDate),
-                    dateSent = decoded.date_sent.flatMap(parseDate),
-                    dateUpdated = decoded.date_updated.flatMap(parseDate),
-                    direction = direction,
-                    from = MessageSender.E164(PhoneNumberE164(decoded.from)),
-                    messagingServiceSid =
-                      decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
-                    numMedia = decoded.num_media.toInt,
-                    numSegments = MessageNumSegments(decoded.num_segments.toInt),
-                    price = price,
-                    sid = MessageSid(decoded.sid),
-                    status = status,
-                    to = PhoneNumberE164(decoded.to),
-                    error = messageError,
+              )
+            case true =>
+              MessageStatus.values.find(_.twilioString === decoded.status) match {
+                case None =>
+                  Left(
+                    new MessageSendException.Unspecified(
+                      s"Could not parse MessageStatus, ${decoded.status} is not part of possible values"
+                    )
                   )
-                )
-            }
-        }
+                case Some(status) =>
+                  Right(
+                    MessageSendResponse(
+                      accountSid = TwilioAccount.Sid(decoded.account_sid),
+                      body = MessageBody(decoded.body),
+                      dateCreated = decoded.date_created.flatMap(parseDate),
+                      dateSent = decoded.date_sent.flatMap(parseDate),
+                      dateUpdated = decoded.date_updated.flatMap(parseDate),
+                      direction = direction,
+                      from = MessageSender.E164(PhoneNumberE164(decoded.from)),
+                      messagingServiceSid =
+                        decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
+                      numMedia = decoded.num_media.toInt,
+                      numSegments = MessageNumSegments(decoded.num_segments.toInt),
+                      price = decoded.price.flatMap(parsePrice),
+                      priceUnit = decoded.price_unit.flatMap(parsePriceUnit),
+                      sid = MessageSid(decoded.sid),
+                      status = status,
+                      to = PhoneNumberE164(decoded.to)
+                    )
+                  )
+              }
+          }
+      }
     }
   }
 
   private def buildResultForBadRequestResponse(
-      entity: HttpEntity.Strict
-  ): Left[MessageSendException, Nothing] = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
-    decoded.code match {
-      case 21211L => Left(MessageSendException.ToNumberNotValid())
-      case 21212L => Left(MessageSendException.FromNumberNotValid())
-      case 21606L => Left(MessageSendException.NotMessageCapableNumber())
-      case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
-      case other =>
-        Left(
-          new MessageSendException.Unspecified(
-            s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
-              s"$other represents. Full error entity from Twilio: $entityString"
+      entity: HttpEntityString
+  ) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).flatMap { decoded =>
+      decoded.code match {
+        case 21211L => Left(MessageSendException.ToNumberNotValid())
+        case 21212L => Left(MessageSendException.FromNumberNotValid())
+        case 21606L => Left(MessageSendException.NotMessageCapableNumber())
+        case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
+        case other =>
+          Left(
+            new MessageSendException.Unspecified(
+              s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                s"$other represents. Full error entity from Twilio: $entity"
+            )
           )
-        )
+      }
     }
   }
 }

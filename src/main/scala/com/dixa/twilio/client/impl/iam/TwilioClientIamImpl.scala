@@ -5,7 +5,11 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
+import com.dixa.twilio.client.iam.{
+  AccountFetchRequestExecutor,
+  ReadAllAccountsRequestExecutor,
+  TwilioClientIam
+}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import scala.concurrent.ExecutionContext
@@ -16,10 +20,8 @@ private[impl] final class TwilioClientIamImpl()(
     httpExt: HttpExt
 ) extends TwilioClientIam {
 
-  override def accountFetch: AccountFetchRequestExecutor = new AccountFetchRequestExecutorImpl()
+  override val accountFetch: AccountFetchRequestExecutor = new AccountFetchRequestExecutorImpl()
 
-  override def accountRead(
-      connSettings: TwilioConnectionSettings,
-      status: Option[TwilioAccount.Status] = None
-  ): Source[TwilioAccount, NotUsed] = FetchAllAccountsRequest(connSettings, status)
+  override val accountRead: ReadAllAccountsRequestExecutor =
+    new ReadAllAccountsRequestExecutorImpl()
 }

@@ -27,7 +27,7 @@ trait EnumWithTwilioString[A <: EnumWithTwilioString.EnumEntry] extends Enum[A] 
 
   /** Return the value corresponding to provided twilioString.
     *
-    * @throws TwilioStringNotFoundException
+    * @throws EnumWithTwilioString.TwilioStringNotFoundException
     *   if not found
     */
   def fromTwilioStringUnsafe(twilioString: String): A =
@@ -56,7 +56,7 @@ trait EnumWithTwilioString[A <: EnumWithTwilioString.EnumEntry] extends Enum[A] 
 
   /** Return the value corresponding to provided twilioString with case insensitive matching.
     *
-    * @throws TwilioStringNotFoundException
+    * @throws EnumWithTwilioString.TwilioStringNotFoundException
     *   if not found
     */
   def fromTwilioStringCaseInsensitiveUnsafe(twilioString: String): A =

@@ -1,4 +1,4 @@
-package com.dixa.twilio.client
+package com.dixa.twilio.model
 
 import enumeratum.{Enum, EnumEntry}
 

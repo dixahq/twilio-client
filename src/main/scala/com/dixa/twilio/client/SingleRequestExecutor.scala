@@ -1,10 +1,11 @@
 package com.dixa.twilio.client
 
-import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
-import akka.stream.Materializer
+import com.dixa.twilio.client.impl.HttpEntityString
+import io.circe.Decoder
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
+import scala.reflect.ClassTag
 
 /** Base trait for an executor that is able and ready to fire a specific request in different ways.
   *
@@ -19,7 +20,8 @@ import scala.concurrent.{ExecutionContext, Future}
   * @tparam Success
   *   The type of a successfully response.
   */
-trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
+trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
+    extends RequestExecutor[Req, Err] {
 
   /** Run the request, with typesafe error handling
     *
@@ -35,18 +37,21 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     */
   def run(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]] =
     Future {
-      val httpRequest = createHttpReq(connSettings, req)
-      execWithCheckForApiException(httpRequest, connSettings.timeouts).map { apiErrorOrResp =>
-        apiErrorOrResp.left
-          .map(mapApiException)
-          .flatMap(HttpReqRespAndEntity =>
-            parseHttpResponse(
-              req,
-              HttpReqRespAndEntity._1,
-              HttpReqRespAndEntity._2,
-              HttpReqRespAndEntity._3
-            )
-          )
+      createHttpReq(connSettings, req) match {
+        case Left(value) => Future.successful(Left(value))
+        case Right(httpRequest) =>
+          execWithCheckForApiException(httpRequest, connSettings.timeouts).map { apiErrorOrResp =>
+            apiErrorOrResp.left
+              .map(mapApiException)
+              .flatMap(HttpReqRespAndEntity =>
+                parseHttpResponse(
+                  req,
+                  HttpReqRespAndEntity._1,
+                  HttpReqRespAndEntity._2,
+                  HttpEntityString(HttpReqRespAndEntity._3.data.utf8String)
+                )
+              )
+          }
       }
     }.flatten.recover { case e: Exception =>
       Left(
@@ -68,44 +73,6 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     */
   def unsafeRun(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
     run(connSettings, req).map(_.fold(e => throw e, res => res))
-
-  protected def http: HttpExt
-
-  protected implicit def materializer: Materializer
-
-  /** Execution context to use for Async operations. No blocking operation will be run on this. */
-  protected implicit def executionContext: ExecutionContext
-
-  /** Type for the request specific wrapper for an ApiException.
-    *
-    * All implementations is expected to have there own Exception ADT, where one one of the possible
-    * values should be a ApiException wrapper
-    */
-  protected type ApiExceptionWrapper <: Err
-
-  /** Type for the request specific UnspecifiedException.
-    *
-    * All implementations is expected to have there own Exception ADT, where one one of the possible
-    * values should be a UnspecifiedException for representing all the error cases, that does not
-    * have it own type for representing it.
-    */
-  protected type UnspecifiedException <: Err
-
-  /** Build the http request.
-    *
-    * Implementations should provide this for building the HttpRequest for the request represented
-    * by the concrete implementation.
-    */
-  protected def createHttpReq(connSettings: TwilioConnectionSettings, req: Req): HttpRequest
-
-  /** Convert an ApiException into the request specific Exception. */
-  protected def mapApiException(apiException: ApiException): ApiExceptionWrapper
-
-  /** Create the request specific Unspecified exception. */
-  protected def createUnspecifiedException(
-      msg: Option[String],
-      cause: Option[Exception]
-  ): UnspecifiedException
 
   /** Parse the response of the http request.
     *
@@ -138,13 +105,13 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
     * @param httpResponse
     *   The HttpResponse to parse (Entity has already been read to a Strict)
     * @param entity
-    *   The Strict version of the Http entity.
+    *   The entity parsed as a String using UTF-8
     */
   protected def parseHttpResponse(
       request: Req,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[Err, Success]
 
   private def execWithCheckForApiException(
@@ -165,16 +132,22 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success] {
   /** Helper method for creating a response to cases where we have no support for handling a
     * Responese.
     */
-  protected def buildResultForUnhandledResponse(
+  protected final def buildResultForUnhandledResponse(
       request: Req,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[Err, Success] = {
-    val entityAsString = entity.data.utf8String
     val msg =
       s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
-        s"after firing $httpRequest. Full entity of response is: $entityAsString"
+        s"after firing $httpRequest. Full entity of response is: $entity"
     Left(createUnspecifiedException(Some(msg), None))
+  }
+
+  /** Helper method for parsing entity as Json, wrapping errors in UnspecifiedException. */
+  protected final def parseEntityAs[A: ClassTag: Decoder](
+      entity: HttpEntityString
+  ): Either[UnspecifiedException, A] = {
+    entity.parse[A]().left.map(e => createUnspecifiedException(None, Some(e)))
   }
 }

@@ -2,7 +2,7 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.impl.messaging.MediaResourceUrlFactory
-import com.dixa.twilio.client.messaging.TwilioClientMessaging
+import com.dixa.twilio.client.messaging.{MessageResourceReadRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -16,14 +16,14 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
 
-import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
+import java.time._
 
-final class MediaResourceListTest extends TwilioClientTest with Matchers {
+final class MessageResourceReadTest extends TwilioClientTest with Matchers {
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val messageSid   = MessageSid("MM9c8a124127702f0c7084b373cb06157a")
   private val sid          = MediaSid("ME9ec380c03268689d63e8fc5e97bba86e")
-  private val req = TwilioClientMessaging.MediaResourceReadRequest(
+  private val req = MessageResourceReadRequestExecutor.MessageResourceReadRequest(
     messageSid = messageSid
   )
   private val path = MediaResourceUrlFactory.buildMediaResourcePath(
@@ -49,7 +49,7 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
 
   classOf[TwilioClientMessaging].getSimpleName when {
 
-    "mediaResourceList" should {
+    "mediaResourceReadV2" should {
 
       "no media resources should turn into an empty list" in {
 
@@ -68,7 +68,7 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
+          instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.isEmpty shouldBe true
         }
@@ -102,12 +102,13 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
+          instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 1
-          result.head shouldBe expected
-          result.head.dateCreated.toString shouldBe "2022-02-01T13:44:20Z"
-          result.head.dateUpdated.toString shouldBe "2022-02-02T15:42:20Z"
+          assert(result.head.isRight)
+          result.head shouldBe Right(expected)
+          assert(result.head.map(_.dateCreated.toString) === Right("2022-02-01T13:44:20Z"))
+          assert(result.head.map(_.dateUpdated.toString) === Right("2022-02-02T15:42:20Z"))
         }
       }
 
@@ -167,10 +168,10 @@ final class MediaResourceListTest extends TwilioClientTest with Matchers {
 
         val instance = TwilioClient.defaultImpl().messaging
         val result =
-          instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
+          instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 3
-          result should contain theSameElementsAs List(expected, expected2, expected3)
+          result should contain theSameElementsAs List(expected, expected2, expected3).map(Right(_))
         }
       }
     }

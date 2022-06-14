@@ -2,7 +2,7 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.Done
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpEntity, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
@@ -23,13 +23,15 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberDeleteRequest
-  ): HttpRequest = {
-    TwilioPath(
-      ApiSubDomain.Messaging,
-      HttpMethods.DELETE,
-      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
+  ): Either[PhoneNumberDeleteException, HttpRequest] = {
+    Right(
+      TwilioPath(
+        ApiSubDomain.Messaging,
+        HttpMethods.DELETE,
+        s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
+      )
+        .createHttpRequest(connSettings)
     )
-      .createHttpRequest(connSettings)
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
@@ -44,7 +46,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
       request: PhoneNumberDeleteRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[PhoneNumberDeleteException, Done] = httpResponse.status match {
     case StatusCodes.OK | StatusCodes.NoContent =>
       Right(Done)
@@ -53,9 +55,8 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
     case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
   }
 
-  private def buildResultForNotFoundResponse(entity: HttpEntity.Strict) = {
-    val entityString = HttpEntityString(entity.data.utf8String)
-    val decoded      = entityString.parseUnsafe[DefaultApiErrorEntityJsonRep]()
-    Left(PhoneNumberDeleteException.NotFound(decoded.message))
+  private def buildResultForNotFoundResponse(entity: HttpEntityString) = {
+    val msg = entity.parse[DefaultApiErrorEntityJsonRep]().fold(_.getMessage, _.message)
+    Left(PhoneNumberDeleteException.NotFound(msg))
   }
 }

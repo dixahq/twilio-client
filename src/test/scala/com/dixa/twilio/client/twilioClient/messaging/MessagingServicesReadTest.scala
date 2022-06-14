@@ -2,9 +2,11 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Sink, Source}
-import com.dixa.twilio.client.messaging.TwilioClientMessaging
+import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor.ServicesReadException
+import com.dixa.twilio.client.messaging.{ServicesReadRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{HttpMethod, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -18,7 +20,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
 
     "asked to read all service" should {
 
-      "return all the services it gets from twilio" in {
+      "safely return all the services it gets from twilio" in {
 
         wireMockServer.stubFor(
           WireMock
@@ -52,9 +54,9 @@ final class MessagingServicesReadTest extends TwilioClientTest {
 
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientMessaging = TwilioClient.defaultImpl().messaging
-
-        val resultSource: Source[TwilioMessagingService, NotUsed] =
-          instance.servicesRead(twilioConnectionSetting)
+        val req                             = ServicesReadRequestExecutor.ServicesReadRequest()
+        val resultSource: Source[Either[ServicesReadException, TwilioMessagingService], NotUsed] =
+          instance.servicesRead.source(twilioConnectionSetting, req)
         val resultFut =
           resultSource.runWith(Sink.seq)
 
@@ -96,7 +98,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.False
           )
         )
-        resultFut.map(result => assert(result.toSet === expected.toSet))
+        resultFut.map(result => assert(result.toSet === expected.map(Right(_)).toSet))
       }
     }
   }

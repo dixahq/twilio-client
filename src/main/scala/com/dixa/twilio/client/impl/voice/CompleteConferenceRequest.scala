@@ -7,7 +7,7 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
-import com.dixa.twilio.model.voice.TwilioConference
+import com.dixa.twilio.model.voice.Conference
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
 
@@ -17,12 +17,12 @@ private[impl] object CompleteConferenceRequest {
 
   def apply(
       connSettings: TwilioConnectionSettings,
-      conference: TwilioConference
+      conference: Conference
   )(
       implicit http: HttpExt,
       materializer: Materializer,
       executionContext: ExecutionContext
-  ): Future[TwilioConference] = {
+  ): Future[Conference] = {
     val req = TwilioPath(
       ApiSubDomain.Api,
       HttpMethods.POST,
@@ -38,7 +38,7 @@ private[impl] object CompleteConferenceRequest {
       }
       resp.entity.toStrict(connSettings.timeouts.requestEntityTimeout).map { entity =>
         val entityString = HttpEntityString(entity.data.utf8String)
-        val decoded      = entityString.parseUnsafe[TwilioConferenceJsonResp]()
+        val decoded      = entityString.parse[TwilioConferenceJsonResp]().toTry.get
         decoded.toModel
       }
     }

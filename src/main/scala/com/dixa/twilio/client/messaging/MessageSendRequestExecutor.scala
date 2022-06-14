@@ -1,6 +1,13 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
+
+import java.time.Instant
+import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
+  MessageSendException,
+  MessageSendResponse
+}
+import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -10,7 +17,7 @@ trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
       MessageSendRequestExecutor.MessageSendRequest,
       MessageSendRequestExecutor.MessageSendException,
-      MessageResource
+      MessageSendResponse
     ] {
 
   override protected final type ApiExceptionWrapper = MessageSendException.Api
@@ -66,4 +73,26 @@ object MessageSendRequestExecutor {
       def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
     }
   }
+
+  /** Items from the json response not included in this Response: <ul> <li>error_code, error_message
+    * \- the message delivery errors are handled through status callbacks</li> <li>uri</li>
+    * <li>subresourceUris</li> </ul>
+    */
+  final case class MessageSendResponse(
+      accountSid: TwilioAccount.Sid,
+      body: MessageBody,
+      dateCreated: Option[Instant],
+      dateSent: Option[Instant],
+      dateUpdated: Option[Instant],
+      direction: MessageDirection,
+      from: MessageSender,
+      messagingServiceSid: Option[ServiceSid],
+      numMedia: Int, // number of media files associated with the message
+      numSegments: MessageNumSegments,
+      price: Option[BigDecimal],
+      priceUnit: Option[Iso4127CountryCode],
+      sid: MessageSid,
+      status: MessageStatus,
+      to: PhoneNumberE164
+  )
 }
