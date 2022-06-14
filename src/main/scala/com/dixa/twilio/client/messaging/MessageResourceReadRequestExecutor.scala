@@ -1,17 +1,17 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
-import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import java.time.Instant
 
-trait MessageResourceReadSource
+trait MessageResourceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
-      MessageResourceReadSource.MessageResourceReadRequest,
-      MessageResourceReadSource.MessageResourceReadException,
+      MessageResourceReadRequestExecutor.MessageResourceReadRequest,
+      MessageResourceReadRequestExecutor.MessageResourceReadException,
       MessageResource
     ] {
 
@@ -20,7 +20,7 @@ trait MessageResourceReadSource
   override protected type UnspecifiedException = MessageResourceReadException.Unspecified
 }
 
-object MessageResourceReadSource {
+object MessageResourceReadRequestExecutor {
 
   final case class MessageResourceReadRequest(
       accountSid: TwilioAccount.Sid,

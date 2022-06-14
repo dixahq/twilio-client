@@ -3,9 +3,20 @@ package com.dixa.twilio.client.twilioClient.messaging
 import akka.stream.scaladsl.Sink
 import com.dixa.twilio.CommonFixtures.AccountSid
 import com.dixa.twilio.client.impl.messaging.MediaResourceUrlFactory
-import com.dixa.twilio.client.messaging.{MessageResourceReadSource, TwilioClientMessaging}
+import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest
+import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadRequest
+import com.dixa.twilio.client.messaging.{
+  MessageMediaResourceReadRequestExecutor,
+  MessageResourceReadRequestExecutor,
+  TwilioClientMessaging
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioConnectionSettings, TwilioTestConstants}
+import com.dixa.twilio.client.{
+  messaging,
+  TwilioClient,
+  TwilioConnectionSettings,
+  TwilioTestConstants
+}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{
@@ -29,16 +40,16 @@ import org.scalatest.matchers.should.Matchers
 
 import java.time._
 
-final class MessageResourceListTest extends TwilioClientTest with Matchers {
+final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
 
-  import MessageResourceListTest._
+  import MessageResourceReadListTest._
 
   classOf[TwilioClientMessaging].getSimpleName when {
 
     val connectionSettings = connSettings(wireMockServer.port())
     val accountSid         = connectionSettings.accountSid
 
-    "mediaResourceList" should {
+    "messageResourceList" should {
 
       "no message resources should turn into an empty list" in {
 
@@ -59,12 +70,11 @@ final class MessageResourceListTest extends TwilioClientTest with Matchers {
         val result =
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
         result.map { result =>
-          println(s"result: $result")
           result.isEmpty shouldBe true
         }
       }
 
-      "lists a single media resource" in {
+      "lists a single message resource" in {
 
         wireMockServer.stubFor(
           WireMock
@@ -165,7 +175,7 @@ final class MessageResourceListTest extends TwilioClientTest with Matchers {
   }
 }
 
-private object MessageResourceListTest {
+private object MessageResourceReadListTest {
   private def connSettings(port: Int) = TwilioTestConstants.connSettings(port)
 
   private def path(accountSid: TwilioAccount.Sid) =
@@ -173,17 +183,18 @@ private object MessageResourceListTest {
 
   private val messageSid = MessageSid("MM9c8a124127702f0c7084b373cb06157a")
 
-  val filter = MessageResourceReadSource.MessageResourcesReadRequestFilter(
+  val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
     to = None,
     from = None,
     dateSentAfter = None,
     dateSentBefore = None,
     pageSize = 1000
   )
-  def req(accountSid: TwilioAccount.Sid) = MessageResourceReadSource.MessageResourceReadRequest(
-    accountSid = accountSid,
-    filter = filter
-  )
+  def req(accountSid: TwilioAccount.Sid) =
+    MessageResourceReadRequestExecutor.MessageResourceReadRequest(
+      accountSid = accountSid,
+      filter = filter
+    )
 
   private val createdAt = "Tue, 01 Feb 2022 13:44:20 +0000"
   private val updatedAt = "Wed, 02 Feb 2022 15:42:20 +0000"

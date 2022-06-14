@@ -14,8 +14,8 @@ import com.dixa.twilio.client.impl.{
   TwilioResponseNextPageJsonRep,
   TwilioUri
 }
-import com.dixa.twilio.client.messaging.MessageResourceReadSource
-import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
+import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{
@@ -36,17 +36,17 @@ import io.circe.generic.auto._
 import java.time.Instant
 import scala.concurrent.ExecutionContext
 
-private[impl] final class MessageResourceReadSourceImpl()(
+private[impl] final class MessageResourceReadRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends MessageResourceReadSource {
+) extends MessageResourceReadRequestExecutor {
 
-  import MessageResourceReadSourceImpl._
+  import MessageResourceReadRequestExecutorImpl._
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: MessageResourceReadSource.MessageResourceReadRequest
+      req: MessageResourceReadRequestExecutor.MessageResourceReadRequest
   ): Either[MessageResourceReadException, HttpRequest] = {
     val query = {
       val dateSentAfterParameter: Option[(String, String)] = req.filter.dateSentAfter.map { date =>
@@ -92,11 +92,13 @@ private[impl] final class MessageResourceReadSourceImpl()(
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,
-      request: MessageResourceReadSource.MessageResourceReadRequest,
+      request: MessageResourceReadRequestExecutor.MessageResourceReadRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
-  ): List[Either[MessageResourceReadSource.MessageResourceReadException, MessageResource]] = {
+  ): List[
+    Either[MessageResourceReadRequestExecutor.MessageResourceReadException, MessageResource]
+  ] = {
     responseEntity
       .parse[ListJsonRep[MessageJsonRep]]() match {
       case Left(ex) =>
@@ -164,7 +166,7 @@ private[impl] final class MessageResourceReadSourceImpl()(
   }
 }
 
-private object MessageResourceReadSourceImpl {
+private object MessageResourceReadRequestExecutorImpl {
   private def parseDate(date: String): Option[Instant] = date match {
     case null => None
     case _    => Some(Instant.from(Formatter.dateTime.parse(date)))

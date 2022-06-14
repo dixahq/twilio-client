@@ -7,10 +7,10 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.HttpEntityString
-import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
+import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
 import com.dixa.twilio.client.messaging.{
   MessageMediaResourceReadRequestExecutor,
-  MessageResourceReadSource,
+  MessageResourceReadRequestExecutor,
   MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
@@ -48,8 +48,9 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val messageSend: MessageSendRequestExecutor = new MessageSendRequestExecutorImpl()
 
-  override val messageResourceRead: MessageResourceReadSource =
-    new MessageResourceReadSourceImpl()
   override val mediaResourceRead: MessageMediaResourceReadRequestExecutor =
     new MessageMediaResourceReadRequestExecutorImpl()
+
+  override val messageResourceRead: MessageResourceReadRequestExecutor =
+    new MessageResourceReadRequestExecutorImpl()
 }

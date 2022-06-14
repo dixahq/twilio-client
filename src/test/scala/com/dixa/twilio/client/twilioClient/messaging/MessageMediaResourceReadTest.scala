@@ -21,7 +21,7 @@ import org.scalatest.matchers.should.Matchers
 
 import java.time._
 
-final class MessageResourceReadTest extends TwilioClientTest with Matchers {
+final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers {
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val messageSid   = MessageSid("MM9c8a124127702f0c7084b373cb06157a")

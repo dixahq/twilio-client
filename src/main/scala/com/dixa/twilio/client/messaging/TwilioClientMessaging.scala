@@ -49,7 +49,7 @@ trait TwilioClientMessaging {
   /** Returns a Source of messages from a given account, can be filtered based on to and/or from
     * phone number and sent date
     */
-  val messageResourceRead: MessageSendRequestExecutor
+  val messageResourceRead: MessageResourceReadRequestExecutor
 }
 
 object TwilioClientMessaging {
