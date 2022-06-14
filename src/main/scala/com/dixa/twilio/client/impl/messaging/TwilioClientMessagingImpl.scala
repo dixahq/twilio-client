@@ -1,13 +1,8 @@
 package com.dixa.twilio.client.impl.messaging
 
-import akka.NotUsed
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.HttpRequest
 import akka.stream.Materializer
-import akka.stream.scaladsl.Source
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.HttpEntityString
-import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
+import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
   MessageMediaResourceReadRequestExecutor,
   MessageResourceReadRequestExecutor,
@@ -17,11 +12,7 @@ import com.dixa.twilio.client.messaging.{
   ServicesReadRequestExecutor,
   TwilioClientMessaging
 }
-import com.dixa.twilio.model.messaging.{
-  MediaResourceReference,
-  MessageResource,
-  TwilioMessagingService
-}
+import com.dixa.twilio.model.messaging.TwilioMessagingService
 
 import scala.concurrent.{ExecutionContext, Future}
 

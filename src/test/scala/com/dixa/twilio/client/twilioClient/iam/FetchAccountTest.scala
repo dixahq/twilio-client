@@ -12,7 +12,6 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 import scala.concurrent.Future
 
 final class FetchAccountTest extends TwilioClientTest {

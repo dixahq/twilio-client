@@ -2,12 +2,14 @@ package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.{HttpMethod, StringUtil}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.twiml.{Response, TwimlConstraints, TwimlElement}
+import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
+
+import scala.annotation.nowarn
 
 /** Representation of the Redirect Verb from TwiML
   *
-  * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
-  * trait.
+  * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
+  * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
 sealed trait RedirectVerb extends TwimlElement.Verb {}
 
@@ -23,6 +25,7 @@ object RedirectVerb {
 
     def withMethod(method: HttpMethod): Builder[B] = new Builder(callbackUrl, Some(method))
 
+    @nowarn
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): RedirectVerb =

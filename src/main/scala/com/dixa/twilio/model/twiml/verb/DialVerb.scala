@@ -11,12 +11,14 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
   HasSingleAllowedValueAlreadyTrue
 }
 import com.dixa.twilio.model.twiml.noun.ConferenceNoun
-import com.dixa.twilio.model.twiml.{Response, TwimlElement}
+import com.dixa.twilio.model.twiml.TwimlElement
+
+import scala.annotation.nowarn
 
 /** Represent the Dial verb in TwiML
   *
-  * Creating a [[Response]] via the [[Response.build]] method, is the preferred way to use this
-  * trait.
+  * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
+  * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
 trait DialVerb extends TwimlElement.Verb
 
@@ -30,11 +32,13 @@ object DialVerb {
       S <: HasSingleAllowedValueAlready
   ](value: ValueToUse) {
 
+    @nowarn
     def withPhoneNumber(pn: PhoneNumberE164)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] =
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValuePhoneNumber(pn))
 
+    @nowarn
     def withConference(fun: ConferenceNoun.BuildFunction)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] = {
@@ -42,6 +46,7 @@ object DialVerb {
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValueNoun(conference))
     }
 
+    @nowarn
     def build()(
         implicit evB: B =:= BuildableTrue
     ): DialVerb = DialVerbImpl(value)

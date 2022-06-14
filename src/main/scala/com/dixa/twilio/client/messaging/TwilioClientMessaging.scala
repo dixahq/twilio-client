@@ -1,14 +1,7 @@
 package com.dixa.twilio.client.messaging
 
-import akka.NotUsed
-import akka.stream.scaladsl.Source
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.model.messaging.{
-  MediaResourceReference,
-  MessageSid,
-  StatusCallback,
-  TwilioMessagingService
-}
+import com.dixa.twilio.model.messaging.{MessageSid, StatusCallback, TwilioMessagingService}
 import com.dixa.twilio.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,

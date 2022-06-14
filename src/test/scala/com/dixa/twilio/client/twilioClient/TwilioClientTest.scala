@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient
 
 import com.dixa.twilio.client.TestActorSystem
-import org.scalatest.wordspec.{AnyWordSpec, AsyncWordSpec}
+import org.scalatest.wordspec.AsyncWordSpec
 
 /** Shared base class for all tests of functionality in the TwilioClientX classes.
   *

@@ -9,12 +9,11 @@ import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.{
   ReadAllAccountsRequest
 }
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, TwilioUri}
-import com.dixa.twilio.client.{iam, ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
 import io.circe.generic.auto._
 
-import java.time.Instant
 import scala.concurrent.ExecutionContext
 
 private[impl] class ReadAllAccountsRequestExecutorImpl(
