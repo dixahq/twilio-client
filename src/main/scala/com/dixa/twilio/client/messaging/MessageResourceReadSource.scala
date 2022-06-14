@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.ApiException
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
@@ -9,7 +9,7 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import java.time.Instant
 
 trait MessageResourceReadSource
-    extends MultipleResponseSource[
+    extends MultipleResponseRequestExecutor[
       MessageResourceReadSource.MessageResourceReadRequest,
       MessageResourceReadSource.MessageResourceReadException,
       MessageResource

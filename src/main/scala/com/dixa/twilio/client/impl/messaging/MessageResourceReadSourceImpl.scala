@@ -47,7 +47,7 @@ private[impl] final class MessageResourceReadSourceImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: MessageResourceReadSource.MessageResourceReadRequest
-  ): HttpRequest = {
+  ): Either[MessageResourceReadException, HttpRequest] = {
     val query = {
       val dateSentAfterParameter: Option[(String, String)] = req.filter.dateSentAfter.map { date =>
         "DateSent>" -> date.toString
@@ -73,11 +73,13 @@ private[impl] final class MessageResourceReadSourceImpl()(
       )
     }
 
-    TwilioPath(
-      ApiSubDomain.Api,
-      HttpMethods.GET,
-      s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString()}"
-    ).createHttpRequest(connSettings)
+    Right(
+      TwilioPath(
+        ApiSubDomain.Api,
+        HttpMethods.GET,
+        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString()}"
+      ).createHttpRequest(connSettings)
+    )
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
@@ -144,15 +146,20 @@ private[impl] final class MessageResourceReadSourceImpl()(
   override protected def nextPageHttpRequestBuilder(
       connectionSettings: TwilioConnectionSettings,
       entityString: HttpEntityString
-  ): Option[HttpRequest] = {
+  ): Either[MessageResourceReadException, Option[HttpRequest]] = {
     entityString
-      .parseUnsafe[TwilioResponseNextPageJsonRep]()
-      .next_page_uri
-      .map(s =>
-        TwilioUri
-          .autoDetect(s, HttpMethods.GET, ApiSubDomain.Api)
-          .createHttpRequest(connectionSettings)
-      )
+      .parse[TwilioResponseNextPageJsonRep]()
+      .left
+      .map { ex =>
+        createUnspecifiedException(Some(ex.cause.getMessage), Some(ex.cause))
+      }
+      .map { response =>
+        response.next_page_uri.map(nextPage =>
+          TwilioUri
+            .autoDetect(nextPage, HttpMethods.GET, ApiSubDomain.Api)
+            .createHttpRequest(connectionSettings)
+        )
+      }
   }
 }
 

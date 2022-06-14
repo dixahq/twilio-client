@@ -9,7 +9,7 @@ import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.HttpEntityString
 import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
 import com.dixa.twilio.client.messaging.{
-  MessageResourceReadRequestExecutor,
+  MessageMediaResourceReadRequestExecutor,
   MessageResourceReadSource,
   MessageSendRequestExecutor,
   PhoneNumberCreateRequestExecutor,
@@ -50,6 +50,6 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val messageResourceRead: MessageResourceReadSource =
     new MessageResourceReadSourceImpl()
-  override val mediaResourceRead: MessageResourceReadRequestExecutor =
-    new MessageResourceReadRequestExecutorImpl()
+  override val mediaResourceRead: MessageMediaResourceReadRequestExecutor =
+    new MessageMediaResourceReadRequestExecutorImpl()
 }

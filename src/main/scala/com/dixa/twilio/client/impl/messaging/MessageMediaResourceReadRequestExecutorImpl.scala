@@ -7,10 +7,10 @@ import com.dixa.twilio.client.impl.Formatter.dateTime
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.messaging.MediaResourceUrlFactory.buildMediaResourcePath
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
-import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
-import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.{
-  MessageResourceReadException,
-  MessageResourceReadRequest
+import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor
+import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.{
+  MessageMediaResourceReadException,
+  MessageMediaResourceReadRequest
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -21,16 +21,16 @@ import java.time.Instant
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
-private[impl] class MessageResourceReadRequestExecutorImpl(
+private[impl] class MessageMediaResourceReadRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends MessageResourceReadRequestExecutor {
+) extends MessageMediaResourceReadRequestExecutor {
 
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: MessageResourceReadRequestExecutor.MessageResourceReadRequest
-  ): Either[MessageResourceReadException, HttpRequest] = {
+      req: MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest
+  ): Either[MessageMediaResourceReadException, HttpRequest] = {
     val requestPath = buildMediaResourcePath(connSettings.accountSid, req.messageSid)
     Right(
       TwilioPath(
@@ -42,12 +42,12 @@ private[impl] class MessageResourceReadRequestExecutorImpl(
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
-    MessageResourceReadException.Api.apply(apiException)
+    MessageMediaResourceReadException.Api.apply(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Exception]
-  ): UnspecifiedException = MessageResourceReadException.Unspecified(msg, cause)
+  ): UnspecifiedException = MessageMediaResourceReadException.Unspecified(msg, cause)
 
   private case class MediaResourceListJsonRep(
       first_page_uri: String,
@@ -90,15 +90,17 @@ private[impl] class MessageResourceReadRequestExecutorImpl(
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,
-      request: MessageResourceReadRequest,
+      request: MessageMediaResourceReadRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
-  ): List[Either[MessageResourceReadException, MediaResourceReference]] = {
+  ): List[Either[MessageMediaResourceReadException, MediaResourceReference]] = {
     responseEntity.parse[MediaResourceListJsonRep]() match {
       case Left(ex) =>
         List(
-          Left(MessageResourceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause)))
+          Left(
+            MessageMediaResourceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
+          )
         )
       case Right(decoded: MediaResourceListJsonRep) =>
         decoded.media_list.map { jsonRep =>
