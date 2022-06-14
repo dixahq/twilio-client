@@ -7,6 +7,11 @@ import com.dixa.twilio.client.phonenumber.{
   IncomingNumbersReadRequestExecutor,
   TwilioClientPhoneNumber
 }
+import com.dixa.twilio.client.phonenumber.{
+  ActiveNumbersReadRequestExecutor,
+  IncomingNumbersReadRequestExecutor,
+  TwilioClientPhoneNumber
+}
 
 import scala.concurrent.ExecutionContext
 

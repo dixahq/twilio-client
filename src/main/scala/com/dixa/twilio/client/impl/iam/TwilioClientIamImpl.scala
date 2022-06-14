@@ -7,6 +7,7 @@ import com.dixa.twilio.client.iam.{
   ReadAllAccountsRequestExecutor,
   TwilioClientIam
 }
+
 import scala.concurrent.ExecutionContext
 
 private[impl] final class TwilioClientIamImpl()(
