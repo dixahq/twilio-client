@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.messaging
 
-import com.dixa.twilio.client.{ApiException, MultipleResponseSource}
+import com.dixa.twilio.client.ApiException
 import com.dixa.twilio.client.messaging.MessageResourceReadSource.MessageResourceReadException
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
