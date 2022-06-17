@@ -284,6 +284,8 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
             }
           } catch {
             case e: Exception =>
+              println(s"Exception: $e")
+              e.printStackTrace()
               List(
                 Left(
                   createUnspecifiedException(

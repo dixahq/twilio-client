@@ -6,9 +6,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{
   parseDate,
-  parseMessagingServiceSid,
-  parsePrice,
-  parsePriceUnit
+  parseMessagingServiceSid
 }
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,
@@ -171,16 +169,6 @@ private object MessageSendRequestExecutorImpl {
   private def parseDate(date: String): Option[Instant] = date match {
     case null => None
     case _    => Some(Instant.from(Formatter.dateTime.parse(date)))
-  }
-
-  private def parsePrice(price: String): Option[BigDecimal] = price match {
-    case null => None
-    case _    => Some(BigDecimal(price))
-  }
-
-  private def parsePriceUnit(priceUnit: String): Option[Iso4127CountryCode] = priceUnit match {
-    case null => None
-    case _    => Some(Iso4127CountryCode(priceUnit))
   }
 
   private def parseMessagingServiceSid(

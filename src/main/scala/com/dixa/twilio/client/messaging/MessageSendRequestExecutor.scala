@@ -2,9 +2,6 @@ package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
 
-import java.time.Instant
-import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
-import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164

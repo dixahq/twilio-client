@@ -1,28 +1,13 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.CommonFixtures.AccountSid
-import com.dixa.twilio.client.impl.messaging.MediaResourceUrlFactory
-import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest
-import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadRequest
-import com.dixa.twilio.client.messaging.{
-  MessageMediaResourceReadRequestExecutor,
-  MessageResourceReadRequestExecutor,
-  TwilioClientMessaging
-}
+import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter
+import com.dixa.twilio.client.messaging.{MessageResourceReadRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{
-  messaging,
-  TwilioClient,
-  TwilioConnectionSettings,
-  TwilioTestConstants
-}
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{
-  MediaResourceReference,
-  MediaResourceUrl,
-  MediaSid,
   MessageBody,
   MessageDirection,
   MessageNumSegments,
@@ -35,9 +20,11 @@ import com.dixa.twilio.model.messaging.{
 }
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo}
+import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.scalatest.matchers.should.Matchers
 
+import java.util.{HashMap => JavaMap}
 import java.time._
 
 final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
@@ -81,6 +68,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
+            .withQueryParams(filterMapBuilder(req(accountSid).filter))
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
@@ -96,81 +84,54 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
         result.map { result =>
           println(result)
+          result.head.left.map(ex => println(ex.getMessage))
           result.size shouldBe 1
           result.head.isRight shouldBe true
           result.head.right.get shouldBe expected
-          result.head.right.get.dateCreated.toString shouldBe "2022-02-01T13:44:20Z"
-          result.head.right.get.dateUpdated.toString shouldBe "2022-02-02T15:42:20Z"
+          result.head.right.get.dateCreated
+            .map { _.toString }
+            .getOrElse("") shouldBe "2022-02-01T13:44:20Z"
+          result.head.right.get.dateUpdated
+            .map { _.toString }
+            .getOrElse("") shouldBe "2022-02-02T15:42:20Z"
           result.head.right.get.body.toString shouldBe "testing"
         }
       }
 
-//      "lists multiple of media resources" in {
-//        val sid2 = MediaSid("Sid2")
-//        val sid3 = MediaSid("Sid3")
-//        wireMockServer.stubFor(
-//          WireMock
-//            .get(
-//              WireMock.urlPathEqualTo(path)
-//            )
-//            .withBasicAuth(connSettings.accountSid.toString, "testPassword")
-//            .willReturn(
-//              aResponse()
-//                .withStatus(200)
-//                .withBody(
-//                  messageResourceListResp(
-//                    connSettings.accountSid,
-//                    messageSid,
-//                    List(sid, sid2, sid3)
-//                  )
-//                )
-//            )
-//        )
-//
-//        val expected = MediaResourceReference(
-//          sid,
-//          connSettings.accountSid,
-//          messageSid,
-//          contentType = "image/jpeg",
-//          dateCreated = createdAtInstant,
-//          dateUpdated = updatedAtInstant,
-//          MediaResourceUrl(
-//            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid"
-//          )
-//        )
-//
-//        val expected2 = MediaResourceReference(
-//          sid2,
-//          connSettings.accountSid,
-//          messageSid,
-//          contentType = "image/jpeg",
-//          dateCreated = createdAtInstant,
-//          dateUpdated = updatedAtInstant,
-//          MediaResourceUrl(
-//            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid2"
-//          )
-//        )
-//
-//        val expected3 = MediaResourceReference(
-//          sid3,
-//          connSettings.accountSid,
-//          messageSid,
-//          contentType = "image/jpeg",
-//          dateCreated = createdAtInstant,
-//          dateUpdated = updatedAtInstant,
-//          MediaResourceUrl(
-//            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid3"
-//          )
-//        )
-//
-//        val instance = TwilioClient.defaultImpl().messaging
-//        val result =
-//          instance.mediaResourceRead(connSettings, req).runWith(Sink.seq)
-//        result.map { result =>
-//          result.size shouldBe 3
-//          result should contain theSameElementsAs List(expected, expected2, expected3)
-//        }
-//      }
+      "lists multiple of message resources" in {
+        val expected  = messageResource(accountSid)
+        val expected2 = messageResource(accountSid).copy(to = receiver2)
+        val expected3 = messageResource(accountSid).copy(to = receiver3)
+
+        wireMockServer.stubFor(
+          WireMock
+            .get(
+              WireMock.urlPathEqualTo(path(accountSid))
+            )
+            .withQueryParams(filterMapBuilder(req(accountSid).filter))
+            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(
+                  messageResourceListResp(
+                    connectionSettings.accountSid,
+                    List(expected, expected2, expected3)
+                  )
+                )
+            )
+        )
+
+        val instance = TwilioClient.defaultImpl().messaging
+        val result =
+          instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
+        result.map { result =>
+          result.size shouldBe 3
+          result should contain theSameElementsAs List(expected, expected2, expected3).map {
+            Right(_)
+          }
+        }
+      }
     }
   }
 }
@@ -212,22 +173,24 @@ private object MessageResourceReadListTest {
       ZoneOffset.UTC
     )
   )
-  private val dateSentInstant = Instant.from(
-    OffsetDateTime.of(
-      LocalDateTime.of(LocalDate.of(2022, 2, 2), LocalTime.of(16, 42, 20)),
-      ZoneOffset.UTC
-    )
+  private val dateSentDateTime = OffsetDateTime.of(
+    LocalDateTime.of(LocalDate.of(2022, 2, 2), LocalTime.of(16, 42, 20)),
+    ZoneOffset.UTC
   )
 
+  private val dateSentInstant = Instant.from(dateSentDateTime)
+
   private val direction      = MessageDirection.OutboundApi
-  private val sender         = MessageSender.Alphanumeric("+12019235161")
+  private val sender         = MessageSender.E164(PhoneNumberE164("+12019235161"))
   private val serviceSid     = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   private val numberSegments = MessageNumSegments.apply(1)
   private val price = MessagePrice(
     BigDecimal(0.234324),
     Iso4127CountryCode("DKK")
   )
-  private val receiver = PhoneNumberE164("+12019235100")
+  private val receiver  = PhoneNumberE164("+12019235100")
+  private val receiver2 = PhoneNumberE164("+12019235100")
+  private val receiver3 = PhoneNumberE164("+12019235100")
 
   private def messageResource(accountSid: TwilioAccount.Sid) = MessageResource(
     sid = messageSid,
@@ -255,19 +218,19 @@ private object MessageResourceReadListTest {
        |  "account_sid": "${messageResource.accountSid}",
        |  "api_version": "2010-04-01",
        |  "body": "${messageResource.body}",
-       |  "date_created": "${messageResource.dateCreated}",
-       |  "date_sent": "${messageResource.dateSent}",
-       |  "date_updated": "${messageResource.dateUpdated}",
+       |  "date_created": "$createdAt",
+       |  "date_sent": "$dateSent",
+       |  "date_updated": "$updatedAt",
        |  "direction": "${messageResource.direction.twilioString}",
-       |  "from": "${messageResource.from}",
-       |  "messaging_service_sid": "${messageResource.messagingServiceSid}",
+       |  "from": "${messageResource.from.asString}",
+       |  "messaging_service_sid": "${messageResource.messagingServiceSid.getOrElse("")}",
        |  "num_media": "${messageResource.numMedia}",
        |  "num_segments": "${messageResource.numSegments}",
-       |  "price": "${messageResource.price.map(_.amount)}",
-       |  "price_unit": "${messageResource.price.map(_.unit)}",
+       |  "price": "${messageResource.price.map(_.amount).getOrElse("null")}",
+       |  "price_unit": "${messageResource.price.map(_.unit).getOrElse("null")}",
        |  "sid": "${messageResource.sid}",
        |  "status": "${messageResource.status.twilioString}",
-       |  "to": "${messageResource.to}",
+       |  "to": "${messageResource.to.asString}",
        |  "uri": "/2010-04-01/Accounts/$accountSid/Messages/${messageResource.sid}.json"
        |}""".stripMargin
   }
@@ -290,4 +253,24 @@ private object MessageResourceReadListTest {
        |    "page": 0
        |}
        |""".stripMargin
+
+  private def filterMapBuilder(
+      filter: MessageResourcesReadRequestFilter
+  ): JavaMap[String, StringValuePattern] = {
+    val filterMap = new JavaMap[String, StringValuePattern]()
+    filter.dateSentAfter.map { date =>
+      filterMap.put("DateSent>", equalTo(date.toString))
+    }
+    filter.dateSentBefore.map { date =>
+      filterMap.put("DateSent<", equalTo(date.toString))
+    }
+    filter.to.map { number =>
+      filterMap.put("To", equalTo(number.toString))
+    }
+    filter.from.map { number =>
+      filterMap.put("From", equalTo(number.toString))
+    }
+    filterMap.put("PageSize", equalTo(filter.pageSize.toString))
+    filterMap
+  }
 }
