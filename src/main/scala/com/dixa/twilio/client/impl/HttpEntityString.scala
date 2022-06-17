@@ -12,12 +12,7 @@ private[client] final case class HttpEntityString(override val toString: String)
 
   /** Parse this entity into Specified type using Circe, throwing exception on error.
     */
-  def parseUnsafe[A: ClassTag: Decoder](): A = decode[A](this.toString)
-    .leftMap { error =>
-      JsonParsingException(classTag[A], this, error)
-    }
-    .toTry
-    .get
+  def parseUnsafe[A: ClassTag: Decoder](): A = parse.toTry.get
 
   /** Parse this entity into Specified type using Circe, throwing exception on error.
     */
