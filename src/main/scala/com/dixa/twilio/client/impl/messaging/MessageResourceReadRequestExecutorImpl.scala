@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -47,40 +48,36 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: MessageResourceReadRequestExecutor.MessageResourceReadRequest
   ): Either[MessageResourceReadException, HttpRequest] = {
-    val dateSentAfterParameter: String = req.filter.dateSentAfter
-      .map { date =>
-        s"DateSent>${date.toString}&"
+    val query = {
+      val dateSentAfterParameter: Option[(String, String)] = req.filter.dateSentAfter.map { date =>
+        "DateSent>" -> date.toString
       }
-      .getOrElse("")
-    val dateSentBeforeParameter: String = req.filter.dateSentBefore
-      .map { date =>
-        s"DateSent<${date.toString}&"
+      val dateSentBeforeParameter: Option[(String, String)] = req.filter.dateSentBefore.map {
+        date =>
+          "DateSent<" -> date.toString
       }
-      .getOrElse("")
-    val toParameter: String = req.filter.to
-      .map { number =>
-        s"To=${number.toString}&"
+      val toParameter: Option[(String, String)] = req.filter.to.map { number =>
+        "To" -> number.toString
       }
-      .getOrElse("")
-    val fromParameter: String = req.filter.from
-      .map { number =>
-        s"From=${number.toString}&"
+      val fromParameter: Option[(String, String)] = req.filter.from.map { number =>
+        "From" -> number.toString
       }
-      .getOrElse("")
-    val pageSizeParameter = s"PageSize=${req.filter.pageSize.toString}"
-
-    val query =
-      pageSizeParameter +
-        dateSentAfterParameter +
-        dateSentBeforeParameter +
-        toParameter +
-        fromParameter
+      Query(
+        Map("PageSize" -> req.filter.pageSize.toString) ++
+          List(
+            dateSentAfterParameter,
+            dateSentBeforeParameter,
+            toParameter,
+            fromParameter
+          ).flatten.toMap
+      )
+    }
 
     Right(
       TwilioPath(
         ApiSubDomain.Api,
         HttpMethods.GET,
-        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?$query"
+        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString().replace(":", "%3A")}"
       ).createHttpRequest(connSettings)
     )
   }
@@ -105,21 +102,13 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
     responseEntity
       .parse[ListJsonRep[MessageJsonRep]]() match {
       case Left(ex) =>
-        println(responseEntity.toString)
         List(
           Left(
             MessageResourceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
           )
         )
       case Right(listJsonRep) =>
-        println(s"http response parsed to json: $listJsonRep")
-        println()
-        println(s"http response parsed to json: ${listJsonRep.messages}")
         listJsonRep.messages.map { toModel }.map { message =>
-          message.left.map { ex =>
-            println()
-            println(s"exception ${ex.getMessage}")
-          }
           message
         }
     }
@@ -133,11 +122,9 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
     for {
       messageDirection <- MessageDirection.fromTwilioStringEither(jsonRep.direction).left.map {
         err =>
-          println(s"Message direction not parsed: ${jsonRep.direction}")
           new MessageResourceReadException.Unspecified(err.msg)
       }
       messageStatus <- MessageStatus.fromTwilioStringEither(jsonRep.status).left.map { err =>
-        println(s"Message status not parsed: ${jsonRep.status}")
         new MessageResourceReadException.Unspecified(err.msg)
       }
       messageResource = MessageResource(
@@ -183,7 +170,6 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
 
 private object MessageResourceReadRequestExecutorImpl {
   private def parseDate(date: String): Option[Instant] = {
-    println(s"date: $date")
     date match {
       case null => None
       case _    => Some(Instant.from(Formatter.dateTime.parse(date)))
@@ -200,8 +186,6 @@ private object MessageResourceReadRequestExecutorImpl {
   private def parsePrice(price: Option[String], unit: Option[String]): Option[MessagePrice] = {
     (price, unit) match {
       case (Some(amount), Some(currency)) =>
-        println(s"amount: $amount")
-        println(s"currency: $currency")
         Some(MessagePrice(BigDecimal(amount), Iso4127CountryCode(currency)))
       case _ => None
     }

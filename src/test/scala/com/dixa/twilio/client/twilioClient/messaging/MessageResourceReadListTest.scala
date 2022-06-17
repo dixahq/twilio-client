@@ -83,7 +83,6 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
         val result =
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
         result.map { result =>
-          println(result)
           result.head.left.map(ex => println(ex.getMessage))
           result.size shouldBe 1
           result.head.isRight shouldBe true
@@ -108,7 +107,6 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
-            .withQueryParams(filterMapBuilder(req(accountSid).filter))
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
@@ -125,6 +123,49 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
         val instance = TwilioClient.defaultImpl().messaging
         val result =
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
+        result.map { result =>
+          result.size shouldBe 3
+          result should contain theSameElementsAs List(expected, expected2, expected3).map {
+            Right(_)
+          }
+        }
+      }
+
+      "lists multiple of message resources, with filter parameters" in {
+        val expected  = messageResource(accountSid)
+        val expected2 = messageResource(accountSid).copy(to = receiver2)
+        val expected3 = messageResource(accountSid).copy(to = receiver3)
+
+        val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
+          to = Some(expected.to),
+          from = Some(PhoneNumberE164(expected.from.asString)),
+          dateSentAfter = Some(createdAtInstant),
+          dateSentBefore = Some(updatedAtInstant)
+        )
+        wireMockServer.stubFor(
+          WireMock
+            .get(
+              WireMock.urlPathEqualTo(path(accountSid))
+            )
+            .withQueryParams(filterMapBuilder(filter))
+            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withBody(
+                  messageResourceListResp(
+                    connectionSettings.accountSid,
+                    List(expected, expected2, expected3)
+                  )
+                )
+            )
+        )
+
+        val instance = TwilioClient.defaultImpl().messaging
+        val result =
+          instance.messageResourceRead
+            .source(connectionSettings, req(accountSid, filter))
+            .runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 3
           result should contain theSameElementsAs List(expected, expected2, expected3).map {
@@ -151,7 +192,10 @@ private object MessageResourceReadListTest {
     dateSentBefore = None,
     pageSize = 1000
   )
-  def req(accountSid: TwilioAccount.Sid) =
+  def req(
+      accountSid: TwilioAccount.Sid,
+      filter: MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter = filter
+  ) =
     MessageResourceReadRequestExecutor.MessageResourceReadRequest(
       accountSid = accountSid,
       filter = filter
@@ -259,10 +303,10 @@ private object MessageResourceReadListTest {
   ): JavaMap[String, StringValuePattern] = {
     val filterMap = new JavaMap[String, StringValuePattern]()
     filter.dateSentAfter.map { date =>
-      filterMap.put("DateSent>", equalTo(date.toString))
+      filterMap.put("DateSent%3E", equalTo(date.toString))
     }
     filter.dateSentBefore.map { date =>
-      filterMap.put("DateSent<", equalTo(date.toString))
+      filterMap.put("DateSent%3C", equalTo(date.toString))
     }
     filter.to.map { number =>
       filterMap.put("To", equalTo(number.toString))
