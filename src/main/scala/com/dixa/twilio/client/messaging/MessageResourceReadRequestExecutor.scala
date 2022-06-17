@@ -41,26 +41,6 @@ object MessageResourceReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with MessageResourceReadException
-    final case class ToNumberNotValid()
-        extends IllegalStateException(
-          "Invalid 'To' Phone Number. More info: https://www.twilio.com/docs/api/errors/21211"
-        )
-        with MessageResourceReadException
-    final case class FromNumberNotValid()
-        extends IllegalStateException(
-          "Invalid From Number. More info: https://www.twilio.com/docs/api/errors/21212"
-        )
-        with MessageResourceReadException
-    final case class NotMessageCapableNumber()
-        extends IllegalStateException(
-          "Attempt to use a 'From' number which is not capable of sending SMS messages. More info: https://www.twilio.com/docs/api/errors/21606"
-        )
-        with MessageResourceReadException
-    final case class MessageBodyCharLimitExceeded()
-        extends IllegalStateException(
-          "Concatenated message body exceeds the maximum 1600 character limit. More info: https://www.twilio.com/docs/api/errors/21617"
-        )
-        with MessageResourceReadException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
