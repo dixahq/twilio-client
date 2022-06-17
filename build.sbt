@@ -1,6 +1,6 @@
 import sbt.Test
 
-val scala2_12          = "2.12.15"
+val scala2_12          = "2.12.16"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
