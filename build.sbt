@@ -50,7 +50,8 @@ lazy val `twilio-client` = project
         "-language:postfixOps",
         "-language:implicitConversions",
         "-language:higherKinds",
-        "-target:jvm-1.8"
+        "-target:jvm-1.8",
+        "-Wconf:msg=discarding unmoored doc comment:s"
       ),
       crossScalaVersions := Seq(scala2_12),
       releaseCrossBuild  := true,
