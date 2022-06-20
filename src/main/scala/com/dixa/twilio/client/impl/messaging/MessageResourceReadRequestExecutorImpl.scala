@@ -198,7 +198,9 @@ private object MessageResourceReadRequestExecutorImpl {
   private def parseMessagingServiceSid(
       messagingServiceSid: String
   ): Option[ServiceSid] = messagingServiceSid match {
-    case null => None
-    case _    => Some(ServiceSid(messagingServiceSid))
+    case null                         => None
+    case str: String if (str.isEmpty) => None
+    case ""                           => None
+    case _                            => Some(ServiceSid(messagingServiceSid))
   }
 }
