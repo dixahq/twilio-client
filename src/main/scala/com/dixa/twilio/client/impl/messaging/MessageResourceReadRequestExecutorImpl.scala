@@ -110,9 +110,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
           )
         )
       case Right(listJsonRep) =>
-        listJsonRep.messages.map { toModel }.map { message =>
-          message
-        }
+        listJsonRep.messages.map { toModel }
     }
   }
 
