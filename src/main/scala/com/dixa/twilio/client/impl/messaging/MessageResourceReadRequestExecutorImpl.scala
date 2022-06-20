@@ -77,7 +77,11 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
       TwilioPath(
         ApiSubDomain.Api,
         HttpMethods.GET,
-        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString().replace(":", "%3A")}"
+        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query
+            .toString()
+            // the `:` character present in the time instances in dateSent parameter should be URL encoded
+            // akka.http.scaladsl.model.Uri.Query doesn't URL encode the `:` character
+            .replace(":", "%3A")}"
       ).createHttpRequest(connSettings)
     )
   }
