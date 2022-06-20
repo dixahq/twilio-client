@@ -6,9 +6,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{
   parseDate,
-  parseMessagingServiceSid,
-  parsePrice,
-  parsePriceUnit
+  parseMessagingServiceSid
 }
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,
@@ -19,8 +17,7 @@ import com.dixa.twilio.client.impl.{
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendException,
-  MessageSendRequest,
-  MessageSendResponse
+  MessageSendRequest
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
@@ -75,7 +72,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[MessageSendException, MessageSendResponse] = httpResponse.status match {
+  ): Either[MessageSendException, MessageResource] = httpResponse.status match {
     case StatusCodes.Created =>
       buildSuccessResponse(req, entity)
     case StatusCodes.BadRequest =>
@@ -86,8 +83,8 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   private def buildSuccessResponse(
       req: MessageSendRequest,
       entity: HttpEntityString
-  ): Either[MessageSendException, MessageSendResponse] = {
-    parseEntityAs[MessageSendRespJsonRep](entity).flatMap { decoded =>
+  ): Either[MessageSendException, MessageResource] = {
+    parseEntityAs[MessageJsonRep](entity).flatMap { decoded =>
       MessageDirection.values.find(_.twilioString === decoded.direction) match {
         case None =>
           Left(
@@ -112,8 +109,17 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                     )
                   )
                 case Some(status) =>
+                  val price = (decoded.price, decoded.price_unit) match {
+                    case (Some(amount), Some(currency)) =>
+                      Some(MessagePrice(BigDecimal(amount), Iso4127CountryCode(currency)))
+                    case _ => None
+                  }
+                  val messageError = (decoded.error_code, decoded.error_message) match {
+                    case (Some(code), Some(message)) => Some(MessageError(message, code))
+                    case _                           => None
+                  }
                   Right(
-                    MessageSendResponse(
+                    MessageResource(
                       accountSid = TwilioAccount.Sid(decoded.account_sid),
                       body = MessageBody(decoded.body),
                       dateCreated = decoded.date_created.flatMap(parseDate),
@@ -125,11 +131,11 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                         decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
                       numMedia = decoded.num_media.toInt,
                       numSegments = MessageNumSegments(decoded.num_segments.toInt),
-                      price = decoded.price.flatMap(parsePrice),
-                      priceUnit = decoded.price_unit.flatMap(parsePriceUnit),
+                      price = price,
                       sid = MessageSid(decoded.sid),
                       status = status,
-                      to = PhoneNumberE164(decoded.to)
+                      to = PhoneNumberE164(decoded.to),
+                      error = messageError
                     )
                   )
               }
@@ -163,16 +169,6 @@ private object MessageSendRequestExecutorImpl {
   private def parseDate(date: String): Option[Instant] = date match {
     case null => None
     case _    => Some(Instant.from(Formatter.dateTime.parse(date)))
-  }
-
-  private def parsePrice(price: String): Option[BigDecimal] = price match {
-    case null => None
-    case _    => Some(BigDecimal(price))
-  }
-
-  private def parsePriceUnit(priceUnit: String): Option[Iso4127CountryCode] = priceUnit match {
-    case null => None
-    case _    => Some(Iso4127CountryCode(priceUnit))
   }
 
   private def parseMessagingServiceSid(

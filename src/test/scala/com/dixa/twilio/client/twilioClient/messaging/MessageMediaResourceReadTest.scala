@@ -2,7 +2,10 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.impl.messaging.MediaResourceUrlFactory
-import com.dixa.twilio.client.messaging.{MessageResourceReadRequestExecutor, TwilioClientMessaging}
+import com.dixa.twilio.client.messaging.{
+  MessageMediaResourceReadRequestExecutor,
+  TwilioClientMessaging
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -18,12 +21,12 @@ import org.scalatest.matchers.should.Matchers
 
 import java.time._
 
-final class MessageResourceReadTest extends TwilioClientTest with Matchers {
+final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers {
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val messageSid   = MessageSid("MM9c8a124127702f0c7084b373cb06157a")
   private val sid          = MediaSid("ME9ec380c03268689d63e8fc5e97bba86e")
-  private val req = MessageResourceReadRequestExecutor.MessageResourceReadRequest(
+  private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest(
     messageSid = messageSid
   )
   private val path = MediaResourceUrlFactory.buildMediaResourcePath(
