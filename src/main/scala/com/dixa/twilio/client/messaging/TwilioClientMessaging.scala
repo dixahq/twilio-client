@@ -12,7 +12,7 @@ import scala.concurrent.Future
 
 trait TwilioClientMessaging {
 
-  val servicesRead: ServicesReadRequestExecutor
+  def servicesRead: ServicesReadRequestExecutor
 
   def serviceCreate(
       connSettings: TwilioConnectionSettings,
@@ -24,25 +24,25 @@ trait TwilioClientMessaging {
     * The create is only in context of messaging. So it takes an existing phone number and creates
     * it / adds it in a messaging service.
     */
-  val phoneNumberCreate: PhoneNumberCreateRequestExecutor
+  def phoneNumberCreate: PhoneNumberCreateRequestExecutor
 
   /** Delete a phone number from a messaging service.
     *
     * The delete is only in context of messaging. So it takes an existing phonenumber and delete it
     * / removes it from a messaging service.
     */
-  val phoneNumberDelete: PhoneNumberDeleteRequestExecutor
+  def phoneNumberDelete: PhoneNumberDeleteRequestExecutor
 
-  val messageSend: MessageSendRequestExecutor
+  def messageSend: MessageSendRequestExecutor
 
   /** Lists the media resources from a given account and message sid.
     */
-  val mediaResourceRead: MessageMediaResourceReadRequestExecutor
+  def mediaResourceRead: MessageMediaResourceReadRequestExecutor
 
   /** Returns a Source of messages from a given account, can be filtered based on to and/or from
     * phone number and sent date
     */
-  val messageResourceRead: MessageResourceReadRequestExecutor
+  def messageResourceRead: MessageResourceReadRequestExecutor
 }
 
 object TwilioClientMessaging {
