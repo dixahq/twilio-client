@@ -10,7 +10,7 @@ trait TwilioClientPhoneNumber {
     * The optional filter will be applied at Twilio side if set. See doc on
     * [[com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberFilter]] for details.
     */
-  val incomingPhoneNumberList: IncomingNumbersReadRequestExecutor
+  def incomingPhoneNumberList: IncomingNumbersReadRequestExecutor
 
   /** Lists active phone numbers for a particular Twilio subaccount as a Source.
     *
@@ -19,5 +19,5 @@ trait TwilioClientPhoneNumber {
     *
     * The optional filter will be applied at Twilio side if set.
     */
-  val activePhoneNumberList: ActiveNumbersReadRequestExecutor
+  def activePhoneNumberList: ActiveNumbersReadRequestExecutor
 }
