@@ -21,7 +21,7 @@ trait OutgoingCallerIdDeleteRequestExecutor
 object OutgoingCallerIdDeleteRequestExecutor {
   final case class OutgoingCallerIdDeleteRequest(
       accountSid: TwilioAccount.Sid,
-      outGoingCallerId: OutgoingCallerId
+      outGoingCallerId: OutgoingCallerId.Sid
   )
 
   sealed trait OutgoingCallerIdDeleteException extends RuntimeException
