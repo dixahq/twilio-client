@@ -2,7 +2,6 @@ package com.dixa.twilio.client.twilioClient.phonenumber
 
 import akka.NotUsed
 import akka.stream.scaladsl.{Sink, Source}
-import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
   IncomingNumbersReadException,
   IncomingNumbersReadRequest
@@ -21,7 +20,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 final class IncomingPhoneNumberListTest extends TwilioClientTest {
-  classOf[TwilioClientMessaging].getSimpleName when {
+  classOf[TwilioClientPhoneNumber].getSimpleName when {
 
     "asked to list incoming phone numbers" should {
 
