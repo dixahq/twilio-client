@@ -1,7 +1,6 @@
 package com.dixa.twilio.client.twilioClient.phonenumber
 
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.phonenumber.ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -16,7 +15,7 @@ import com.neovisionaries.i18n.CountryCode
 import org.scalatest.matchers.should.Matchers
 
 final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
-  classOf[TwilioClientMessaging].getSimpleName when {
+  classOf[TwilioClientPhoneNumber].getSimpleName when {
 
     "activePhoneNumberList" should {
       "safely lists a single number when filter applied" in {

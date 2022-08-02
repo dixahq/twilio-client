@@ -20,4 +20,20 @@ trait TwilioClientPhoneNumber {
     * The optional filter will be applied at Twilio side if set.
     */
   def activePhoneNumberList: ActiveNumbersReadRequestExecutor
+
+  /** Lists outgoing caller ID's for a particular Twilio subaccount as a Source.
+    *
+    * A Outgoing caller ID represents a single verified number that may be used as a caller ID when
+    * making outgoing calls
+    *
+    * The optional filter will be applied at Twilio side if set.
+    */
+  def outgoingCallerIdList: OutgoingCallerIdReadRequestExecutor
+
+  /** Deletes outgoing caller ID for a particular Twilio subaccount
+    *
+    * A Outgoing caller ID represents a single verified number that may be used as a caller ID when
+    * making outgoing calls
+    */
+  def outgoingCallerIdDelete: OutgoingCallerIdDeleteRequestExecutor
 }
