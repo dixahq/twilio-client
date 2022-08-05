@@ -13,7 +13,7 @@ val Version = new AnyRef {
   val Circe    = "0.14.2"
 
   // test
-  val ScalatestScalactic = "3.2.12"
+  val ScalatestScalactic = "3.2.13"
 }
 
 lazy val `twilio-client` = project
