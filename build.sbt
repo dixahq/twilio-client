@@ -47,7 +47,6 @@ lazy val `twilio-client` = project
         "utf8",
         "-Xlint",
         "-Xfatal-warnings",
-        "-language:higherKinds",
         "-target:jvm-1.8",
         "-Wconf:msg=discarding unmoored doc comment:s"
       ),
