@@ -6,7 +6,7 @@ import com.dixa.twilio.client.callback.RequestValidator.{
   ValidationStatus,
   XTwilioSignature
 }
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.AuthToken
 
 import java.nio.charset.StandardCharsets
 import java.util.Base64
@@ -20,7 +20,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
 
   override def validate(
       requestUrl: String,
-      authToken: TwilioAccount.AuthToken,
+      authToken: AuthToken,
       params: Map[String, String],
       xTwilioSignature: XTwilioSignature
   ): ValidationRequestStatus = {
@@ -34,7 +34,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
     *   `com.twilio.security.RequestValidator`
     */
   private def getValidationSignature(
-      authToken: TwilioAccount.AuthToken,
+      authToken: AuthToken,
       requestUrl: String,
       params: Map[String, String]
   ): Try[String] = {

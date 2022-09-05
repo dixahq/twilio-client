@@ -1,7 +1,7 @@
 package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 
 object TwilioTestConstants {
 
@@ -12,7 +12,7 @@ object TwilioTestConstants {
     TwilioEndpoint(baseHostName = "localhost", port = port),
     protocol = TwilioConnectionSettings.Protocol.Http,
     accountSid = TwilioAccount.Sid(testSid),
-    authToken = TwilioAccount.AuthToken(testAuthToken),
+    authToken = AuthToken.UnknownType(testAuthToken),
     parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
     timeouts = TwilioConnectionSettings.Timeouts.default
   )
