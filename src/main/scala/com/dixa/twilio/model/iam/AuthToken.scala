@@ -12,7 +12,11 @@ object AuthToken {
 
   def unapply(arg: AuthToken): Option[String] = Some(arg.asString)
 
-  final case class Primary(override val asString: String) extends AuthToken
+  sealed trait KnownType extends AuthToken
 
-  final case class Secondary(override val asString: String) extends AuthToken
+  final case class Primary(override val asString: String) extends KnownType
+
+  final case class Secondary(override val asString: String) extends KnownType
+
+  final case class UnknownType(override val asString: String) extends AuthToken
 }
