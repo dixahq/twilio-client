@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.callback
 
 import com.dixa.twilio.client.impl.callback.RequestValidatorImpl
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.AuthToken
 
 trait RequestValidator {
 
@@ -16,7 +16,7 @@ trait RequestValidator {
     */
   def validate(
       requestUrl: String,
-      authToken: TwilioAccount.AuthToken,
+      authToken: AuthToken,
       params: Map[String, String],
       xTwilioSignature: XTwilioSignature
   ): ValidationRequestStatus

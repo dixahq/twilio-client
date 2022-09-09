@@ -14,7 +14,7 @@ import com.dixa.twilio.client.{
   TwilioConnectionSettings,
   TwilioTestConstants
 }
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalamock.scalatest.AsyncMockFactory
@@ -261,7 +261,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
       "NoSuchMethodException" in {
         val ownerAccountSid = TwilioAccount.Sid("TestOwnerAccountSid")
         val accountSid      = TwilioAccount.Sid("TestAccountSid")
-        val accountToken    = TwilioAccount.AuthToken("TestAuthToken")
+        val accountToken    = AuthToken.Primary("TestAuthToken")
         val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
         val account = TwilioAccount(
           name = TwilioAccount.Name("TestAccount"),

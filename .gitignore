@@ -153,3 +153,4 @@ project/plugins/project/
 
 .idea/*
 .bsp/*
+*.orig

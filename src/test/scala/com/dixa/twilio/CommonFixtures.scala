@@ -1,6 +1,6 @@
 package com.dixa.twilio
 
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 
 import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 
@@ -16,7 +16,7 @@ object CommonFixtures {
       sid = accountSid1,
       status = TwilioAccount.Status.Active,
       ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4a56fa29e23a"),
-      authToken = TwilioAccount.AuthToken("AVerySecretValueThatShouldBeXXXX"),
+      authToken = AuthToken.Primary("AVerySecretValueThatShouldBeXXXX"),
       accountType = TwilioAccount.Type.Full,
       timeCreated = Instant.from(
         OffsetDateTime.of(

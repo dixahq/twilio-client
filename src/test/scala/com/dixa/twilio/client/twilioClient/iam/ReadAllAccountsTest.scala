@@ -6,7 +6,7 @@ import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.ReadAllAccounts
 import com.dixa.twilio.client.iam.{ReadAllAccountsRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -67,7 +67,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
               sid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
               status = TwilioAccount.Status.Active,
               ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
-              authToken = TwilioAccount.AuthToken("go4oYeeShoozahb1ohdahbee6ahtevai"),
+              authToken = AuthToken.Primary("go4oYeeShoozahb1ohdahbee6ahtevai"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(
                 OffsetDateTime.of(
@@ -89,7 +89,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
               sid = TwilioAccount.Sid("AC3183a741f1bab4764dac2492c8d1fd89"),
               status = TwilioAccount.Status.Active,
               ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
-              authToken = TwilioAccount.AuthToken("shoos9reiWohzew2HoP7fei3Hoo2lai7"),
+              authToken = AuthToken.Primary("shoos9reiWohzew2HoP7fei3Hoo2lai7"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(
                 OffsetDateTime.of(
@@ -111,7 +111,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
               sid = TwilioAccount.Sid("AC4e8db239dc8664688a791d7f9cf45740"),
               status = TwilioAccount.Status.Active,
               ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
-              authToken = TwilioAccount.AuthToken("ith0Zaeghie0phoshiet5eeteengaina"),
+              authToken = AuthToken.Primary("ith0Zaeghie0phoshiet5eeteengaina"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(
                 OffsetDateTime.of(
