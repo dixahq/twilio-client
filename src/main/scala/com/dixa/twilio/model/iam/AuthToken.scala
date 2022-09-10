@@ -1,4 +1,5 @@
 package com.dixa.twilio.model.iam
+import java.time.Instant
 
 /** Represent a AuthToken
   *
@@ -27,11 +28,40 @@ object AuthToken {
 
   def unapply(arg: AuthToken): Option[String] = Some(arg.asString)
 
+  /** Represent the known types of auth tokens in twilio.
+    *
+    * See [[AuthToken]] for details.
+    */
   sealed trait KnownType extends AuthToken
 
+  /** Represent a Primary auth token.
+    *
+    * See [[AuthToken]] for details.
+    */
   final case class Primary(override val asString: String) extends KnownType
 
+  /** Represent a Secondary auth token
+    *
+    * See [[AuthToken]] for details.
+    */
   final case class Secondary(override val asString: String) extends KnownType
 
+  /** Represent a auth token in cases where the type is unknown.
+    *
+    * See [[AuthToken]] for details.
+    */
   final case class UnknownType(override val asString: String) extends AuthToken
+
+  /** Metadata about a AuthToken
+    *
+    * Twilio often combine a AuthToken with some metadata, and this class represent that metadata.
+    */
+  final case class MetaData(
+      accountSid: TwilioAccount.Sid,
+      createdTime: Instant,
+      updatedTime: Instant
+  )
+
+  /** Wrapper class that combines a AuthToken instance with it's metadata. */
+  final case class AuthTokenAndMetaData[A <: AuthToken](authToken: A, metaData: MetaData)
 }

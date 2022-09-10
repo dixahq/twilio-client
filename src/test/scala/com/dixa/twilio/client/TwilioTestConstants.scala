@@ -3,16 +3,21 @@ package com.dixa.twilio.client
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 
+import java.time.Instant
+
 object TwilioTestConstants {
 
-  val testSid       = "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-  val testAuthToken = "testPassword"
+  val createdTime: Instant = Instant.ofEpochSecond(1662836497)
+  val updatedTime: Instant = Instant.ofEpochSecond(1662834697)
+
+  val accountSid: TwilioAccount.Sid    = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+  val authToken: AuthToken.UnknownType = AuthToken.UnknownType("testPassword")
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
     TwilioEndpoint(baseHostName = "localhost", port = port),
     protocol = TwilioConnectionSettings.Protocol.Http,
-    accountSid = TwilioAccount.Sid(testSid),
-    authToken = AuthToken.UnknownType(testAuthToken),
+    accountSid = accountSid,
+    authToken = authToken,
     parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
     timeouts = TwilioConnectionSettings.Timeouts.default
   )
