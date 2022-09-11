@@ -27,6 +27,18 @@ object SecondaryAuthTokenCreateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with SecondaryAuthTokenCreateException
+
+    /** Exceptions for cases where creating secondary auth tokens via API is not enabled on account.
+      *
+      * In such cases Twilio will return a 404 status. You can contact Twilio support to get them to
+      * activate the API call.
+      */
+    final case class ApiCallNotEnabledOnAccountException()
+        extends RuntimeException(
+          "API for creating secondary auth token is not enabled on this account. Contact Twilio to get it enabled."
+        )
+        with SecondaryAuthTokenCreateException
+
     final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
@@ -35,5 +47,9 @@ object SecondaryAuthTokenCreateRequestExecutor {
           cause.orNull
         )
         with SecondaryAuthTokenCreateException
+    object UnspecifiedError {
+      def apply(msg: String): UnspecifiedError  = new UnspecifiedError(Some(msg), None)
+      def apply(t: Throwable): UnspecifiedError = new UnspecifiedError(None, Some(t))
+    }
   }
 }

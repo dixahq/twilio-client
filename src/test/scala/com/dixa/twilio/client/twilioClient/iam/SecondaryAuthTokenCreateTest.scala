@@ -54,6 +54,33 @@ final class SecondaryAuthTokenCreateTest extends TwilioClientTest {
           assert(result === expected)
         }
       }
+
+      "Return an API error in case of 404" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(404)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                  """{"code": 20404, "message": "The requested resource /AuthTokens/Secondary was not found", "more_info": "https://www.twilio.com/docs/errors/20404", "status": 404}"""
+                )
+            )
+        )
+
+        val expected = Left(SecondaryAuthTokenCreateException.ApiCallNotEnabledOnAccountException())
+
+        val resultFut: Future[
+          Either[SecondaryAuthTokenCreateException, AuthToken.AuthTokenAndMetaData[
+            AuthToken.Secondary
+          ]]
+        ] =
+          instance.run(connSettings, createRequest)
+        resultFut.map { resultEither => assert(resultEither === expected) }
+      }
     }
   }
 

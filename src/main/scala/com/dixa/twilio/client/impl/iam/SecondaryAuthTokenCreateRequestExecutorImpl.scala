@@ -9,7 +9,7 @@ import com.dixa.twilio.client.iam.SecondaryAuthTokenCreateRequestExecutor.{
   SecondaryAuthTokenCreateRequest
 }
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.AuthToken
 import io.circe.generic.auto._
@@ -58,6 +58,30 @@ private[iam] final class SecondaryAuthTokenCreateRequestExecutorImpl()(
     httpResponse.status match {
       case StatusCodes.OK =>
         parseEntityAs[SecondaryAuthTokenCreateRespJsonRep](entity).map(_.toModel)
+      case StatusCodes.NotFound => buildResultForNotFoundResponse(entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
+
+  private def buildResultForNotFoundResponse(
+      entity: HttpEntityString
+  ) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+      .map(e => SecondaryAuthTokenCreateException.UnspecifiedError(e))
+      .flatMap { decoded =>
+        decoded.code match {
+          case 20404L =>
+            // Twilio returns this if you do not have the API enabled, and as there is no
+            // variables in the path, it should be safe to assume that it's the ony thing
+            // this code can mean for this API call.
+            Left(SecondaryAuthTokenCreateException.ApiCallNotEnabledOnAccountException())
+          case other =>
+            Left(
+              SecondaryAuthTokenCreateException.UnspecifiedError(
+                s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                  s"$other represent. Full error entity from Twilio: $entity"
+              )
+            )
+        }
+      }
+  }
 }
