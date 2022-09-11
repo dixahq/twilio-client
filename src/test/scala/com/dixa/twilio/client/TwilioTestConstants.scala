@@ -7,8 +7,8 @@ import java.time.Instant
 
 object TwilioTestConstants {
 
-  val createdTime: Instant = Instant.ofEpochSecond(1662836497)
-  val updatedTime: Instant = Instant.ofEpochSecond(1662834697)
+  val createdTime: Instant = Instant.ofEpochSecond(1661836497) // 2022-08-30T05:14:57Z
+  val updatedTime: Instant = Instant.ofEpochSecond(1662834697) // 2022-09-10T18:31:37Z
 
   val accountSid: TwilioAccount.Sid    = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   val authToken: AuthToken.UnknownType = AuthToken.UnknownType("testPassword")

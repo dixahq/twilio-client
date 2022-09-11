@@ -19,4 +19,15 @@ trait TwilioClientIam {
     *   make multiple request behind the scene.
     */
   def accountRead: ReadAllAccountsRequestExecutor
+
+  /** Create a secondary auth token.
+    *
+    * Note that you do not provide any account sid, so the secondary token will be created on the
+    * account belonging to the used credentials. Unlike most other request, this makes it impossible
+    * to use root account credentials, when doing this on a sub account.
+    *
+    * @return
+    *   SecondaryAuthTokenCreateRequestExecutor
+    */
+  def secondaryAuthTokenCreate: SecondaryAuthTokenCreateRequestExecutor
 }

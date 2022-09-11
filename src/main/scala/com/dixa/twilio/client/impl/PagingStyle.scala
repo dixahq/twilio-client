@@ -10,6 +10,9 @@ private[impl] sealed abstract class PagingStyle extends EnumEntry
 private[impl] object PagingStyle extends Enum[PagingStyle] {
   override val values: immutable.IndexedSeq[PagingStyle] = findValues
 
+  /** Paging is not supported or expected in this API. */
+  case object NoPaging extends PagingStyle
+
   /** Paging is provided by having the paging attributes directly in the root json returned
     *
     * Example:

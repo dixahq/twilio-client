@@ -5,6 +5,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.iam.{
   AccountFetchRequestExecutor,
   ReadAllAccountsRequestExecutor,
+  SecondaryAuthTokenCreateRequestExecutor,
   TwilioClientIam
 }
 
@@ -20,4 +21,7 @@ private[impl] final class TwilioClientIamImpl()(
 
   override val accountRead: ReadAllAccountsRequestExecutor =
     new ReadAllAccountsRequestExecutorImpl()
+
+  override def secondaryAuthTokenCreate: SecondaryAuthTokenCreateRequestExecutor =
+    new SecondaryAuthTokenCreateRequestExecutorImpl()
 }

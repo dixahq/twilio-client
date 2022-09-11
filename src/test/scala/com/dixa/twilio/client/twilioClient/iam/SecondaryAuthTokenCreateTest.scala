@@ -1,8 +1,11 @@
 package com.dixa.twilio.client.twilioClient.iam
 
 import com.dixa.twilio.CommonFixtures
-import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.{AccountFetchException, AccountFetchRequest}
-import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
+import com.dixa.twilio.client.iam.SecondaryAuthTokenCreateRequestExecutor.{
+  SecondaryAuthTokenCreateException,
+  SecondaryAuthTokenCreateRequest
+}
+import com.dixa.twilio.client.iam.{SecondaryAuthTokenCreateRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
@@ -30,23 +33,33 @@ final class SecondaryAuthTokenCreateTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(SecondaryAuthTokenCreateResponse(
-          TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-
-        ))
+        val expected =
+          AuthToken.AuthTokenAndMetaData[AuthToken.Secondary](
+            AuthToken.Secondary("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+            AuthToken.MetaData(
+              TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+              TwilioTestConstants.createdTime,
+              TwilioTestConstants.updatedTime
+            )
+          )
 
         val resultFut: Future[
-          Either[SecondaryTokenCreateException, ]
+          Either[SecondaryAuthTokenCreateException, AuthToken.AuthTokenAndMetaData[
+            AuthToken.Secondary
+          ]]
         ] =
-          instance.run(connSettings, fetchRequest)
-        resultFut.map(result => assert(result === expected))
+          instance.run(connSettings, createRequest)
+        resultFut.map { resultEither =>
+          val result = resultEither.toTry.get
+          assert(result === expected)
+        }
       }
     }
   }
 
   // noinspection TypeAnnotation
   final class Fixture extends CommonFixtures.AccountSid {
-    val fetchRequest = SecondaryAuthTokenCreateRequest()
+    val createRequest = SecondaryAuthTokenCreateRequest()
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
@@ -63,9 +76,9 @@ final class SecondaryAuthTokenCreateTest extends TwilioClientTest {
 
   private def twilioResponse1 =
     """{
-      |  "account_sid": "ACXXXXXXXXXACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-      |  "date_created": "2015-07-31T04:00:00Z",
-      |  "date_updated": "2015-07-31T04:00:00Z",
+      |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      |  "date_created": "2022-08-30T05:14:57Z",
+      |  "date_updated": "2022-09-10T18:31:37Z",
       |  "secondary_auth_token": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
       |  "url": "https://accounts.twilio.com/v1/AuthTokens/Secondary"
       |}
