@@ -27,7 +27,7 @@ final class SecondaryAuthTokenCreateTest extends TwilioClientTest {
           wireMockBuilderExpectedTwilioRequest
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(201) // this api returns 201 on success.
                 .withHeader("Content-Type", "application/json")
                 .withBody(twilioResponse1)
             )

@@ -56,7 +56,7 @@ private[iam] final class SecondaryAuthTokenCreateRequestExecutorImpl()(
     AuthToken.Secondary
   ]] =
     httpResponse.status match {
-      case StatusCodes.OK =>
+      case StatusCodes.Created =>
         parseEntityAs[SecondaryAuthTokenCreateRespJsonRep](entity).map(_.toModel)
       case StatusCodes.NotFound => buildResultForNotFoundResponse(entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
