@@ -15,5 +15,5 @@ trait TwilioClientIam {
     * account belonging to the used credentials. Unlike most other request, this makes it impossible
     * to use root account credentials, when doing this on a sub account.
     */
-  def secondaryAuthTokenCreate: SecondaryAuthTokenCreateRequestExecutor
+  def authTokenSecondaryCreate: AuthTokenSecondaryCreateRequestExecutor
 }

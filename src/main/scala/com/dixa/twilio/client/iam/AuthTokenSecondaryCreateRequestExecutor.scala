@@ -3,30 +3,30 @@ package com.dixa.twilio.client.iam
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.AuthToken
 
-trait SecondaryAuthTokenCreateRequestExecutor
+trait AuthTokenSecondaryCreateRequestExecutor
     extends SingleRequestExecutor[
-      SecondaryAuthTokenCreateRequestExecutor.SecondaryAuthTokenCreateRequest,
-      SecondaryAuthTokenCreateRequestExecutor.SecondaryAuthTokenCreateException,
+      AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateRequest,
+      AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateException,
       AuthToken.AuthTokenAndMetaData[AuthToken.Secondary]
     ] {
 
-  import SecondaryAuthTokenCreateRequestExecutor._
+  import AuthTokenSecondaryCreateRequestExecutor._
 
-  override final protected type ApiExceptionWrapper = SecondaryAuthTokenCreateException.Api
+  override final protected type ApiExceptionWrapper = AuthTokenSecondaryCreateException.Api
 
   override final protected type UnspecifiedException =
-    SecondaryAuthTokenCreateException.UnspecifiedError
+    AuthTokenSecondaryCreateException.UnspecifiedError
 }
 
-object SecondaryAuthTokenCreateRequestExecutor {
+object AuthTokenSecondaryCreateRequestExecutor {
 
-  final case class SecondaryAuthTokenCreateRequest()
+  final case class AuthTokenSecondaryCreateRequest()
 
-  sealed trait SecondaryAuthTokenCreateException extends RuntimeException
-  object SecondaryAuthTokenCreateException {
+  sealed trait AuthTokenSecondaryCreateException extends RuntimeException
+  object AuthTokenSecondaryCreateException {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
-        with SecondaryAuthTokenCreateException
+        with AuthTokenSecondaryCreateException
 
     /** Exceptions for cases where creating secondary auth tokens via API is not enabled on account.
       *
@@ -37,7 +37,7 @@ object SecondaryAuthTokenCreateRequestExecutor {
         extends RuntimeException(
           "API for creating secondary auth token is not enabled on this account. Contact Twilio to get it enabled."
         )
-        with SecondaryAuthTokenCreateException
+        with AuthTokenSecondaryCreateException
 
     final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
@@ -46,7 +46,7 @@ object SecondaryAuthTokenCreateRequestExecutor {
           ),
           cause.orNull
         )
-        with SecondaryAuthTokenCreateException
+        with AuthTokenSecondaryCreateException
     object UnspecifiedError {
       def apply(msg: String): UnspecifiedError  = new UnspecifiedError(Some(msg), None)
       def apply(t: Throwable): UnspecifiedError = new UnspecifiedError(None, Some(t))

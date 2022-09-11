@@ -3,10 +3,10 @@ package com.dixa.twilio.client.impl.iam
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.iam.SecondaryAuthTokenCreateRequestExecutor
-import com.dixa.twilio.client.iam.SecondaryAuthTokenCreateRequestExecutor.{
-  SecondaryAuthTokenCreateException,
-  SecondaryAuthTokenCreateRequest
+import com.dixa.twilio.client.iam.AuthTokenSecondaryCreateRequestExecutor
+import com.dixa.twilio.client.iam.AuthTokenSecondaryCreateRequestExecutor.{
+  AuthTokenSecondaryCreateException,
+  AuthTokenSecondaryCreateRequest
 }
 import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
@@ -16,16 +16,16 @@ import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 
-private[iam] final class SecondaryAuthTokenCreateRequestExecutorImpl()(
+private[iam] final class AuthTokenSecondaryCreateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends SecondaryAuthTokenCreateRequestExecutor {
+) extends AuthTokenSecondaryCreateRequestExecutor {
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: SecondaryAuthTokenCreateRequest
-  ): Either[SecondaryAuthTokenCreateException, HttpRequest] = {
+      req: AuthTokenSecondaryCreateRequest
+  ): Either[AuthTokenSecondaryCreateException, HttpRequest] = {
     Right(
       TwilioPath(
         ApiSubDomain.Accounts,
@@ -38,21 +38,21 @@ private[iam] final class SecondaryAuthTokenCreateRequestExecutorImpl()(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): SecondaryAuthTokenCreateException.Api =
-    SecondaryAuthTokenCreateException.Api(apiException)
+  ): AuthTokenSecondaryCreateException.Api =
+    AuthTokenSecondaryCreateException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Exception]
-  ): SecondaryAuthTokenCreateRequestExecutor.SecondaryAuthTokenCreateException.UnspecifiedError =
-    SecondaryAuthTokenCreateException.UnspecifiedError(msg, cause)
+  ): AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateException.UnspecifiedError =
+    AuthTokenSecondaryCreateException.UnspecifiedError(msg, cause)
 
   override protected def parseHttpResponse(
-      request: SecondaryAuthTokenCreateRequest,
+      request: AuthTokenSecondaryCreateRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[SecondaryAuthTokenCreateException, AuthToken.AuthTokenAndMetaData[
+  ): Either[AuthTokenSecondaryCreateException, AuthToken.AuthTokenAndMetaData[
     AuthToken.Secondary
   ]] =
     httpResponse.status match {
@@ -66,17 +66,17 @@ private[iam] final class SecondaryAuthTokenCreateRequestExecutorImpl()(
       entity: HttpEntityString
   ) = {
     parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
-      .map(e => SecondaryAuthTokenCreateException.UnspecifiedError(e))
+      .map(e => AuthTokenSecondaryCreateException.UnspecifiedError(e))
       .flatMap { decoded =>
         decoded.code match {
           case 20404L =>
             // Twilio returns this if you do not have the API enabled, and as there is no
             // variables in the path, it should be safe to assume that it's the ony thing
             // this code can mean for this API call.
-            Left(SecondaryAuthTokenCreateException.ApiCallNotEnabledOnAccountException())
+            Left(AuthTokenSecondaryCreateException.ApiCallNotEnabledOnAccountException())
           case other =>
             Left(
-              SecondaryAuthTokenCreateException.UnspecifiedError(
+              AuthTokenSecondaryCreateException.UnspecifiedError(
                 s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
                   s"$other represent. Full error entity from Twilio: $entity"
               )
