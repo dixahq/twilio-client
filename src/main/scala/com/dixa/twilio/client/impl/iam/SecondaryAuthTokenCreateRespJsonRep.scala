@@ -12,13 +12,13 @@ private[iam] final case class SecondaryAuthTokenCreateRespJsonRep(
 ) {
 
   def toModel: AuthToken.AuthTokenAndMetaData[AuthToken.Secondary] = {
-    val a = AuthToken.Secondary(secondary_auth_token)
-    val m = AuthToken.MetaData(
+    val token = AuthToken.Secondary(secondary_auth_token)
+    val metadata = AuthToken.MetaData(
       TwilioAccount.Sid(account_sid),
       Instant.from(Formatter.newApiDateTimeFormatter.parse(date_created)),
       Instant.from(Formatter.newApiDateTimeFormatter.parse(date_updated))
     )
-    AuthToken.AuthTokenAndMetaData(a, m)
+    AuthToken.AuthTokenAndMetaData(token, metadata)
   }
 
   override def toString =
