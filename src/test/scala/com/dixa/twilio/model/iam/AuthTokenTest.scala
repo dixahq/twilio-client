@@ -1,4 +1,5 @@
 package com.dixa.twilio.model.iam
+import com.dixa.twilio.client.TwilioTestConstants
 import org.scalatest.wordspec.AnyWordSpec
 
 final class AuthTokenTest extends AnyWordSpec {
@@ -81,6 +82,30 @@ final class AuthTokenTest extends AnyWordSpec {
     "hide the actual value in its toString when it is a UnknownType instance" in {
       val unknownType = AuthToken.UnknownType("secondaryToken")
       assert(unknownType.toString === "AuthToken.UnknownType(***)")
+    }
+
+    "have inner type representing meta information" in {
+      val m: AuthToken.MetaData = AuthToken.MetaData(
+        accountSid = TwilioTestConstants.accountSid,
+        createdTime = TwilioTestConstants.createdTime,
+        updatedTime = TwilioTestConstants.updatedTime
+      )
+      assert(m.accountSid === TwilioTestConstants.accountSid)
+      assert(m.createdTime === TwilioTestConstants.createdTime)
+      assert(m.updatedTime === TwilioTestConstants.updatedTime)
+    }
+
+    "have a wrapper class containing an auth token and it's metadata" in {
+      val t: AuthToken.Primary = AuthToken.Primary("token")
+      val m: AuthToken.MetaData = AuthToken.MetaData(
+        accountSid = TwilioTestConstants.accountSid,
+        createdTime = TwilioTestConstants.createdTime,
+        updatedTime = TwilioTestConstants.updatedTime
+      )
+      val w: AuthToken.AuthTokenAndMetaData[AuthToken.Primary] =
+        AuthToken.AuthTokenAndMetaData(t, m)
+      assert(w.authToken === t)
+      assert(w.metaData === m)
     }
   }
 }
