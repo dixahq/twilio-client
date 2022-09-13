@@ -4,13 +4,13 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{
   ContentTypes,
   HttpEntity,
+  HttpMethod,
   HttpMethods,
   HttpRequest,
   HttpResponse,
   StatusCodes
 }
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.{
@@ -21,6 +21,7 @@ import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Call
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
+
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 
@@ -29,6 +30,10 @@ private[client] class CallUpdateRequestExecutorImpl()(
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
 ) extends CallUpdateRequestExecutor {
+
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+  override protected def method: HttpMethod = HttpMethods.POST
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
@@ -42,15 +47,10 @@ private[client] class CallUpdateRequestExecutorImpl()(
       postParamBuilder.deleteCharAt(postParamLastCharIndex)
     val postParam = postParamBuilder.toString()
 
-    Right(
-      TwilioPath(
-        ApiSubDomain.Api,
-        HttpMethods.POST,
-        s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json"
-      )
-        .createHttpRequest(connSettings)
-        .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
-    )
+    createHttpRequestFor(
+      s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json",
+      connSettings
+    ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam)))
   }
 
   override protected def mapApiException(apiException: ApiException): CallUpdateException.Api =
@@ -58,7 +58,7 @@ private[client] class CallUpdateRequestExecutorImpl()(
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): CallUpdateException.Unspecified = CallUpdateException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(

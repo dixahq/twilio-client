@@ -3,14 +3,13 @@ package com.dixa.twilio.client.impl.messaging
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import ServiceCreateRequest.createPostParamString
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
-import com.dixa.twilio.model.messaging.TwilioMessagingService
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.impl.messaging.ServiceCreateRequest.createPostParamString
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
-import org.scalactic.TypeCheckedTripleEquals._
+import com.dixa.twilio.model.messaging.TwilioMessagingService
 import io.circe.generic.auto._
+import org.scalactic.TypeCheckedTripleEquals._
 
 import java.net.URLEncoder
 import scala.concurrent.{ExecutionContext, Future}
@@ -26,12 +25,13 @@ private[impl] final class ServiceCreateRequest()(
       req: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
     val postParams = createPostParamString(req)
-    val httpReq = TwilioPath(
-      ApiSubDomain.Messaging,
-      HttpMethods.POST,
-      "/v1/Services"
-    )
-      .createHttpRequest(connSettings)
+    val httpReq = TwilioUri
+      .createPathUnsafe(
+        ApiSubDomain.Messaging,
+        HttpMethods.POST,
+        "/v1/Services"
+      )
+      .createHttpRequestUnsafe(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParams))
     http.singleRequest(httpReq).flatMap { httpResp =>
       if (httpResp.status !== StatusCodes.Created) {

@@ -24,16 +24,13 @@ object ServicesReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ServicesReadException
-    final case class Unspecified(msg: Option[String], cause: Option[Exception])
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to read services"
           ),
           cause.orNull
         )
-        with ServicesReadException {
-      def this(msg: String) = this(Some(msg), None)
-      def this(cause: Exception) = this(None, Some(cause))
-    }
+        with ServicesReadException
   }
 }

@@ -34,7 +34,7 @@ object OutgoingCallerIdReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with OutgoingCallerIdReadException
-    final case class Unspecified(msg: Option[String], cause: Option[Exception])
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to read incoming numbers"

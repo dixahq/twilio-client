@@ -1,10 +1,9 @@
 package com.dixa.twilio.client.impl.phonenumber
 
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
   IncomingNumbersReadException,
@@ -23,6 +22,10 @@ private[impl] class IncomingNumbersReadRequestExecutorImpl(
     override protected val executionContext: ExecutionContext
 ) extends IncomingNumbersReadRequestExecutor {
 
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+  override protected def method: HttpMethod = HttpMethods.GET
+
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest
@@ -35,10 +38,7 @@ private[impl] class IncomingNumbersReadRequestExecutorImpl(
       .getOrElse("")
     val pathAsString =
       s"/2010-04-01/Accounts/${connSettings.accountSid}/IncomingPhoneNumbers.json?PageSize=1000$filterQueryParam"
-    Right(
-      TwilioPath(ApiSubDomain.Api, HttpMethods.GET, pathAsString)
-        .createHttpRequest(connSettings)
-    )
+    createHttpRequestFor(pathAsString, connSettings)
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
@@ -46,7 +46,7 @@ private[impl] class IncomingNumbersReadRequestExecutorImpl(
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): UnspecifiedException = IncomingNumbersReadException.Unspecified(msg, cause)
 
   private case class OuterJsonRep(incoming_phone_numbers: List[IncomingPhoneNumberJsonRep])
@@ -68,26 +68,5 @@ private[impl] class IncomingNumbersReadRequestExecutorImpl(
           Right(jsonRep.toModel)
         }
     }
-  }
-
-  private case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
-
-  override protected def nextPageHttpRequestBuilder(
-      connectionSettings: TwilioConnectionSettings,
-      entityString: HttpEntityString
-  ): Either[UnspecifiedException, Option[HttpRequest]] = {
-    entityString
-      .parse[TwilioResponseNextPageJsonRep]()
-      .left
-      .map { ex =>
-        createUnspecifiedException(Some(ex.getMessage), Some(ex.cause))
-      }
-      .map { response =>
-        response.next_page_uri.map { nextPage =>
-          TwilioUri
-            .autoDetect(nextPage, HttpMethods.GET, ApiSubDomain.Api)
-            .createHttpRequest(connectionSettings)
-        }
-      }
   }
 }

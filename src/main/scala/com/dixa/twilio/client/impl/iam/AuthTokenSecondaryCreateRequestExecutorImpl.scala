@@ -1,14 +1,13 @@
 package com.dixa.twilio.client.impl.iam
 
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.iam.AuthTokenSecondaryCreateRequestExecutor
 import com.dixa.twilio.client.iam.AuthTokenSecondaryCreateRequestExecutor.{
   AuthTokenSecondaryCreateException,
   AuthTokenSecondaryCreateRequest
 }
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.AuthToken
@@ -22,19 +21,15 @@ private[iam] final class AuthTokenSecondaryCreateRequestExecutorImpl()(
     override protected val executionContext: ExecutionContext
 ) extends AuthTokenSecondaryCreateRequestExecutor {
 
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Accounts
+
+  override protected def method: HttpMethod = HttpMethods.POST
+
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: AuthTokenSecondaryCreateRequest
-  ): Either[AuthTokenSecondaryCreateException, HttpRequest] = {
-    Right(
-      TwilioPath(
-        ApiSubDomain.Accounts,
-        HttpMethods.POST,
-        s"/v1/AuthTokens/Secondary"
-      )
-        .createHttpRequest(connSettings)
-    )
-  }
+  ): Either[AuthTokenSecondaryCreateException, HttpRequest] =
+    createHttpRequestFor(s"/v1/AuthTokens/Secondary", connSettings)
 
   override protected def mapApiException(
       apiException: ApiException
@@ -43,7 +38,7 @@ private[iam] final class AuthTokenSecondaryCreateRequestExecutorImpl()(
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateException.UnspecifiedError =
     AuthTokenSecondaryCreateException.UnspecifiedError(msg, cause)
 

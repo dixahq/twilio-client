@@ -45,7 +45,7 @@ private[impl] object TwilioPagingFlow {
     Source.fromGraph(GraphDSL.create() { implicit builder: GraphDSL.Builder[NotUsed] =>
       import GraphDSL.Implicits._
 
-      val starter = Source.single(initPath.createHttpRequest(connSettings))
+      val starter = Source.single(initPath.createHttpRequestUnsafe(connSettings))
 
       val httpReqMerge  = builder.add(Merge[HttpRequest](2))
       val httpReqTupler = Flow[HttpRequest].map((_, NotUsed))
@@ -77,7 +77,7 @@ private[impl] object TwilioPagingFlow {
         )
 
       val nextPageHttpRequestBuild =
-        builder.add(Flow[TwilioUri].map(_.createHttpRequest(connSettings)))
+        builder.add(Flow[TwilioUri].map(_.createHttpRequestUnsafe(connSettings)))
 
       //    val httpRespBroadCast = builder.add(Broadcast[])
       // format: off
@@ -102,8 +102,6 @@ private[impl] object TwilioPagingFlow {
 //    "next_page_url": null,
 //    "key": "services"
 //  }
-  private final case class MetaJsonRep(next_page_url: Option[String])
-  private final case class MetaRootJsonResp(meta: MetaJsonRep)
 
   private def extractNextUrlPathFromHttpEntity(
       in: HttpEntityString,
@@ -116,7 +114,7 @@ private[impl] object TwilioPagingFlow {
       case PagingStyle.MetaObject =>
         in.parse[MetaRootJsonResp]().toTry.get.meta.next_page_url
     }
-    optionalUri.map(s => TwilioUri.autoDetect(s, HttpMethods.GET, apiSubDomain))
+    optionalUri.map(s => TwilioUri.autoDetectUnsafe(s, HttpMethods.GET, apiSubDomain))
   }
 
 }

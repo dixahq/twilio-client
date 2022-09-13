@@ -2,15 +2,9 @@ package com.dixa.twilio.client.impl.phonenumber
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  HttpEntityString,
-  TwilioResponseNextPageJsonRep,
-  TwilioUri
-}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor.{
   OutgoingCallerIdReadException,
@@ -50,6 +44,10 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
     }
   }
 
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+  override protected def method: HttpMethod = HttpMethods.GET
+
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequest
@@ -71,12 +69,9 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
       )
     }
 
-    Right(
-      TwilioPath(
-        ApiSubDomain.Api,
-        HttpMethods.GET,
-        s"/2010-04-01/Accounts/${req.accountSid}/OutgoingCallerIds.json?${query.toString}"
-      ).createHttpRequest(connSettings)
+    createHttpRequestFor(
+      s"/2010-04-01/Accounts/${req.accountSid}/OutgoingCallerIds.json?${query.toString}",
+      connSettings
     )
   }
 
@@ -86,27 +81,10 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): OutgoingCallerIdReadException.Unspecified =
     OutgoingCallerIdReadException.Unspecified(msg, cause)
 
   private case class OuterJsonRep(outgoing_caller_ids: List[OutgoingCallerIdJsonRep])
 
-  override protected def nextPageHttpRequestBuilder(
-      connectionSettings: TwilioConnectionSettings,
-      entityString: HttpEntityString
-  ): Either[OutgoingCallerIdReadException, Option[HttpRequest]] =
-    entityString
-      .parse[TwilioResponseNextPageJsonRep]()
-      .left
-      .map { ex =>
-        createUnspecifiedException(Some(ex.getMessage), Some(ex.cause))
-      }
-      .map { response =>
-        response.next_page_uri.map { nextPage =>
-          TwilioUri
-            .autoDetect(nextPage, HttpMethods.GET, ApiSubDomain.Api)
-            .createHttpRequest(connectionSettings)
-        }
-      }
 }
