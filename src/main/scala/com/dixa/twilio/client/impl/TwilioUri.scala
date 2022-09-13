@@ -102,9 +102,9 @@ private[client] object TwilioUri {
   }
 
   def createUrl(
+      subDomain: ApiSubDomain,
       method: HttpMethod,
       uri: Uri,
-      subDomain: ApiSubDomain
   ): Either[TwilioUrlExecption, TwilioUrl] = {
     if (!uri.isAbsolute)
       Left(TwilioUrlMustBeAbsoluteException(uri))
@@ -146,7 +146,7 @@ private[client] object TwilioUri {
       methods: HttpMethod,
       fallbackSubDomain: ApiSubDomain
   ): Either[TwilioUriException, TwilioUri] = {
-    if (urlOrPath.startsWith("http")) createUrl(methods, urlOrPath, fallbackSubDomain)
+    if (urlOrPath.startsWith("http")) createUrl(fallbackSubDomain, methods, urlOrPath)
     else if (urlOrPath.startsWith("/")) createPath(fallbackSubDomain, methods, urlOrPath)
     else createPath(fallbackSubDomain, methods, s"/$urlOrPath")
   }
