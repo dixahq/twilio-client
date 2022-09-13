@@ -4,13 +4,13 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{
   ContentTypes,
   HttpEntity,
+  HttpMethod,
   HttpMethods,
   HttpRequest,
   HttpResponse,
   StatusCodes
 }
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
@@ -32,20 +32,17 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
 
   import PhoneNumberCreateRequestExecutorImpl._
 
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
+
+  override protected def method: HttpMethod = HttpMethods.POST
+
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberCreateRequest
   ): Either[PhoneNumberCreateException, HttpRequest] = {
     val postParam = s"PhoneNumberSid=${req.phoneNumberSid}"
-    Right(
-      TwilioPath(
-        ApiSubDomain.Messaging,
-        HttpMethods.POST,
-        s"/v1/Services/${req.serviceSid}/PhoneNumbers"
-      )
-        .createHttpRequest(connSettings)
-        .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam))
-    )
+    createHttpRequestFor(s"/v1/Services/${req.serviceSid}/PhoneNumbers", connSettings)
+      .map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam)))
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
@@ -54,7 +51,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
   /** Create the request specific Unspecified exception. */
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): UnspecifiedException = PhoneNumberCreateException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(

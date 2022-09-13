@@ -2,9 +2,8 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.Done
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -20,26 +19,25 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
 
   import PhoneNumberDeleteRequestExecutor._
 
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
+
+  override protected def method: HttpMethod = HttpMethods.DELETE
+
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: PhoneNumberDeleteRequest
-  ): Either[PhoneNumberDeleteException, HttpRequest] = {
-    Right(
-      TwilioPath(
-        ApiSubDomain.Messaging,
-        HttpMethods.DELETE,
-        s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}"
-      )
-        .createHttpRequest(connSettings)
+  ): Either[PhoneNumberDeleteException, HttpRequest] =
+    createHttpRequestFor(
+      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}",
+      connSettings
     )
-  }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
     PhoneNumberDeleteException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): UnspecifiedException = PhoneNumberDeleteException.UnspecifiedError(msg, cause)
 
   override protected def parseHttpResponse(

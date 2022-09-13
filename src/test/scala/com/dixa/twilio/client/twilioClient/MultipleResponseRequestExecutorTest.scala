@@ -1,11 +1,11 @@
 package com.dixa.twilio.client.twilioClient
 
 import akka.http.scaladsl.model.headers.RawHeader
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.{
   ApiException,
   MultipleResponseRequestExecutor,
@@ -67,12 +67,16 @@ final class MultipleResponseRequestExecutorTest
 
         val impl = new MultipleResponseRequestExecutorTestBaseImplemented {
 
+          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+          override protected def method: HttpMethod = HttpMethods.GET
+
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
           ): Either[AbstractTestException, HttpRequest] = Right(
             HttpRequest(
-              method = HttpMethods.GET,
+              method,
               uri = s"http://localhost:${wireMockServer.port()}/test"
             )
           )
@@ -86,7 +90,7 @@ final class MultipleResponseRequestExecutorTest
           ): List[Either[AbstractTestException, TestSuccess]] = {
             responseEntity
               .parse[ListJsonRep[TestSuccessJsonRep]]() match {
-              case Left(ex) =>
+              case Left(_) =>
                 List(
                   Left(
                     AbstractTestException.Undefined(
@@ -101,15 +105,6 @@ final class MultipleResponseRequestExecutorTest
                     Right(toModel(item))
                   }
             }
-          }
-
-          override protected def nextPageHttpRequestBuilder(
-              connectionSettings: TwilioConnectionSettings,
-              entityString: HttpEntityString
-          ): Either[UnspecifiedException, Option[HttpRequest]] = {
-            sharedNextPageHttpRequestBuilder(connectionSettings, entityString).left.map(ex =>
-              createUnspecifiedException(Some(ex.getMessage), Some(ex))
-            )
           }
         }
 
@@ -148,12 +143,17 @@ final class MultipleResponseRequestExecutorTest
 
           override protected def http: HttpExt = Http()
 
+          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+          /** Specify the Http method that this API request uses */
+          override protected def method: HttpMethod = HttpMethods.GET
+
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
           ): Either[AbstractTestException, HttpRequest] = Right(
             HttpRequest(
-              method = HttpMethods.GET,
+              method,
               uri = s"http://localhost:${wireMockServer.port()}/test"
             )
           )
@@ -167,13 +167,6 @@ final class MultipleResponseRequestExecutorTest
           ): List[Either[AbstractTestException, TestSuccess]] = {
             throw toThrow
           }
-
-          override protected def nextPageHttpRequestBuilder(
-              connectionSettings: TwilioConnectionSettings,
-              entityString: HttpEntityString
-          ): Either[UnspecifiedException, Option[HttpRequest]] =
-            sharedNextPageHttpRequestBuilder(connectionSettings, entityString).left
-              .map(ex => createUnspecifiedException(Some(ex.getMessage), Some(ex)))
         }
 
         impl
@@ -187,7 +180,7 @@ final class MultipleResponseRequestExecutorTest
                   case ue: AbstractTestException.Undefined => assert(ue.getCause === toThrow)
                   case _                                   => fail("Wrong cause in Exception")
                 }
-              case Right(value) => fail("should throw exception")
+              case Right(_) => fail("should throw exception")
             }
           }
       }
@@ -210,12 +203,16 @@ final class MultipleResponseRequestExecutorTest
 
           override protected def http: HttpExt = Http()
 
+          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+          override protected def method: HttpMethod = HttpMethods.GET
+
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
           ): Either[AbstractTestException, HttpRequest] = Right(
             HttpRequest(
-              method = HttpMethods.GET,
+              method,
               uri = s"http://localhost:${wireMockServer.port()}/test"
             )
           )
@@ -229,13 +226,6 @@ final class MultipleResponseRequestExecutorTest
           ): List[Either[AbstractTestException, TestSuccess]] = {
             sharedHttpParser(reponseEntity)
           }
-
-          override protected def nextPageHttpRequestBuilder(
-              connectionSettings: TwilioConnectionSettings,
-              entityString: HttpEntityString
-          ): Either[UnspecifiedException, Option[HttpRequest]] =
-            sharedNextPageHttpRequestBuilder(connectionSettings, entityString).left
-              .map(ex => createUnspecifiedException(Some(ex.getMessage), Some(ex)))
         }
 
         impl
@@ -281,7 +271,7 @@ final class MultipleResponseRequestExecutorTest
 
     override protected def createUnspecifiedException(
         msg: Option[String],
-        cause: Option[Exception]
+        cause: Option[Throwable]
     ): UnspecifiedException = AbstractTestException.Undefined(msg, cause)
   }
 }

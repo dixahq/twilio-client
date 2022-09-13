@@ -1,10 +1,9 @@
 package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor.ServicesReadException
 import com.dixa.twilio.client.{messaging, ApiException, TwilioConnectionSettings}
@@ -19,22 +18,23 @@ private[impl] class ServicesReadRequestExecutorImpl(
     override protected val executionContext: ExecutionContext
 ) extends ServicesReadRequestExecutor {
 
+  /** Specify the sub domain in twilio, that this API request is against. */
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
+
+  /** Specify the Http method that this API request uses */
+  override protected def method: HttpMethod = HttpMethods.GET
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: messaging.ServicesReadRequestExecutor.ServicesReadRequest
-  ): Either[ServicesReadException, HttpRequest] = {
-    Right(
-      TwilioPath(ApiSubDomain.Messaging, HttpMethods.GET, "/v1/Services?PageSize=1000")
-        .createHttpRequest(connSettings)
-    )
-  }
+  ): Either[ServicesReadException, HttpRequest] =
+    createHttpRequestFor("/v1/Services?PageSize=1000", connSettings)
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
     ServicesReadException.Api.apply(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): UnspecifiedException = ServicesReadException.Unspecified(msg, cause)
 
   private case class OuterJsonRep(services: List[MessagingServiceJsonRep])
@@ -56,37 +56,5 @@ private[impl] class ServicesReadRequestExecutorImpl(
           Right(jsonRep.toTwilioMessagingService)
         }
     }
-  }
-
-  //  Full meta json object likes like this, but for now we only need the nex_page_url:
-  //  "meta": {
-  //    "page": 1,
-  //    "page_size": 2,
-  //    "first_page_url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=0",
-  //    "previous_page_url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=0&PageToken=PTMGd8410e59416697cb4455c87eba98a6d0",
-  //    "url": "https://messaging.twilio.com/v1/Services?PageSize=2&Page=1&PageToken=PTMGf9a4a36b7b901e4a5d325ff1d92c6dcd",
-  //    "next_page_url": null,
-  //    "key": "services"
-  //  }
-  private case class MetaJsonRep(next_page_url: Option[String])
-  private case class MetaRootJsonResp(meta: MetaJsonRep)
-
-  override protected def nextPageHttpRequestBuilder(
-      connectionSettings: TwilioConnectionSettings,
-      entityString: HttpEntityString
-  ): Either[UnspecifiedException, Option[HttpRequest]] = {
-    entityString
-      .parse[MetaRootJsonResp]()
-      .left
-      .map { ex =>
-        createUnspecifiedException(Some(ex.getMessage), Some(ex.cause))
-      }
-      .map { response =>
-        response.meta.next_page_url.map { nextPage =>
-          TwilioUri
-            .autoDetect(nextPage, HttpMethods.GET, ApiSubDomain.Messaging)
-            .createHttpRequest(connectionSettings)
-        }
-      }
   }
 }
