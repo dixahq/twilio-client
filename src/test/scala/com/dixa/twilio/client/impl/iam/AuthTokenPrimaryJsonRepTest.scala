@@ -3,7 +3,7 @@ package com.dixa.twilio.client.impl.iam
 import com.dixa.twilio.client.TwilioTestConstants
 import org.scalatest.wordspec.AnyWordSpec
 
-final class AuthTokenCreateRespJsonRepTest extends AnyWordSpec {
+final class AuthTokenPrimaryJsonRepTest extends AnyWordSpec {
 
   classOf[AuthTokenPrimaryJsonRep].getSimpleName should {
 
