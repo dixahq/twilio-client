@@ -6,7 +6,7 @@ final class AuthTokenSecondaryJsonRepTest extends AnyWordSpec {
 
   classOf[AuthTokenSecondaryJsonRep].getSimpleName should {
 
-    "not print the actual token in it's toString method" in {
+    "not print the actual token in its toString method" in {
       val i = AuthTokenSecondaryJsonRep(
         TwilioTestConstants.accountSid.toString,
         TwilioTestConstants.createdTime.toString,

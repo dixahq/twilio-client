@@ -40,7 +40,7 @@ final class AuthTokenSecondaryDeleteTest extends TwilioClientTest {
         }
       }
 
-      "Return an not existing error in case of 404" in {
+      "Return a not existing error in case of 404" in {
         val f = new Fixture
         import f._
 

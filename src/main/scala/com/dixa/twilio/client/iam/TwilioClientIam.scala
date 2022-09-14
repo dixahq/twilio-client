@@ -33,9 +33,9 @@ trait TwilioClientIam {
     *
     * This will:
     *
-    *   - Delete the currentl primary token
+    *   - Delete the current primary token
     *   - Promote the current secondary token to be the new primary token
-    *   - Leave no account without a secondary token.*
+    *   - Leave no account without a secondary token
     *
     * Twilio documentation: [[https://www.twilio.com/docs/iam/api/authtoken]]
     */
