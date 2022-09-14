@@ -39,6 +39,10 @@ object AuthTokenSecondaryCreateRequestExecutor {
         )
         with AuthTokenSecondaryCreateException
 
+    final case class SecondaryAuthTokenAlreadyExistsException()
+        extends RuntimeException("A secondary auth token already exists on this account")
+        with AuthTokenSecondaryCreateException
+
     final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(

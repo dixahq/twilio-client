@@ -53,7 +53,8 @@ private[iam] final class AuthTokenSecondaryCreateRequestExecutorImpl()(
     httpResponse.status match {
       case StatusCodes.Created =>
         parseEntityAs[AuthTokenSecondaryJsonRep](entity).map(_.toModel)
-      case StatusCodes.NotFound => buildResultForNotFoundResponse(entity)
+      case StatusCodes.NotFound   => buildResultForNotFoundResponse(entity)
+      case StatusCodes.BadRequest => buildResultForBadRequestResponse(entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
 
@@ -69,6 +70,26 @@ private[iam] final class AuthTokenSecondaryCreateRequestExecutorImpl()(
             // variables in the path, it should be safe to assume that it's the ony thing
             // this code can mean for this API call.
             Left(AuthTokenSecondaryCreateException.ApiCallNotEnabledOnAccountException())
+          case other =>
+            Left(
+              AuthTokenSecondaryCreateException.UnspecifiedError(
+                s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                  s"$other represent. Full error entity from Twilio: $entity"
+              )
+            )
+        }
+      }
+  }
+
+  private def buildResultForBadRequestResponse(
+      entity: HttpEntityString
+  ) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+      .map(e => AuthTokenSecondaryCreateException.UnspecifiedError(e))
+      .flatMap { decoded =>
+        decoded.code match {
+          case 70002L =>
+            Left(AuthTokenSecondaryCreateException.SecondaryAuthTokenAlreadyExistsException())
           case other =>
             Left(
               AuthTokenSecondaryCreateException.UnspecifiedError(
