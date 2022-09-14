@@ -27,7 +27,7 @@ final class AuthTokenSecondaryDeleteTest extends TwilioClientTest {
           wireMockBuilderExpectedTwilioRequest
             .willReturn(
               aResponse()
-                .withStatus(204) // this api returns 203 on success.
+                .withStatus(204) // this api returns 204 on success.
                 .withHeader("Content-Type", "application/json")
             )
         )
