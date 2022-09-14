@@ -27,7 +27,7 @@ final class AuthTokenSecondaryDeleteTest extends TwilioClientTest {
           wireMockBuilderExpectedTwilioRequest
             .willReturn(
               aResponse()
-                .withStatus(204) // this api returns 203 on success.
+                .withStatus(204) // this api returns 204 on success.
                 .withHeader("Content-Type", "application/json")
             )
         )
@@ -40,7 +40,7 @@ final class AuthTokenSecondaryDeleteTest extends TwilioClientTest {
         }
       }
 
-      "Return an not existing error in case of 404" in {
+      "Return a not existing error in case of 404" in {
         val f = new Fixture
         import f._
 
