@@ -65,6 +65,9 @@ trait RequestExecutor[Req, Err <: RuntimeException] {
   protected final def createUnspecifiedException(msg: String): UnspecifiedException =
     createUnspecifiedException(Some(msg), None)
 
+  protected final def createUnspecifiedException(cause: Throwable): UnspecifiedException =
+    createUnspecifiedException(None, Some(cause))
+
   /** Helper method for creating a HttpRequest for a path, converting errors to unspecified errors.
     */
   protected final def createHttpRequestFor(

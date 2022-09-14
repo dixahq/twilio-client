@@ -14,6 +14,8 @@ trait TwilioClientIam {
     * Note that you do not provide any account sid, so the secondary token will be created on the
     * account belonging to the used credentials. Unlike most other request, this makes it impossible
     * to use root account credentials, when doing this on a sub account.
+    *
+    * Twilio documentation: [[https://www.twilio.com/docs/iam/api/secondary_authtoken]]
     */
   def authTokenSecondaryCreate: AuthTokenSecondaryCreateRequestExecutor
 
@@ -22,6 +24,20 @@ trait TwilioClientIam {
     * Note that you do not provide any account sid, so the secondary token will be deleted on the
     * account belonging to the used credentials. Unlike most other request, this makes it impossible
     * to use root account credentials, when doing this on a sub account.
+    *
+    * Twilio documentation: [[https://www.twilio.com/docs/iam/api/secondary_authtoken]]
     */
   def authTokenSecondaryDelete: AuthTokenSecondaryDeleteRequestExecutor
+
+  /** Promote the secondary auth token to primary.
+    *
+    * This will:
+    *
+    *   - Delete the currentl primary token
+    *   - Promote the current secondary token to be the new primary token
+    *   - Leave no account without a secondary token.*
+    *
+    * Twilio documentation: [[https://www.twilio.com/docs/iam/api/authtoken]]
+    */
+  def authTokenPromote: AuthTokenPromoteRequestExecutor
 }
