@@ -81,6 +81,33 @@ final class AuthTokenSecondaryCreateTest extends TwilioClientTest {
           instance.run(connSettings, createRequest)
         resultFut.map { resultEither => assert(resultEither === expected) }
       }
+
+      "return a specific exception in case secondary token already exists" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                  """{"code": 70002, "message": "secondaryAuthToken already exists on account", "more_info": "https://www.twilio.com/docs/errors/70002", "status": 400}"""
+                )
+            )
+        )
+
+        val expected =
+          Left(AuthTokenSecondaryCreateException.SecondaryAuthTokenAlreadyExistsException())
+        val resultFut: Future[
+          Either[AuthTokenSecondaryCreateException, AuthToken.AuthTokenAndMetaData[
+            AuthToken.Secondary
+          ]]
+        ] =
+          instance.run(connSettings, createRequest)
+        resultFut.map { resultEither => assert(resultEither === expected) }
+      }
     }
   }
 
