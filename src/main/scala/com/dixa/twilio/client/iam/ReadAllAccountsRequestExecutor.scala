@@ -17,6 +17,13 @@ trait ReadAllAccountsRequestExecutor
 }
 
 object ReadAllAccountsRequestExecutor {
+
+  /** Request for reading all accounts
+    *
+    * @param status
+    *   If Some(status) then only fetch accounts of that status. If None no status filtering is
+    *   applied.
+    */
   final case class ReadAllAccountsRequest(
       status: Option[TwilioAccount.Status]
   )
@@ -26,7 +33,7 @@ object ReadAllAccountsRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ReadAllAccountsException
-    final case class Unspecified(msg: Option[String], cause: Option[Exception])
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to fetch accounts"

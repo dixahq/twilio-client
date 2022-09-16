@@ -1,3 +1,3 @@
 package com.dixa.twilio.client.impl
 
-private[impl] case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
+private[client] case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])

@@ -2,20 +2,12 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  Formatter,
-  HttpEntityString,
-  ListJsonRep,
-  TwilioResponseNextPageJsonRep,
-  TwilioUri
-}
+import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, ListJsonRep}
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{
@@ -43,6 +35,10 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
 ) extends MessageResourceReadRequestExecutor {
 
   import MessageResourceReadRequestExecutorImpl._
+
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+  override protected def method: HttpMethod = HttpMethods.GET
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
@@ -73,14 +69,11 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
       )
     }
 
-    Right(
-      TwilioPath(
-        ApiSubDomain.Api,
-        HttpMethods.GET,
-        // the `:` character present in the time instances in dateSent parameter should be URL encoded
-        // akka.http.scaladsl.model.Uri.Query doesn't URL encode the `:` character
-        s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString().replace(":", "%3A")}"
-      ).createHttpRequest(connSettings)
+    createHttpRequestFor(
+      // the `:` character present in the time instances in dateSent parameter should be URL encoded
+      // akka.http.scaladsl.model.Uri.Query doesn't URL encode the `:` character
+      s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString().replace(":", "%3A")}",
+      connSettings
     )
   }
 
@@ -89,7 +82,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
 
   override protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): UnspecifiedException = MessageResourceReadException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
@@ -146,26 +139,6 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
       )
     } yield messageResource
   }
-
-  /** Build http request for next page based on a uri */
-  override protected def nextPageHttpRequestBuilder(
-      connectionSettings: TwilioConnectionSettings,
-      entityString: HttpEntityString
-  ): Either[MessageResourceReadException, Option[HttpRequest]] = {
-    entityString
-      .parse[TwilioResponseNextPageJsonRep]()
-      .left
-      .map { ex =>
-        createUnspecifiedException(Some(ex.cause.getMessage), Some(ex.cause))
-      }
-      .map { response =>
-        response.next_page_uri.map(nextPage =>
-          TwilioUri
-            .autoDetect(nextPage, HttpMethods.GET, ApiSubDomain.Api)
-            .createHttpRequest(connectionSettings)
-        )
-      }
-  }
 }
 
 private object MessageResourceReadRequestExecutorImpl {
@@ -194,9 +167,9 @@ private object MessageResourceReadRequestExecutorImpl {
   private def parseMessagingServiceSid(
       messagingServiceSid: String
   ): Option[ServiceSid] = messagingServiceSid match {
-    case null                         => None
-    case str: String if (str.isEmpty) => None
-    case ""                           => None
-    case _                            => Some(ServiceSid(messagingServiceSid))
+    case null                       => None
+    case str: String if str.isEmpty => None
+    case ""                         => None
+    case _                          => Some(ServiceSid(messagingServiceSid))
   }
 }

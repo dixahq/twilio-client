@@ -4,7 +4,14 @@ import akka.NotUsed
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{FlowShape, SourceShape}
-import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.impl.{
+  HttpEntityString,
+  MetaRootJsonResp,
+  PagingStyle,
+  TwilioResponseNextPageJsonRep,
+  TwilioUri
+}
+import io.circe.generic.auto._
 
 import scala.concurrent.Future
 import scala.util.Failure
@@ -146,10 +153,64 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
   /** Detect uri for next page in the entity and build optional http request dependent on uri is
     * present or not
     */
-  protected def nextPageHttpRequestBuilder(
+  protected final def nextPageHttpRequestBuilder(
       connectionSettings: TwilioConnectionSettings,
       entityString: HttpEntityString
-  ): Either[Err, Option[HttpRequest]]
+  ): Either[Err, Option[HttpRequest]] = {
+    subDomain.pagingStyle match {
+      case PagingStyle.NoPaging => Right(None)
+      case PagingStyle.PagingAttributesInRootJson =>
+        extractNextPageFromRootJson(entityString)
+          .flatMap(fromOptionalNextPageUriToHttpRequest(_, connectionSettings))
+      case PagingStyle.MetaObject =>
+        extractNextPageFromMeta(entityString)
+          .flatMap(fromOptionalNextPageUriToHttpRequest(_, connectionSettings))
+    }
+  }
+
+  private def extractNextPageFromRootJson(entity: HttpEntityString): Either[Err, Option[String]] = {
+    entity
+      .parse[TwilioResponseNextPageJsonRep]()
+      .map(_.next_page_uri)
+      .left
+      .map(
+        createUnspecifiedException(
+          "Failed to parse response for getting the next page element",
+          _
+        )
+      )
+  }
+
+  private def extractNextPageFromMeta(entity: HttpEntityString): Either[Err, Option[String]] = {
+    entity
+      .parse[MetaRootJsonResp]()
+      .map(_.meta.next_page_url)
+      .left
+      .map(
+        createUnspecifiedException("Failed to parse response for getting the next page element", _)
+      )
+  }
+
+  private def fromOptionalNextPageUriToHttpRequest(
+      nextPageOpt: Option[String],
+      connectionSettings: TwilioConnectionSettings
+  ): Either[Err, Option[HttpRequest]] = {
+    nextPageOpt match {
+      case Some(nextPage) =>
+        TwilioUri
+          .autoDetect(nextPage, method, subDomain)
+          .flatMap(_.createHttpRequest(connectionSettings))
+          .map(Some(_))
+          .left
+          .map(
+            createUnspecifiedException(
+              s"Error creating HttpRequest for nextPage: $nextPage",
+              _
+            )
+          )
+      case None => Right(None)
+    }
+  }
 
   /** Helper method for creating a response to cases where we have no support for handling a
     * Responese.

@@ -1,12 +1,12 @@
 package com.dixa.twilio.client.twilioClient
 
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
-import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.{
   ApiException,
   SingleRequestExecutor,
@@ -14,7 +14,7 @@ import com.dixa.twilio.client.{
   TwilioConnectionSettings,
   TwilioTestConstants
 }
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalamock.scalatest.AsyncMockFactory
@@ -44,12 +44,15 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
         val impl = new SingleRequestExecutorTestBaseImplemented {
 
+          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+          override protected def method: HttpMethod = HttpMethods.GET
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
           ): Either[AbstractTestException, HttpRequest] = Right(
             HttpRequest(
-              method = HttpMethods.GET,
+              method,
               uri = s"http://localhost:${wireMockServer.port()}/test"
             )
           )
@@ -94,12 +97,16 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
         val impl = new SingleRequestExecutorTestBaseImplemented {
 
+          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+          override protected def method: HttpMethod = HttpMethods.GET
+
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
           ): Either[AbstractTestException, HttpRequest] = Right(
             HttpRequest(
-              method = HttpMethods.GET,
+              method = method,
               uri = s"http://localhost:${wireMockServer.port()}/test"
             )
           )
@@ -135,12 +142,16 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
       val impl = new SingleRequestExecutorTestBaseImplemented {
 
+        override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+        override protected def method: HttpMethod = HttpMethods.GET
+
         override protected def createHttpReq(
             connSettings: TwilioConnectionSettings,
             req: TestRequest
         ): Either[AbstractTestException, HttpRequest] = Right(
           HttpRequest(
-            method = HttpMethods.GET,
+            method = method,
             uri = s"http://localhost:${wireMockServer.port()}/test"
           )
         )
@@ -183,12 +194,16 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
       val impl = new SingleRequestExecutorTestBaseImplemented {
 
+        override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+        override protected def method: HttpMethod = HttpMethods.GET
+
         override protected def createHttpReq(
             connSettings: TwilioConnectionSettings,
             req: TestRequest
         ): Either[AbstractTestException, HttpRequest] = Right(
           HttpRequest(
-            method = HttpMethods.GET,
+            method,
             uri = s"http://localhost:${wireMockServer.port()}/test"
           )
         )
@@ -229,6 +244,10 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
         val impl = new SingleRequestExecutorTestBaseImplemented {
 
+          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+          override protected def method: HttpMethod = HttpMethods.GET
+
           override protected def createHttpReq(
               connSettings: TwilioConnectionSettings,
               req: TestRequest
@@ -261,7 +280,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
       "NoSuchMethodException" in {
         val ownerAccountSid = TwilioAccount.Sid("TestOwnerAccountSid")
         val accountSid      = TwilioAccount.Sid("TestAccountSid")
-        val accountToken    = TwilioAccount.AuthToken("TestAuthToken")
+        val accountToken    = AuthToken.Primary("TestAuthToken")
         val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
         val account = TwilioAccount(
           name = TwilioAccount.Name("TestAccount"),
@@ -331,7 +350,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
     override protected def createUnspecifiedException(
         msg: Option[String],
-        cause: Option[Exception]
+        cause: Option[Throwable]
     ): UnspecifiedException = AbstractTestException.Undefined(msg, cause)
   }
 }

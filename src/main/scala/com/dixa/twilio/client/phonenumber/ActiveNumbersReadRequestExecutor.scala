@@ -26,16 +26,13 @@ object ActiveNumbersReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ActiveNumbersReadException
-    final case class Unspecified(msg: Option[String], cause: Option[Exception])
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
             "Unspecified error happened trying to read active numbers"
           ),
           cause.orNull
         )
-        with ActiveNumbersReadException {
-      def this(msg: String) = this(Some(msg), None)
-      def this(cause: Exception) = this(None, Some(cause))
-    }
+        with ActiveNumbersReadException {}
   }
 }

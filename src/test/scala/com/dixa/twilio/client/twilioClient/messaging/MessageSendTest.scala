@@ -1,16 +1,15 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.TwilioTestConstants.{testAuthToken, testSid}
+import com.dixa.twilio.client.TwilioTestConstants.{accountSid, authToken}
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendException,
   MessageSendRequest
 }
-import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging._
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.messaging._
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -28,7 +27,7 @@ final class MessageSendTest extends TwilioClientTest {
 
         val messageSendTwilioSuccessResponse =
           s"""{
-             |  "account_sid": "$testSid",
+             |  "account_sid": "$accountSid",
              |  "api_version": "2010-04-01",
              |  "body": "$messageBody",
              |  "date_created": null,
@@ -54,9 +53,9 @@ final class MessageSendTest extends TwilioClientTest {
 
         wireMockServer.stubFor(
           WireMock
-            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$testSid/Messages.json"))
+            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
             .withRequestBody(WireMock.containing(reqEntity))
-            .withBasicAuth(testSid, testAuthToken)
+            .withBasicAuth(accountSid.toString, authToken.asString)
             .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
             .willReturn(
               aResponse()
@@ -68,7 +67,7 @@ final class MessageSendTest extends TwilioClientTest {
 
         val expected = Right(
           MessageResource(
-            accountSid = TwilioAccount.Sid(testSid),
+            accountSid = accountSid,
             body = MessageBody(messageBody),
             dateCreated = None,
             dateSent = None,
@@ -266,13 +265,13 @@ final class MessageSendTest extends TwilioClientTest {
     val reqEntity = s"From=$encFrom&To=$encTo&Body=$encBody&StatusCallback=$encStatusCallback"
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
-      .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$testSid/Messages.json"))
+      .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
       .withRequestBody(WireMock.containing(reqEntity))
-      .withBasicAuth(testSid, testAuthToken)
+      .withBasicAuth(accountSid.toString, authToken.asString)
       .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
 
     val messageSendRequest = MessageSendRequest(
-      accountSid = TwilioAccount.Sid(testSid),
+      accountSid = accountSid,
       from = MessageSender.E164(PhoneNumberE164(from)),
       to = PhoneNumberE164(to),
       body = MessageBody(messageBody),

@@ -1,8 +1,9 @@
 package com.dixa.twilio.client
 
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
 import akka.stream.Materializer
+import com.dixa.twilio.client.impl.{ApiSubDomain, TwilioUri}
 
 import scala.concurrent.ExecutionContext
 
@@ -30,6 +31,12 @@ trait RequestExecutor[Req, Err <: RuntimeException] {
     */
   protected type UnspecifiedException <: Err
 
+  /** Specify the sub domain in twilio, that this API request is against. */
+  protected def subDomain: ApiSubDomain
+
+  /** Specify the Http method that this API request uses */
+  protected def method: HttpMethod
+
   /** Build the http request.
     *
     * Implementations should provide this for building the HttpRequest for the request represented
@@ -47,7 +54,29 @@ trait RequestExecutor[Req, Err <: RuntimeException] {
   /** Create the request specific Unspecified exception. */
   protected def createUnspecifiedException(
       msg: Option[String],
-      cause: Option[Exception]
+      cause: Option[Throwable]
   ): UnspecifiedException
+
+  protected final def createUnspecifiedException(
+      msg: String,
+      cause: Throwable
+  ): UnspecifiedException = createUnspecifiedException(Some(msg), Some(cause))
+
+  protected final def createUnspecifiedException(msg: String): UnspecifiedException =
+    createUnspecifiedException(Some(msg), None)
+
+  protected final def createUnspecifiedException(cause: Throwable): UnspecifiedException =
+    createUnspecifiedException(None, Some(cause))
+
+  /** Helper method for creating a HttpRequest for a path, converting errors to unspecified errors.
+    */
+  protected final def createHttpRequestFor(
+      path: String,
+      connectionSettings: TwilioConnectionSettings
+  ): Either[Err, HttpRequest] = TwilioUri
+    .createPath(subDomain, method, path)
+    .flatMap(_.createHttpRequest(connectionSettings))
+    .left
+    .map(createUnspecifiedException("Error creating HttpRequest", _))
 
 }

@@ -6,7 +6,6 @@ import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.impl.TwilioUri.TwilioPath
 import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -33,7 +32,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
       accountSid =>
         {
           val statusParam = statusFilter.map(f => s"Status=${f.twilioString}&").getOrElse("")
-          val initPath = TwilioPath(
+          val initPath = TwilioUri.createPathUnsafe(
             ApiSubDomain.Api,
             HttpMethods.GET,
             s"/2010-04-01/Accounts/$accountSid/Conferences.json?${statusParam}PageSize=1000"
@@ -51,7 +50,11 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
         .createPagingSrc(
           connSettings,
           TwilioUri
-            .autoDetect(confJs.subresource_uris.participants, HttpMethods.GET, ApiSubDomain.Api)
+            .autoDetectUnsafe(
+              confJs.subresource_uris.participants,
+              HttpMethods.GET,
+              ApiSubDomain.Api
+            )
         )
         .map(entityToParticipantList)
         .mapConcat(identity)

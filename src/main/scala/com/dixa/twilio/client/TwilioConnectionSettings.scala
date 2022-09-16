@@ -3,7 +3,7 @@ package com.dixa.twilio.client
 import com.dixa.twilio.client
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import enumeratum.{Enum, EnumEntry}
 import org.scalactic.TypeCheckedTripleEquals._
 
@@ -35,7 +35,7 @@ final case class TwilioConnectionSettings(
     endpoint: TwilioEndpoint,
     protocol: client.TwilioConnectionSettings.Protocol,
     accountSid: TwilioAccount.Sid,
-    authToken: TwilioAccount.AuthToken,
+    authToken: AuthToken,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
     timeouts: TwilioConnectionSettings.Timeouts
 ) {
