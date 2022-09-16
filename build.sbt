@@ -10,10 +10,10 @@ val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/
 val Version = new AnyRef {
   val Akka     = "2.6.19"
   val AkkaHttp = "10.2.9"
-  val Circe    = "0.14.2"
+  val Circe    = "0.14.3"
 
   // test
-  val ScalatestScalactic = "3.2.12"
+  val ScalatestScalactic = "3.2.13"
 }
 
 lazy val `twilio-client` = project
