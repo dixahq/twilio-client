@@ -12,7 +12,7 @@ final case class PhoneNumberCapabilities(
 )
 
 object PhoneNumberCapabilities {
-  sealed abstract class CallerIdPreservation(val twilioString: String)
+  sealed abstract class CallerIdPreservation(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
   object CallerIdPreservation extends EnumWithTwilioString[CallerIdPreservation] {
@@ -23,7 +23,7 @@ object PhoneNumberCapabilities {
     case object None          extends CallerIdPreservation("none")
   }
 
-  sealed abstract class InboundReachability(val twilioString: String)
+  sealed abstract class InboundReachability(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
   object InboundReachability extends EnumWithTwilioString[InboundReachability] {

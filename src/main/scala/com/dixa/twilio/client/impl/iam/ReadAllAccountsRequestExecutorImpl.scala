@@ -8,7 +8,7 @@ import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.{
   ReadAllAccountsException,
   ReadAllAccountsRequest
 }
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
 import io.circe.generic.auto._
@@ -27,8 +27,12 @@ private[impl] class ReadAllAccountsRequestExecutorImpl(
       connSettings: TwilioConnectionSettings,
       req: ReadAllAccountsRequestExecutor.ReadAllAccountsRequest
   ): Either[ReadAllAccountsException, HttpRequest] = {
-    val statusParam = req.status.map(s => s"&Status=${s.twilioString}").getOrElse("")
-    createHttpRequestFor(s"/2010-04-01/Accounts.json?PageSize=1000$statusParam", connSettings)
+    val queryParams = QueryParamBuilder.empty
+      .withParam("PageSize", "1000")
+      .withOptionalParam("Status", req.status)
+      .withOptionalParam("FriendlyName", req.name)
+      .build
+    createHttpRequestFor(s"/2010-04-01/Accounts.json$queryParams", connSettings)
   }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =

@@ -4,7 +4,7 @@ import com.dixa.twilio.model.EnumWithTwilioString
 
 import scala.collection.immutable
 
-sealed abstract class PhoneNumberType(val twilioString: String)
+sealed abstract class PhoneNumberType(override val twilioString: String)
     extends EnumWithTwilioString.EnumEntry
 
 object PhoneNumberType extends EnumWithTwilioString[PhoneNumberType] {

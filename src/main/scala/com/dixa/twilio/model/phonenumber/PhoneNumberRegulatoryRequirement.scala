@@ -10,7 +10,7 @@ final case class PhoneNumberRegulatoryRequirement(
 )
 
 object PhoneNumberRegulatoryRequirement {
-  sealed abstract class AddressRequirementType(val twilioString: String)
+  sealed abstract class AddressRequirementType(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
   object AddressRequirementType extends EnumWithTwilioString[AddressRequirementType] {

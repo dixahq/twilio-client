@@ -73,9 +73,7 @@ trait EnumWithTwilioString[A <: EnumWithTwilioString.EnumEntry] extends Enum[A] 
 
 object EnumWithTwilioString {
 
-  trait EnumEntry extends enumeratum.EnumEntry {
-    def twilioString: String
-  }
+  trait EnumEntry extends enumeratum.EnumEntry with TwilioStringValue
 
   final case class TwilioStringNotFoundException(msg: String) extends IllegalArgumentException(msg)
 }

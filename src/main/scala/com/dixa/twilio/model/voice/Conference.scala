@@ -39,7 +39,7 @@ object Conference {
   final case class Sid(override val toString: String)
 
   sealed abstract class Status(
-      val twilioString: String,
+      override val twilioString: String,
       /** Specifies if this conference status is considerd active
         *
         * By active is meant a status where it is in progress or will end up in-progress in the
@@ -58,7 +58,7 @@ object Conference {
   final case class FriendlyName(override val toString: String)
 
   sealed abstract class ParticipantStatus(
-      val twilioString: String,
+      override val twilioString: String,
       /** Specifies if this status is one, where the participant are considered active
         *
         * By active means a state where the participant is either activily part of the conference,
@@ -92,7 +92,8 @@ object Conference {
     * This attribute is set when creating a conference via TwiML dial verb:
     * [[https://www.twilio.com/docs/voice/twiml/conference#attributes-beep]]
     */
-  sealed abstract class Beep(val twilioString: String) extends EnumWithTwilioString.EnumEntry
+  sealed abstract class Beep(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
 
   object Beep extends EnumWithTwilioString[Beep] {
     case object True    extends Beep("true")
