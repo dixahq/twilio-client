@@ -23,9 +23,13 @@ object ReadAllAccountsRequestExecutor {
     * @param status
     *   If Some(status) then only fetch accounts of that status. If None no status filtering is
     *   applied.
+    * @param name
+    *   if Some(name) is provided, then only return accounts that friendly name match this value
+    *   exactly. If None is supplied then no filtering is done on name.
     */
   final case class ReadAllAccountsRequest(
-      status: Option[TwilioAccount.Status]
+      status: Option[TwilioAccount.Status] = None,
+      name: Option[TwilioAccount.Name] = None
   )
 
   sealed trait ReadAllAccountsException extends RuntimeException
