@@ -28,5 +28,9 @@ object ApiException {
   /** The request could not be completed due to a conflict with the current state of the target
     * resource. For more info: https://www.twilio.com/docs/errors/20409
     */
-  final case class Conflict() extends ApiException
+  final case class Conflict()
+      extends IllegalStateException(
+        "Number registration failed due to conflict. More info: https://www.twilio.com/docs/errors/20409"
+      )
+      with ApiException
 }
