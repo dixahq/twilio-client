@@ -1,8 +1,9 @@
 package com.dixa.twilio.client
 
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
-import com.dixa.twilio.client.impl.HttpEntityString
+import com.dixa.twilio.client.impl.{DefaultApiErrorEntityJsonRep, HttpEntityString}
 import io.circe.Decoder
+import io.circe.generic.auto._
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -123,6 +124,14 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
       entity   <- httpResp.entity.toStrict(timeouts.requestEntityTimeout)
       result = httpResp.status match {
         case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
+        case StatusCodes.Conflict =>
+          parseEntityAs[DefaultApiErrorEntityJsonRep](
+            HttpEntityString(entity.data.utf8String)
+          ) match {
+            case Right(DefaultApiErrorEntityJsonRep(20409L, _, _, _)) =>
+              Left(ApiException.Conflict())
+            case _ => Right((httpReq, httpResp, entity))
+          }
         // Fill in more cases here as we find them
         case _ => Right((httpReq, httpResp, entity))
       }

@@ -5,7 +5,7 @@ package com.dixa.twilio.client.impl
   *
   * More details can be found here: https://www.twilio.com/docs/api/errors
   */
-private[impl] final case class DefaultApiErrorEntityJsonRep(
+private[client] final case class DefaultApiErrorEntityJsonRep(
     code: Long,
     message: String,
     more_info: String,
