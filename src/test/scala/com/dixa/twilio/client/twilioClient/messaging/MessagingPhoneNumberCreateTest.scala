@@ -95,6 +95,30 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
       }
 
+      "return a Left if there is a conflict with the current state of phone number or service" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(409)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseConflict)
+            )
+        )
+
+        val resultFut: Future[
+          Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
+        ] =
+          instance.run(connSettings, createRequest)
+        val expected =
+          Left(PhoneNumberCreateException.Api(cause = ApiException.Conflict()))
+        resultFut.map(res => assert(res === expected))
+
+      }
+
       "Return a Left if credentials are wrong" in {
         val f = new Fixture
         import f._
@@ -150,6 +174,15 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
       |  "code": 21712,
       |  "message": "Phone Number or Short Code is associated with another Messaging Service.",
       |  "more_info": "https://www.twilio.com/docs/errors/21712",
+      |  "status": 409
+      |}
+      |""".stripMargin
+
+  private def twilioResponseConflict =
+    """{
+      |  "code": 20409,
+      |  "message": "Number registration failed due to conflict.",
+      |  "more_info": "https://www.twilio.com/docs/errors/20409",
       |  "status": 409
       |}
       |""".stripMargin

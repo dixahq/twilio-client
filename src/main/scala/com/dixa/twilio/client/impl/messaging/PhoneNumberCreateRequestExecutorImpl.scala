@@ -75,6 +75,8 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
             Left(PhoneNumberCreateException.PhoneNumberAlreadyInMessagingService())
           case 21712L =>
             Left(PhoneNumberCreateException.PhoneNumberAssociatedWithOtherMessagingService())
+          case 20409L =>
+            Left(PhoneNumberCreateException.Api(cause = ApiException.Conflict()))
           case other =>
             Left(
               new PhoneNumberCreateException.Unspecified(
