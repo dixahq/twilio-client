@@ -11,7 +11,7 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
   VerifiedFalse,
   VerifiedTrue
 }
-import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{DialVerb, PlayVerb, RedirectVerb, SayVerb}
 
 import scala.annotation.nowarn
 
@@ -117,7 +117,7 @@ object Response {
       verbs: Vector[TwimlElement.Verb]
   ) {
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addDial(fun: DialVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -128,17 +128,23 @@ object Response {
       * Calling this, will prevent you from adding more verbs to builder, as it makes no sense to
       * have anything after a redirect in TwiML.
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addRedirect(fun: RedirectVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
       new Builder(verbs :+ RedirectVerb.build(fun))
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addSay(fun: SayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ SayVerb.build(fun))
+
+    @nowarn(value = "cat=unused-params")
+    def addPlay(fun: PlayVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ PlayVerb.build(fun))
 
     /** A a custom Verb to the builder (not recommended)
       *
@@ -147,7 +153,7 @@ object Response {
       * such the generated [[Response]] may generate TwiML that is not valid, without detecting it
       * compile time.
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addCustomVerb(
         verb: TwimlElement.Verb
     )(
@@ -164,7 +170,7 @@ object Response {
       *   1. Added at least one verb.
       *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def buildVerified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedTrue
@@ -178,7 +184,7 @@ object Response {
       *   1. Added at least one verb
       *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def buildUnverified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedFalse

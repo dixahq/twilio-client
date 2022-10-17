@@ -10,29 +10,29 @@ import scala.annotation.nowarn
   * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
   * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
-sealed trait SayVerb extends TwimlElement.Verb {}
+sealed trait PlayVerb extends TwimlElement.Verb {}
 
-object SayVerb {
+object PlayVerb {
 
-  final class Builder[B <: TwimlConstraints.Buildable] private[SayVerb] (text: String) {
+  final class Builder[B <: TwimlConstraints.Buildable] private[PlayVerb] (url: String) {
 
-    def withText(text: String): Builder[TwimlConstraints.BuildableTrue] =
-      new Builder[TwimlConstraints.BuildableTrue](text = text)
+    def withSoundFileUrl(url: String): Builder[TwimlConstraints.BuildableTrue] =
+      new Builder[TwimlConstraints.BuildableTrue](url = url)
 
     @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
-    ): SayVerb = SayVerbImpl(text)
+    ): PlayVerb = PlayVerbImpl(url)
   }
   type BuilderStartState = Builder[TwimlConstraints.BuildableFalse]
-  type BuildFunction     = BuilderStartState => SayVerb
+  type BuildFunction     = BuilderStartState => PlayVerb
 
-  def build(fun: BuildFunction): SayVerb = fun(
+  def build(fun: BuildFunction): PlayVerb = fun(
     new BuilderStartState("")
   )
 
-  private final case class SayVerbImpl(text: String) extends SayVerb {
-    override val xmlCompact: String = s"""<Say>${StringUtil.xmlEscape(text)}</Say>"""
+  private final case class PlayVerbImpl(text: String) extends PlayVerb {
+    override val xmlCompact: String = s"""<Play>${StringUtil.xmlEscape(text)}</Play>"""
 
     override def xmlPretty: String = xmlCompact
   }
