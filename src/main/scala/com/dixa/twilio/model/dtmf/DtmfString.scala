@@ -26,6 +26,11 @@ final class DtmfString private (private val seq: Vector[DtmfDigit]) extends Twil
   override def twilioString: String = seq.mkString("")
 
   def map(fun: DtmfDigit => DtmfDigit): DtmfString = new DtmfString(seq.map(fun))
+
+  def flatMap(fun: DtmfDigit => DtmfString): DtmfString = {
+    val newSeq = seq.flatMap(fun(_).seq)
+    new DtmfString(newSeq)
+  }
 }
 
 object DtmfString {

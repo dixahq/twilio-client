@@ -62,5 +62,24 @@ final class DtmfStringTest extends AnyWordSpec {
       }
       assert(result == expected)
     }
+
+    "should provide a flatMap method" in {
+      val in = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected = DtmfString(
+        DtmfDigit.`1`,
+        DtmfDigit.`w`,
+        DtmfDigit.`w`,
+        DtmfDigit.`2`,
+        DtmfDigit.`w`,
+        DtmfDigit.`w`,
+        DtmfDigit.`3`,
+        DtmfDigit.`w`,
+        DtmfDigit.`w`
+      )
+      val result = in.flatMap { d =>
+        DtmfString(d, DtmfDigit.`w`, DtmfDigit.`w`)
+      }
+      assert(result == expected)
+    }
   }
 }
