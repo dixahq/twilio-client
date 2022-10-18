@@ -59,13 +59,14 @@ final class ResponsePlayTest extends AnyWordSpec {
         assert(xmlPretty === expectedXmlPretty)
       }
 
-      "should allow adding both digits and a Url" in {
+      "should allow adding both digits and a Url and a Loop attribute" in {
         val result = Response.build { responseBuilder =>
           responseBuilder
             .addPlay { playBuilder =>
               playBuilder
                 .withSoundFileUrl("https://www.dixa.com")
                 .withDigits(DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`))
+                .withLoop(88)
                 .build()
             }
             .buildVerified()
@@ -73,14 +74,14 @@ final class ResponsePlayTest extends AnyWordSpec {
 
         val xmlCompact = result.xmlCompact
         val expectedXmlCompact =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234">https://www.dixa.com</Play></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234" loop="88">https://www.dixa.com</Play></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
         val xmlPretty = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
-             |  <Play digits="234">https://www.dixa.com</Play>
+             |  <Play digits="234" loop="88">https://www.dixa.com</Play>
              |</Response>""".stripMargin
         assert(xmlPretty === expectedXmlPretty)
       }
@@ -92,6 +93,22 @@ final class ResponsePlayTest extends AnyWordSpec {
             |          responseBuilder
             |            .addPlay { playBuilder =>
             |              playBuilder.build()
+            |            }
+            |            .buildVerified()
+            |        }
+            |""".stripMargin)
+        // format: on
+      }
+
+      "should not allow building an instance only with loop" in {
+        // format: off
+        assertTypeError(
+          """Response.build { responseBuilder =>
+            |          responseBuilder
+            |            .addPlay { playBuilder =>
+            |              playBuilder
+            |                .withLoop(88)
+            |                .build()
             |            }
             |            .buildVerified()
             |        }
@@ -130,6 +147,24 @@ final class ResponsePlayTest extends AnyWordSpec {
             |        }
             |""".stripMargin
         )
+      }
+
+      "should not allow multipleLoop" in {
+        // format: off
+        assertTypeError(
+          """Response.build { responseBuilder =>
+            |          responseBuilder
+            |            .addPlay { playBuilder =>
+            |              playBuilder
+            |                .withSoundFileUrl("https://www.dixa.com")
+            |                .withLoop(88)
+            |                .withLoop(99)
+            |                .build()
+            |            }
+            |            .buildVerified()
+            |        }
+            |""".stripMargin)
+        // format: on
       }
     }
   }

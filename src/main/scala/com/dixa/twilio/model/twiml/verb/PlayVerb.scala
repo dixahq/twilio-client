@@ -27,9 +27,19 @@ object PlayVerb {
   sealed trait DigitsAddedTrue  extends DigitsAdded
   sealed trait DigitsAddedFalse extends DigitsAdded
 
-  final class Builder[B <: Buildable, S <: SoundFileAdded, D <: DigitsAdded] private[PlayVerb] (
+  sealed trait LoopAdded
+  sealed trait LoopAddedTrue  extends LoopAdded
+  sealed trait LoopAddedFalse extends LoopAdded
+
+  final class Builder[
+      B <: Buildable,
+      S <: SoundFileAdded,
+      D <: DigitsAdded,
+      L <: LoopAdded
+  ] private[PlayVerb] (
       url: String,
-      digits: Option[DtmfString]
+      digits: Option[DtmfString],
+      loopValue: Option[Int]
   ) {
 
     /** Add a url for a sound file to play.
@@ -43,8 +53,8 @@ object PlayVerb {
     @nowarn(value = "cat=unused-params")
     def withSoundFileUrl(url: String)(
         implicit ev: S =:= SoundFileAddedFalse
-    ): Builder[BuildableTrue, SoundFileAddedTrue, D] =
-      new Builder[BuildableTrue, SoundFileAddedTrue, D](url = url, digits)
+    ): Builder[BuildableTrue, SoundFileAddedTrue, D, L] =
+      new Builder[BuildableTrue, SoundFileAddedTrue, D, L](url = url, digits, loopValue)
 
     /** Add DTMF digits to play
       *
@@ -57,25 +67,44 @@ object PlayVerb {
     @nowarn(value = "cat=unused-params")
     def withDigits(dtmfString: DtmfString)(
         implicit ev: D =:= DigitsAddedFalse
-    ): Builder[BuildableTrue, S, DigitsAddedTrue] =
-      new Builder[BuildableTrue, S, DigitsAddedTrue](url, Some(dtmfString))
+    ): Builder[BuildableTrue, S, DigitsAddedTrue, L] =
+      new Builder[BuildableTrue, S, DigitsAddedTrue, L](url, Some(dtmfString), loopValue)
+
+    /** Add loop attribute to the play verb.
+      *
+      * Will make Twilio loop it. Input value must be 0 or positive, otherwise it will fail runtime
+      * in Twilio.
+      *
+      * 0 will make Twilio loop it 1000 times, or until the call is hang up.
+      */
+    @nowarn(value = "cat=unused-params")
+    def withLoop(loopValue: Int)(
+        implicit ev: L =:= LoopAddedFalse
+    ): Builder[B, S, D, LoopAddedTrue] =
+      new Builder[B, S, D, LoopAddedTrue](url, digits, Some(loopValue))
 
     @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
-    ): PlayVerb = PlayVerbImpl(url, digits)
+    ): PlayVerb = PlayVerbImpl(url, digits, loopValue)
   }
-  type BuilderStartState = Builder[BuildableFalse, SoundFileAddedFalse, DigitsAddedFalse]
-  type BuildFunction     = BuilderStartState => PlayVerb
+  type BuilderStartState =
+    Builder[BuildableFalse, SoundFileAddedFalse, DigitsAddedFalse, LoopAddedFalse]
+  type BuildFunction = BuilderStartState => PlayVerb
 
   def build(fun: BuildFunction): PlayVerb = fun(
-    new BuilderStartState("", None)
+    new BuilderStartState("", None, None)
   )
 
-  private final case class PlayVerbImpl(url: String, digits: Option[DtmfString]) extends PlayVerb {
+  private final case class PlayVerbImpl(
+      url: String,
+      digits: Option[DtmfString],
+      loopValue: Option[Int]
+  ) extends PlayVerb {
     override val xmlCompact: String = {
       val digitsAttribute = digits.map(d => s""" digits="${d.twilioString}"""").getOrElse("")
-      s"""<Play$digitsAttribute>${StringUtil.xmlEscape(url)}</Play>"""
+      val loopAttribute   = loopValue.map(l => s""" loop="$l"""").getOrElse("")
+      s"""<Play$digitsAttribute$loopAttribute>${StringUtil.xmlEscape(url)}</Play>"""
     }
 
     override def xmlPretty: String = xmlCompact
