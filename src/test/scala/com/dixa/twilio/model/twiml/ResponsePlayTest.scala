@@ -58,6 +58,79 @@ final class ResponsePlayTest extends AnyWordSpec {
              |</Response>""".stripMargin
         assert(xmlPretty === expectedXmlPretty)
       }
+
+      "should allow adding both digits and a Url" in {
+        val result = Response.build { responseBuilder =>
+          responseBuilder
+            .addPlay { playBuilder =>
+              playBuilder
+                .withSoundFileUrl("https://www.dixa.com")
+                .withDigits(DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`))
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val xmlCompact = result.xmlCompact
+        val expectedXmlCompact =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234">https://www.dixa.com</Play></Response>"""
+        assert(xmlCompact == expectedXmlCompact)
+
+        val xmlPretty = result.xmlPretty
+        val expectedXmlPretty =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Play digits="234">https://www.dixa.com</Play>
+             |</Response>""".stripMargin
+        assert(xmlPretty === expectedXmlPretty)
+      }
+
+      "should not allow building empty instance" in {
+        // format: off
+        assertTypeError(
+          """Response.build { responseBuilder =>
+            |          responseBuilder
+            |            .addPlay { playBuilder =>
+            |              playBuilder.build()
+            |            }
+            |            .buildVerified()
+            |        }
+            |""".stripMargin)
+        // format: on
+      }
+
+      "should not allow adding multiple urls" in {
+        // format: off
+        assertTypeError(
+        """Response.build { responseBuilder =>
+           |          responseBuilder
+           |            .addPlay { playBuilder =>
+           |              playBuilder
+           |                .withSoundFileUrl("https://www.dixa.com/")
+           |                .withSoundFileUrl("https://www.dixa.com/about/")
+           |                .build
+           |            }
+           |            .buildVerified()
+           |        }
+           |""".stripMargin)
+        // format: on
+      }
+
+      "should not allow adding muliple digtits" in {
+        assertTypeError(
+          """Response.build { responseBuilder =>
+            |          responseBuilder
+            |            .addPlay { playBuilder =>
+            |              playBuilder
+            |                .withDigits(DtmfString(DtmfDigit.`1`, DtmfDigit.w, DtmfDigit.`*`))
+            |                .withDigits(DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`))
+            |                .build()
+            |            }
+            |            .buildVerified()
+            |        }
+            |""".stripMargin
+        )
+      }
     }
   }
 }
