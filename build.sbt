@@ -53,7 +53,7 @@ lazy val `twilio-client` = project
       crossScalaVersions := Seq(scala2_12),
       releaseCrossBuild  := true,
       publishTo := {
-        if (version.value.trim.contains("SNAPSHOT")) {
+        if (version.value.trim.endsWith("SNAPSHOT")) {
           Some(snapshotsRepository)
         } else {
           Some(releasesRepository)
