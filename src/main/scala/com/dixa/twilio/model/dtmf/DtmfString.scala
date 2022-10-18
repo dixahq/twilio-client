@@ -8,7 +8,7 @@ import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
   * lot of places it won't make sense to have a empty value, like when providing digits to the Play
   * TwiML verb, and you can always wrap it in an Option if you need it.
   */
-final class DtmfString private (private val seq: IndexedSeq[DtmfDigit]) extends TwilioStringValue {
+final class DtmfString private (private val seq: Vector[DtmfDigit]) extends TwilioStringValue {
 
   override def equals(other: Any): Boolean = other match {
     case that: DtmfString =>
@@ -24,6 +24,8 @@ final class DtmfString private (private val seq: IndexedSeq[DtmfDigit]) extends 
   override def toString = s"DtmfString(${seq.mkString(",")})"
 
   override def twilioString: String = seq.mkString("")
+
+  def map(fun: DtmfDigit => DtmfDigit): DtmfString = new DtmfString(seq.map(fun))
 }
 
 object DtmfString {

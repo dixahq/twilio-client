@@ -51,5 +51,16 @@ final class DtmfStringTest extends AnyWordSpec {
         }
       }
     }
+
+    "should provide a map method" in {
+      val in       = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected = DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`)
+      val result = in.map { d =>
+        val asInt   = d.twilioString.toInt
+        val plusOne = asInt + 1
+        DtmfDigit.fromCharUnsafe(plusOne.toString.head)
+      }
+      assert(result == expected)
+    }
   }
 }
