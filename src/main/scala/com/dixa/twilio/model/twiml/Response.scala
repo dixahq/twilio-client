@@ -47,6 +47,18 @@ import scala.annotation.nowarn
   * need to use a custom Verb, or create a Response from a String, then please contribute to
   * this library instead, and make it support building the needed TwiMl in a typesafe way.
   * 
+  * If you instead need to build a Response from a string, you simply just use call 
+  * [[Response.fromString]]. This will give you an instance of [[Response.UnverifiedFromString]].
+  * In Contrast you will get a [[Response.Verified]] if you are building it via the [[Response.build]]
+  * method without adding a custom [[TwimlElement.Verb]]. If you do add a custom verb, you end up
+  * with a [[Response.UnverifiedFromModel]]. 
+  * 
+  * Note that getting a [[Response.Verified]] is only guarentying that the TwiML is formattet
+  * correctly, and is following the schema rules of Twiml. However we cannot guarantee that
+  * the TwiML will not produce an error in Twilio at runtime, as a lot of TwiML element can point
+  * to external resources, that we have no way of checking compile time. An example of this is Play,
+  * that can point to external downloadable files. 
+  * 
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
   * provides the builder to. But as many of the things added to the builder are them self objects 
   * that needs to be build using another builder, which provides a pleasant syntax for clients.
@@ -208,7 +220,7 @@ object Response {
     * It is highly recommended to use [[Response.build]] instead.
     *
     * There will be no manipulation of the supplied TwiML. So returned Response will return it
-    * exactly as is, both when `xmlCompact` and `xmlCompact` is called.
+    * exactly as is, both when `xmlCompact` and `xmlPretty` is called.
     */
   def fromString(suppliedTwiml: String): UnverifiedFromString = UnverifiedFromStringImpl(
     suppliedTwiml

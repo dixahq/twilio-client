@@ -1,5 +1,6 @@
 package com.dixa.twilio.model.twiml
 
+import com.dixa.twilio.model.dtmf.{DtmfDigit, DtmfString}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ResponsePlayTest extends AnyWordSpec {
@@ -32,6 +33,31 @@ final class ResponsePlayTest extends AnyWordSpec {
                |</Response>""".stripMargin
           assert(xmlPretty === expectedXmlPretty)
         }
+
+      "should support playing DTMF digits" in {
+        val result = Response.build { responseBuilder =>
+          responseBuilder
+            .addPlay { playBuilder =>
+              playBuilder
+                .withDigits(DtmfString(DtmfDigit.`1`, DtmfDigit.w, DtmfDigit.`*`))
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val xmlCompact = result.xmlCompact
+        val expectedXmlCompact =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="1w*"></Play></Response>"""
+        assert(xmlCompact == expectedXmlCompact)
+
+        val xmlPretty = result.xmlPretty
+        val expectedXmlPretty =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Play digits="1w*"></Play>
+             |</Response>""".stripMargin
+        assert(xmlPretty === expectedXmlPretty)
+      }
     }
   }
 }
