@@ -4,7 +4,7 @@ import com.dixa.twilio.model.EnumWithTwilioString
 import scala.collection.immutable
 
 /** Enum representing all the possible DTMF digits. */
-sealed abstract class DtmfDigit(asChar: Char) extends EnumWithTwilioString.EnumEntry {
+sealed abstract class DtmfDigit(private val asChar: Char) extends EnumWithTwilioString.EnumEntry {
   override val toString: String = asChar.toString
 }
 
@@ -24,4 +24,21 @@ object DtmfDigit extends EnumWithTwilioString[DtmfDigit] {
   case object `*` extends DtmfDigit('*')
   case object `#` extends DtmfDigit('#')
   case object `w` extends DtmfDigit('w')
+
+  sealed trait DtmfDigitException extends RuntimeException
+  object DtmfDigitException {
+    final case class InvalidChar(char: Char)
+        extends IllegalArgumentException(
+          s"$char is not a valid DtmfDigit. Allowed values are: ${values.map(_.asChar).mkString(",")}"
+        )
+        with DtmfDigitException
+  }
+
+  def fromChar(char: Char): Either[DtmfDigitException.InvalidChar, DtmfDigit] =
+    values
+      .find(_.asChar == char)
+      .map(Right(_))
+      .getOrElse(Left(DtmfDigitException.InvalidChar(char)))
+
+  def fromCharUnsafe(char: Char): DtmfDigit = fromChar(char).fold(e => throw e, identity)
 }

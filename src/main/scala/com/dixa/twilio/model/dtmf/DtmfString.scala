@@ -1,5 +1,6 @@
 package com.dixa.twilio.model.dtmf
 import com.dixa.twilio.model.TwilioStringValue
+import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
 
 /** Represent a string of DTMF digits
   *
@@ -27,5 +28,38 @@ final class DtmfString private (private val seq: IndexedSeq[DtmfDigit]) extends 
 
 object DtmfString {
 
+  sealed trait DtmfStringException extends RuntimeException
+
+  object DtmfStringException {
+    final case object EmptyValue
+        extends IllegalStateException("DtmfString not allowed to be empty")
+        with DtmfStringException
+
+    final case class InvalidChar(invalidCharException: DtmfDigitException.InvalidChar)
+        extends IllegalArgumentException(invalidCharException.getMessage)
+        with DtmfStringException
+  }
+
   def apply(first: DtmfDigit, rest: DtmfDigit*): DtmfString = new DtmfString(first +: rest.toVector)
+
+  def fromSeq(first: DtmfDigit, rest: Seq[DtmfDigit]): DtmfString = new DtmfString(
+    first +: rest.toVector
+  )
+
+  def fromString(s: String): Either[DtmfStringException, DtmfString] = s match {
+    case empty if empty == null || empty.isEmpty => Left(DtmfStringException.EmptyValue)
+    case singleChar if singleChar.length == 1 =>
+      DtmfDigit.fromChar(s.head).map(DtmfString(_)).left.map(DtmfStringException.InvalidChar)
+    case multiCharString =>
+      val mapped = multiCharString.map(DtmfDigit.fromChar)
+      mapped.find(_.isLeft) match {
+        case Some(e) => Left(DtmfStringException.InvalidChar(e.left.get))
+        case None =>
+          val mappedUnwrapped = mapped.map(_.right.get)
+          Right(DtmfString.fromSeq(mappedUnwrapped.head, mappedUnwrapped.tail))
+      }
+  }
+
+  def fromStringUnsafe(s: String): DtmfString = fromString(s).fold(e => throw e, identity)
+
 }
