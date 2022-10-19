@@ -1,0 +1,112 @@
+package com.dixa.twilio.model.twiml.verb
+
+import com.dixa.twilio.model.StringUtil
+import com.dixa.twilio.model.dtmf.DtmfString
+import com.dixa.twilio.model.twiml.TwimlConstraints.{Buildable, BuildableFalse, BuildableTrue}
+import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
+
+import scala.annotation.nowarn
+
+/** Representation of the Play Verb from TwiML
+  *
+  * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
+  * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
+  *
+  * Twilio documentation: https://www.twilio.com/docs/voice/twiml/play
+  */
+sealed trait PlayVerb extends TwimlElement.Verb {}
+
+object PlayVerb {
+
+  // Play specific constraints (Phantom types)
+  sealed trait SoundFileAdded
+  sealed trait SoundFileAddedTrue  extends SoundFileAdded
+  sealed trait SoundFileAddedFalse extends SoundFileAdded
+
+  sealed trait DigitsAdded
+  sealed trait DigitsAddedTrue  extends DigitsAdded
+  sealed trait DigitsAddedFalse extends DigitsAdded
+
+  sealed trait LoopAdded
+  sealed trait LoopAddedTrue  extends LoopAdded
+  sealed trait LoopAddedFalse extends LoopAdded
+
+  final class Builder[
+      B <: Buildable,
+      S <: SoundFileAdded,
+      D <: DigitsAdded,
+      L <: LoopAdded
+  ] private[PlayVerb] (
+      url: String,
+      digits: Option[DtmfString],
+      loopValue: Option[Int]
+  ) {
+
+    /** Add a url for a sound file to play.
+      *
+      * Only a single call to this method is allowed, as the Play verb only support a single file.
+      * But you can just use two consecutive Play verbs, if you need to play two files in a row.
+      *
+      * You can add both this and [[withDigits]], and in such cases the digits are played before the
+      * sound file.
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSoundFileUrl(url: String)(
+        implicit ev: S =:= SoundFileAddedFalse
+    ): Builder[BuildableTrue, SoundFileAddedTrue, D, L] =
+      new Builder[BuildableTrue, SoundFileAddedTrue, D, L](url = url, digits, loopValue)
+
+    /** Add DTMF digits to play
+      *
+      * Only a single call to this method is allowed, as the Play verb only support one single
+      * string of DTMF digits.
+      *
+      * You can add both this and [[withSoundFileUrl]], and in such cases the digits are played
+      * before the sound file.
+      */
+    @nowarn(value = "cat=unused-params")
+    def withDigits(dtmfString: DtmfString)(
+        implicit ev: D =:= DigitsAddedFalse
+    ): Builder[BuildableTrue, S, DigitsAddedTrue, L] =
+      new Builder[BuildableTrue, S, DigitsAddedTrue, L](url, Some(dtmfString), loopValue)
+
+    /** Add loop attribute to the play verb.
+      *
+      * Will make Twilio loop it. Input value must be 0 or positive, otherwise it will fail at
+      * runtime in Twilio.
+      *
+      * 0 will make Twilio loop it 1000 times, or until the call is hang up.
+      */
+    @nowarn(value = "cat=unused-params")
+    def withLoop(loopValue: Int)(
+        implicit ev: L =:= LoopAddedFalse
+    ): Builder[B, S, D, LoopAddedTrue] =
+      new Builder[B, S, D, LoopAddedTrue](url, digits, Some(loopValue))
+
+    @nowarn(value = "cat=unused-params")
+    def build()(
+        implicit ev: B =:= TwimlConstraints.BuildableTrue
+    ): PlayVerb = PlayVerbImpl(url, digits, loopValue)
+  }
+  type BuilderStartState =
+    Builder[BuildableFalse, SoundFileAddedFalse, DigitsAddedFalse, LoopAddedFalse]
+  type BuildFunction = BuilderStartState => PlayVerb
+
+  def build(fun: BuildFunction): PlayVerb = fun(
+    new BuilderStartState("", None, None)
+  )
+
+  private final case class PlayVerbImpl(
+      url: String,
+      digits: Option[DtmfString],
+      loopValue: Option[Int]
+  ) extends PlayVerb {
+    override val xmlCompact: String = {
+      val digitsAttribute = digits.map(d => s""" digits="${d.twilioString}"""").getOrElse("")
+      val loopAttribute   = loopValue.map(l => s""" loop="$l"""").getOrElse("")
+      s"""<Play$digitsAttribute$loopAttribute>${StringUtil.xmlEscape(url)}</Play>"""
+    }
+
+    override def xmlPretty: String = xmlCompact
+  }
+}

@@ -19,7 +19,7 @@ object SayVerb {
     def withText(text: String): Builder[TwimlConstraints.BuildableTrue] =
       new Builder[TwimlConstraints.BuildableTrue](text = text)
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): SayVerb = SayVerbImpl(text)

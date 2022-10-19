@@ -25,7 +25,7 @@ object RedirectVerb {
 
     def withMethod(method: HttpMethod): Builder[B] = new Builder(callbackUrl, Some(method))
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): RedirectVerb =

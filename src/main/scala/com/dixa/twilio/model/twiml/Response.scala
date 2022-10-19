@@ -11,7 +11,7 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
   VerifiedFalse,
   VerifiedTrue
 }
-import com.dixa.twilio.model.twiml.verb.{DialVerb, RedirectVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{DialVerb, PlayVerb, RedirectVerb, SayVerb}
 
 import scala.annotation.nowarn
 
@@ -47,9 +47,21 @@ import scala.annotation.nowarn
   * need to use a custom Verb, or create a Response from a String, then please contribute to
   * this library instead, and make it support building the needed TwiMl in a typesafe way.
   * 
+  * If you instead need to build a Response from a string, you simply just use call 
+  * [[Response.fromString]]. This will give you an instance of [[Response.UnverifiedFromString]].
+  * In Contrast you will get a [[Response.Verified]] if you are building it via the [[Response.build]]
+  * method without adding a custom [[TwimlElement.Verb]]. If you do add a custom verb, you end up
+  * with a [[Response.UnverifiedFromModel]]. 
+  * 
+  * Note that getting a [[Response.Verified]] is only guaranteeing that the TwiML is formatted
+  * correctly, and is following the schema rules of Twiml. However we cannot guarantee that
+  * the TwiML will not produce an error in Twilio at runtime, as a lot of TwiML elements can point
+  * to external resources, that we have no way of checking at compile time. An example of this is Play,
+  * that can point to external downloadable files. 
+  * 
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
-  * provides the builder to. But as many of the things added to the builder are them self objects 
-  * that needs to be build using another builder, which provides a pleasant syntax for clients.
+  * provides the builder to. But as many of the things added to the builder are objects themselves 
+  * that need to be build using another builder, which provides a pleasant syntax for clients.
   * Instead of them needing to find the correct builder to create 
   * and provide, they can just provide a function, give the argument (the builder) a name, and
   * start using it. This works really well with autocompletion in editors, after calling
@@ -117,7 +129,7 @@ object Response {
       verbs: Vector[TwimlElement.Verb]
   ) {
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addDial(fun: DialVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -128,17 +140,23 @@ object Response {
       * Calling this, will prevent you from adding more verbs to builder, as it makes no sense to
       * have anything after a redirect in TwiML.
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addRedirect(fun: RedirectVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
       new Builder(verbs :+ RedirectVerb.build(fun))
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addSay(fun: SayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ SayVerb.build(fun))
+
+    @nowarn(value = "cat=unused-params")
+    def addPlay(fun: PlayVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ PlayVerb.build(fun))
 
     /** A a custom Verb to the builder (not recommended)
       *
@@ -147,7 +165,7 @@ object Response {
       * such the generated [[Response]] may generate TwiML that is not valid, without detecting it
       * compile time.
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def addCustomVerb(
         verb: TwimlElement.Verb
     )(
@@ -164,7 +182,7 @@ object Response {
       *   1. Added at least one verb.
       *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def buildVerified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedTrue
@@ -178,7 +196,7 @@ object Response {
       *   1. Added at least one verb
       *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
       */
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def buildUnverified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedFalse
@@ -202,7 +220,7 @@ object Response {
     * It is highly recommended to use [[Response.build]] instead.
     *
     * There will be no manipulation of the supplied TwiML. So returned Response will return it
-    * exactly as is, both when `xmlCompact` and `xmlCompact` is called.
+    * exactly as is, both when `xmlCompact` and `xmlPretty` is called.
     */
   def fromString(suppliedTwiml: String): UnverifiedFromString = UnverifiedFromStringImpl(
     suppliedTwiml

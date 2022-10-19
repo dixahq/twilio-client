@@ -32,13 +32,13 @@ object DialVerb {
       S <: HasSingleAllowedValueAlready
   ](value: ValueToUse) {
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def withPhoneNumber(pn: PhoneNumberE164)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] =
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValuePhoneNumber(pn))
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def withConference(fun: ConferenceNoun.BuildFunction)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] = {
@@ -46,7 +46,7 @@ object DialVerb {
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValueNoun(conference))
     }
 
-    @nowarn
+    @nowarn(value = "cat=unused-params")
     def build()(
         implicit evB: B =:= BuildableTrue
     ): DialVerb = DialVerbImpl(value)
