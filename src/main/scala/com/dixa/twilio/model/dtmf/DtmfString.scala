@@ -10,12 +10,27 @@ import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
   */
 final class DtmfString private (private val seq: Vector[DtmfDigit]) extends TwilioStringValue {
 
+  // Not a case class, so implement equals, hashCode and toString manually.
+
+  /** Equals method that follows the classic Java equals contract.
+    *
+    * It will return true on matching DtmfString instances. Matches the implementation of the
+    * hashCode method.
+    *
+    * For an good explanation of the Java equals contract, you could look it up in the book:
+    * Effective Java.
+    */
   override def equals(other: Any): Boolean = other match {
     case that: DtmfString =>
       seq == that.seq
     case _ => false
   }
 
+  /** hashCode implementation, that follows the classic Java hashCode contract.
+    *
+    * For an good explanation of the Java hashCode contract, you could look it up in the book:
+    * Effective Java
+    */
   override def hashCode(): Int = {
     val state = Seq(seq)
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
