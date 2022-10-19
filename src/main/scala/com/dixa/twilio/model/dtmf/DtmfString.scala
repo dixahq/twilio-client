@@ -4,8 +4,8 @@ import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
 
 /** Represent a string of DTMF digits
   *
-  * This type is not supporting representing an empty value. and it is enforced compile time. In a
-  * lot of places it won't make sense to have a empty value, like when providing digits to the Play
+  * This type does not support representing an empty value, and it is enforced at compile time. In a
+  * lot of places it won't make sense to have an empty value, like when providing digits to the Play
   * TwiML verb, and you can always wrap it in an Option if you need it.
   */
 final class DtmfString private (private val seq: Vector[DtmfDigit]) extends TwilioStringValue {

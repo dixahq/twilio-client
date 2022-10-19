@@ -45,7 +45,7 @@ object PlayVerb {
     /** Add a url for a sound file to play.
       *
       * Only a single call to this method is allowed, as the Play verb only support a single file.
-      * But you can just use two consecutive Play verb, if you need to play to files in a row.
+      * But you can just use two consecutive Play verbs, if you need to play two files in a row.
       *
       * You can add both this and [[withDigits]], and in such cases the digits are played before the
       * sound file.
@@ -72,8 +72,8 @@ object PlayVerb {
 
     /** Add loop attribute to the play verb.
       *
-      * Will make Twilio loop it. Input value must be 0 or positive, otherwise it will fail runtime
-      * in Twilio.
+      * Will make Twilio loop it. Input value must be 0 or positive, otherwise it will fail at
+      * runtime in Twilio.
       *
       * 0 will make Twilio loop it 1000 times, or until the call is hang up.
       */

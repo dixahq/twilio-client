@@ -53,15 +53,15 @@ import scala.annotation.nowarn
   * method without adding a custom [[TwimlElement.Verb]]. If you do add a custom verb, you end up
   * with a [[Response.UnverifiedFromModel]]. 
   * 
-  * Note that getting a [[Response.Verified]] is only guarentying that the TwiML is formattet
+  * Note that getting a [[Response.Verified]] is only guaranteeing that the TwiML is formatted
   * correctly, and is following the schema rules of Twiml. However we cannot guarantee that
-  * the TwiML will not produce an error in Twilio at runtime, as a lot of TwiML element can point
-  * to external resources, that we have no way of checking compile time. An example of this is Play,
+  * the TwiML will not produce an error in Twilio at runtime, as a lot of TwiML elements can point
+  * to external resources, that we have no way of checking at compile time. An example of this is Play,
   * that can point to external downloadable files. 
   * 
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
-  * provides the builder to. But as many of the things added to the builder are them self objects 
-  * that needs to be build using another builder, which provides a pleasant syntax for clients.
+  * provides the builder to. But as many of the things added to the builder are objects themselves 
+  * that need to be build using another builder, which provides a pleasant syntax for clients.
   * Instead of them needing to find the correct builder to create 
   * and provide, they can just provide a function, give the argument (the builder) a name, and
   * start using it. This works really well with autocompletion in editors, after calling
