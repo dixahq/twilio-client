@@ -36,9 +36,9 @@ final class DtmfString private (private val seq: Vector[DtmfDigit]) extends Twil
     state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
   }
 
-  override def toString = s"DtmfString(${seq.mkString(",")})"
+  override lazy val toString = s"DtmfString(${seq.mkString(",")})"
 
-  override def twilioString: String = seq.mkString("")
+  override lazy val twilioString: String = seq.mkString("")
 
   def map(fun: DtmfDigit => DtmfDigit): DtmfString = new DtmfString(seq.map(fun))
 
