@@ -5,6 +5,7 @@ import akka.http.scaladsl.model._
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{FlowShape, SourceShape}
 import com.dixa.twilio.client.impl.{
+  DefaultApiErrorEntityJsonRep,
   HttpEntityString,
   MetaRootJsonResp,
   PagingStyle,
@@ -303,7 +304,13 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
   ): Either[ApiException, (HttpResponse, HttpEntityString)] = {
     resp.status match {
       case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
-      case _                        => Right((resp, httpEntityString))
+      case StatusCodes.Conflict =>
+        httpEntityString.parse[DefaultApiErrorEntityJsonRep] match {
+          case Right(DefaultApiErrorEntityJsonRep(20409L, _, _, _)) =>
+            Left(ApiException.Conflict())
+          case _ => Right((resp, httpEntityString))
+        }
+      case _ => Right((resp, httpEntityString))
     }
   }
 
