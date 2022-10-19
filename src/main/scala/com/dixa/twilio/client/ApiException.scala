@@ -30,7 +30,7 @@ object ApiException {
     */
   final case class Conflict()
       extends IllegalStateException(
-        "Number registration failed due to conflict. More info: https://www.twilio.com/docs/errors/20409"
+        "Failed due to conflict. More info: https://www.twilio.com/docs/errors/20409"
       )
       with ApiException
 }
