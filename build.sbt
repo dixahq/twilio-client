@@ -8,8 +8,8 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Akka     = "2.6.19"
-  val AkkaHttp = "10.2.9"
+  val Akka     = "2.6.20"
+  val AkkaHttp = "10.2.10"
   val Circe    = "0.14.3"
 
   // test
@@ -61,9 +61,9 @@ lazy val `twilio-client` = project
       },
       libraryDependencies ++= Seq(
         // Akka
-        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka,
-        "com.typesafe.akka" %% "akka-stream"      % Version.Akka,
-        "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp,
+        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka % Provided,
+        "com.typesafe.akka" %% "akka-stream"      % Version.Akka % Provided,
+        "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
         // Circe
         "io.circe" %% "circe-core"    % Version.Circe,
