@@ -61,8 +61,8 @@ lazy val `twilio-client` = project
       },
       libraryDependencies ++= Seq(
         // Akka
-        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka % Provided,
-        "com.typesafe.akka" %% "akka-stream"      % Version.Akka % Provided,
+        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka     % Provided,
+        "com.typesafe.akka" %% "akka-stream"      % Version.Akka     % Provided,
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
         // Circe
@@ -75,7 +75,7 @@ lazy val `twilio-client` = project
 
         // Lang improvement libs
         "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
-        "com.beachape"  %% "enumeratum" % "1.7.0",
+        "com.beachape"  %% "enumeratum" % "1.7.2",
 
         // Test
         "org.scalatest" %% "scalatest"                   % Version.ScalatestScalactic % Test,
