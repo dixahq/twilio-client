@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: twilio-client
+  description: Interface and utilities for using Twilio's API.
+  annotations:
+    github.com/project-slug: dixahq/twilio-client
+  tags:
+    - scala
+spec:
+  type: library
+  lifecycle: production
+  owner: dixahq-backend-channels
