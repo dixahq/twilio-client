@@ -75,7 +75,7 @@ lazy val `twilio-client` = project
 
         // Lang improvement libs
         "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
-        "com.beachape"  %% "enumeratum" % "1.7.0",
+        "com.beachape"  %% "enumeratum" % "1.7.2",
 
         // Test
         "org.scalatest" %% "scalatest"                   % Version.ScalatestScalactic % Test,
