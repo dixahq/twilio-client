@@ -61,8 +61,8 @@ lazy val `twilio-client` = project
       },
       libraryDependencies ++= Seq(
         // Akka
-        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka % Provided,
-        "com.typesafe.akka" %% "akka-stream"      % Version.Akka % Provided,
+        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka     % Provided,
+        "com.typesafe.akka" %% "akka-stream"      % Version.Akka     % Provided,
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
         // Circe
