@@ -68,7 +68,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
     }
   }
 
-  //noinspection TypeAnnotation
+  // noinspection TypeAnnotation
   class Fixture {
     val outgoingCallerId = OutgoingCallerId(
       sid = OutgoingCallerId.Sid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
