@@ -11,7 +11,7 @@ import java.time.Instant
 final case class MediaResourceReference(
     sid: Media.Sid,
     accountSid: Sid,
-    parentSid: MessageSid,
+    parentSid: Message.Sid,
     contentType: String,
     dateCreated: Instant,
     dateUpdated: Instant,

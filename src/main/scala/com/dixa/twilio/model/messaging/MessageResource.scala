@@ -6,7 +6,7 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import java.time.Instant
 
 case class MessageResource(
-    sid: MessageSid,
+    sid: Message.Sid,
     dateCreated: Option[Instant],
     dateUpdated: Option[Instant],
     dateSent: Option[Instant],

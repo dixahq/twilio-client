@@ -7,25 +7,15 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{
-  MessageBody,
-  MessageDirection,
-  MessageNumSegments,
-  MessagePrice,
-  MessageResource,
-  MessageSender,
-  MessageSid,
-  MessageStatus,
-  ServiceSid
-}
+import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo}
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.scalatest.matchers.should.Matchers
 
-import java.util.{HashMap => JavaMap}
 import java.time._
+import java.util.{HashMap => JavaMap}
 
 final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
 
@@ -183,7 +173,7 @@ private object MessageResourceReadListTest {
   private def path(accountSid: TwilioAccount.Sid) =
     s"/2010-04-01/Accounts/$accountSid/Messages.json"
 
-  private val messageSid = MessageSid("MM9c8a124127702f0c7084b373cb06157a")
+  private val messageSid = Message.Sid.unsafe("SM9c8a124127702f0c7084b373cb06157a")
 
   val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
     to = None,

@@ -130,7 +130,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                       numMedia = decoded.num_media.toInt,
                       numSegments = MessageNumSegments(decoded.num_segments.toInt),
                       price = price,
-                      sid = MessageSid(decoded.sid),
+                      sid = Message.Sid.unsafe(decoded.sid),
                       status = status,
                       to = PhoneNumberE164(decoded.to),
                       error = messageError

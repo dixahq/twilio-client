@@ -78,7 +78,7 @@ final class MessageSendTest extends TwilioClientTest {
             numMedia = 0,
             numSegments = MessageNumSegments(1),
             price = None,
-            sid = MessageSid("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             status = MessageStatus.withName("Sent"),
             to = PhoneNumberE164(to),
             error = None

@@ -13,7 +13,7 @@ import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, MessageSid}
+import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, Message}
 import io.circe.generic.auto._
 
 import java.time.Instant
@@ -68,7 +68,7 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
       uri: String
   ) {
     def toModel(
-        messageSid: MessageSid,
+        messageSid: Message.Sid,
         connSettings: TwilioConnectionSettings
     ): MediaResourceReference = {
       val accountSid = TwilioAccount.Sid.unsafe(account_sid)
@@ -76,7 +76,7 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
       MediaResourceReference(
         sid = mediaSid,
         accountSid = accountSid,
-        parentSid = MessageSid(parent_sid),
+        parentSid = Message.Sid.unsafe(parent_sid),
         contentType = content_type,
         dateCreated = Try(Instant.from(dateTime.parse(date_created))).getOrElse(Instant.now),
         dateUpdated = Try(Instant.from(dateTime.parse(date_updated))).getOrElse(Instant.now),

@@ -10,18 +10,7 @@ import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.Messa
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{
-  MessageBody,
-  MessageDirection,
-  MessageError,
-  MessageNumSegments,
-  MessagePrice,
-  MessageResource,
-  MessageSender,
-  MessageSid,
-  MessageStatus,
-  ServiceSid
-}
+import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import io.circe.generic.auto._
 
@@ -111,7 +100,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
       jsonRep: MessageJsonRep
   ): Either[MessageResourceReadException, MessageResource] = {
     val accountSid = TwilioAccount.Sid.unsafe(jsonRep.account_sid)
-    val messageSid = MessageSid(jsonRep.sid)
+    val messageSid = Message.Sid.unsafe(jsonRep.sid)
     for {
       messageDirection <- MessageDirection.fromTwilioStringEither(jsonRep.direction).left.map {
         err =>

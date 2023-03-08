@@ -9,7 +9,7 @@ import com.dixa.twilio.client.messaging.{
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, MediaResourceUrl, MessageSid}
+import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, MediaResourceUrl, Message}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
@@ -19,7 +19,7 @@ import java.time._
 final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers {
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-  private val messageSid   = MessageSid("MM9c8a124127702f0c7084b373cb06157a")
+  private val messageSid   = Message.Sid.unsafe("SM9c8a124127702f0c7084b373cb06157a")
   private val sid          = Media.Sid.unsafe("ME9ec380c03268689d63e8fc5e97bba86e")
   private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest(
     messageSid = messageSid
@@ -177,7 +177,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
 
   def mediaResourceReferenceResp(
       accountSid: TwilioAccount.Sid,
-      messageSid: MessageSid,
+      messageSid: Message.Sid,
       sid: Media.Sid
   ): String = {
     s"""{
@@ -193,7 +193,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
 
   private def mediaResourceListResp(
       accountSid: TwilioAccount.Sid,
-      messageSid: MessageSid,
+      messageSid: Message.Sid,
       sids: List[Media.Sid]
   ) =
     s"""{
