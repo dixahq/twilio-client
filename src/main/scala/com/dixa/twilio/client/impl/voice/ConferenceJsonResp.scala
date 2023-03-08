@@ -32,7 +32,7 @@ private[voice] object ConferenceJsonResp {
         participants: Seq[Conference.Participant]
     ): ConferenceWithParticipants = {
       ConferenceWithParticipants(
-        Conference.Sid(sid),
+        Conference.Sid.unsafe(sid),
         Conference.Status.fromTwilioStringUnsafe(status),
         Conference.FriendlyName(friendly_name),
         TwilioAccount.Sid.unsafe(account_sid),
@@ -42,7 +42,7 @@ private[voice] object ConferenceJsonResp {
 
     private[voice] def toModel: Conference.DefaultImpl = {
       Conference(
-        Conference.Sid(sid),
+        Conference.Sid.unsafe(sid),
         Conference.Status.fromTwilioStringUnsafe(status),
         Conference.FriendlyName(friendly_name),
         TwilioAccount.Sid.unsafe(account_sid)
