@@ -2,8 +2,8 @@ package com.dixa.twilio.model.phonenumber
 
 import com.dixa.twilio.model.iam.TwilioAccount
 
-sealed trait TwilioIncomingPhoneNumber {
-  def sid: TwilioPhoneNumberSid
+sealed trait TwilioIncomingPhoneNumber extends TwilioPhoneNumber {
+  def sid: TwilioPhoneNumber.Sid
   def accountSid: TwilioAccount.Sid
   def friendlyName: TwilioIncomingPhoneNumber.FriendlyName
   def phoneNumber: PhoneNumberE164
@@ -30,7 +30,7 @@ object TwilioIncomingPhoneNumber {
   )
 
   def apply(
-      sid: TwilioPhoneNumberSid,
+      sid: TwilioPhoneNumber.Sid,
       accountSid: TwilioAccount.Sid,
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
       phoneNumber: PhoneNumberE164,
@@ -39,7 +39,7 @@ object TwilioIncomingPhoneNumber {
     DefaultImpl(sid, accountSid, friendlyName, phoneNumber, capabilities)
 
   private final case class DefaultImpl(
-      sid: TwilioPhoneNumberSid,
+      sid: TwilioPhoneNumber.Sid,
       accountSid: TwilioAccount.Sid,
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
       phoneNumber: PhoneNumberE164,

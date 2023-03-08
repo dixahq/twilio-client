@@ -1,6 +1,7 @@
 package com.dixa.twilio.model.iam
 
-import com.dixa.twilio.model.{EnumWithTwilioString, TwilioStringValue}
+import com.dixa.twilio.model.SidAbstract.Prefix
+import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract, TwilioStringValue}
 import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
@@ -24,8 +25,10 @@ final case class TwilioAccount(
 
 object TwilioAccount {
 
-  final case class Name(override val toString: String) extends TwilioStringValue
-  final case class Sid(override val toString: String)
+  final case class Name(override val toString: String)         extends TwilioStringValue
+  final case class Sid private (override val toString: String) extends SidAbstract
+
+  object Sid extends SidAbstract.SidCompanionObject[Sid](Prefix("AC"), new Sid(_))
 
   sealed abstract class Status(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry

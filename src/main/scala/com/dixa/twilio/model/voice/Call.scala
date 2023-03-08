@@ -1,5 +1,7 @@
 package com.dixa.twilio.model.voice
 
+import com.dixa.twilio.model.SidAbstract
+import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 final case class Call(
@@ -22,39 +24,8 @@ object Call {
     * The twilio documentation about it can be found here:
     * https://support.twilio.com/hc/en-us/articles/223180488-What-is-a-Call-SID-
     */
-  final case class Sid private (override val toString: String)
+  final case class Sid private[Call] (override val toString: String) extends SidAbstract
 
-  object Sid {
-
-    def apply(input: String): Sid = safe(input).toTry.get
-
-    def safe(input: String): Either[CreationException, Sid] = {
-      if (input.isEmpty) Left(Sid.ArgumentEmptyException())
-      else if (!input.startsWith("CA")) Left(Sid.ArgumentMissingCaPrefixException(input))
-      else if (input.length != 34) Left(Sid.ArgumentLengthException(input))
-      else Right(new Sid(input))
-    }
-
-    sealed trait CreationException extends RuntimeException
-
-    final case class ArgumentEmptyException()
-        extends IllegalArgumentException(s"Empty string does not conform to: $conformToString")
-        with CreationException
-
-    final case class ArgumentMissingCaPrefixException(argument: String)
-        extends IllegalArgumentException(
-          s"$conformToString does not start with CA and therefore not conform to: $conformToString"
-        )
-        with CreationException
-
-    final case class ArgumentLengthException(argument: String)
-        extends IllegalArgumentException(
-          s"$argument has length not conforming to: $conformToString"
-        )
-        with CreationException
-
-    private val conformToString = "Callsid is a 34 character string that starts with CA"
-
-  }
+  object Sid extends SidCompanionObject(Prefix("CA"), new Sid(_))
 
 }

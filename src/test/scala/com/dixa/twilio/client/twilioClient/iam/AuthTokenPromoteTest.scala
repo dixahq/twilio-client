@@ -37,7 +37,7 @@ final class AuthTokenPromoteTest extends TwilioClientTest {
           AuthToken.AuthTokenAndMetaData[AuthToken.Primary](
             AuthToken.Primary("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
             AuthToken.MetaData(
-              TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+              TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
               TwilioTestConstants.createdTime,
               TwilioTestConstants.updatedTime
             )

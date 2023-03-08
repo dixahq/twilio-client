@@ -12,10 +12,10 @@ import scala.concurrent.Future
 
 final class CompleteConferenceTest extends TwilioClientTest {
 
-  private val account1Sid = TwilioAccount.Sid("TwilioTestAccount1")
+  private val account1Sid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
   private val conference1 = Conference(
-    sid = Conference.Sid("TwilioTestConference1Sid"),
+    sid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
     status = Conference.Status.InProgress,
     friendlyName = Conference.FriendlyName("Conference1FriendlyName"),
     accountSid = account1Sid
@@ -28,15 +28,15 @@ final class CompleteConferenceTest extends TwilioClientTest {
       |  "date_updated": "Wed, 06 Oct 2021 16:02:10 +0000",
       |  "region": "ie1",
       |  "friendly_name": "Conference1FriendlyName",
-      |  "uri": "/2010-04-01/Accouts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid.json",
-      |  "account_sid": "TwilioTestAccount1",
+      |  "uri": "/2010-04-01/Accouts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1.json",
+      |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
       |  "call_sid_ending_conference": null,
-      |  "sid": "TwilioTestConference1Sid",
+      |  "sid": "CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
       |  "date_created": "Wed, 06 Oct 2021 15:55:00 +0000",
       |  "api_version": "2010-04-01",
       |  "subresource_uris": {
-      |    "participants": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Participants.json",
-      |    "recordings": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Recordings.json"
+      |    "participants": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Participants.json",
+      |    "recordings": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Recordings.json"
       |  }
       |}
       |""".stripMargin
@@ -50,7 +50,7 @@ final class CompleteConferenceTest extends TwilioClientTest {
           WireMock
             .post(
               WireMock.urlPathEqualTo(
-                "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid.json"
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1.json"
               )
             )
             .withRequestBody(WireMock.equalTo("Status=completed"))
