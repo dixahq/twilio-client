@@ -4,8 +4,9 @@ import scala.reflect.{classTag, ClassTag}
 
 /** Base type for all classes representing a SID in Twilio.
   *
-  * That is Sids that comform to: "It is a 34 character string that starts with a 2 charactor
-  * prefix, where the prefix indicates the entity the sid represent".
+  * That is Sids that conform to: "It is a 34 character string that starts with a 2 character
+  * prefix, where the prefix indicates the entity the sid represent". This representation of
+  * a Sid is documented by Twilio here: https://www.twilio.com/docs/glossary/what-is-a-sid
   *
   * It is recommended for subclasses, to make there constructor private, and instead let the
   * companion object extend the SidCompanionObject class. This will ensure consistency in how we
