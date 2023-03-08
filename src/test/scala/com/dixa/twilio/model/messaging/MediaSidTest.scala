@@ -1,15 +1,10 @@
 package com.dixa.twilio.model.messaging
 
-import org.scalatest.wordspec.AnyWordSpec
+import com.dixa.twilio.model.{SidAbstract, SidAbstractTest}
+import org.scalatest.Assertions.assertDoesNotCompile
 
-final class MediaSidTest extends AnyWordSpec {
-
-  classOf[MediaSid].getSimpleName should {
-
-    "return its wrapped value in it's toString" in {
-      val wrapped = "SomeSid"
-      val a       = MediaSid(wrapped)
-      assert(a.toString === wrapped)
-    }
-  }
-}
+final class MediaSidTest
+    extends SidAbstractTest[Media.Sid, SidAbstract.SidCompanionObject[Media.Sid]](
+      Media.Sid,
+      { assertDoesNotCompile("""new Media.Sid("NotValidInput")""") }
+    )

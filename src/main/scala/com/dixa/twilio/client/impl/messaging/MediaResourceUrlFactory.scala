@@ -3,20 +3,20 @@ package com.dixa.twilio.client.impl.messaging
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{MediaResourceUrl, MediaSid, MessageSid}
+import com.dixa.twilio.model.messaging.{Media, MediaResourceUrl, Message}
 
 private[client] object MediaResourceUrlFactory {
 
   private[client] def buildMediaResourcePath(
       accountSid: TwilioAccount.Sid,
-      messageSid: MessageSid
+      messageSid: Message.Sid
   ): String = {
     buildMediaResourceBasePath(accountSid, messageSid) + "/Media.json"
   }
 
   private def buildMediaResourceBasePath(
       accountSid: TwilioAccount.Sid,
-      messageSid: MessageSid
+      messageSid: Message.Sid
   ): String = {
     s"/2010-04-01/Accounts/$accountSid/Messages/$messageSid"
   }
@@ -26,8 +26,8 @@ private[client] object MediaResourceUrlFactory {
   // using Twilio's basic auth, since it's publicly available.
   private[messaging] def resourceUrl(
       accountSid: TwilioAccount.Sid,
-      messageSid: MessageSid,
-      sid: MediaSid,
+      messageSid: Message.Sid,
+      sid: Media.Sid,
       twilioConnSettings: TwilioConnectionSettings
   ): MediaResourceUrl = {
     val basePath: String = buildMediaResourceBasePath(accountSid, messageSid)

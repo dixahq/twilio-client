@@ -278,8 +278,8 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
     "SingleRequestExecutor's run methods should be able to be overridden for testing and not throw " +
       "NoSuchMethodException" in {
-        val ownerAccountSid = TwilioAccount.Sid("TestOwnerAccountSid")
-        val accountSid      = TwilioAccount.Sid("TestAccountSid")
+        val ownerAccountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXA")
+        val accountSid      = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXB")
         val accountToken    = AuthToken.Primary("TestAuthToken")
         val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
         val account = TwilioAccount(

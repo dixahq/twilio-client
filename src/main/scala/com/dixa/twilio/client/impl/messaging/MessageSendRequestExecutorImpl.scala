@@ -118,7 +118,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                   }
                   Right(
                     MessageResource(
-                      accountSid = TwilioAccount.Sid(decoded.account_sid),
+                      accountSid = TwilioAccount.Sid.unsafe(decoded.account_sid),
                       body = MessageBody(decoded.body),
                       dateCreated = decoded.date_created.flatMap(parseDate),
                       dateSent = decoded.date_sent.flatMap(parseDate),
@@ -130,7 +130,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                       numMedia = decoded.num_media.toInt,
                       numSegments = MessageNumSegments(decoded.num_segments.toInt),
                       price = price,
-                      sid = MessageSid(decoded.sid),
+                      sid = Message.Sid.unsafe(decoded.sid),
                       status = status,
                       to = PhoneNumberE164(decoded.to),
                       error = messageError
@@ -171,8 +171,6 @@ private object MessageSendRequestExecutorImpl {
 
   private def parseMessagingServiceSid(
       messagingServiceSid: String
-  ): Option[ServiceSid] = messagingServiceSid match {
-    case null => None
-    case _    => Some(ServiceSid(messagingServiceSid))
-  }
+  ): Option[TwilioMessagingService.Sid] =
+    TwilioMessagingService.Sid.safe(messagingServiceSid).toOption
 }
