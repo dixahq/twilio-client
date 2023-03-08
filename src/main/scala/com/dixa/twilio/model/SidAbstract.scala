@@ -69,12 +69,14 @@ object SidAbstract {
       )
       with CreationException
 
+  // format: off
   /** Class to be extended by the companion object of a Sid subclass.
     *
-    *   1. This class will provide a sub type specific version of each possible error type. 2. A
-    *      Safe method for construction of a Sid having errors as part of the return type. 2. An
-    *      Unsafe method that will construct a Sid, throwing exceptions on errors.
+    *   1. This class will provide a sub type specific version of each possible error type.
+    *   2. A Safe method for construction of a Sid having errors as part of the return type.
+    *   3. An Unsafe method that will construct a Sid, throwing exceptions on errors.
     */
+  // format: on
   abstract class SidCompanionObject[S <: SidAbstract: ClassTag](
       val prefix: Prefix,
       instanceFactory: String => S
