@@ -71,7 +71,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
   // noinspection TypeAnnotation
   class Fixture {
     val outgoingCallerId = OutgoingCallerId(
-      sid = OutgoingCallerId.Sid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+      sid = OutgoingCallerId.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
       friendlyName = OutgoingCallerId.FriendlyName("(415) 867-5309"),
       phoneNumber = PhoneNumberE164("+141586753096")
     )
