@@ -34,7 +34,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
 
         val expected = Right(
           Call(
-            sid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             accountSid = connSettings.accountSid
           )
         )
@@ -155,7 +155,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
   final class Fixture {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val callSid      = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)

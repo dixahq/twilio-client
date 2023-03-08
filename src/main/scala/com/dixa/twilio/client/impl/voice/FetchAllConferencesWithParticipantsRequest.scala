@@ -90,7 +90,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     val decoded = entity.parse[TwilioConferenceParticipantOuterJsonRep]()
     decoded.toTry.get.participants.map { jsonRep =>
       Conference.Participant(
-        Call.Sid(jsonRep.call_sid),
+        Call.Sid.unsafe(jsonRep.call_sid),
         Conference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
       )
     }

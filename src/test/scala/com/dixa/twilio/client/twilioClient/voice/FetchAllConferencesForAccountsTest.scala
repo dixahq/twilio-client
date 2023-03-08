@@ -178,15 +178,15 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             participants = Vector(
               // 3 participants in this conference, so we can test pagination of fetching participants
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X1"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X1"),
                 status = Conference.ParticipantStatus.Connected
               ),
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X2"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X2"),
                 status = Conference.ParticipantStatus.Connected
               ),
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X3"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X3"),
                 status = Conference.ParticipantStatus.Connected
               )
             )
@@ -198,11 +198,11 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             accountSid = account1Sid,
             participants = Vector(
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X1"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X1"),
                 status = Conference.ParticipantStatus.Connected
               ),
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X2"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X2"),
                 status = Conference.ParticipantStatus.Connected
               )
             )
@@ -214,11 +214,11 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             accountSid = account1Sid,
             participants = Vector(
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X1"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X1"),
                 status = Conference.ParticipantStatus.Connected
               ),
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X2"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X2"),
                 status = Conference.ParticipantStatus.Connected
               )
             )
@@ -231,11 +231,11 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             accountSid = account2Sid,
             participants = Vector(
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1"),
                 status = Conference.ParticipantStatus.Connected
               ),
               Conference.Participant(
-                callSid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X2"),
+                callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X2"),
                 status = Conference.ParticipantStatus.Connected
               )
             )
