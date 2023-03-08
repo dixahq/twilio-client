@@ -35,7 +35,7 @@ private[voice] object ConferenceJsonResp {
         Conference.Sid(sid),
         Conference.Status.fromTwilioStringUnsafe(status),
         Conference.FriendlyName(friendly_name),
-        TwilioAccount.Sid(account_sid),
+        TwilioAccount.Sid.unsafe(account_sid),
         participants.toVector
       )
     }
@@ -45,7 +45,7 @@ private[voice] object ConferenceJsonResp {
         Conference.Sid(sid),
         Conference.Status.fromTwilioStringUnsafe(status),
         Conference.FriendlyName(friendly_name),
-        TwilioAccount.Sid(account_sid)
+        TwilioAccount.Sid.unsafe(account_sid)
       )
     }
   }

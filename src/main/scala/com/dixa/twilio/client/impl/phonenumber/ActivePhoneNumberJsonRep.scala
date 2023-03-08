@@ -22,7 +22,7 @@ private[phonenumber] final case class ActivePhoneNumberJsonRep(
 
   private[phonenumber] def toModel = TwilioActivePhoneNumber(
     TwilioPhoneNumberSid(sid),
-    TwilioAccount.Sid(account_sid),
+    TwilioAccount.Sid.unsafe(account_sid),
     PhoneNumberE164(phone_number),
     PhoneNumberType.fromTwilioStringCaseInsensitiveUnsafe(`type`),
     PhoneNumberLifecycle.fromTwilioStringCaseInsensitiveUnsafe(lifecycle),

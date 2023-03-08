@@ -26,6 +26,6 @@ object Call {
     */
   final case class Sid private[Call] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidCompanionObject(classOf[Sid], Prefix("CA"), new Sid(_))
+  object Sid extends SidCompanionObject(Prefix("CA"), new Sid(_))
 
 }

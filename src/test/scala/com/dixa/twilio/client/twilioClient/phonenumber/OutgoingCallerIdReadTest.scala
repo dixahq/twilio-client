@@ -53,7 +53,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
         val req =
           OutgoingCallerIdReadRequest(
-            TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             filter
           )
 
@@ -68,6 +68,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
     }
   }
 
+  //noinspection TypeAnnotation
   class Fixture {
     val outgoingCallerId = OutgoingCallerId(
       sid = OutgoingCallerId.Sid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),

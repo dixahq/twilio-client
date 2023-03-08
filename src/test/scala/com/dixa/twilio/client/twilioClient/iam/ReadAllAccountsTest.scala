@@ -62,9 +62,9 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           Right(
             TwilioAccount(
               name = TwilioAccount.Name("Dixa main account"),
-              sid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+              sid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4c93ca23e741"),
               status = TwilioAccount.Status.Active,
-              ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+              ownerAccountSid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4c93ca23e741"),
               authToken = AuthToken.Primary("go4oYeeShoozahb1ohdahbee6ahtevai"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(
@@ -84,9 +84,9 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           Right(
             TwilioAccount(
               name = TwilioAccount.Name("b1d45851-4ea1-4d28-9513-9fd770166a3e"),
-              sid = TwilioAccount.Sid("AC3183a741f1bab4764dac2492c8d1fd89"),
+              sid = TwilioAccount.Sid.unsafe("AC3183a741f1bab4764dac2492c8d1fd89"),
               status = TwilioAccount.Status.Active,
-              ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+              ownerAccountSid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4c93ca23e741"),
               authToken = AuthToken.Primary("shoos9reiWohzew2HoP7fei3Hoo2lai7"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(
@@ -106,9 +106,9 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           Right(
             TwilioAccount(
               name = TwilioAccount.Name("7f67d27b-6aa8-4a37-9dd4-8992ab3170ea"),
-              sid = TwilioAccount.Sid("AC4e8db239dc8664688a791d7f9cf45740"),
+              sid = TwilioAccount.Sid.unsafe("AC4e8db239dc8664688a791d7f9cf45740"),
               status = TwilioAccount.Status.Active,
-              ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+              ownerAccountSid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4c93ca23e741"),
               authToken = AuthToken.Primary("ith0Zaeghie0phoshiet5eeteengaina"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(
@@ -164,9 +164,9 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           Right(
             TwilioAccount(
               name = TwilioAccount.Name("FriendlyNameToQueryFor"),
-              sid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+              sid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4c93ca23e741"),
               status = TwilioAccount.Status.Suspended,
-              ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4c93ca23e741"),
+              ownerAccountSid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4c93ca23e741"),
               authToken = AuthToken.Primary("go4oYeeShoozahb1ohdahbee6ahtevai"),
               accountType = TwilioAccount.Type.Full,
               timeCreated = Instant.from(

@@ -37,7 +37,7 @@ final class AuthTokenSecondaryCreateTest extends TwilioClientTest {
           AuthToken.AuthTokenAndMetaData[AuthToken.Secondary](
             AuthToken.Secondary("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
             AuthToken.MetaData(
-              TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+              TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
               TwilioTestConstants.createdTime,
               TwilioTestConstants.updatedTime
             )

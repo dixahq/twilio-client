@@ -118,7 +118,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                   }
                   Right(
                     MessageResource(
-                      accountSid = TwilioAccount.Sid(decoded.account_sid),
+                      accountSid = TwilioAccount.Sid.unsafe(decoded.account_sid),
                       body = MessageBody(decoded.body),
                       dateCreated = decoded.date_created.flatMap(parseDate),
                       dateSent = decoded.date_sent.flatMap(parseDate),

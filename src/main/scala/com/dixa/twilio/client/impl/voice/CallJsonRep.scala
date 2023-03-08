@@ -12,6 +12,6 @@ private[impl] case class CallJsonRep(
 
   def toModel: Call = Call(
     Call.Sid.unsafe(sid),
-    TwilioAccount.Sid(account_sid)
+    TwilioAccount.Sid.unsafe(account_sid)
   )
 }

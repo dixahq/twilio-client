@@ -103,7 +103,7 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
   private def genAvailableNumber(pnSid: String) =
     TwilioActivePhoneNumber(
       TwilioPhoneNumberSid(pnSid),
-      TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+      TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
       PhoneNumberE164("+18559728742"),
       PhoneNumberType.TollFree,
       PhoneNumberLifecycle.GenerallyAvailable,

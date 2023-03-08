@@ -71,7 +71,7 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
         messageSid: MessageSid,
         connSettings: TwilioConnectionSettings
     ): MediaResourceReference = {
-      val accountSid = TwilioAccount.Sid(account_sid)
+      val accountSid = TwilioAccount.Sid.unsafe(account_sid)
       val mediaSid   = MediaSid(sid)
       MediaResourceReference(
         sid = mediaSid,

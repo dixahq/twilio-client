@@ -75,7 +75,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
           WireMock
             .get(
               WireMock.urlPathEqualTo(
-                "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Participants.json"
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference1Sid/Participants.json"
               )
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
@@ -91,7 +91,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
           WireMock
             .get(
               WireMock.urlPathEqualTo(
-                "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Participants.json"
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference1Sid/Participants.json"
               )
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
@@ -110,7 +110,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
           WireMock
             .get(
               WireMock.urlPathEqualTo(
-                "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference2Sid/Participants.json"
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference2Sid/Participants.json"
               )
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
@@ -127,7 +127,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
           WireMock
             .get(
               WireMock.urlPathEqualTo(
-                "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference3Sid/Participants.json"
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference3Sid/Participants.json"
               )
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
@@ -144,7 +144,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
           WireMock
             .get(
               WireMock.urlPathEqualTo(
-                "/2010-04-01/Accounts/TwilioTestAccount2/Conferences/TwilioTestConference4Sid/Participants.json"
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2/Conferences/TwilioTestConference4Sid/Participants.json"
               )
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
@@ -249,12 +249,12 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
 
 //noinspection TypeAnnotation
 private object FetchAllConferencesForAccountsTest {
-  val account1Sid = TwilioAccount.Sid("TwilioTestAccount1")
-  val account2Sid = TwilioAccount.Sid("TwilioTestAccount2")
+  val account1Sid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
+  val account2Sid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
 
   def getConferencesAccount1Response1 =
     """{
-      |  "first_page_uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences.json?Status=in-progress&PageSize=2&Page=0",
+      |  "first_page_uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences.json?Status=in-progress&PageSize=2&Page=0",
       |  "end": 1,
       |  "conferences": [
       |    {
@@ -263,15 +263,15 @@ private object FetchAllConferencesForAccountsTest {
       |      "date_updated": "Thu, 30 Sep 2021 06:30:46 +0000",
       |      "region": "us1",
       |      "friendly_name": "Conference1FriendlyName",
-      |      "uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid.json",
-      |      "account_sid": "TwilioTestAccount1",
+      |      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference1Sid.json",
+      |      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
       |      "call_sid_ending_conference": null,
       |      "sid": "TwilioTestConference1Sid",
       |      "date_created": "Thu, 30 Sep 2021 06:30:42 +0000",
       |      "api_version": "2010-04-01",
       |      "subresource_uris": {
-      |        "participants": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Participants.json",
-      |        "recordings": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference1Sid/Recordings.json"
+      |        "participants": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference1Sid/Participants.json",
+      |        "recordings": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference1Sid/Recordings.json"
       |      }
       |    },
       |    {
@@ -280,15 +280,15 @@ private object FetchAllConferencesForAccountsTest {
       |      "date_updated": "Thu, 30 Sep 2021 06:30:46 +0000",
       |      "region": "us1",
       |      "friendly_name": "Conference2FriendlyName",
-      |      "uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference2Sid.json",
-      |      "account_sid": "TwilioTestAccount1",
+      |      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference2Sid.json",
+      |      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
       |      "call_sid_ending_conference": null,
       |      "sid": "TwilioTestConference2Sid",
       |      "date_created": "Thu, 30 Sep 2021 06:30:42 +0000",
       |      "api_version": "2010-04-01",
       |      "subresource_uris": {
-      |        "participants": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference2Sid/Participants.json",
-      |        "recordings": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference2Sid/Recordings.json"
+      |        "participants": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference2Sid/Participants.json",
+      |        "recordings": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference2Sid/Recordings.json"
       |      }
       |    }
       |  ],
@@ -296,14 +296,14 @@ private object FetchAllConferencesForAccountsTest {
       |  "uri": "/2010-04-01/Accounts/ACf6c9aa4f8756c258be45a6d2637cfa15/Conferences.json?Status=in-progress&PageSize=20&Page=0",
       |  "page_size": 2,
       |  "start": 0,
-      |  "next_page_uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences.json?Status=in-progress&PageSize=2&Page=1&PageToken=PACFda6b2b3527379329c1394829dfb9768e",
+      |  "next_page_uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences.json?Status=in-progress&PageSize=2&Page=1&PageToken=PACFda6b2b3527379329c1394829dfb9768e",
       |  "page": 0
       |}
       |""".stripMargin
 
   def getConferencesAccount1Response2 =
     """{
-      |  "first_page_uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences.json?Status=in-progress&PageSize=2&Page=0",
+      |  "first_page_uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences.json?Status=in-progress&PageSize=2&Page=0",
       |  "end": 2,
       |  "conferences": [
       |    {
@@ -312,20 +312,20 @@ private object FetchAllConferencesForAccountsTest {
       |      "date_updated": "Thu, 30 Sep 2021 06:30:46 +0000",
       |      "region": "us1",
       |      "friendly_name": "Conference3FriendlyName",
-      |      "uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference3Sid.json",
-      |      "account_sid": "TwilioTestAccount1",
+      |      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference3Sid.json",
+      |      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
       |      "call_sid_ending_conference": null,
       |      "sid": "TwilioTestConference3Sid",
       |      "date_created": "Thu, 30 Sep 2021 06:30:42 +0000",
       |      "api_version": "2010-04-01",
       |      "subresource_uris": {
-      |        "participants": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference3Sid/Participants.json",
-      |        "recordings": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences/TwilioTestConference3Sid/Recordings.json"
+      |        "participants": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference3Sid/Participants.json",
+      |        "recordings": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences/TwilioTestConference3Sid/Recordings.json"
       |      }
       |    }
       |  ],
-      |  "previous_page_uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences.json?PageSize=2&Page=0&PageToken=PBCF413fe77c0869d36017df9dc313d4a664",
-      |  "uri": "/2010-04-01/Accounts/TwilioTestAccount1/Conferences.json?Status=in-progress&PageSize=2&Page=1",
+      |  "previous_page_uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences.json?PageSize=2&Page=0&PageToken=PBCF413fe77c0869d36017df9dc313d4a664",
+      |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1/Conferences.json?Status=in-progress&PageSize=2&Page=1",
       |  "page_size": 1,
       |  "start": 1,
       |  "next_page_uri": null,
@@ -335,7 +335,7 @@ private object FetchAllConferencesForAccountsTest {
 
   def getConferencesAccount2Response1 =
     """{
-      |  "first_page_uri": "/2010-04-01/Accounts/TwilioTestAccount2/Conferences.json?Status=in-progress&PageSize=2&Page=0",
+      |  "first_page_uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2/Conferences.json?Status=in-progress&PageSize=2&Page=0",
       |  "end": 0,
       |  "conferences": [
       |    {
@@ -344,20 +344,20 @@ private object FetchAllConferencesForAccountsTest {
       |      "date_updated": "Thu, 30 Sep 2021 06:30:46 +0000",
       |      "region": "us1",
       |      "friendly_name": "Conference4FriendlyName",
-      |      "uri": "/2010-04-01/Accounts/TwilioTestAccount2/Conferences/TwilioTestConference4Sid.json",
-      |      "account_sid": "TwilioTestAccount2",
+      |      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2/Conferences/TwilioTestConference4Sid.json",
+      |      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2",
       |      "call_sid_ending_conference": null,
       |      "sid": "TwilioTestConference4Sid",
       |      "date_created": "Thu, 30 Sep 2021 06:30:42 +0000",
       |      "api_version": "2010-04-01",
       |      "subresource_uris": {
-      |        "participants": "/2010-04-01/Accounts/TwilioTestAccount2/Conferences/TwilioTestConference4Sid/Participants.json",
-      |        "recordings": "/2010-04-01/Accounts/TwilioTestAccount2/Conferences/TwilioTestConference4Sid/Recordings.json"
+      |        "participants": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2/Conferences/TwilioTestConference4Sid/Participants.json",
+      |        "recordings": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2/Conferences/TwilioTestConference4Sid/Recordings.json"
       |      }
       |    }
       |  ],
       |  "previous_page_uri": null,
-      |  "uri": "/2010-04-01/Accounts/TwilioTestAccount2/Conferences.json?Status=in-progress&PageSize=2&Page=1",
+      |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2/Conferences.json?Status=in-progress&PageSize=2&Page=1",
       |  "page_size": 1,
       |  "start": 0,
       |  "next_page_uri": null,

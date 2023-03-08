@@ -63,7 +63,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
         val expected = List(
           TwilioMessagingService(
             sid = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
-            accountSid = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             friendlyName = TwilioMessagingService.FriendlyName("My Service!"),
             inboundRequestWebhook = Some(
               TwilioMessagingService
@@ -75,7 +75,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
           ),
           TwilioMessagingService(
             sid = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"),
-            accountSid = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             friendlyName = TwilioMessagingService.FriendlyName("My Secondary Service!"),
             inboundRequestWebhook = Some(
               TwilioMessagingService
@@ -87,7 +87,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
           ),
           TwilioMessagingService(
             sid = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"),
-            accountSid = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             friendlyName = TwilioMessagingService.FriendlyName("My third Service!"),
             inboundRequestWebhook = None,
             fallbackWebhook = Some(

@@ -54,7 +54,7 @@ final class MessagingServiceCreateTest extends TwilioClientTest {
 
         val expected = TwilioMessagingService(
           ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXX678"),
-          TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXX354"),
+          TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXX354"),
           toCreate.friendlyName,
           toCreate.inboundRequestWebhook,
           toCreate.fallbackWebhook,

@@ -34,7 +34,7 @@ final class OutgoingCallerIdDeleteTest extends TwilioClientTest with Matchers {
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
         val req =
           OutgoingCallerIdDeleteRequest(
-            TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             OutgoingCallerId.Sid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
           )
 

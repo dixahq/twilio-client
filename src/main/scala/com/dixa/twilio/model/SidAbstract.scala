@@ -1,5 +1,7 @@
 package com.dixa.twilio.model
 
+import scala.reflect.{classTag, ClassTag}
+
 /** Base type for all classes representing a SID in Twilio.
   *
   * That is Sids that comform to: "It is a 34 character string that starts with a 2 charactor
@@ -72,14 +74,15 @@ object SidAbstract {
     *      Safe method for construction of a Sid having errors as part of the return type. 2. An
     *      Unsafe method that will construct a Sid, throwing exceptions on errors.
     */
-  abstract class SidCompanionObject[S <: SidAbstract](
-      entity: Class[S],
+  abstract class SidCompanionObject[S <: SidAbstract: ClassTag](
       val prefix: Prefix,
       instanceFactory: String => S
   ) {
 
+    private val entityName = classTag[S].runtimeClass.getName
+
     private val conformToString = ConformToString(
-      s"${entity.getName} is a 34 character string that starts with $prefix"
+      s"$entityName is a 34 character string that starts with $prefix"
     )
 
     sealed trait CreationException extends SidAbstract.CreationException

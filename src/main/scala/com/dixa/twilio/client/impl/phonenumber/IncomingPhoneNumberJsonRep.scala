@@ -19,7 +19,7 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
 
   private[phonenumber] def toModel = TwilioIncomingPhoneNumber(
     TwilioPhoneNumberSid(sid),
-    TwilioAccount.Sid(account_sid),
+    TwilioAccount.Sid.unsafe(account_sid),
     TwilioIncomingPhoneNumber.FriendlyName(friendly_name),
     PhoneNumberE164(phone_number),
     PhoneNumberCapabilitiesSummary(

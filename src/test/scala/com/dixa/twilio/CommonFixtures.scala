@@ -7,7 +7,8 @@ import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, 
 object CommonFixtures {
 
   trait AccountSid {
-    val accountSid1: TwilioAccount.Sid = TwilioAccount.Sid("ACf6c9aa4f2754c258aa45a6d2637cfa15")
+    val accountSid1: TwilioAccount.Sid =
+      TwilioAccount.Sid.unsafe("ACf6c9aa4f2754c258aa45a6d2637cfa15")
   }
 
   trait Account extends AccountSid {
@@ -15,7 +16,7 @@ object CommonFixtures {
       name = TwilioAccount.Name("CommonFixtures.Account.account1 friendly name"),
       sid = accountSid1,
       status = TwilioAccount.Status.Active,
-      ownerAccountSid = TwilioAccount.Sid("AC5fc6c53ce58165d0712d4a56fa29e23a"),
+      ownerAccountSid = TwilioAccount.Sid.unsafe("AC5fc6c53ce58165d0712d4a56fa29e23a"),
       authToken = AuthToken.Primary("AVerySecretValueThatShouldBeXXXX"),
       accountType = TwilioAccount.Type.Full,
       timeCreated = Instant.from(

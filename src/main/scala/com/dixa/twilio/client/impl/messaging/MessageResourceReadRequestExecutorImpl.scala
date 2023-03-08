@@ -110,7 +110,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
   private def toModel(
       jsonRep: MessageJsonRep
   ): Either[MessageResourceReadException, MessageResource] = {
-    val accountSid = TwilioAccount.Sid(jsonRep.account_sid)
+    val accountSid = TwilioAccount.Sid.unsafe(jsonRep.account_sid)
     val messageSid = MessageSid(jsonRep.sid)
     for {
       messageDirection <- MessageDirection.fromTwilioStringEither(jsonRep.direction).left.map {

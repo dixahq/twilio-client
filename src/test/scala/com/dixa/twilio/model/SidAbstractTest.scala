@@ -2,36 +2,42 @@ package com.dixa.twilio.model
 
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.reflect.{classTag, ClassTag}
+
 /** Abstract base class for tests of subclasses of SidAbstract.
   *
-  * All you need do do, to have a working test, it so create a test class, that
-  * extends this class, and nothing else. You should not declare any tests directly in that class, if
-  * you need more tests than is provided by this class, then create a separate test class for that.
+  * All you need do do, to have a working test, it so create a test class, that extends this class,
+  * and nothing else. You should not declare any tests directly in that class, if you need more
+  * tests than is provided by this class, then create a separate test class for that.
   *
-  * This test will only work, if the companion object of the SidAbstract implementation is also extending
-  * the SidAbstract.SidCompanionObject class, but that is something you really should do anyway, when
-  * implementing a Sid class.
+  * This test will only work, if the companion object of the SidAbstract implementation is also
+  * extending the SidAbstract.SidCompanionObject class, but that is something you really should do
+  * anyway, when implementing a Sid class.
   *
-  * @param companionObject The companion object of the SidAbstract implementation.
-  * @param notAllowDirectCallToConstructorTest A Sid implementation should have private constructor, so that it's not
-  *                                            possible to bypass the validation checks of the input. So we would like
-  *                                            to test that it does not compile to create a instance with the `new`
-  *                                            keyword. Unfortunatly scala-test `assertDoesNotCompile` function requires
-  *                                            a plain string literal as input, and that means that we cannot construct
-  *                                            the line dynamically in this class. So you have to provide that test as
-  *                                            a function in this argument. If as an example you is testing the
-  *                                            Call.Sid class, the input would be:
-  *                                            `{ assertDoesNotCompile("""new com.dixa.twilio.model.voice.Call.Sid("NotValidInput")""") }`
-  * @tparam S The SidAbstract implementation type to test
-  * @tparam C The type of the companion object of the SidAbstract implementation to test.
+  * @param companionObject
+  *   The companion object of the SidAbstract implementation.
+  * @param notAllowDirectCallToConstructorTest
+  *   A Sid implementation should have private constructor, so that it's not possible to bypass the
+  *   validation checks of the input. So we would like to test that it does not compile to create a
+  *   instance with the `new` keyword. Unfortunatly scala-test `assertDoesNotCompile` function
+  *   requires a plain string literal as input, and that means that we cannot construct the line
+  *   dynamically in this class. So you have to provide that test as a function in this argument. If
+  *   as an example you is testing the Call.Sid class, the input would be: {
+  *   assertDoesNotCompile("""new com.dixa.twilio.model.voice.Call.Sid("NotValidInput")""") }
+  * @tparam S
+  *   The SidAbstract implementation type to test
+  * @tparam C
+  *   The type of the companion object of the SidAbstract implementation to test.
   */
 abstract class SidAbstractTest[
-    S <: SidAbstract,
+    S <: SidAbstract: ClassTag,
     C <: SidAbstract.SidCompanionObject[S],
 ](companionObject: C, notAllowDirectCallToConstructorTest: => Any)
     extends AnyWordSpec {
 
-  s"Call.Sid" when {
+  private val entityName = classTag[S].runtimeClass.getName
+
+  entityName when {
 
     "constructed with apply method" should {
       // It looks like call sids are always CA and then 32 HEX characters. But the
