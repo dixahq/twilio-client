@@ -175,14 +175,14 @@ private object MessageResourceReadListTest {
 
   private val messageSid = Message.Sid.unsafe("SM9c8a124127702f0c7084b373cb06157a")
 
-  val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
+  private val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
     to = None,
     from = None,
     dateSentAfter = None,
     dateSentBefore = None,
     pageSize = 1000
   )
-  def req(
+  private def req(
       accountSid: TwilioAccount.Sid,
       filter: MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter = filter
   ) =
@@ -214,9 +214,9 @@ private object MessageResourceReadListTest {
 
   private val dateSentInstant = Instant.from(dateSentDateTime)
 
-  private val direction      = MessageDirection.OutboundApi
-  private val sender         = MessageSender.E164(PhoneNumberE164("+12019235161"))
-  private val serviceSid     = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+  private val direction  = MessageDirection.OutboundApi
+  private val sender     = MessageSender.E164(PhoneNumberE164("+12019235161"))
+  private val serviceSid = TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   private val numberSegments = MessageNumSegments.apply(1)
   private val price = MessagePrice(
     BigDecimal(0.234324),

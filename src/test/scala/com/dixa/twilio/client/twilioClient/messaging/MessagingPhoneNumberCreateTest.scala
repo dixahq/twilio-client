@@ -7,7 +7,7 @@ import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
 import com.dixa.twilio.client.messaging.{PhoneNumberCreateRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.messaging.{ServiceSid, TwilioMessagingPhoneNumber}
+import com.dixa.twilio.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -38,7 +38,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         val expected = Right(
           TwilioMessagingPhoneNumber(
             TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477"),
-            ServiceSid("MG777c6a32c5b17bc426e7fff6a0f67aa0")
+            TwilioMessagingService.Sid.unsafe("MG777c6a32c5b17bc426e7fff6a0f67aa0")
           )
         )
 
@@ -200,7 +200,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
   // noinspection TypeAnnotation
   final class Fixture {
     val createRequest = PhoneNumberCreateRequest(
-      serviceSid = ServiceSid("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
+      serviceSid = TwilioMessagingService.Sid.unsafe("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
       phoneNumberSid = TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
     )
 

@@ -3,7 +3,7 @@ package com.dixa.twilio.client.impl.messaging
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
-import com.dixa.twilio.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
+import com.dixa.twilio.model.messaging.{StatusCallback, TwilioMessagingService}
 
 import java.net.URL
 
@@ -50,7 +50,7 @@ private[messaging] final case class MessagingServiceJsonRep(
   }
 
   private[messaging] def toTwilioMessagingService = TwilioMessagingService(
-    ServiceSid(sid),
+    TwilioMessagingService.Sid.unsafe(sid),
     TwilioAccount.Sid.unsafe(account_sid),
     TwilioMessagingService.FriendlyName(friendly_name.getOrElse("")),
     toInboundRequestWebhook,

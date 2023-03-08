@@ -18,7 +18,7 @@ import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
   PhoneNumberCreateRequest
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.messaging.{ServiceSid, TwilioMessagingPhoneNumber}
+import com.dixa.twilio.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 import io.circe.generic.auto._
 
@@ -93,7 +93,7 @@ private object PhoneNumberCreateRequestExecutorImpl {
     def toModel: TwilioMessagingPhoneNumber =
       TwilioMessagingPhoneNumber(
         TwilioPhoneNumberSid(sid),
-        ServiceSid(service_sid)
+        TwilioMessagingService.Sid.unsafe(service_sid)
       )
   }
 }

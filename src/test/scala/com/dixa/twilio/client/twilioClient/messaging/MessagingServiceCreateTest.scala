@@ -5,7 +5,7 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
+import com.dixa.twilio.model.messaging.{StatusCallback, TwilioMessagingService}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -53,7 +53,7 @@ final class MessagingServiceCreateTest extends TwilioClientTest {
         )
 
         val expected = TwilioMessagingService(
-          ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXX678"),
+          TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXX678"),
           TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXX354"),
           toCreate.friendlyName,
           toCreate.inboundRequestWebhook,

@@ -3,7 +3,7 @@ package com.dixa.twilio.client.messaging
 import akka.Done
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteException
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.messaging.ServiceSid
+import com.dixa.twilio.model.messaging.TwilioMessagingService
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 
 trait PhoneNumberDeleteRequestExecutor
@@ -21,7 +21,7 @@ trait PhoneNumberDeleteRequestExecutor
 object PhoneNumberDeleteRequestExecutor {
 
   final case class PhoneNumberDeleteRequest(
-      serviceSid: ServiceSid,
+      serviceSid: TwilioMessagingService.Sid,
       phoneNumberSid: TwilioPhoneNumberSid
   )
 

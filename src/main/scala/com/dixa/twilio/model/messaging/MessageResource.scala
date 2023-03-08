@@ -13,7 +13,7 @@ case class MessageResource(
     accountSid: TwilioAccount.Sid,
     to: PhoneNumberE164,
     from: MessageSender,
-    messagingServiceSid: Option[ServiceSid],
+    messagingServiceSid: Option[TwilioMessagingService.Sid],
     body: MessageBody,
     status: MessageStatus,
     numSegments: MessageNumSegments,

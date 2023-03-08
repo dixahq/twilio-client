@@ -4,18 +4,18 @@ import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
 
 sealed trait TwilioMessagingPhoneNumber {
   def numberSid: TwilioPhoneNumberSid
-  def serviceSid: ServiceSid
+  def serviceSid: TwilioMessagingService.Sid
 }
 
 object TwilioMessagingPhoneNumber {
 
   def apply(
       activeNumberSid: TwilioPhoneNumberSid,
-      serviceSid: ServiceSid
+      serviceSid: TwilioMessagingService.Sid
   ): TwilioMessagingPhoneNumber = DefaultImpl(activeNumberSid, serviceSid)
 
   private final case class DefaultImpl(
       numberSid: TwilioPhoneNumberSid,
-      serviceSid: ServiceSid
+      serviceSid: TwilioMessagingService.Sid
   ) extends TwilioMessagingPhoneNumber
 }

@@ -171,8 +171,6 @@ private object MessageSendRequestExecutorImpl {
 
   private def parseMessagingServiceSid(
       messagingServiceSid: String
-  ): Option[ServiceSid] = messagingServiceSid match {
-    case null => None
-    case _    => Some(ServiceSid(messagingServiceSid))
-  }
+  ): Option[TwilioMessagingService.Sid] =
+    TwilioMessagingService.Sid.safe(messagingServiceSid).toOption
 }
