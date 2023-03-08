@@ -1,15 +1,7 @@
 package com.dixa.twilio.client.impl.messaging
 
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{
-  ContentTypes,
-  HttpEntity,
-  HttpMethod,
-  HttpMethods,
-  HttpRequest,
-  HttpResponse,
-  StatusCodes
-}
+import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor
@@ -19,7 +11,7 @@ import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -92,7 +84,7 @@ private object PhoneNumberCreateRequestExecutorImpl {
   private final case class MessagingPhoneNumberJsonRep(sid: String, service_sid: String) {
     def toModel: TwilioMessagingPhoneNumber =
       TwilioMessagingPhoneNumber(
-        TwilioPhoneNumberSid(sid),
+        TwilioPhoneNumber.Sid.unsafe(sid),
         TwilioMessagingService.Sid.unsafe(service_sid)
       )
   }

@@ -9,7 +9,7 @@ import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.{
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.messaging.TwilioMessagingService
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -141,7 +141,7 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
   final class Fixture {
     val toDelete = PhoneNumberDeleteRequest(
       serviceSid = TwilioMessagingService.Sid.unsafe("MG777c6a32c5b17bc426e7fff6a0f67aa0"),
-      phoneNumberSid = TwilioPhoneNumberSid("PNa2ab2f57a0ffca3a3fa907a4ce305477")
+      phoneNumberSid = TwilioPhoneNumber.Sid.unsafe("PNa2ab2f57a0ffca3a3fa907a4ce305477")
     )
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
