@@ -9,12 +9,7 @@ import com.dixa.twilio.client.messaging.{
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{
-  MediaResourceReference,
-  MediaResourceUrl,
-  MediaSid,
-  MessageSid
-}
+import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, MediaResourceUrl, MessageSid}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
@@ -25,7 +20,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val messageSid   = MessageSid("MM9c8a124127702f0c7084b373cb06157a")
-  private val sid          = MediaSid("ME9ec380c03268689d63e8fc5e97bba86e")
+  private val sid          = Media.Sid.unsafe("ME9ec380c03268689d63e8fc5e97bba86e")
   private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest(
     messageSid = messageSid
   )
@@ -116,8 +111,8 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
       }
 
       "lists multiple of media resources" in {
-        val sid2 = MediaSid("Sid2")
-        val sid3 = MediaSid("Sid3")
+        val sid2 = Media.Sid.unsafe("MEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
+        val sid3 = Media.Sid.unsafe("MEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3")
         wireMockServer.stubFor(
           WireMock
             .get(
@@ -165,7 +160,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
           MediaResourceUrl(
-            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid3"
+            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/MEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"
           )
         )
 
@@ -183,7 +178,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
   def mediaResourceReferenceResp(
       accountSid: TwilioAccount.Sid,
       messageSid: MessageSid,
-      sid: MediaSid
+      sid: Media.Sid
   ): String = {
     s"""{
        |             "sid": "$sid",
@@ -199,7 +194,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
   private def mediaResourceListResp(
       accountSid: TwilioAccount.Sid,
       messageSid: MessageSid,
-      sids: List[MediaSid]
+      sids: List[Media.Sid]
   ) =
     s"""{
        |    "first_page_uri": "/2010-04-01/Accounts/$accountSid/Messages/$messageSid/Media.json?PageSize=1000&Page=0",

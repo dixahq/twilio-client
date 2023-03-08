@@ -3,7 +3,7 @@ package com.dixa.twilio.client.impl.messaging
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{MediaResourceUrl, MediaSid, MessageSid}
+import com.dixa.twilio.model.messaging.{Media, MediaResourceUrl, MessageSid}
 
 private[client] object MediaResourceUrlFactory {
 
@@ -27,7 +27,7 @@ private[client] object MediaResourceUrlFactory {
   private[messaging] def resourceUrl(
       accountSid: TwilioAccount.Sid,
       messageSid: MessageSid,
-      sid: MediaSid,
+      sid: Media.Sid,
       twilioConnSettings: TwilioConnectionSettings
   ): MediaResourceUrl = {
     val basePath: String = buildMediaResourceBasePath(accountSid, messageSid)
