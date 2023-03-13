@@ -70,8 +70,14 @@ object QueueUpdateRequestExecutor {
       def withFriendlyName(friendlyName: Queue.FriendlyName): Builder[Attributes] =
         new Builder(accountSid, sid, Some(friendlyName), maxSize)
 
-      def withMaxSize(maxSize: Queue.MaxSize.ValidValues.Value): Builder[Attributes] =
-        new Builder(accountSid, sid, friendlyName, Some(Queue.MaxSize.fromValidValue(maxSize)))
+      /** Set the Max size to update to.
+        *
+        * Not that only a specific range of values are allowed here. At time of writing this is
+        * 1-5000. If you specify something outside of the allowed range, you request will fail at
+        * runtime.
+        */
+      def withMaxSize(maxSize: Queue.MaxSize): Builder[Attributes] =
+        new Builder(accountSid, sid, friendlyName, Some(maxSize))
 
       @nowarn
       def build()(

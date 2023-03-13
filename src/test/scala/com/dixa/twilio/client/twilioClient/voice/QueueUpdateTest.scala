@@ -139,7 +139,7 @@ final class QueueUpdateTest extends TwilioClientTest {
     val request = QueueUpdateRequestExecutor.QueueUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withSid(queueSid)
-        .withMaxSize(Queue.MaxSize.ValidValues.`5000`)
+        .withMaxSize(Queue.MaxSize(5000))
         .build
     )
 
