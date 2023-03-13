@@ -26,14 +26,11 @@ jobs:
           path: .github/actions
           token: ${{ secrets.DIXAROBOT_GITHUB_READONLY_TOKEN }}
 
-      - name: print memory info
-        run: free -h
-
       - name: Setup Scala and sbt
         uses: olafurpg/setup-scala@v11
 
       - name: Run test wtih coverage
-        run: SBT_OPTS="led -XX:MaxPermSize=2G -Xmx5G" sbt -Dfile.encoding=utf-8 coverage test coverageReport
+        run: sbt -Dfile.encoding=utf-8 coverage test coverageReport
 
       - name: Upload test coverage report
         uses: actions/upload-artifact@v2.2.4
