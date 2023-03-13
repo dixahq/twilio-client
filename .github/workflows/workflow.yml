@@ -28,6 +28,8 @@ jobs:
 
       - name: Setup Scala and sbt
         uses: olafurpg/setup-scala@v11
+        with:
+          java-version: amazon-corretto@1.17
 
       - name: Run test wtih coverage
         run: sbt -Dfile.encoding=utf-8 coverage test coverageReport

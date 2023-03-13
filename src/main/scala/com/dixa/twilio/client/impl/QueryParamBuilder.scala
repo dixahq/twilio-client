@@ -15,6 +15,9 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
     new QueryParamBuilder(toAdd +: paramStrings)
   }
 
+  def withParam(key: String, value: TwilioStringValue): QueryParamBuilder =
+    withParam(key, value.twilioString)
+
   def withOptionalParam(
       key: String,
       valueOpt: Option[TwilioStringValue]
@@ -27,6 +30,12 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
     case Nil                            => ""
     case ::(head, tail) if tail.isEmpty => s"?$head"
     case ::(head, tail)                 => s"?$head${tail.mkString("&", "&", "")}"
+  }
+
+  def buildForPostParams: String = paramStrings match {
+    case Nil                            => ""
+    case ::(head, tail) if tail.isEmpty => s"$head"
+    case ::(head, tail)                 => s"$head${tail.mkString("&", "&", "")}"
   }
 }
 
