@@ -26,6 +26,8 @@ private[client] class QueueUpdateRequestExecutorImpl()(
     override protected val executionContext: ExecutionContext
 ) extends QueueUpdateRequestExecutor {
 
+  import QueueUpdateRequestExecutorImpl._
+
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
   override protected def method: HttpMethod = HttpMethods.POST
@@ -35,10 +37,10 @@ private[client] class QueueUpdateRequestExecutorImpl()(
       req: QueueUpdateRequestExecutor.QueueUpdateRequest
   ): Either[QueueUpdateException, HttpRequest] = {
     val params = QueryParamBuilder.empty
-      .withParam("AccountSid", req.accountSid)
-      .withParam("Sid", req.sid.toString)
-      .withOptionalParam("FriendlyName", req.friendlyName)
-      .withOptionalParam("MaxSize", req.maxSize)
+      .withParam(accountSidParamKey, req.accountSid)
+      .withParam(sidParamKey, req.sid.toString)
+      .withOptionalParam(friendlyNameParamKey, req.friendlyName)
+      .withOptionalParam(maxSizeParamKey, req.maxSize)
       .buildForPostParams
 
     createHttpRequestFor(
@@ -83,4 +85,11 @@ private[client] class QueueUpdateRequestExecutorImpl()(
         }
       }
   }
+}
+
+private object QueueUpdateRequestExecutorImpl {
+  private val accountSidParamKey   = "AccountSid"
+  private val sidParamKey          = "Sid"
+  private val friendlyNameParamKey = "FriendlyName"
+  private val maxSizeParamKey      = "MaxSize"
 }
