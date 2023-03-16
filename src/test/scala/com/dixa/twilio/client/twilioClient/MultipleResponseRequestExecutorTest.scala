@@ -15,7 +15,7 @@ import com.dixa.twilio.client.{
 }
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, matching}
-import io.circe.CursorOp.{DownArray, DownField}
+import io.circe.CursorOp.DownField
 import io.circe.DecodingFailure
 import org.scalamock.scalatest.AsyncMockFactory
 import io.circe.generic.auto._
@@ -239,7 +239,7 @@ final class MultipleResponseRequestExecutorTest
                   case AbstractTestException.Undefined(_, Some(cause)) =>
                     val expectedCause = DecodingFailure(
                       "Missing required field",
-                      List(DownField("body"), DownArray, DownField("successes"))
+                      List(DownField("body"), DownField("successes"))
                     )
                     assert(
                       cause.getMessage == expectedCause.getMessage

@@ -10,10 +10,10 @@ val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/
 val Version = new AnyRef {
   val Akka     = "2.6.20"
   val AkkaHttp = "10.2.10"
-  val Circe    = "0.14.3"
+  val Circe    = "0.14.5"
 
   // test
-  val ScalatestScalactic = "3.2.14"
+  val ScalatestScalactic = "3.2.15"
 }
 
 lazy val `twilio-client` = project
@@ -87,8 +87,4 @@ lazy val `twilio-client` = project
       coverageHighlighting     := false,
       Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
-  )
-  .enablePlugins(
-    JavaAppPackaging,
-    UniversalDeployPlugin
   )
