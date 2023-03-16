@@ -88,7 +88,3 @@ lazy val `twilio-client` = project
       Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
-  .enablePlugins(
-    JavaAppPackaging,
-    UniversalDeployPlugin
-  )
