@@ -1,6 +1,7 @@
 package com.dixa.twilio.model.voice
 
-import com.dixa.twilio.model.EnumWithTwilioString
+import com.dixa.twilio.model.SidAbstract.Prefix
+import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import scala.collection.immutable
@@ -36,7 +37,9 @@ object Conference {
       participants: Vector[Participant]
   ) extends Conference
 
-  final case class Sid(override val toString: String)
+  final case class Sid private[Conference] (override val toString: String) extends SidAbstract
+
+  object Sid extends SidAbstract.SidCompanionObject(Prefix("CF"), new Sid(_))
 
   sealed abstract class Status(
       override val twilioString: String,

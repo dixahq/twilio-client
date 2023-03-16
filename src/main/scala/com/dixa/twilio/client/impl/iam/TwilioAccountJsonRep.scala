@@ -63,9 +63,9 @@ private[iam] final case class TwilioAccountJsonRep(
   private[iam] def toModel: TwilioAccount = {
     TwilioAccount(
       name = TwilioAccount.Name(friendly_name),
-      sid = TwilioAccount.Sid(sid),
+      sid = TwilioAccount.Sid.unsafe(sid),
       status = TwilioAccount.Status.fromTwilioStringUnsafe(status),
-      ownerAccountSid = TwilioAccount.Sid(owner_account_sid),
+      ownerAccountSid = TwilioAccount.Sid.unsafe(owner_account_sid),
       authToken = AuthToken.Primary(auth_token),
       accountType = TwilioAccount.Type.fromTwilioStringUnsafe(`type`),
       timeCreated = Instant.from(Formatter.dateTime.parse(date_created)),

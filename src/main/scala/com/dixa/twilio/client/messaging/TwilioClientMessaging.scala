@@ -1,13 +1,14 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.model.messaging.{MessageSid, StatusCallback, TwilioMessagingService}
 import com.dixa.twilio.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
   InboundRequestWebhook,
   UseInboundWebhookOnNumber
 }
+import com.dixa.twilio.model.messaging.{Message, StatusCallback, TwilioMessagingService}
+
 import scala.concurrent.Future
 
 trait TwilioClientMessaging {
@@ -55,6 +56,6 @@ object TwilioClientMessaging {
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   )
 
-  final case class MediaResourceReadRequest(messageSid: MessageSid)
+  final case class MediaResourceReadRequest(messageSid: Message.Sid)
 
 }

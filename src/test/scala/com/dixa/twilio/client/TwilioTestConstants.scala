@@ -10,7 +10,7 @@ object TwilioTestConstants {
   val createdTime: Instant = Instant.ofEpochSecond(1661836497) // 2022-08-30T05:14:57Z
   val updatedTime: Instant = Instant.ofEpochSecond(1662834697) // 2022-09-10T18:31:37Z
 
-  val accountSid: TwilioAccount.Sid    = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+  val accountSid: TwilioAccount.Sid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   val authToken: AuthToken.UnknownType = AuthToken.UnknownType("testPassword")
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(

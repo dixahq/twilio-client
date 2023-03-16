@@ -30,7 +30,7 @@ private[impl] class ActiveNumbersReadRequestExecutorImpl(
       req: ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest
   ): Either[ActiveNumbersReadException, HttpRequest] = {
     createHttpRequestFor(
-      s"/Numbers/ActiveNumbers/${req.phoneNumberSid.map(_.asString).getOrElse("")}?PageSize=1000",
+      s"/Numbers/ActiveNumbers/${req.phoneNumberSid.map(_.toString).getOrElse("")}?PageSize=1000",
       connSettings
     )
   }

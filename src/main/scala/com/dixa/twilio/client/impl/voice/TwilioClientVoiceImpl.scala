@@ -8,7 +8,11 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
-import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
+import com.dixa.twilio.client.voice.{
+  CallUpdateRequestExecutor,
+  QueueUpdateRequestExecutor,
+  TwilioClientVoice
+}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,6 +23,8 @@ private[impl] final class TwilioClientVoiceImpl()(
 ) extends TwilioClientVoice {
 
   override val callUpdate: CallUpdateRequestExecutor = new CallUpdateRequestExecutorImpl()
+
+  override val queueUpdate: QueueUpdateRequestExecutor = new QueueUpdateRequestExecutorImpl()
 
   override def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,

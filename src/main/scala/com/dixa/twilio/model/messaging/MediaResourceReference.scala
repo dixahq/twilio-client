@@ -9,9 +9,9 @@ import java.time.Instant
   *   https://www.twilio.com/docs/sms/api/media-resource
   */
 final case class MediaResourceReference(
-    sid: MediaSid,
+    sid: Media.Sid,
     accountSid: Sid,
-    parentSid: MessageSid,
+    parentSid: Message.Sid,
     contentType: String,
     dateCreated: Instant,
     dateUpdated: Instant,

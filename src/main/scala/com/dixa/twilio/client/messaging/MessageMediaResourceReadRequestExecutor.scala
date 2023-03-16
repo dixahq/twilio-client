@@ -2,7 +2,7 @@ package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadException
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
-import com.dixa.twilio.model.messaging.{MediaResourceReference, MessageSid}
+import com.dixa.twilio.model.messaging.{MediaResourceReference, Message}
 
 trait MessageMediaResourceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
@@ -18,7 +18,7 @@ trait MessageMediaResourceReadRequestExecutor
 
 object MessageMediaResourceReadRequestExecutor {
   final case class MessageMediaResourceReadRequest(
-      messageSid: MessageSid
+      messageSid: Message.Sid
   )
 
   sealed trait MessageMediaResourceReadException extends RuntimeException

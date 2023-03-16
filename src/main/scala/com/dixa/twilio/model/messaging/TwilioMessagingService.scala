@@ -1,6 +1,7 @@
 package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.SidAbstract.Prefix
+import com.dixa.twilio.model.{HttpMethod, SidAbstract}
 import com.dixa.twilio.model.iam.TwilioAccount
 import enumeratum.{Enum, EnumEntry}
 
@@ -14,7 +15,7 @@ import scala.collection.immutable
 trait TwilioMessagingService {
 
   import TwilioMessagingService._
-  def sid: ServiceSid
+  def sid: TwilioMessagingService.Sid
   def accountSid: TwilioAccount.Sid
   def friendlyName: FriendlyName
   def inboundRequestWebhook: Option[InboundRequestWebhook]
@@ -24,6 +25,11 @@ trait TwilioMessagingService {
 }
 
 object TwilioMessagingService {
+
+  final case class Sid private[TwilioMessagingService] (override val toString: String)
+      extends SidAbstract
+
+  object Sid extends SidAbstract.SidCompanionObject(Prefix("MG"), new Sid(_))
 
   final case class FriendlyName(override val toString: String)
   final case class InboundRequestWebhook(method: HttpMethod, url: URL)
@@ -44,7 +50,7 @@ object TwilioMessagingService {
   }
 
   def apply(
-      sid: ServiceSid,
+      sid: TwilioMessagingService.Sid,
       accountSid: TwilioAccount.Sid,
       friendlyName: FriendlyName,
       inboundRequestWebhook: Option[InboundRequestWebhook],
@@ -62,7 +68,7 @@ object TwilioMessagingService {
   )
 
   private final case class DefaultImpl(
-      sid: ServiceSid,
+      sid: TwilioMessagingService.Sid,
       accountSid: TwilioAccount.Sid,
       friendlyName: FriendlyName,
       inboundRequestWebhook: Option[InboundRequestWebhook],

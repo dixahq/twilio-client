@@ -10,18 +10,7 @@ import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.Messa
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{
-  MessageBody,
-  MessageDirection,
-  MessageError,
-  MessageNumSegments,
-  MessagePrice,
-  MessageResource,
-  MessageSender,
-  MessageSid,
-  MessageStatus,
-  ServiceSid
-}
+import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import io.circe.generic.auto._
 
@@ -110,8 +99,8 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
   private def toModel(
       jsonRep: MessageJsonRep
   ): Either[MessageResourceReadException, MessageResource] = {
-    val accountSid = TwilioAccount.Sid(jsonRep.account_sid)
-    val messageSid = MessageSid(jsonRep.sid)
+    val accountSid = TwilioAccount.Sid.unsafe(jsonRep.account_sid)
+    val messageSid = Message.Sid.unsafe(jsonRep.sid)
     for {
       messageDirection <- MessageDirection.fromTwilioStringEither(jsonRep.direction).left.map {
         err =>
@@ -166,10 +155,6 @@ private object MessageResourceReadRequestExecutorImpl {
 
   private def parseMessagingServiceSid(
       messagingServiceSid: String
-  ): Option[ServiceSid] = messagingServiceSid match {
-    case null                       => None
-    case str: String if str.isEmpty => None
-    case ""                         => None
-    case _                          => Some(ServiceSid(messagingServiceSid))
-  }
+  ): Option[TwilioMessagingService.Sid] =
+    TwilioMessagingService.Sid.safe(messagingServiceSid).toOption
 }
