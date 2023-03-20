@@ -1,7 +1,7 @@
 package com.dixa.twilio.model.voice
 
 import com.dixa.twilio.model.SidAbstract.Prefix
-import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract}
+import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract, TwilioStringValue}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import scala.collection.immutable
@@ -58,7 +58,7 @@ object Conference {
     case object Completed  extends Status("completed", isActive = false)
   }
 
-  final case class FriendlyName(override val toString: String)
+  final case class FriendlyName(override val toString: String) extends TwilioStringValue
 
   sealed abstract class ParticipantStatus(
       override val twilioString: String,
