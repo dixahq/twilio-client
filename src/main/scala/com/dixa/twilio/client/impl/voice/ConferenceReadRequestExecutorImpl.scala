@@ -3,22 +3,14 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
-  accountSidParamKey,
   dateCreatedParamKey,
   dateUpdatedParamKey,
   friendlyNameParamKey,
   statusParamKey
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  Formatter,
-  HttpEntityString,
-  ListJsonRep,
-  QueryParamBuilder
-}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
 import com.dixa.twilio.model.voice.Conference
@@ -40,20 +32,17 @@ class ConferenceReadRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: ConferenceReadRequestExecutor.ConferenceReadRequest
   ): Either[ConferenceReadRequestExecutor.ConferenceReadException, HttpRequest] = {
-    implicit val formatter = Formatter.newApiDateTimeFormatter
-
     val params = QueryParamBuilder.empty
-      .withParam(accountSidParamKey, req.accountSid)
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreated)
       .withOptionalDateParam(dateUpdatedParamKey, req.dateUpdated)
       .withOptionalParam(friendlyNameParamKey, req.friendlyName)
       .withOptionalParam(statusParamKey, req.status)
-      .buildForPostParams
+      .build
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Conferences.json",
+      s"/2010-04-01/Accounts/${req.accountSid}/Conferences.json$params",
       connSettings
-    ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params)))
+    )
   }
 
   override protected def mapApiException(apiException: ApiException): ConferenceReadException.Api =
@@ -71,10 +60,11 @@ class ConferenceReadRequestExecutorImpl()(
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
   ): List[Either[ConferenceReadRequestExecutor.ConferenceReadException, Conference]] = {
-    responseEntity.parse[ListJsonRep[TwilioConferenceJsonResp]]() match {
+    println(s"Conference Read responseEntity: $responseEntity")
+    responseEntity.parse[ConferenceListJsonRep]() match {
       case Left(ex) =>
         List(Left(ConferenceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))
-      case Right(listJsonRep) => listJsonRep.messages.map { _.toModel }.map { Right(_) }
+      case Right(listJsonRep) => listJsonRep.conferences.map { _.toModel }.map { Right(_) }
     }
 
   }
@@ -82,7 +72,6 @@ class ConferenceReadRequestExecutorImpl()(
 }
 
 private object ConferenceReadRequestExecutorImpl {
-  private val accountSidParamKey   = "AccountSid"
   private val dateCreatedParamKey  = "DateCreated"
   private val dateUpdatedParamKey  = "DateUpdated"
   private val friendlyNameParamKey = "FriendlyName"

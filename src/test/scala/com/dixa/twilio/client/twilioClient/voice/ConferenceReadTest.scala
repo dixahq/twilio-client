@@ -27,18 +27,24 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
 
     "conferenceRead" should {
 
-      "no message resources should turn into an empty list" in {
+      "no conferences should turn into an empty list" in {
+
+        val returnedBody = conferenceListResp(accountSid, List.empty)
+
+        println(s"returnedBody: $returnedBody")
+
+        val expectedPath = s"/2010-04-01/Accounts/$accountSid/Conferences.json"
 
         wireMockServer.stubFor(
           WireMock
             .get(
-              WireMock.urlPathEqualTo(path(accountSid))
+              WireMock.urlPathEqualTo(expectedPath)
             )
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
-                .withBody(conferenceListResp(accountSid, List.empty))
+                .withBody(returnedBody)
             )
         )
 
@@ -50,6 +56,11 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val result =
           instance.conferenceRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
+          result.head.left.map { ex =>
+            println(ex.getMessage)
+            ex.getStackTrace.map(println)
+          }
+          result shouldBe Seq.empty
           result.isEmpty shouldBe true
         }
       }
@@ -67,12 +78,13 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
           Some(Conference.EndReason.ConferenceEndedViaApi)
         )
 
+        val expectedPath = s"/2010-04-01/Accounts/$accountSid/Conferences.json"
+
         wireMockServer.stubFor(
           WireMock
             .get(
-              WireMock.urlPathEqualTo(path(accountSid))
+              WireMock.urlPathEqualTo(expectedPath)
             )
-            .withQueryParams(expectedQueryParam)
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
@@ -89,12 +101,15 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val result =
           instance.conferenceRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
-          result.head.left.map(ex => println(ex.getMessage))
+          result.head.left.map { ex =>
+            println(ex.getMessage)
+            ex.getStackTrace.map(println)
+          }
           result.size shouldBe 1
           result.head.isRight shouldBe true
           result.head.right.get shouldBe expected
-          result.head.right.get.dateCreated shouldBe "2022-02-01T13:44:20Z"
-          result.head.right.get.dateUpdated shouldBe "2022-02-02T15:42:20Z"
+          result.head.right.get.dateCreated.toString shouldBe "2020-07-01T11:23:45Z"
+          result.head.right.get.dateUpdated.toString shouldBe "2020-07-01T11:23:45Z"
         }
       }
 
@@ -103,7 +118,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
           accountSid,
           Conference.Status.Completed,
           Region.Ie1,
-          Conference.FriendlyName("testConferenece"),
+          Conference.FriendlyName("testConference"),
           Some(Conference.EndReason.ConferenceEndedViaApi)
         )
         val expected2 = conference(
@@ -121,10 +136,12 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
           Some(Conference.EndReason.ParticipantWithEndConferenceOnExitLeft)
         )
 
+        val expectedPath = s"/2010-04-01/Accounts/$accountSid/Conferences.json"
+
         wireMockServer.stubFor(
           WireMock
             .get(
-              WireMock.urlPathEqualTo(path(accountSid))
+              WireMock.urlPathEqualTo(expectedPath)
             )
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
@@ -155,13 +172,6 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
       }
 
       "lists multiple of confereces, with filter parameters" in {
-        val expected = conference(
-          accountSid,
-          Conference.Status.Completed,
-          Region.Ie1,
-          Conference.FriendlyName("testConferenece"),
-          Some(Conference.EndReason.ConferenceEndedViaApi)
-        )
         val expected2 = conference(
           accountSid,
           Conference.Status.InProgress,
@@ -169,27 +179,19 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
           Conference.FriendlyName("testConference2"),
           Some(Conference.EndReason.LastParticipantLeft)
         )
-        val expected3 = conference(
-          accountSid,
-          Conference.Status.Init,
-          Region.Us1,
-          Conference.FriendlyName("testConference3"),
-          Some(Conference.EndReason.ParticipantWithEndConferenceOnExitLeft)
-        )
 
-        val expectedQueryParam = new JavaMap[String, StringValuePattern]()
-        expectedQueryParam.put("AccountSid%3E", equalTo(accountSid.toString))
-        expectedQueryParam.put("DateCreated%3E", equalTo("<=01-07-2023"))
-        expectedQueryParam.put("DateUpdated%3E", equalTo("<=01-07-2023"))
-        expectedQueryParam.put("FriendlyName%3E", equalTo("testConference2"))
-        expectedQueryParam.put("Status%3E", equalTo("in-progress"))
+        val expectedPath =
+          s"/2010-04-01/Accounts/$accountSid/Conferences.json?" +
+            s"Status=in-progress&" +
+            s"FriendlyName=testConference2&" +
+            s"DateUpdated%3C=2020-07-31T11%3A23%3A45Z&" +
+            s"DateCreated%3C=2020-07-31T11%3A23%3A45Z"
 
         wireMockServer.stubFor(
           WireMock
             .get(
-              WireMock.urlPathEqualTo(path(accountSid))
+              WireMock.urlEqualTo(expectedPath)
             )
-            .withQueryParams(expectedQueryParam)
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
@@ -215,8 +217,8 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val result =
           instance.conferenceRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
-          result.size shouldBe 3
-          result should contain theSameElementsAs List(expected, expected2, expected3).map {
+          result.size shouldBe 1
+          result should contain theSameElementsAs List(expected2).map {
             Right(_)
           }
         }
@@ -228,18 +230,15 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
 private object ConferenceReadTest {
   private def connSettings(port: Int) = TwilioTestConstants.connSettings(port)
 
-  private def path(accountSid: TwilioAccount.Sid) =
-    s"/2010-04-01/Accounts/$accountSid/Conference.json"
-
   private val createdAtInstant = Instant.from(
     OffsetDateTime.of(
-      LocalDateTime.of(LocalDate.of(2022, 7, 1), LocalTime.of(11, 23, 45)),
+      LocalDateTime.of(LocalDate.of(2020, 7, 1), LocalTime.of(11, 23, 45)),
       ZoneOffset.UTC
     )
   )
   private val updatedAtInstant = Instant.from(
     OffsetDateTime.of(
-      LocalDateTime.of(LocalDate.of(2022, 7, 1), LocalTime.of(11, 23, 45)),
+      LocalDateTime.of(LocalDate.of(2020, 7, 1), LocalTime.of(11, 23, 45)),
       ZoneOffset.UTC
     )
   )

@@ -18,13 +18,13 @@ final class CompleteConferenceTest extends TwilioClientTest {
 
   private val createdAtInstant = Instant.from(
     OffsetDateTime.of(
-      LocalDateTime.of(LocalDate.of(2022, 7, 1), LocalTime.of(11, 23, 45)),
+      LocalDateTime.of(LocalDate.of(2021, 10, 6), LocalTime.of(15, 55, 0)),
       ZoneOffset.UTC
     )
   )
   private val updatedAtInstant = Instant.from(
     OffsetDateTime.of(
-      LocalDateTime.of(LocalDate.of(2022, 7, 1), LocalTime.of(11, 23, 45)),
+      LocalDateTime.of(LocalDate.of(2021, 10, 6), LocalTime.of(16, 2, 10)),
       ZoneOffset.UTC
     )
   )
