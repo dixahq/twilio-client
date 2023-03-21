@@ -1,7 +1,9 @@
 package com.dixa.twilio.client.impl
+import com.dixa.twilio.model.Iso8601DateTime.{After, Before}
 import com.dixa.twilio.model.{Iso8601DateTime, TwilioStringValue}
 
 import java.net.URLEncoder
+import java.time.format.DateTimeFormatter
 
 /** Helper class for easy building of multiple query params, into one single String, that can just
   * be added to the end of a url
@@ -29,9 +31,12 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
   def withOptionalDateParam(
       key: String,
       valueOpt: Option[Iso8601DateTime]
+  )(
+      implicit formatter: DateTimeFormatter
   ): QueryParamBuilder = valueOpt match {
-    case Some(value) => withParam(key, value.twilioString)
-    case None        => this
+    case Some(before: Before) => withParam(key, s"<=${formatter.format(before.instant)}")
+    case Some(after: After)   => withParam(key, s"<=${formatter.format(after.instant)}")
+    case _                    => this
   }
 
   def build: String = paramStrings match {

@@ -3,22 +3,43 @@ package com.dixa.twilio.client.twilioClient.voice
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.{ApiVersion, Region}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 import scala.concurrent.Future
 
 final class CompleteConferenceTest extends TwilioClientTest {
 
   private val account1Sid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
+  private val createdAtInstant = Instant.from(
+    OffsetDateTime.of(
+      LocalDateTime.of(LocalDate.of(2022, 7, 1), LocalTime.of(11, 23, 45)),
+      ZoneOffset.UTC
+    )
+  )
+  private val updatedAtInstant = Instant.from(
+    OffsetDateTime.of(
+      LocalDateTime.of(LocalDate.of(2022, 7, 1), LocalTime.of(11, 23, 45)),
+      ZoneOffset.UTC
+    )
+  )
+
   private val conference1 = Conference(
     sid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
     status = Conference.Status.InProgress,
     friendlyName = Conference.FriendlyName("Conference1FriendlyName"),
-    accountSid = account1Sid
+    accountSid = account1Sid,
+    dateCreated = createdAtInstant,
+    dateUpdated = updatedAtInstant,
+    apiVersion = ApiVersion("2010-04-01"),
+    region = Region.Ie1,
+    reasonConferenceEnded = Some(Conference.EndReason.ConferenceEndedViaApi),
+    callSidEndingConference = None
   )
 
   private val twilioCompleteConferenceResponseJson =

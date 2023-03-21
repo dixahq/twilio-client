@@ -1,20 +1,10 @@
 package com.dixa.twilio.model
 
-import java.time.format.DateTimeFormatter
-
-trait Iso8601DateTime extends TwilioStringValue
+trait Iso8601DateTime
 
 object Iso8601DateTime {
 
-  case class Before(instant: java.time.Instant)(
-      implicit formatter: DateTimeFormatter
-  ) extends Iso8601DateTime {
-    override def twilioString: String = s"<=${formatter.format(instant)}"
-  }
+  case class Before(instant: java.time.Instant) extends Iso8601DateTime
 
-  case class After(instant: java.time.Instant)(
-      implicit formatter: DateTimeFormatter
-  ) extends Iso8601DateTime {
-    override def twilioString: String = s">=${formatter.format(instant)}"
-  }
+  case class After(instant: java.time.Instant) extends Iso8601DateTime
 }

@@ -12,11 +12,16 @@ import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
   statusParamKey
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, ListJsonRep, QueryParamBuilder}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  Formatter,
+  HttpEntityString,
+  ListJsonRep,
+  QueryParamBuilder
+}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
 import com.dixa.twilio.model.voice.Conference
-
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -35,6 +40,8 @@ class ConferenceReadRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: ConferenceReadRequestExecutor.ConferenceReadRequest
   ): Either[ConferenceReadRequestExecutor.ConferenceReadException, HttpRequest] = {
+    implicit val formatter = Formatter.newApiDateTimeFormatter
+
     val params = QueryParamBuilder.empty
       .withParam(accountSidParamKey, req.accountSid)
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreated)
