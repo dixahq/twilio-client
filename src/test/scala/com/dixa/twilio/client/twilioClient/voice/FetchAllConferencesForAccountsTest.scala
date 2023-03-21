@@ -263,12 +263,16 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             status = Conference.Status.InProgress,
             friendlyName = Conference.FriendlyName("Conference4FriendlyName"),
             accountSid = account2Sid,
-            dateCreated = ???,
-            dateUpdated = ???,
-            apiVersion = ???,
-            region = ???,
-            reasonConferenceEnded = ???,
-            callSidEndingConference = ???,
+            dateCreated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+            ),
+            dateUpdated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+            ),
+            apiVersion = ApiVersion("2010-04-01"),
+            region = Region.Us1,
+            reasonConferenceEnded = None,
+            callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1"),
