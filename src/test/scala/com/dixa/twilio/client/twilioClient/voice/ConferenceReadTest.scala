@@ -31,8 +31,6 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
 
         val returnedBody = conferenceListResp(accountSid, List.empty)
 
-        println(s"returnedBody: $returnedBody")
-
         val expectedPath = s"/2010-04-01/Accounts/$accountSid/Conferences.json"
 
         wireMockServer.stubFor(

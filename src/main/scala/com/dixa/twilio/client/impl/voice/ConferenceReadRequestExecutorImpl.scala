@@ -60,7 +60,6 @@ class ConferenceReadRequestExecutorImpl()(
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
   ): List[Either[ConferenceReadRequestExecutor.ConferenceReadException, Conference]] = {
-    println(s"Conference Read responseEntity: $responseEntity")
     responseEntity.parse[ConferenceListJsonRep]() match {
       case Left(ex) =>
         List(Left(ConferenceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))
