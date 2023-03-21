@@ -4,7 +4,13 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
-import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{accountSidParamKey, dateCreatedParamKey, dateUpdatedParamKey, friendlyNameParamKey, statusParamKey}
+import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
+  accountSidParamKey,
+  dateCreatedParamKey,
+  dateUpdatedParamKey,
+  friendlyNameParamKey,
+  statusParamKey
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, ListJsonRep, QueryParamBuilder}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
@@ -25,11 +31,6 @@ class ConferenceReadRequestExecutorImpl()(
 
   override protected def method: HttpMethod = HttpMethods.GET
 
-  /** Build the http request.
-    *
-    * Implementations should provide this for building the HttpRequest for the request represented
-    * by the concrete implementation.
-    */
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ConferenceReadRequestExecutor.ConferenceReadRequest
@@ -66,7 +67,7 @@ class ConferenceReadRequestExecutorImpl()(
     responseEntity.parse[ListJsonRep[TwilioConferenceJsonResp]]() match {
       case Left(ex) =>
         List(Left(ConferenceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))
-      case Right(listJsonRep) => listJsonRep.messages.map{_.toModel}
+      case Right(listJsonRep) => listJsonRep.messages.map { _.toModel }.map { Right(_) }
     }
 
   }
