@@ -8,7 +8,7 @@ import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 
 import java.time.Instant
 
-private[voice] object ConferenceJsonResp {
+private[voice] object ConferenceJsonRep {
 
   /** Class representing the Twilio JSON representation of a sub object of a Conference.
     *

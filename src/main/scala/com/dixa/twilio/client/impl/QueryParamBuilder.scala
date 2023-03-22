@@ -27,6 +27,14 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
     case None        => this
   }
 
+  def withOptionalBooleanParam(
+      key: String,
+      valueOpt: Option[Boolean]
+  ): QueryParamBuilder = valueOpt match {
+    case Some(value) => withParam(key, value.toString)
+    case None        => this
+  }
+
   def withOptionalDateParam(
       key: String,
       valueOpt: Option[Iso8601DateTime]

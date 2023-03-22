@@ -4,7 +4,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
+import com.dixa.twilio.client.impl.voice.ConferenceJsonRep.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
 import com.dixa.twilio.model.voice.Conference
 import io.circe.generic.auto._
