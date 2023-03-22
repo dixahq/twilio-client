@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.voice
 
 import com.dixa.twilio.client.impl.Formatter
-import com.dixa.twilio.model.{ApiVersion, Region}
+import com.dixa.twilio.model.{ApiVersion, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
@@ -49,7 +49,7 @@ private[voice] object ConferenceJsonResp {
         Instant.from(Formatter.dateTime.parse(date_created)),
         Instant.from(Formatter.dateTime.parse(date_updated)),
         ApiVersion(api_version),
-        Region.fromTwilioStringUnsafe(region),
+        PublicEdgeLocation.withEdgeOrRegionId(region.toLowerCase),
         reason_conference_ended.flatMap(Conference.EndReason.fromTwilioString),
         call_sid_ending_conference.map(Call.Sid.unsafe),
         participants.toVector
@@ -65,7 +65,7 @@ private[voice] object ConferenceJsonResp {
         Instant.from(Formatter.dateTime.parse(date_created)),
         Instant.from(Formatter.dateTime.parse(date_updated)),
         ApiVersion(api_version),
-        Region.fromTwilioStringUnsafe(region),
+        PublicEdgeLocation.withEdgeOrRegionId(region.toLowerCase),
         reason_conference_ended.flatMap(Conference.EndReason.fromTwilioString),
         call_sid_ending_conference.map(Call.Sid.unsafe),
       )
