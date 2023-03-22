@@ -4,7 +4,7 @@ import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{ConferenceReadRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.{ApiVersion, Iso8601DateTime, Region}
+import com.dixa.twilio.model.{ApiVersion, Iso8601DateTime, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -67,7 +67,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val expected = conference(
           accountSid,
           Conference.Status.Completed,
-          Region.Ie1,
+          PublicEdgeLocation.Dublin,
           Conference.FriendlyName("testConferenece"),
           Some(Conference.EndReason.ConferenceEndedViaApi)
         )
@@ -95,10 +95,6 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val result =
           instance.conferenceRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
-          result.head.left.map { ex =>
-            println(ex.getMessage)
-            ex.getStackTrace.map(println)
-          }
           result.size shouldBe 1
           result.head.isRight shouldBe true
           result.head.right.get shouldBe expected
@@ -111,21 +107,21 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val expected = conference(
           accountSid,
           Conference.Status.Completed,
-          Region.Ie1,
+          PublicEdgeLocation.Dublin,
           Conference.FriendlyName("testConference"),
           Some(Conference.EndReason.ConferenceEndedViaApi)
         )
         val expected2 = conference(
           accountSid,
           Conference.Status.InProgress,
-          Region.Br1,
+          PublicEdgeLocation.SaoPaulo,
           Conference.FriendlyName("testConference2"),
           Some(Conference.EndReason.LastParticipantLeft)
         )
         val expected3 = conference(
           accountSid,
           Conference.Status.Init,
-          Region.Us1,
+          PublicEdgeLocation.Ashburn,
           Conference.FriendlyName("testConference3"),
           Some(Conference.EndReason.ParticipantWithEndConferenceOnExitLeft)
         )
@@ -169,7 +165,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val expected2 = conference(
           accountSid,
           Conference.Status.InProgress,
-          Region.Br1,
+          PublicEdgeLocation.SaoPaulo,
           Conference.FriendlyName("testConference2"),
           Some(Conference.EndReason.LastParticipantLeft)
         )
@@ -246,7 +242,7 @@ private object ConferenceReadTest {
   private def conference(
       accountSid: TwilioAccount.Sid,
       status: Conference.Status,
-      region: Region,
+      edgeLocation: PublicEdgeLocation,
       friendlyName: Conference.FriendlyName,
       reason: Option[Conference.EndReason]
   ) = Conference.DefaultImpl(
@@ -257,7 +253,7 @@ private object ConferenceReadTest {
     dateCreated = createdAtInstant,
     dateUpdated = updatedAtInstant,
     apiVersion = apiVersion,
-    region = region,
+    edgeLocation = edgeLocation,
     reasonConferenceEnded = reason,
     callSidEndingConference = callSidEndingConference,
   )
@@ -265,13 +261,13 @@ private object ConferenceReadTest {
   def conferenceReferenceResp(
       accountSid: TwilioAccount.Sid,
       status: Conference.Status,
-      region: Region,
+      edgeLocation: PublicEdgeLocation,
       friendlyName: Conference.FriendlyName,
       reason: Option[Conference.EndReason]
   ): String = {
     s"""{
        |  "status": "${status.twilioString}",
-       |  "region": "${region.twilioString}",
+       |  "region": "${edgeLocation.legacyRegionId.map(_.twilioString).get}",
        |  "sid": "CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
        |  "date_updated": "Wed, 01 Jul 2020 11:23:45 +0000",
        |  "date_created": "Wed, 01 Jul 2020 11:23:45 +0000",
@@ -303,7 +299,7 @@ private object ConferenceReadTest {
           conferenceReferenceResp(
             accountSid,
             conf.status,
-            conf.region,
+            conf.edgeLocation,
             conf.friendlyName,
             conf.reasonConferenceEnded
           )

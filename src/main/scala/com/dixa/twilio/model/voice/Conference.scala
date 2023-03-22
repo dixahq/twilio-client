@@ -4,7 +4,7 @@ import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.{
   ApiVersion,
   EnumWithTwilioString,
-  Region,
+  PublicEdgeLocation,
   SidAbstract,
   TwilioStringValue
 }
@@ -22,7 +22,7 @@ sealed trait Conference {
   def dateCreated: Instant
   def dateUpdated: Instant
   def apiVersion: ApiVersion
-  def region: Region
+  def edgeLocation: PublicEdgeLocation
   def reasonConferenceEnded: Option[EndReason]
   def callSidEndingConference: Option[Call.Sid]
 }
@@ -37,7 +37,7 @@ object Conference {
       dateCreated: Instant,
       dateUpdated: Instant,
       apiVersion: ApiVersion,
-      region: Region,
+      edgeLocation: PublicEdgeLocation,
       reasonConferenceEnded: Option[EndReason],
       callSidEndingConference: Option[Call.Sid]
   ): DefaultImpl = DefaultImpl(
@@ -48,7 +48,7 @@ object Conference {
     dateCreated,
     dateUpdated,
     apiVersion,
-    region,
+    edgeLocation,
     reasonConferenceEnded,
     callSidEndingConference
   )
@@ -61,7 +61,7 @@ object Conference {
       dateCreated: Instant,
       dateUpdated: Instant,
       apiVersion: ApiVersion,
-      region: Region,
+      edgeLocation: PublicEdgeLocation,
       reasonConferenceEnded: Option[EndReason],
       callSidEndingConference: Option[Call.Sid]
   ) extends Conference
@@ -74,7 +74,7 @@ object Conference {
       dateCreated: Instant,
       dateUpdated: Instant,
       apiVersion: ApiVersion,
-      region: Region,
+      edgeLocation: PublicEdgeLocation,
       reasonConferenceEnded: Option[EndReason],
       callSidEndingConference: Option[Call.Sid],
       participants: Vector[Participant]
