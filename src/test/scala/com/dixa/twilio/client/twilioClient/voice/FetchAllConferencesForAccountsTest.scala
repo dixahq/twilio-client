@@ -13,6 +13,7 @@ import com.github.tomakehurst.wiremock.client.WireMock
 
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import scala.concurrent.Future
 
 final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
 
@@ -164,12 +165,12 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
         val twilioConnectionSetting     = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
 
-        val resultFlow: Flow[TwilioAccount.Sid, Conference, NotUsed] =
+        val resultFlow: Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
           instance.fetchAllConferencesWithParticipants(
             twilioConnectionSetting,
             statusFilter = Some(Conference.Status.InProgress)
           )
-        val resultFut =
+        val resultFut: Future[Seq[ConferenceWithParticipants]] =
           Source(List(account1Sid, account2Sid)).via(resultFlow).toMat(Sink.seq)(Keep.right).run()
 
         val expectedValue = Set(
@@ -192,16 +193,61 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             participants = Vector(
               // 3 participants in this conference, so we can test pagination of fetching participants
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X1"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = true,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = true,
+                status = Conference.Participant.Status.Connected,
               ),
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X2"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = false,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = false,
+                status = Conference.Participant.Status.Connected
               ),
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1X3"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = true,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = true,
+                status = Conference.Participant.Status.Connected
               )
             )
           ),
@@ -222,12 +268,42 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X1"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = true,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = true,
+                status = Conference.Participant.Status.Connected
               ),
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X2"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = false,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = false,
+                status = Conference.Participant.Status.Connected
               )
             )
           ),
@@ -248,12 +324,42 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X1"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = true,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = true,
+                status = Conference.Participant.Status.Connected
               ),
               Conference.Participant(
+                accountSid = account1Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X2"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = false,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = false,
+                status = Conference.Participant.Status.Connected
               )
             )
           ),
@@ -275,12 +381,42 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
+                accountSid = account2Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = true,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = true,
+                status = Conference.Participant.Status.Connected
               ),
               Conference.Participant(
+                accountSid = account2Sid,
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X2"),
-                status = Conference.ParticipantStatus.Connected
+                label = None,
+                callSidToCoach = None,
+                coaching = false,
+                conferenceSid = Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4"),
+                dateCreated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+                ),
+                dateUpdated = Instant.from(
+                  DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+                ),
+                endConferenceOnExit = false,
+                muted = false,
+                hold = false,
+                startConferenceOnEnter = false,
+                status = Conference.Participant.Status.Connected
               )
             )
           )
@@ -583,10 +719,10 @@ private object FetchAllConferencesForAccountsTest {
 
   def getParticipantsConferences4Response =
     s"""{
-       |  "first_page_uri": "/2010-04-01/Accounts/$account1Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants.json?PageSize=2&Page=0",
+       |  "first_page_uri": "/2010-04-01/Accounts/$account2Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants.json?PageSize=2&Page=0",
        |  "end": 1,
        |  "previous_page_uri": null,
-       |  "uri": "/2010-04-01/Accounts/$account1Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants.json?PageSize=2&Page=0",
+       |  "uri": "/2010-04-01/Accounts/$account2Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants.json?PageSize=2&Page=0",
        |  "page_size": 2,
        |  "start": 0,
        |  "participants": [
@@ -596,14 +732,14 @@ private object FetchAllConferencesForAccountsTest {
        |      "hold": false,
        |      "date_updated": "Thu, 30 Sep 2021 06:30:46 +0000",
        |      "end_conference_on_exit": true,
-       |      "uri": "/2010-04-01/Accounts/$account1Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1.json",
+       |      "uri": "/2010-04-01/Accounts/$account2Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1.json",
        |      "label": null,
        |      "muted": false,
        |      "coaching": false,
        |      "start_conference_on_enter": true,
        |      "call_sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1",
        |      "date_created": "Thu, 30 Sep 2021 06:30:46 +0000",
-       |      "account_sid": "$account1Sid",
+       |      "account_sid": "$account2Sid",
        |      "call_sid_to_coach": null
        |    },
        |    {
@@ -612,14 +748,14 @@ private object FetchAllConferencesForAccountsTest {
        |      "hold": false,
        |      "date_updated": "Thu, 30 Sep 2021 06:30:46 +0000",
        |      "end_conference_on_exit": false,
-       |      "uri": "/2010-04-01/Accounts/$account1Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X2.json",
+       |      "uri": "/2010-04-01/Accounts/$account2Sid/Conferences/CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4/Participants/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X2.json",
        |      "label": null,
        |      "muted": false,
        |      "coaching": false,
        |      "start_conference_on_enter": false,
        |      "call_sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X2",
        |      "date_created": "Thu, 30 Sep 2021 06:30:42 +0000",
-       |      "account_sid": "$account1Sid",
+       |      "account_sid": "$account2Sid",
        |      "call_sid_to_coach": null
        |    }
        |  ],

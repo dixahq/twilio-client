@@ -119,28 +119,54 @@ object Conference {
 
   final case class FriendlyName(override val toString: String) extends TwilioStringValue
 
-  sealed abstract class ParticipantStatus(
-      override val twilioString: String,
-      /** Specifies if this status is one, where the participant are considered active
-        *
-        * By active means a state where the participant is either activily part of the conference,
-        * or is expected to be it in the future. So status like queued and connecting is also
-        * considered active.
-        */
-      val isActive: Boolean
-  ) extends EnumWithTwilioString.EnumEntry
-  object ParticipantStatus extends EnumWithTwilioString[ParticipantStatus] {
-    override val values: immutable.IndexedSeq[ParticipantStatus] = findValues
+  final case class Participant(
+      accountSid: TwilioAccount.Sid,
+      callSid: Call.Sid,
+      label: Option[Participant.Label],
+      callSidToCoach: Option[Call.Sid],
+      coaching: Boolean,
+      conferenceSid: Conference.Sid,
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      endConferenceOnExit: Boolean,
+      muted: Boolean,
+      hold: Boolean,
+      startConferenceOnEnter: Boolean,
+      status: Participant.Status,
+  )
 
-    case object Queued     extends ParticipantStatus("queued", isActive = true)
-    case object Connecting extends ParticipantStatus("connecting", isActive = true)
-    case object Ringing    extends ParticipantStatus("ringing", isActive = true)
-    case object Connected  extends ParticipantStatus("connected", isActive = true)
-    case object Complete   extends ParticipantStatus("complete", isActive = false)
-    case object Failed     extends ParticipantStatus("failed", isActive = false)
+  object Participant {
+
+    final case class Label(override val toString: String) extends TwilioStringValue
+
+    sealed abstract class Status(
+        override val twilioString: String,
+
+        /** Specifies if this status is one, where the participant are considered active
+          *
+          * By active means a state where the participant is either activily part of the conference,
+          * or is expected to be it in the future. So status like queued and connecting is also
+          * considered active.
+          */
+        val isActive: Boolean
+    ) extends EnumWithTwilioString.EnumEntry
+
+    object Status extends EnumWithTwilioString[Status] {
+      override val values: immutable.IndexedSeq[Status] = findValues
+
+      case object Queued extends Status("queued", isActive = true)
+
+      case object Connecting extends Status("connecting", isActive = true)
+
+      case object Ringing extends Status("ringing", isActive = true)
+
+      case object Connected extends Status("connected", isActive = true)
+
+      case object Complete extends Status("complete", isActive = false)
+
+      case object Failed extends Status("failed", isActive = false)
+    }
   }
-
-  final case class Participant(callSid: Call.Sid, status: ParticipantStatus)
 
   /** Represent the Beep attribute of an conference.
     *

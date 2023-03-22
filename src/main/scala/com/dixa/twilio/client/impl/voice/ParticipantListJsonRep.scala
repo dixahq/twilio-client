@@ -1,9 +1,9 @@
 package com.dixa.twilio.client.impl.voice
 
-private[impl] case class ConferenceListJsonRep(
+private[impl] final case class ParticipantListJsonRep(
     first_page_uri: String,
     end: Int,
-    conferences: List[ConferenceJsonRep.TwilioConferenceJsonResp],
+    participants: List[ParticipantJsonRep],
     previous_page_uri: Option[String],
     uri: String,
     page_size: Int,
