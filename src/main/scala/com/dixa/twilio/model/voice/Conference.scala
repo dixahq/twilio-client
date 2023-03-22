@@ -153,17 +153,11 @@ object Conference {
 
     object Status extends EnumWithTwilioString[Status] {
       override val values: immutable.IndexedSeq[Status] = findValues
-
       case object Queued extends Status("queued", isActive = true)
-
       case object Connecting extends Status("connecting", isActive = true)
-
       case object Ringing extends Status("ringing", isActive = true)
-
       case object Connected extends Status("connected", isActive = true)
-
       case object Complete extends Status("complete", isActive = false)
-
       case object Failed extends Status("failed", isActive = false)
     }
   }
