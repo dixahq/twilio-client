@@ -19,6 +19,8 @@ trait TwilioClientVoice {
 
   def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor
 
+  def conferenceParticipantDelete: ConferenceParticipantDeleteRequestExecutor
+
   def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[Conference.Status]

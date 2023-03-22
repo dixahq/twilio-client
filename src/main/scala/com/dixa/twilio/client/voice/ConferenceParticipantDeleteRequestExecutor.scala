@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.voice
 
-import com.dixa.twilio.client.{voice, ApiException, SingleRequestExecutor}
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.Funit
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
@@ -52,7 +52,7 @@ object ConferenceParticipantDeleteRequestExecutor {
 
     final class Builder[
         Attributes <: RequestAttribute,
-    ] private[CallUpdateRequest] (
+    ] private[ConferenceParticipantDeleteRequest] (
         accountSid: Option[TwilioAccount.Sid],
         conferenceSid: Option[Conference.Sid],
         callSid: Option[Call.Sid],
