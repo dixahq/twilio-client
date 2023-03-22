@@ -69,9 +69,6 @@ class ConferenceParticipantReadRequestExecutorImpl()(
   ]] = {
     responseEntity.parse[ParticipantListJsonRep]() match {
       case Left(ex) =>
-        println(ex)
-        println(ex.getMessage)
-        ex.getStackTrace.map(println)
         List(
           Left(
             ConferenceParticipantsReadException.Unspecified(
