@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.voice
 
-import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.client.{voice, ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.Funit
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 
@@ -8,9 +9,9 @@ import scala.annotation.nowarn
 
 trait ConferenceParticipantDeleteRequestExecutor
     extends SingleRequestExecutor[
-      CallUpdateRequestExecutor.CallUpdateRequest,
-      CallUpdateRequestExecutor.CallUpdateException,
-      Call
+      ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest,
+      ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteException,
+      Funit
     ] {
 
   import ConferenceParticipantDeleteRequestExecutor._
