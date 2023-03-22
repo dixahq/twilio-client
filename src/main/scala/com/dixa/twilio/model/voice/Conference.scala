@@ -1,9 +1,17 @@
 package com.dixa.twilio.model.voice
 
 import com.dixa.twilio.model.SidAbstract.Prefix
-import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract}
+import com.dixa.twilio.model.{
+  ApiVersion,
+  EnumWithTwilioString,
+  PublicEdgeLocation,
+  SidAbstract,
+  TwilioStringValue
+}
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.Conference.EndReason
 
+import java.time.Instant
 import scala.collection.immutable
 
 sealed trait Conference {
@@ -11,6 +19,12 @@ sealed trait Conference {
   def status: Conference.Status
   def friendlyName: Conference.FriendlyName
   def accountSid: TwilioAccount.Sid
+  def dateCreated: Instant
+  def dateUpdated: Instant
+  def apiVersion: ApiVersion
+  def edgeLocation: PublicEdgeLocation
+  def reasonConferenceEnded: Option[EndReason]
+  def callSidEndingConference: Option[Call.Sid]
 }
 
 object Conference {
@@ -20,13 +34,36 @@ object Conference {
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
-  ): DefaultImpl = DefaultImpl(sid, status, friendlyName, accountSid)
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      apiVersion: ApiVersion,
+      edgeLocation: PublicEdgeLocation,
+      reasonConferenceEnded: Option[EndReason],
+      callSidEndingConference: Option[Call.Sid]
+  ): DefaultImpl = DefaultImpl(
+    sid,
+    status,
+    friendlyName,
+    accountSid,
+    dateCreated,
+    dateUpdated,
+    apiVersion,
+    edgeLocation,
+    reasonConferenceEnded,
+    callSidEndingConference
+  )
 
   final case class DefaultImpl(
       sid: Sid,
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      apiVersion: ApiVersion,
+      edgeLocation: PublicEdgeLocation,
+      reasonConferenceEnded: Option[EndReason],
+      callSidEndingConference: Option[Call.Sid]
   ) extends Conference
 
   final case class ConferenceWithParticipants(
@@ -34,6 +71,12 @@ object Conference {
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      apiVersion: ApiVersion,
+      edgeLocation: PublicEdgeLocation,
+      reasonConferenceEnded: Option[EndReason],
+      callSidEndingConference: Option[Call.Sid],
       participants: Vector[Participant]
   ) extends Conference
 
@@ -58,7 +101,23 @@ object Conference {
     case object Completed  extends Status("completed", isActive = false)
   }
 
-  final case class FriendlyName(override val toString: String)
+  sealed abstract class EndReason(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object EndReason extends EnumWithTwilioString[EndReason] {
+    override def values: immutable.IndexedSeq[EndReason] = findValues
+
+    case object ConferenceEndedViaApi extends EndReason("conference-ended-via-api")
+    case object ParticipantWithEndConferenceOnExitLeft
+        extends EndReason("participant-with-end-conference-on-exit-left")
+    case object ParticipantWithEndConferenceOnExitKicked
+        extends EndReason("participant-with-end-conference-on-exit-kicked")
+    case object LastParticipantKicked extends EndReason("last-participant-kicked")
+    case object LastParticipantLeft   extends EndReason("last-participant-left")
+  }
+
+  final case class FriendlyName(override val toString: String) extends TwilioStringValue
 
   sealed abstract class ParticipantStatus(
       override val twilioString: String,

@@ -5,10 +5,14 @@ import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.{ApiVersion, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.github.tomakehurst.wiremock.client.WireMock
+
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
 
@@ -175,6 +179,16 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             status = Conference.Status.InProgress,
             friendlyName = Conference.FriendlyName("Conference1FriendlyName"),
             accountSid = account1Sid,
+            dateCreated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+            ),
+            dateUpdated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+            ),
+            apiVersion = ApiVersion("2010-04-01"),
+            edgeLocation = PublicEdgeLocation.Ashburn,
+            reasonConferenceEnded = None,
+            callSidEndingConference = None,
             participants = Vector(
               // 3 participants in this conference, so we can test pagination of fetching participants
               Conference.Participant(
@@ -196,6 +210,16 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             status = Conference.Status.InProgress,
             friendlyName = Conference.FriendlyName("Conference2FriendlyName"),
             accountSid = account1Sid,
+            dateCreated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+            ),
+            dateUpdated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+            ),
+            apiVersion = ApiVersion("2010-04-01"),
+            edgeLocation = PublicEdgeLocation.Ashburn,
+            reasonConferenceEnded = None,
+            callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2X1"),
@@ -212,6 +236,16 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             status = Conference.Status.InProgress,
             friendlyName = Conference.FriendlyName("Conference3FriendlyName"),
             accountSid = account1Sid,
+            dateCreated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+            ),
+            dateUpdated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+            ),
+            apiVersion = ApiVersion("2010-04-01"),
+            edgeLocation = PublicEdgeLocation.Ashburn,
+            reasonConferenceEnded = None,
+            callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3X1"),
@@ -229,6 +263,16 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             status = Conference.Status.InProgress,
             friendlyName = Conference.FriendlyName("Conference4FriendlyName"),
             accountSid = account2Sid,
+            dateCreated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:42 +0000")
+            ),
+            dateUpdated = Instant.from(
+              DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
+            ),
+            apiVersion = ApiVersion("2010-04-01"),
+            edgeLocation = PublicEdgeLocation.Ashburn,
+            reasonConferenceEnded = None,
+            callSidEndingConference = None,
             participants = Vector(
               Conference.Participant(
                 callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXX4X1"),

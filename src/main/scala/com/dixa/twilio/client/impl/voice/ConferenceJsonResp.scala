@@ -1,8 +1,12 @@
 package com.dixa.twilio.client.impl.voice
 
+import com.dixa.twilio.client.impl.Formatter
+import com.dixa.twilio.model.{ApiVersion, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.Conference
+import com.dixa.twilio.model.voice.{Call, Conference}
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
+
+import java.time.Instant
 
 private[voice] object ConferenceJsonResp {
 
@@ -22,10 +26,16 @@ private[voice] object ConferenceJsonResp {
     * found here: https://www.twilio.com/docs/voice/api/conference-resource
     */
   private[voice] final case class TwilioConferenceJsonResp(
-      status: String,
-      friendly_name: String,
       account_sid: String,
+      date_created: String,
+      date_updated: String,
+      api_version: String,
+      friendly_name: String,
+      region: String,
       sid: String,
+      status: String,
+      reason_conference_ended: Option[String],
+      call_sid_ending_conference: Option[String],
       subresource_uris: TwilioConferenceSubUrisRep
   ) {
     private[voice] def toModel(
@@ -36,6 +46,12 @@ private[voice] object ConferenceJsonResp {
         Conference.Status.fromTwilioStringUnsafe(status),
         Conference.FriendlyName(friendly_name),
         TwilioAccount.Sid.unsafe(account_sid),
+        Instant.from(Formatter.dateTime.parse(date_created)),
+        Instant.from(Formatter.dateTime.parse(date_updated)),
+        ApiVersion(api_version),
+        PublicEdgeLocation.withEdgeOrRegionId(region.toLowerCase),
+        reason_conference_ended.flatMap(Conference.EndReason.fromTwilioString),
+        call_sid_ending_conference.map(Call.Sid.unsafe),
         participants.toVector
       )
     }
@@ -45,7 +61,13 @@ private[voice] object ConferenceJsonResp {
         Conference.Sid.unsafe(sid),
         Conference.Status.fromTwilioStringUnsafe(status),
         Conference.FriendlyName(friendly_name),
-        TwilioAccount.Sid.unsafe(account_sid)
+        TwilioAccount.Sid.unsafe(account_sid),
+        Instant.from(Formatter.dateTime.parse(date_created)),
+        Instant.from(Formatter.dateTime.parse(date_updated)),
+        ApiVersion(api_version),
+        PublicEdgeLocation.withEdgeOrRegionId(region.toLowerCase),
+        reason_conference_ended.flatMap(Conference.EndReason.fromTwilioString),
+        call_sid_ending_conference.map(Call.Sid.unsafe),
       )
     }
   }
