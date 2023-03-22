@@ -54,10 +54,6 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val result =
           instance.conferenceRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
-          result.head.left.map { ex =>
-            println(ex.getMessage)
-            ex.getStackTrace.map(println)
-          }
           result shouldBe Seq.empty
           result.isEmpty shouldBe true
         }
@@ -99,10 +95,6 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val result =
           instance.conferenceRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
-          result.head.left.map { ex =>
-            println(ex.getMessage)
-            ex.getStackTrace.map(println)
-          }
           result.size shouldBe 1
           result.head.isRight shouldBe true
           result.head.right.get shouldBe expected
