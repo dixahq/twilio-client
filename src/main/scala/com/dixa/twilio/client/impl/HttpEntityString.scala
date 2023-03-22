@@ -18,7 +18,6 @@ private[client] final case class HttpEntityString(override val toString: String)
     */
   def parse[A: ClassTag: Decoder](): Either[JsonParsingException, A] = decode[A](this.toString)
     .leftMap { error =>
-      println(error)
       JsonParsingException(classTag[A], this, error)
     }
 }
