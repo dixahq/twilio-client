@@ -2,7 +2,6 @@ package com.dixa.twilio.model.voice
 
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.{
-  ApiVersion,
   EnumWithTwilioString,
   PublicEdgeLocation,
   SidAbstract,
@@ -21,7 +20,6 @@ sealed trait Conference {
   def accountSid: TwilioAccount.Sid
   def dateCreated: Instant
   def dateUpdated: Instant
-  def apiVersion: ApiVersion
   def edgeLocation: PublicEdgeLocation
   def reasonConferenceEnded: Option[EndReason]
   def callSidEndingConference: Option[Call.Sid]
@@ -36,7 +34,6 @@ object Conference {
       accountSid: TwilioAccount.Sid,
       dateCreated: Instant,
       dateUpdated: Instant,
-      apiVersion: ApiVersion,
       edgeLocation: PublicEdgeLocation,
       reasonConferenceEnded: Option[EndReason],
       callSidEndingConference: Option[Call.Sid]
@@ -47,7 +44,6 @@ object Conference {
     accountSid,
     dateCreated,
     dateUpdated,
-    apiVersion,
     edgeLocation,
     reasonConferenceEnded,
     callSidEndingConference
@@ -60,7 +56,6 @@ object Conference {
       accountSid: TwilioAccount.Sid,
       dateCreated: Instant,
       dateUpdated: Instant,
-      apiVersion: ApiVersion,
       edgeLocation: PublicEdgeLocation,
       reasonConferenceEnded: Option[EndReason],
       callSidEndingConference: Option[Call.Sid]
@@ -73,7 +68,6 @@ object Conference {
       accountSid: TwilioAccount.Sid,
       dateCreated: Instant,
       dateUpdated: Instant,
-      apiVersion: ApiVersion,
       edgeLocation: PublicEdgeLocation,
       reasonConferenceEnded: Option[EndReason],
       callSidEndingConference: Option[Call.Sid],

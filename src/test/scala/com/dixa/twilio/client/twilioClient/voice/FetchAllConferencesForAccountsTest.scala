@@ -5,7 +5,7 @@ import akka.stream.scaladsl.{Flow, Keep, Sink, Source}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.{ApiVersion, PublicEdgeLocation}
+import com.dixa.twilio.model.PublicEdgeLocation
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.model.voice.{Call, Conference}

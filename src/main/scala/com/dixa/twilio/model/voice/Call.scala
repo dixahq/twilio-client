@@ -1,19 +1,41 @@
 package com.dixa.twilio.model.voice
 
-import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract}
+import com.dixa.twilio.model.{
+  EnumWithTwilioString,
+  Iso4127CountryCode,
+  SidAbstract,
+  TwilioStringValue
+}
 import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
 
+import java.time.Instant
 import scala.collection.immutable
 
 final case class Call(
     sid: Call.Sid,
-    accountSid: TwilioAccount.Sid
-
-    // A lot of attributes are missing here, but did not need them at time of writing,
-    // so add them later once needed.
-    // Beware though, that to and from cannot just be phone numbers, as they
-    // are often also sip addresses. So some kind of abstraction over that would be needed.
+    dateCreated: Instant,
+    dateUpdate: Instant,
+    parentCallSid: Option[Call.Sid],
+    accountSid: TwilioAccount.Sid,
+    to: PhoneNumberE164, // TODO - msf: Figure out how to create a trait for both phonenumber, sip, identifyer and SIM SIDs
+    toFormatted: Call.FormattedPhoneNumber, // TODO - msf: Figure out how to contain this, maybe just and object containing a string
+    from: PhoneNumberE164,
+    fromFormatted: Call.FormattedPhoneNumber,
+    phoneNumberSid: TwilioPhoneNumber.Sid,
+    status: Call.Status,
+    startTime: Option[Instant],
+    endTime: Option[Instant],
+    duration: Option[Call.Duration],
+    price: Option[Call.Price],
+    direction: Call.Direction,
+    answeredBy: Option[Call.AnsweredBy],
+    forwardedFrom: Option[Call.ForwardedFrom],
+    groupSid: Option[Group.Sid],
+    callerName: Option[Call.Name],
+    queueTime: Call.QueueTime,
+    trunkSid: Option[Trunk.Sid],
 )
 
 object Call {
@@ -37,12 +59,68 @@ object Call {
   object StatusUpdate extends EnumWithTwilioString[StatusUpdate] {
     override val values: immutable.IndexedSeq[StatusUpdate] = findValues
 
-    case object Init extends StatusUpdate("init")
-
+    case object Init       extends StatusUpdate("init")
     case object InProgress extends StatusUpdate("in-progress")
-
-    case object Completed extends StatusUpdate("completed")
+    case object Completed  extends StatusUpdate("completed")
   }
 
-  final case class TimeLimit(duration: Int)
+  final case class TimeLimit(duration: Int) extends TwilioStringValue {
+    override val toString: String = duration.toString
+  }
+
+  sealed abstract class Status(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object Status extends EnumWithTwilioString[Status] {
+    override val values: immutable.IndexedSeq[Status] = findValues
+
+    case object Queued     extends Status("queued")
+    case object Ringing    extends Status("ringing")
+    case object InProgress extends Status("in-progress")
+    case object Canceled   extends Status("canceled")
+    case object Completed  extends Status("completed")
+    case object Failed     extends Status("failed")
+    case object Busy       extends Status("busy")
+    case object NoAnswer   extends Status("no-answer")
+  }
+
+  final case class Duration(override val toString: String) extends TwilioStringValue
+
+  final case class Price(amount: BigDecimal, unit: Iso4127CountryCode) extends TwilioStringValue {
+    override def toString: String = s"$amount $unit"
+  }
+
+  sealed abstract class Direction(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object Direction extends EnumWithTwilioString[Direction] {
+    override val values: immutable.IndexedSeq[Direction] = findValues
+
+    case object Inbound             extends Direction("inbound")
+    case object OutboundApi         extends Direction("outbound-api")
+    case object OutboundDial        extends Direction("outbound-dial")
+    case object TrunkingTerminating extends Direction("trunking-terminating")
+    case object TrunkingOriginating extends Direction("trunking-originating")
+  }
+
+  sealed abstract class AnsweredBy(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object AnsweredBy extends EnumWithTwilioString[AnsweredBy] {
+    override val values: immutable.IndexedSeq[AnsweredBy] = findValues
+
+    case object Human   extends Direction("human")
+    case object Machine extends Direction("machine")
+  }
+
+  final case class ForwardedFrom(override val toString: String) extends TwilioStringValue
+
+  final case class Name(override val toString: String) extends TwilioStringValue
+
+  final case class QueueTime(override val toString: String) extends TwilioStringValue
+
+  final case class FormattedPhoneNumber(override val toString: String) extends TwilioStringValue
 }

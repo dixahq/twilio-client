@@ -4,7 +4,6 @@ import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.StatusCallback
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.Call
 import com.dixa.twilio.model.voice.Call.TimeLimit
@@ -254,7 +253,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withStatusCallBack(statusCallback: CallbackUrl): Builder[
         Attributes with HasStatusCallbackUrlForMethodTrue,
         TwimlOrUrl,
@@ -324,7 +322,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withTimeLimit(timeLimit: TimeLimit): Builder[
         Attributes,
         TwimlOrUrl,

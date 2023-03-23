@@ -4,7 +4,7 @@ import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{ConferenceReadRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.{ApiVersion, Iso8601DateTime, PublicEdgeLocation}
+import com.dixa.twilio.model.{Iso8601DateTime, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.github.tomakehurst.wiremock.client.WireMock

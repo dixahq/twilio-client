@@ -10,7 +10,7 @@ import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
   statusParamKey
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
 import com.dixa.twilio.model.voice.Conference
@@ -21,7 +21,8 @@ import scala.concurrent.ExecutionContext
 class ConferenceReadRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
-    override protected val executionContext: ExecutionContext
+    override protected val executionContext: ExecutionContext,
+    apiVersion: ApiVersion
 ) extends ConferenceReadRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
@@ -40,7 +41,7 @@ class ConferenceReadRequestExecutorImpl()(
       .build
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Conferences.json$params",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Conferences.json$params",
       connSettings
     )
   }
