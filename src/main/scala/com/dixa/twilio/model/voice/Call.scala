@@ -1,8 +1,10 @@
 package com.dixa.twilio.model.voice
 
-import com.dixa.twilio.model.SidAbstract
+import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract}
 import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
 import com.dixa.twilio.model.iam.TwilioAccount
+
+import scala.collection.immutable
 
 final case class Call(
     sid: Call.Sid,
@@ -28,4 +30,19 @@ object Call {
 
   object Sid extends SidCompanionObject(Prefix("CA"), new Sid(_))
 
+  sealed abstract class StatusUpdate(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object StatusUpdate extends EnumWithTwilioString[StatusUpdate] {
+    override val values: immutable.IndexedSeq[StatusUpdate] = findValues
+
+    case object Init extends StatusUpdate("init")
+
+    case object InProgress extends StatusUpdate("in-progress")
+
+    case object Completed extends StatusUpdate("completed")
+  }
+
+  final case class TimeLimit(duration: Int)
 }

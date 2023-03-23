@@ -48,7 +48,7 @@ private[client] class CallUpdateRequestExecutorImpl()(
     val postParam = postParamBuilder.toString()
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json",
+      s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.sid}.json",
       connSettings
     ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam)))
   }
@@ -78,7 +78,7 @@ private[client] class CallUpdateRequestExecutorImpl()(
       .flatMap { decoded =>
         decoded.code match {
           case 20404L =>
-            Left(CallUpdateException.CallNotFound(req.accountSid, req.callSid))
+            Left(CallUpdateException.CallNotFound(req.accountSid, req.sid))
           case other =>
             Left(
               CallUpdateException.Unspecified(
