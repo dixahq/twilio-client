@@ -81,8 +81,6 @@ object ConferenceParticipantDeleteRequestExecutor {
       ): Builder[
         Attributes
           with RequestCallSidAttribute
-          with RequestConferenceSidAttribute
-          with RequestCallSidAttribute
       ] =
         new Builder(accountSid, conferenceSid, Some(callSid))
 
