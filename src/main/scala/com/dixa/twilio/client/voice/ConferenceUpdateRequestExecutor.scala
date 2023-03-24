@@ -1,15 +1,15 @@
 package com.dixa.twilio.client.voice
 
-import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.{voice, HttpMethod, Iso8601DateTime}
+import com.dixa.twilio.model.{HttpMethod, Iso8601DateTime, voice}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 
 import scala.annotation.nowarn
 
 trait ConferenceUpdateRequestExecutor
-    extends MultipleResponseRequestExecutor[
+    extends SingleRequestExecutor[
       ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
       ConferenceUpdateRequestExecutor.ConferenceUpdateException,
       Conference

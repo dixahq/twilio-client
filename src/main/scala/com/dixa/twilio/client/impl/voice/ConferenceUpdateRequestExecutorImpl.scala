@@ -9,7 +9,12 @@ import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
   friendlyNameParamKey,
   statusParamKey
 }
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString,
+  QueryParamBuilder
+}
 import com.dixa.twilio.client.voice.{ConferenceReadRequestExecutor, ConferenceUpdateRequestExecutor}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
 import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor.ConferenceUpdateException
@@ -58,18 +63,16 @@ class ConferenceUpdateRequestExecutorImpl()(
   ): ConferenceUpdateException.Unspecified = ConferenceUpdateException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-      connectionSettings: TwilioConnectionSettings,
-      request: ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
-      httpRequest: HttpRequest,
+      req: ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
+      httpReq: HttpRequest,
       httpResponse: HttpResponse,
-      responseEntity: HttpEntityString
-  ): List[Either[ConferenceUpdateRequestExecutor.ConferenceUpdateException, Conference]] = {
-    responseEntity.parse[ConferenceListJsonRep]() match {
-      case Left(ex) =>
-        List(Left(ConferenceUpdateException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))
-      case Right(listJsonRep) => listJsonRep.conferences.map { _.toModel }.map { Right(_) }
+      entity: HttpEntityString
+  ): Either[ConferenceUpdateRequestExecutor.ConferenceUpdateException, Conference] = {
+    httpResponse.status match {
+      case StatusCodes.OK =>
+        parseEntityAs[ConferenceJsonRep.TwilioConferenceJsonResp](entity).map(_.toModel)
+      case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
     }
-
   }
 
 }
