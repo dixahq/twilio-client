@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.voice
 
-import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor, SingleRequestExecutor}
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.{HttpMethod, Iso8601DateTime, voice}
+import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 
@@ -45,7 +45,7 @@ object ConferenceUpdateRequestExecutor {
     sealed trait RequestAccountSidAttribute    extends RequestAttribute
     sealed trait RequestConferenceSidAttribute extends RequestAttribute
 
-    sealed trait HasUrlForMethodSet extends RequestAttribute
+    sealed trait HasUrlForMethodSet
 
     sealed trait HasUrlForMethodSetTrue extends HasUrlForMethodSet
 
@@ -54,7 +54,6 @@ object ConferenceUpdateRequestExecutor {
     type RequestRequiredAttributes = RequestAttribute
       with RequestAccountSidAttribute
       with RequestConferenceSidAttribute
-      with HasUrlForMethodSetTrue
 
     type BuilderStartState = Builder[RequestAttribute, HasUrlForMethodSetFalse]
 
@@ -83,9 +82,10 @@ object ConferenceUpdateRequestExecutor {
 
       def withAnnounceUrl(
           announceUrl: CallbackUrl
-      ): Builder[Attributes with HasUrlForMethodSetTrue, HasUrlForMethodSetTrue] =
+      ): Builder[Attributes, HasUrlForMethodSetTrue] =
         new Builder(accountSid, conferenceSid, status, Some(announceUrl), announceMethod)
 
+      @nowarn
       def withAnnounceMethod(announceMethod: HttpMethod)(
           implicit ev: Attributes =:= HasUrlForMethodSetTrue
       ): Builder[Attributes, UrlForMethod] =

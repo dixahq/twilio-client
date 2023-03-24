@@ -7,15 +7,15 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 
-import scala.concurrent.Future
-
 trait TwilioClientVoice {
 
   def callUpdate: CallUpdateRequestExecutor
 
   def queueUpdate: QueueUpdateRequestExecutor
 
-  def conferenceRead: ConferenceUpdateRequestExecutor
+  def conferenceRead: ConferenceReadRequestExecutor
+
+  def conferenceUpdate: ConferenceUpdateRequestExecutor
 
   def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor
 
@@ -23,9 +23,4 @@ trait TwilioClientVoice {
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[Conference.Status]
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed]
-
-  def completeConference(
-      connSettings: TwilioConnectionSettings,
-      conference: Conference
-  ): Future[Conference]
 }

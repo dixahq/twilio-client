@@ -1,7 +1,6 @@
 package com.dixa.twilio.client.voice
 
-import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
-import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor, voice}
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.Iso8601DateTime
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference

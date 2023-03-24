@@ -3,22 +3,10 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
-  dateCreatedParamKey,
-  dateUpdatedParamKey,
-  friendlyNameParamKey,
-  statusParamKey
-}
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  DefaultApiErrorEntityJsonRep,
-  HttpEntityString,
-  QueryParamBuilder
-}
-import com.dixa.twilio.client.voice.{ConferenceReadRequestExecutor, ConferenceUpdateRequestExecutor}
-import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
+import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor.ConferenceUpdateException
-import com.dixa.twilio.client.{voice, ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Conference
 import io.circe.generic.auto._
 
@@ -44,12 +32,12 @@ class ConferenceUpdateRequestExecutorImpl()(
       .withOptionalParam(statusParamKey, req.status)
       .withOptionalParam(announceUrlParamKey, req.announceUrl)
       .withOptionalParam(announceMethodParamKey, req.announceMethod)
-      .build
+      .buildForPostParams
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Conferences/${req.conferenceSid}.json$params",
+      s"/2010-04-01/Accounts/${req.accountSid}/Conferences/${req.conferenceSid}.json",
       connSettings
-    )
+    ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params)))
   }
 
   override protected def mapApiException(

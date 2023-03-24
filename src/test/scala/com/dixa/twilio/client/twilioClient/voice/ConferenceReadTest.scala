@@ -2,7 +2,7 @@ package com.dixa.twilio.client.twilioClient.voice
 
 import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.voice.{ConferenceUpdateRequestExecutor, TwilioClientVoice}
+import com.dixa.twilio.client.voice.{ConferenceReadRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.{ApiVersion, Iso8601DateTime, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -47,7 +47,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.builder(
+        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .build()
         )
@@ -88,7 +88,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.builder(
+        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .build()
         )
@@ -147,7 +147,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.builder(
+        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .build()
         )
@@ -196,7 +196,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.builder(
+        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .withDateCreated(Iso8601DateTime.Before(createdAtInstant.plus(30, ChronoUnit.DAYS)))
             .withDateUpdated(Iso8601DateTime.Before(updatedAtInstant.plus(30, ChronoUnit.DAYS)))

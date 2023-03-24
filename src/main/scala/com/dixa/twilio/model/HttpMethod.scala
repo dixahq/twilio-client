@@ -1,7 +1,5 @@
 package com.dixa.twilio.model
 
-import enumeratum.{Enum, EnumEntry}
-
 import scala.collection.immutable
 
 sealed abstract class HttpMethod(override val toString: String)
