@@ -11,6 +11,7 @@ import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.client.voice.{
   CallUpdateRequestExecutor,
+  ConferenceParticipantDeleteRequestExecutor,
   ConferenceParticipantReadRequestExecutor,
   ConferenceReadRequestExecutor,
   QueueUpdateRequestExecutor,
@@ -36,6 +37,9 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor =
     new ConferenceParticipantReadRequestExecutorImpl()
+
+  override def conferenceParticipantDelete: ConferenceParticipantDeleteRequestExecutor =
+    new ConferenceParticipantDeleteRequestExecutorImpl()
 
   override def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
