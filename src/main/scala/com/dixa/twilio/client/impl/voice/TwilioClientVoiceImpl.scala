@@ -11,7 +11,7 @@ import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.client.voice.{
   CallUpdateRequestExecutor,
   ConferenceParticipantReadRequestExecutor,
-  ConferenceReadRequestExecutor,
+  ConferenceUpdateRequestExecutor,
   QueueUpdateRequestExecutor,
   TwilioClientVoice
 }
@@ -28,7 +28,7 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override val queueUpdate: QueueUpdateRequestExecutor = new QueueUpdateRequestExecutorImpl()
 
-  override val conferenceRead: ConferenceReadRequestExecutor =
+  override val conferenceRead: ConferenceUpdateRequestExecutor =
     new ConferenceReadRequestExecutorImpl()
 
   override def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor =

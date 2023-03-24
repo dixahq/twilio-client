@@ -15,7 +15,7 @@ trait TwilioClientVoice {
 
   def queueUpdate: QueueUpdateRequestExecutor
 
-  def conferenceRead: ConferenceReadRequestExecutor
+  def conferenceRead: ConferenceUpdateRequestExecutor
 
   def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor
 

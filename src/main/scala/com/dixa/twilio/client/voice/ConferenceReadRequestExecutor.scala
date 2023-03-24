@@ -9,16 +9,16 @@ import scala.annotation.nowarn
 
 trait ConferenceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
-      ConferenceReadRequestExecutor.ConferenceReadRequest,
-      ConferenceReadRequestExecutor.ConferenceReadException,
+      ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
+      ConferenceUpdateRequestExecutor.ConferenceUpdateException,
       Conference
     ] {
 
-  import ConferenceReadRequestExecutor._
+  import ConferenceUpdateRequestExecutor._
 
-  override final protected type ApiExceptionWrapper = ConferenceReadException.Api
+  override final protected type ApiExceptionWrapper = ConferenceUpdateException.Api
 
-  override final protected type UnspecifiedException = ConferenceReadException.Unspecified
+  override final protected type UnspecifiedException = ConferenceUpdateException.Unspecified
 }
 
 object ConferenceReadRequestExecutor {
