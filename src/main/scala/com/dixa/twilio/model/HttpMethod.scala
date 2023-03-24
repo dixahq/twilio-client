@@ -4,9 +4,10 @@ import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
 
-sealed abstract class HttpMethod(override val toString: String) extends EnumEntry {}
+sealed abstract class HttpMethod(override val toString: String)
+    extends EnumWithTwilioString.EnumEntry {}
 
-object HttpMethod extends Enum[HttpMethod] {
+object HttpMethod extends EnumWithTwilioString[HttpMethod] {
   override val values: immutable.IndexedSeq[HttpMethod] = findValues
 
   case object Get  extends HttpMethod("GET")

@@ -3,12 +3,6 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
-  dateCreatedParamKey,
-  dateUpdatedParamKey,
-  friendlyNameParamKey,
-  statusParamKey
-}
 import com.dixa.twilio.client.{voice, ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
@@ -24,6 +18,7 @@ class ConferenceReadRequestExecutorImpl()(
     override protected val executionContext: ExecutionContext
 ) extends ConferenceReadRequestExecutor {
 
+  import ConferenceReadRequestExecutorImpl._
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
   override protected def method: HttpMethod = HttpMethods.GET
