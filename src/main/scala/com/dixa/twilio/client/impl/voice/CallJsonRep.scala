@@ -52,7 +52,7 @@ private[impl] case class CallJsonRep(
     startTime = start_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
     endTime = end_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
     duration = duration.map(Call.Duration),
-    price = price.map(p => Call.Price(p.toInt, Iso4127CountryCode.apply(price_unit))),
+    price = price.map(p => Call.Price(BigDecimal(p), Iso4127CountryCode.apply(price_unit))),
     direction = Call.Direction.fromTwilioStringUnsafe(direction),
     answeredBy = answered_by.map(Call.AnsweredBy.fromTwilioStringUnsafe),
     forwardedFrom = forwarded_from.map(Call.ForwardedFrom),

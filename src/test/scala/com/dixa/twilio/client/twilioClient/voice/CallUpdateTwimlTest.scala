@@ -4,11 +4,15 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateException
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.Iso4127CountryCode
+import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
+import java.net.URLEncoder
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 import scala.concurrent.Future
 
 final class CallUpdateTwimlTest extends TwilioClientTest {
@@ -35,7 +39,27 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
         val expected = Right(
           Call(
             sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            accountSid = connSettings.accountSid
+            accountSid = connSettings.accountSid,
+            answeredBy = None,
+            callerName = None,
+            dateCreated = createdAtInstant,
+            dateUpdate = updatedAtInstant,
+            direction = Call.Direction.Inbound,
+            duration = Some(Call.Duration("15")),
+            endTime = Some(endTimeAtInstant),
+            forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
+            from = PhoneNumberE164("+14158675308"),
+            fromFormatted = Call.FormattedPhoneNumber("(415) 867-5308"),
+            groupSid = None,
+            parentCallSid = None,
+            phoneNumberSid = TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            price = Some(Call.Price(BigDecimal("-0.0300"), Iso4127CountryCode("USD"))),
+            startTime = Some(startTimeAtInstant),
+            status = Call.Status.Completed,
+            to = PhoneNumberE164("+14158675309"),
+            toFormatted = Call.FormattedPhoneNumber("(415) 867-5309"),
+            trunkSid = None,
+            queueTime = Call.QueueTime("1000"),
           )
         )
 
@@ -43,7 +67,15 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
           Either[CallUpdateRequestExecutor.CallUpdateException, Call]
         ] =
           instance.run(connSettings, request)
-        resultFut.map(result => assert(result === expected))
+        resultFut.map { result =>
+          result.left.map { ex =>
+            ex.getStackTrace.map(println)
+            println(ex)
+
+          }
+
+          assert(result === expected)
+        }
       }
 
       "return a Left if the call does not exists" in {
@@ -163,6 +195,34 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
         .build
     )
 
+    val createdAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 28)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val updatedAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 44)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val endTimeAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 44)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val startTimeAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 29)),
+        ZoneOffset.UTC
+      )
+    )
+
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
@@ -171,7 +231,10 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
       )
       .withRequestBody(
         WireMock.containing(
-          """Twiml=<?xml version="1.0" encoding="UTF-8"?><Response><Say>Ahoy there</Say></Response>"""
+          s"""${URLEncoder.encode("Twiml", "utf-8")}=${URLEncoder.encode(
+              """<?xml version="1.0" encoding="UTF-8"?><Response><Say>Ahoy there</Say></Response>""",
+              "utf-8"
+            )}"""
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")

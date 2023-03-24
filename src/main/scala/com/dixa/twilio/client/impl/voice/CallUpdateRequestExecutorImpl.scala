@@ -57,7 +57,10 @@ private[client] class CallUpdateRequestExecutorImpl()(
       .withOptionalParam(timeLimitParamKey, req.timeLimit)
 
     val paramsWithTwilio =
-      req.twiml.map(t => params.withParam(twimlParamKey, t.xmlCompact)).getOrElse(params).build
+      req.twiml
+        .map(t => params.withParam(twimlParamKey, t.xmlCompact))
+        .getOrElse(params)
+        .buildForPostParams
 
     createHttpRequestFor(
       s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Calls/${req.sid}.json",
@@ -80,10 +83,15 @@ private[client] class CallUpdateRequestExecutorImpl()(
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[CallUpdateException, Call] = httpResponse.status match {
-    case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
-    case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
-    case _                    => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
+  ): Either[CallUpdateException, Call] = {
+    println(s"entity: $entity")
+    println(s"httpResponse: $httpResponse")
+
+    httpResponse.status match {
+      case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
+      case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
+      case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
+    }
   }
 
   private def buildResultForNotFoundResponse(req: CallUpdateRequest, entity: HttpEntityString) = {

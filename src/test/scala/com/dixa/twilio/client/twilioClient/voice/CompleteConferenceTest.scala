@@ -36,7 +36,6 @@ final class CompleteConferenceTest extends TwilioClientTest {
     accountSid = account1Sid,
     dateCreated = createdAtInstant,
     dateUpdated = updatedAtInstant,
-    apiVersion = ApiVersion("2010-04-01"),
     edgeLocation = PublicEdgeLocation.Dublin,
     reasonConferenceEnded = Some(Conference.EndReason.ConferenceEndedViaApi),
     callSidEndingConference = None

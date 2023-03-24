@@ -236,7 +236,6 @@ private object ConferenceReadTest {
   private val conferenceSid: Conference.Sid =
     Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
-  private val apiVersion: ApiVersion = ApiVersion("2010-04-01")
   private val callSidEndingConference: Option[Call.Sid] =
     Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
   private def conference(
@@ -252,7 +251,6 @@ private object ConferenceReadTest {
     accountSid = accountSid,
     dateCreated = createdAtInstant,
     dateUpdated = updatedAtInstant,
-    apiVersion = apiVersion,
     edgeLocation = edgeLocation,
     reasonConferenceEnded = reason,
     callSidEndingConference = callSidEndingConference,

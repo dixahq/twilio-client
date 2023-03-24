@@ -186,7 +186,6 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             dateUpdated = Instant.from(
               DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
             ),
-            apiVersion = ApiVersion("2010-04-01"),
             edgeLocation = PublicEdgeLocation.Ashburn,
             reasonConferenceEnded = None,
             callSidEndingConference = None,
@@ -262,7 +261,6 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             dateUpdated = Instant.from(
               DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
             ),
-            apiVersion = ApiVersion("2010-04-01"),
             edgeLocation = PublicEdgeLocation.Ashburn,
             reasonConferenceEnded = None,
             callSidEndingConference = None,
@@ -318,7 +316,6 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             dateUpdated = Instant.from(
               DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
             ),
-            apiVersion = ApiVersion("2010-04-01"),
             edgeLocation = PublicEdgeLocation.Ashburn,
             reasonConferenceEnded = None,
             callSidEndingConference = None,
@@ -375,7 +372,6 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
             dateUpdated = Instant.from(
               DateTimeFormatter.RFC_1123_DATE_TIME.parse("Thu, 30 Sep 2021 06:30:46 +0000")
             ),
-            apiVersion = ApiVersion("2010-04-01"),
             edgeLocation = PublicEdgeLocation.Ashburn,
             reasonConferenceEnded = None,
             callSidEndingConference = None,
