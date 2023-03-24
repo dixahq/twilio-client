@@ -61,8 +61,7 @@ object ConferenceParticipantDeleteRequestExecutor {
       def withAccountSid(
           accountSid: TwilioAccount.Sid
       ): Builder[
-        Attributes
-          with RequestAccountSidAttribute
+        Attributes with RequestAccountSidAttribute
       ] =
         new Builder(Some(accountSid), conferenceSid, callSid)
 
@@ -79,8 +78,7 @@ object ConferenceParticipantDeleteRequestExecutor {
       def withCallSid(
           callSid: Call.Sid
       ): Builder[
-        Attributes
-          with RequestCallSidAttribute
+        Attributes with RequestCallSidAttribute
       ] =
         new Builder(accountSid, conferenceSid, Some(callSid))
 
