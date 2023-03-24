@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.voice
 
-import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
+import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
+import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor, voice}
 import com.dixa.twilio.model.Iso8601DateTime
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
@@ -9,16 +10,16 @@ import scala.annotation.nowarn
 
 trait ConferenceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
-      ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
-      ConferenceUpdateRequestExecutor.ConferenceUpdateException,
+      ConferenceReadRequestExecutor.ConferenceReadRequest,
+      ConferenceReadRequestExecutor.ConferenceReadException,
       Conference
     ] {
 
-  import ConferenceUpdateRequestExecutor._
+  import ConferenceReadRequestExecutor._
 
-  override final protected type ApiExceptionWrapper = ConferenceUpdateException.Api
+  override final protected type ApiExceptionWrapper = ConferenceReadException.Api
 
-  override final protected type UnspecifiedException = ConferenceUpdateException.Unspecified
+  override final protected type UnspecifiedException = ConferenceReadException.Unspecified
 }
 
 object ConferenceReadRequestExecutor {

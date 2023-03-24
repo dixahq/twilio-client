@@ -9,10 +9,10 @@ import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
   friendlyNameParamKey,
   statusParamKey
 }
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.client.{voice, ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
-import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor
-import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor.ConferenceUpdateException
+import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
+import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
 import com.dixa.twilio.model.voice.Conference
 import io.circe.generic.auto._
 
@@ -22,7 +22,7 @@ class ConferenceReadRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends ConferenceUpdateRequestExecutor {
+) extends ConferenceReadRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
@@ -30,8 +30,8 @@ class ConferenceReadRequestExecutorImpl()(
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: ConferenceUpdateRequestExecutor.ConferenceUpdateRequest
-  ): Either[ConferenceUpdateRequestExecutor.ConferenceUpdateException, HttpRequest] = {
+      req: voice.ConferenceReadRequestExecutor.ConferenceReadRequest
+  ): Either[voice.ConferenceReadRequestExecutor.ConferenceReadException, HttpRequest] = {
     val params = QueryParamBuilder.empty
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreated)
       .withOptionalDateParam(dateUpdatedParamKey, req.dateUpdated)
@@ -45,24 +45,24 @@ class ConferenceReadRequestExecutorImpl()(
     )
   }
 
-  override protected def mapApiException(apiException: ApiException): ConferenceUpdateException.Api =
-    ConferenceUpdateException.Api(apiException)
+  override protected def mapApiException(apiException: ApiException): ConferenceReadException.Api =
+    ConferenceReadException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ConferenceUpdateException.Unspecified = ConferenceUpdateException.Unspecified(msg, cause)
+  ): ConferenceReadException.Unspecified = ConferenceReadException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-                                            connectionSettings: TwilioConnectionSettings,
-                                            request: ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
-                                            httpRequest: HttpRequest,
-                                            httpResponse: HttpResponse,
-                                            responseEntity: HttpEntityString
-  ): List[Either[ConferenceUpdateRequestExecutor.ConferenceUpdateException, Conference]] = {
+      connectionSettings: TwilioConnectionSettings,
+      request: voice.ConferenceReadRequestExecutor.ConferenceReadRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      responseEntity: HttpEntityString
+  ): List[Either[ConferenceReadRequestExecutor.ConferenceReadException, Conference]] = {
     responseEntity.parse[ConferenceListJsonRep]() match {
       case Left(ex) =>
-        List(Left(ConferenceUpdateException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))
+        List(Left(ConferenceReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))
       case Right(listJsonRep) => listJsonRep.conferences.map { _.toModel }.map { Right(_) }
     }
 
