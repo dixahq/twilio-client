@@ -19,9 +19,9 @@ final case class Call(
     dateUpdate: Instant,
     parentCallSid: Option[Call.Sid],
     accountSid: TwilioAccount.Sid,
-    to: PhoneNumberE164, // TODO - msf: Figure out how to create a trait for both phonenumber, sip, identifyer and SIM SIDs
-    toFormatted: Call.FormattedPhoneNumber, // TODO - msf: Figure out how to contain this, maybe just and object containing a string
-    from: PhoneNumberE164,
+    to: Call.CallerId,
+    toFormatted: Call.FormattedPhoneNumber,
+    from: Call.CallerId,
     fromFormatted: Call.FormattedPhoneNumber,
     phoneNumberSid: TwilioPhoneNumber.Sid,
     status: Call.Status,
@@ -51,6 +51,12 @@ object Call {
   final case class Sid private[Call] (override val toString: String) extends SidAbstract
 
   object Sid extends SidCompanionObject(Prefix("CA"), new Sid(_))
+
+  final case class CallerId(override val toString: String) extends TwilioStringValue {
+    def toPhoneNumber: Option[PhoneNumberE164] = {
+      PhoneNumberE164(toString)
+    }
+  }
 
   sealed abstract class StatusUpdate(
       override val twilioString: String,

@@ -21,7 +21,7 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     TwilioPhoneNumber.Sid.unsafe(sid),
     TwilioAccount.Sid.unsafe(account_sid),
     TwilioIncomingPhoneNumber.FriendlyName(friendly_name),
-    PhoneNumberE164(phone_number),
+    PhoneNumberE164.unsafe(phone_number),
     PhoneNumberCapabilitiesSummary(
       capabilities.voice,
       capabilities.sms,

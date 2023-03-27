@@ -3,7 +3,7 @@ package com.dixa.twilio.client.impl.voice
 import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.{Call, Group, Trunk}
 import com.dixa.twilio.model.voice.Call.FormattedPhoneNumber
 
@@ -43,9 +43,9 @@ private[impl] case class CallJsonRep(
     dateUpdate = Instant.from(Formatter.dateTime.parse(date_updated)),
     parentCallSid = parent_call_sid.map(Call.Sid.unsafe),
     accountSid = TwilioAccount.Sid.unsafe(account_sid),
-    to = PhoneNumberE164.apply(to),
+    to = Call.CallerId(to),
     toFormatted = FormattedPhoneNumber.apply(to_formatted),
-    from = PhoneNumberE164.apply(from),
+    from = Call.CallerId(from),
     fromFormatted = FormattedPhoneNumber.apply(from_formatted),
     phoneNumberSid = TwilioPhoneNumber.Sid.unsafe(phone_number_sid),
     status = Call.Status.fromTwilioStringUnsafe(status),
