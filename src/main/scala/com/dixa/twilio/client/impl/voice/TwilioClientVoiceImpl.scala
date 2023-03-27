@@ -26,7 +26,7 @@ private[impl] final class TwilioClientVoiceImpl()(
     httpExt: HttpExt
 ) extends TwilioClientVoice {
 
-  implicit val apiVersion = ApiVersion.`2010-04-01`
+  private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
 
   override val callUpdate: CallUpdateRequestExecutor = new CallUpdateRequestExecutorImpl()
 
