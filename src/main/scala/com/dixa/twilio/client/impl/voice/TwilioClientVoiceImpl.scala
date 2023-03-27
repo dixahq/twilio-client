@@ -14,11 +14,12 @@ import com.dixa.twilio.client.voice.{
   ConferenceParticipantDeleteRequestExecutor,
   ConferenceParticipantReadRequestExecutor,
   ConferenceReadRequestExecutor,
+  ConferenceUpdateRequestExecutor,
   QueueUpdateRequestExecutor,
   TwilioClientVoice
 }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 private[impl] final class TwilioClientVoiceImpl()(
     implicit materializer: Materializer,
@@ -35,6 +36,9 @@ private[impl] final class TwilioClientVoiceImpl()(
   override val conferenceRead: ConferenceReadRequestExecutor =
     new ConferenceReadRequestExecutorImpl()
 
+  override val conferenceUpdate: ConferenceUpdateRequestExecutor =
+    new ConferenceUpdateRequestExecutorImpl()
+
   override def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor =
     new ConferenceParticipantReadRequestExecutorImpl()
 
@@ -46,9 +50,4 @@ private[impl] final class TwilioClientVoiceImpl()(
       statusFilter: Option[Conference.Status]
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
     FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
-
-  override def completeConference(
-      connSettings: TwilioConnectionSettings,
-      conference: Conference
-  ): Future[Conference] = CompleteConferenceRequest(connSettings, conference)
 }

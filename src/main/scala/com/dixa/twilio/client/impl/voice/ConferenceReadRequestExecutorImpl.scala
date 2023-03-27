@@ -25,6 +25,7 @@ class ConferenceReadRequestExecutorImpl()(
     apiVersion: ApiVersion
 ) extends ConferenceReadRequestExecutor {
 
+  import ConferenceReadRequestExecutorImpl._
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
   override protected def method: HttpMethod = HttpMethods.GET
