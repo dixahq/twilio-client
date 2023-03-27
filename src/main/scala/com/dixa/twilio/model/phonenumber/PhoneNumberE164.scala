@@ -16,7 +16,7 @@ object PhoneNumberE164 {
     DefaultImpl(asString)
   }
 
-  def apply(asString: String): Option[PhoneNumberE164] = Try{
+  def apply(asString: String): Option[PhoneNumberE164] = Try {
     unsafe(asString)
   }.toOption
 

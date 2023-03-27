@@ -6,7 +6,7 @@ import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoic
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -48,7 +48,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
             duration = Some(Call.Duration("15")),
             endTime = Some(endTimeAtInstant),
             forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
-            from = PhoneNumberE164("+14158675308"),
+            from = Call.CallerId("+14158675308"),
             fromFormatted = Call.FormattedPhoneNumber("(415) 867-5308"),
             groupSid = None,
             parentCallSid = None,
@@ -56,7 +56,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
             price = Some(Call.Price(-0.0300, Iso4127CountryCode("USD"))),
             startTime = Some(startTimeAtInstant),
             status = Call.Status.Completed,
-            to = PhoneNumberE164("+14158675309"),
+            to = Call.CallerId("+14158675309"),
             toFormatted = Call.FormattedPhoneNumber("(415) 867-5309"),
             trunkSid = None,
             queueTime = Call.QueueTime("1000"),
