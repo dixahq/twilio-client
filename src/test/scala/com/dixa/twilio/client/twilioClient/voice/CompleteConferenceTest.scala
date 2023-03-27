@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.voice
 
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.voice.TwilioClientVoice
+import com.dixa.twilio.client.voice.{ConferenceUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.{ApiVersion, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -87,12 +87,21 @@ final class CompleteConferenceTest extends TwilioClientTest {
 
         val connSettings                = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
-        val resultFut: Future[Conference] =
-          instance.completeConference(connSettings, conference1)
+        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.builder { builder =>
+          builder
+            .withAccountSid(account1Sid)
+            .withConferenceSid(conference1.sid)
+            .withStatus(Conference.Status.Completed)
+            .build()
+        }
+        val resultFut: Future[
+          Either[ConferenceUpdateRequestExecutor.ConferenceUpdateException, Conference]
+        ] =
+          instance.conferenceUpdate.run(connSettings, req)
         val expectedValue = conference1.copy(
           status = Conference.Status.Completed
         )
-        resultFut.map(result => assert(result === expectedValue))
+        resultFut.map(result => assert(result === Right(expectedValue)))
       }
     }
   }
