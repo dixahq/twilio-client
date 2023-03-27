@@ -1,10 +1,12 @@
 package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.Call
+import com.dixa.twilio.model.voice.Call.TimeLimit
 
 import scala.annotation.nowarn
 
@@ -26,18 +28,30 @@ object CallUpdateRequestExecutor {
 
   sealed trait CallUpdateRequest {
     def accountSid: TwilioAccount.Sid
-    def callSid: Call.Sid
-    def twiml: Option[Response.Verified]
+    def sid: Call.Sid
     def url: Option[CallbackUrl]
-    // API support a lot more fields, that could be added when needed.
+    def method: Option[HttpMethod]
+    def status: Option[Call.StatusUpdate]
+    def fallbackUrl: Option[CallbackUrl]
+    def fallbackMethod: Option[HttpMethod]
+    def statusCallback: Option[CallbackUrl]
+    def statusCallbackMethod: Option[HttpMethod]
+    def twiml: Option[Response.Verified]
+    def timeLimit: Option[Call.TimeLimit]
   }
 
   private final case class CallUpdateRequestImpl(
       accountSid: TwilioAccount.Sid,
-      callSid: Call.Sid,
+      sid: Call.Sid,
+      url: Option[CallbackUrl],
+      method: Option[HttpMethod],
+      status: Option[Call.StatusUpdate],
+      fallbackUrl: Option[CallbackUrl],
+      fallbackMethod: Option[HttpMethod],
+      statusCallback: Option[CallbackUrl],
+      statusCallbackMethod: Option[HttpMethod],
       twiml: Option[Response.Verified],
-      url: Option[CallbackUrl]
-      // API support a lot more fields, that could be added when needed.
+      timeLimit: Option[Call.TimeLimit]
   ) extends CallUpdateRequest
 
   object CallUpdateRequest {
@@ -50,54 +64,306 @@ object CallUpdateRequestExecutor {
     sealed trait HasTwimlOrUrlSetTrue  extends HasTwimlOrUrlSet
     sealed trait HasTwimlOrUrlSetFalse extends HasTwimlOrUrlSet
 
+    sealed trait HasUrlForMethodSet      extends RequestAttribute
+    sealed trait HasUrlForMethodSetTrue  extends HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
+
+    sealed trait HasFallbackUrlForMethodSet      extends RequestAttribute
+    sealed trait HasFallbackUrlForMethodSetTrue  extends HasFallbackUrlForMethodSet
+    sealed trait HasFallbackUrlForMethodSetFalse extends HasFallbackUrlForMethodSet
+
+    sealed trait HasStatusCallbackUrlForMethodSet   extends RequestAttribute
+    sealed trait HasStatusCallbackUrlForMethodTrue  extends HasStatusCallbackUrlForMethodSet
+    sealed trait HasStatusCallbackUrlForMethodFalse extends HasStatusCallbackUrlForMethodSet
+
     type RequestRequiredAttributes = RequestAttribute
       with RequestAccountSidAttribute
       with RequestCallSidAttribute
       with HasTwimlOrUrlSetTrue
 
-    type BuilderStartState = Builder[RequestAttribute, HasTwimlOrUrlSetFalse]
+    type BuilderStartState =
+      Builder[
+        RequestAttribute,
+        HasTwimlOrUrlSetFalse,
+        HasUrlForMethodSetFalse,
+        HasFallbackUrlForMethodSetFalse,
+        HasStatusCallbackUrlForMethodFalse
+      ]
 
     final class Builder[
         Attributes <: RequestAttribute,
-        TwimlOrUrl <: HasTwimlOrUrlSet
+        TwimlOrUrl <: HasTwimlOrUrlSet,
+        UrlAndMethod <: HasUrlForMethodSet,
+        FallbackUrlAndMethod <: HasFallbackUrlForMethodSet,
+        StatusCallbackUrlForMethod <: HasStatusCallbackUrlForMethodSet
     ] private[CallUpdateRequest] (
         accountSid: Option[TwilioAccount.Sid],
-        callSid: Option[Call.Sid],
+        sid: Option[Call.Sid],
+        url: Option[CallbackUrl],
+        method: Option[HttpMethod],
+        status: Option[Call.StatusUpdate],
+        fallbackUrl: Option[CallbackUrl],
+        fallbackMethod: Option[HttpMethod],
+        statusCallback: Option[CallbackUrl],
+        statusCallbackMethod: Option[HttpMethod],
         twiml: Option[Response.Verified],
-        url: Option[CallbackUrl]
+        timeLimit: Option[Call.TimeLimit]
     ) {
 
       def withAccountSid(
           accountSid: TwilioAccount.Sid
-      ): Builder[Attributes with RequestAccountSidAttribute, TwimlOrUrl] =
-        new Builder(Some(accountSid), callSid, twiml, url)
+      ): Builder[
+        Attributes with RequestAccountSidAttribute,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] = {
+        new Builder(
+          Some(accountSid),
+          sid,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+      }
 
       def withCallSid(
-          callSid: Call.Sid
-      ): Builder[Attributes with RequestCallSidAttribute, TwimlOrUrl] =
-        new Builder(accountSid, Some(callSid), twiml, url)
+          sid: Call.Sid
+      ): Builder[
+        Attributes with RequestCallSidAttribute,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          Some(sid),
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+
+      @nowarn
+      def withUrl(url: CallbackUrl)(
+          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
+      ): Builder[
+        Attributes with HasTwimlOrUrlSetTrue,
+        HasTwimlOrUrlSetTrue,
+        HasUrlForMethodSetTrue,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          Some(url),
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+
+      @nowarn
+      def withMethod(method: HttpMethod)(
+          implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue,
+      ): Builder[
+        Attributes,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          Some(method),
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+
+      @nowarn
+      def withFallbackUrl(fallbackUrl: CallbackUrl)(
+          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
+      ): Builder[
+        Attributes with HasTwimlOrUrlSetTrue with HasFallbackUrlForMethodSetTrue,
+        HasTwimlOrUrlSetTrue,
+        UrlAndMethod,
+        HasFallbackUrlForMethodSetTrue,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          status,
+          Some(fallbackUrl),
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+
+      @nowarn
+      def withFallbackMethod(fallbackMethod: HttpMethod)(
+          implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue,
+      ): Builder[
+        Attributes,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          Some(fallbackMethod),
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+
+      def withStatusCallBack(statusCallback: CallbackUrl): Builder[
+        Attributes with HasStatusCallbackUrlForMethodTrue,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        HasStatusCallbackUrlForMethodTrue
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          Some(statusCallback),
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+
+      @nowarn
+      def withStatusCallBackMethod(statusCallbackMethod: HttpMethod)(
+          implicit ev: StatusCallbackUrlForMethod =:= HasStatusCallbackUrlForMethodTrue,
+      ): Builder[
+        Attributes,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          Some(statusCallbackMethod),
+          twiml,
+          timeLimit
+        )
 
       @nowarn
       def withTwiml(twiml: Response.Verified)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
-      ): Builder[Attributes with HasTwimlOrUrlSetTrue, HasTwimlOrUrlSetTrue] =
-        new Builder(accountSid, callSid, Some(twiml), url)
+      ): Builder[
+        Attributes with HasTwimlOrUrlSetTrue,
+        HasTwimlOrUrlSetTrue,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          Some(twiml),
+          timeLimit
+        )
 
-      @nowarn
-      def withUrl(url: CallbackUrl)(
-          implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
-      ): Builder[Attributes with HasTwimlOrUrlSetTrue, HasTwimlOrUrlSetTrue] =
-        new Builder(accountSid, callSid, twiml, Some(url))
+      def withTimeLimit(timeLimit: TimeLimit): Builder[
+        Attributes,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] =
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          Some(timeLimit)
+        )
 
       @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): CallUpdateRequest =
-        CallUpdateRequestImpl(accountSid.get, callSid.get, twiml, url)
+        CallUpdateRequestImpl(
+          accountSid.get,
+          sid.get,
+          url,
+          method,
+          status,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
     }
 
     def build(fun: BuilderStartState => CallUpdateRequest): CallUpdateRequest =
-      fun(new BuilderStartState(None, None, None, None))
+      fun(new BuilderStartState(None, None, None, None, None, None, None, None, None, None, None))
 
   }
 

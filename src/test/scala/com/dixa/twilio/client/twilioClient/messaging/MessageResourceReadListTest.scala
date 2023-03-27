@@ -128,7 +128,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
 
         val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
           to = Some(expected.to),
-          from = Some(PhoneNumberE164(expected.from.asString)),
+          from = Some(PhoneNumberE164.unsafe(expected.from.asString)),
           dateSentAfter = Some(createdAtInstant),
           dateSentBefore = Some(updatedAtInstant)
         )
@@ -215,16 +215,16 @@ private object MessageResourceReadListTest {
   private val dateSentInstant = Instant.from(dateSentDateTime)
 
   private val direction  = MessageDirection.OutboundApi
-  private val sender     = MessageSender.E164(PhoneNumberE164("+12019235161"))
+  private val sender     = MessageSender.E164(PhoneNumberE164.unsafe("+12019235161"))
   private val serviceSid = TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   private val numberSegments = MessageNumSegments.apply(1)
   private val price = MessagePrice(
     BigDecimal(0.234324),
     Iso4127CountryCode("DKK")
   )
-  private val receiver  = PhoneNumberE164("+12019235100")
-  private val receiver2 = PhoneNumberE164("+12019235100")
-  private val receiver3 = PhoneNumberE164("+12019235100")
+  private val receiver  = PhoneNumberE164.unsafe("+12019235100")
+  private val receiver2 = PhoneNumberE164.unsafe("+12019235100")
+  private val receiver3 = PhoneNumberE164.unsafe("+12019235100")
 
   private def messageResource(accountSid: TwilioAccount.Sid) = MessageResource(
     sid = messageSid,

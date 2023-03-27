@@ -3,8 +3,14 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.{voice, ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
+import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
+  dateCreatedParamKey,
+  dateUpdatedParamKey,
+  friendlyNameParamKey,
+  statusParamKey
+}
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
 import com.dixa.twilio.model.voice.Conference
@@ -15,7 +21,8 @@ import scala.concurrent.ExecutionContext
 class ConferenceReadRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
-    override protected val executionContext: ExecutionContext
+    override protected val executionContext: ExecutionContext,
+    apiVersion: ApiVersion
 ) extends ConferenceReadRequestExecutor {
 
   import ConferenceReadRequestExecutorImpl._
@@ -25,8 +32,8 @@ class ConferenceReadRequestExecutorImpl()(
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: voice.ConferenceReadRequestExecutor.ConferenceReadRequest
-  ): Either[voice.ConferenceReadRequestExecutor.ConferenceReadException, HttpRequest] = {
+      req: ConferenceReadRequestExecutor.ConferenceReadRequest
+  ): Either[ConferenceReadRequestExecutor.ConferenceReadException, HttpRequest] = {
     val params = QueryParamBuilder.empty
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreated)
       .withOptionalDateParam(dateUpdatedParamKey, req.dateUpdated)
@@ -35,7 +42,7 @@ class ConferenceReadRequestExecutorImpl()(
       .build
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Conferences.json$params",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Conferences.json$params",
       connSettings
     )
   }
@@ -50,7 +57,7 @@ class ConferenceReadRequestExecutorImpl()(
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,
-      request: voice.ConferenceReadRequestExecutor.ConferenceReadRequest,
+      request: ConferenceReadRequestExecutor.ConferenceReadRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString

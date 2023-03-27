@@ -106,7 +106,7 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
     TwilioActivePhoneNumber(
       TwilioPhoneNumber.Sid.unsafe(pnSid),
       TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-      PhoneNumberE164("+18559728742"),
+      PhoneNumberE164.unsafe("+18559728742"),
       PhoneNumberType.TollFree,
       PhoneNumberLifecycle.GenerallyAvailable,
       PhoneNumberCapabilities(

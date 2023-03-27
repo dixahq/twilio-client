@@ -124,7 +124,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                       dateSent = decoded.date_sent.flatMap(parseDate),
                       dateUpdated = decoded.date_updated.flatMap(parseDate),
                       direction = direction,
-                      from = MessageSender.E164(PhoneNumberE164(decoded.from)),
+                      from = MessageSender.E164(PhoneNumberE164.unsafe(decoded.from)),
                       messagingServiceSid =
                         decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
                       numMedia = decoded.num_media.toInt,
@@ -132,7 +132,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                       price = price,
                       sid = Message.Sid.unsafe(decoded.sid),
                       status = status,
-                      to = PhoneNumberE164(decoded.to),
+                      to = PhoneNumberE164.unsafe(decoded.to),
                       error = messageError
                     )
                   )

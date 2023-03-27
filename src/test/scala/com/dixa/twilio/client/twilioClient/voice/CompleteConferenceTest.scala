@@ -3,7 +3,7 @@ package com.dixa.twilio.client.twilioClient.voice
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{ConferenceUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.{ApiVersion, PublicEdgeLocation}
+import com.dixa.twilio.model.PublicEdgeLocation
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -36,7 +36,6 @@ final class CompleteConferenceTest extends TwilioClientTest {
     accountSid = account1Sid,
     dateCreated = createdAtInstant,
     dateUpdated = updatedAtInstant,
-    apiVersion = ApiVersion("2010-04-01"),
     edgeLocation = PublicEdgeLocation.Dublin,
     reasonConferenceEnded = Some(Conference.EndReason.ConferenceEndedViaApi),
     callSidEndingConference = None

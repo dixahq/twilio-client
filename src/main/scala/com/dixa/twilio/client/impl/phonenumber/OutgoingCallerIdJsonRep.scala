@@ -12,6 +12,6 @@ private[phonenumber] final case class OutgoingCallerIdJsonRep(
   private[phonenumber] def toModel = OutgoingCallerId(
     sid = OutgoingCallerId.Sid.unsafe(sid),
     friendlyName = OutgoingCallerId.FriendlyName(friendly_name),
-    phoneNumber = PhoneNumberE164(phone_number)
+    phoneNumber = PhoneNumberE164.unsafe(phone_number)
   )
 }

@@ -4,7 +4,7 @@ import akka.stream.scaladsl.Sink
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{ConferenceReadRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.{ApiVersion, Iso8601DateTime, PublicEdgeLocation}
+import com.dixa.twilio.model.{Iso8601DateTime, PublicEdgeLocation}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -236,7 +236,6 @@ private object ConferenceReadTest {
   private val conferenceSid: Conference.Sid =
     Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
-  private val apiVersion: ApiVersion = ApiVersion("2010-04-01")
   private val callSidEndingConference: Option[Call.Sid] =
     Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
   private def conference(
@@ -252,7 +251,6 @@ private object ConferenceReadTest {
     accountSid = accountSid,
     dateCreated = createdAtInstant,
     dateUpdated = updatedAtInstant,
-    apiVersion = apiVersion,
     edgeLocation = edgeLocation,
     reasonConferenceEnded = reason,
     callSidEndingConference = callSidEndingConference,

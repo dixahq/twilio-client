@@ -5,6 +5,7 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.impl.ApiVersion
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
@@ -25,6 +26,8 @@ private[impl] final class TwilioClientVoiceImpl()(
     executionContext: ExecutionContext,
     httpExt: HttpExt
 ) extends TwilioClientVoice {
+
+  private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
 
   override val callUpdate: CallUpdateRequestExecutor = new CallUpdateRequestExecutorImpl()
 
