@@ -55,8 +55,6 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
           }
       }
     }.flatten.recover { case e: Exception =>
-      e.getStackTrace.map(println)
-      println(e)
       Left(
         createUnspecifiedException(
           Some(s"Uncaught Exception thrown when parsing httpResponse for request: $req"),
