@@ -5,7 +5,6 @@ import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateExceptio
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -35,7 +34,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(
+        val expected =
           Call(
             sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             accountSid = connSettings.accountSid,
@@ -51,7 +50,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
             fromFormatted = Call.FormattedPhoneNumber("(415) 867-5308"),
             groupSid = None,
             parentCallSid = None,
-            phoneNumberSid = TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            phoneNumberSid = None,
             price = Some(Call.Price(BigDecimal("-0.0300"), Iso4127CountryCode("USD"))),
             startTime = Some(startTimeAtInstant),
             status = Call.Status.Completed,
@@ -60,25 +59,21 @@ final class CallUpdateStatusTest extends TwilioClientTest {
             trunkSid = None,
             queueTime = Call.QueueTime("1000"),
           )
-        )
 
         val resultFut: Future[
           Either[CallUpdateRequestExecutor.CallUpdateException, Call]
-        ] =
-          instance.run(connSettings, request)
-        resultFut.map { result =>
-          result.left.map { ex =>
-            ex.getStackTrace.map(println)
-            println(ex)
-
-          }
-
-          assert(result === expected)
+        ] = instance.run(connSettings, request)
+        resultFut.map {
+          case Left(e) =>
+            fail(e)
+          case Right(result) =>
+            assert(result === expected)
         }
       }
 
       "return a Left if the call does not exists" in {
         val f = new Fixture
+
         import f._
 
         wireMockServer.stubFor(
@@ -123,6 +118,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
     }
   }
 
+  // `"phone_number_sid": null` is important, as it's an optional parameter, så test should ensure parsing handles that.
   private def twilioResponse1 =
     """{
       |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -139,7 +135,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
       |  "from_formatted": "(415) 867-5308",
       |  "group_sid": null,
       |  "parent_call_sid": null,
-      |  "phone_number_sid": "PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      |  "phone_number_sid": null,
       |  "price": "-0.03000",
       |  "price_unit": "USD",
       |  "sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",

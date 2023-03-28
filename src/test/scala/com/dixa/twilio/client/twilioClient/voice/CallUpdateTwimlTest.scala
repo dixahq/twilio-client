@@ -52,7 +52,8 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
             fromFormatted = Call.FormattedPhoneNumber("(415) 867-5308"),
             groupSid = None,
             parentCallSid = None,
-            phoneNumberSid = TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            phoneNumberSid =
+              Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")),
             price = Some(Call.Price(BigDecimal("-0.0300"), Iso4127CountryCode("USD"))),
             startTime = Some(startTimeAtInstant),
             status = Call.Status.Completed,
