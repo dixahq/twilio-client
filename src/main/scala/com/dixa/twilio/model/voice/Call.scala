@@ -23,7 +23,7 @@ final case class Call(
     toFormatted: Call.FormattedPhoneNumber,
     from: Call.CallerId,
     fromFormatted: Call.FormattedPhoneNumber,
-    phoneNumberSid: TwilioPhoneNumber.Sid,
+    phoneNumberSid: Option[TwilioPhoneNumber.Sid],
     status: Call.Status,
     startTime: Option[Instant],
     endTime: Option[Instant],
