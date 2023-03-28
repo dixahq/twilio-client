@@ -56,34 +56,50 @@ object CallUpdateRequestExecutor {
 
   object CallUpdateRequest {
 
-    sealed trait RequestAttribute
-    sealed trait RequestAccountSidAttribute extends RequestAttribute
-    sealed trait RequestCallSidAttribute    extends RequestAttribute
+    /** Phantom type Used to require account sid to be supplied before build can be called */
+    sealed trait AccountSidAttributeSet
+    sealed trait AccountSidAttributeSetTrue  extends AccountSidAttributeSet
+    sealed trait AccountSidAttributeSetFalse extends AccountSidAttributeSet
 
-    sealed trait HasTwimlOrUrlSet      extends RequestAttribute
+    /** Phantom type Used to require call sid to be supplied before build can be called */
+    sealed trait CallSidAttributeSet
+    sealed trait CallSidAttributeSetTrue  extends CallSidAttributeSet
+    sealed trait CallSidAttributeSetFalse extends CallSidAttributeSet
+
+    /** Used to require tha not both of Twiml and Url is set, as those two are mutually exclusive.
+      */
+    sealed trait HasTwimlOrUrlSet
     sealed trait HasTwimlOrUrlSetTrue  extends HasTwimlOrUrlSet
     sealed trait HasTwimlOrUrlSetFalse extends HasTwimlOrUrlSet
 
-    sealed trait HasUrlForMethodSet      extends RequestAttribute
+    /** Used to require that the request has as minimum one meaningfully attribute set.
+      *
+      * By meaningfully is meant a attribute that will actually change something to the call.
+      * Without that an update request don't really make sense to perform.
+      */
+    sealed trait HasAtLeastOneMeaningfullyAttributeSet
+    sealed trait HasAtLeastOneMeaningfullyAttributeSetTrue
+        extends HasAtLeastOneMeaningfullyAttributeSet
+    sealed trait HasAtLeastOneMeaningfullyAttributeSetFalse
+        extends HasAtLeastOneMeaningfullyAttributeSet
+
+    sealed trait HasUrlForMethodSet
     sealed trait HasUrlForMethodSetTrue  extends HasUrlForMethodSet
     sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
 
-    sealed trait HasFallbackUrlForMethodSet      extends RequestAttribute
+    sealed trait HasFallbackUrlForMethodSet
     sealed trait HasFallbackUrlForMethodSetTrue  extends HasFallbackUrlForMethodSet
     sealed trait HasFallbackUrlForMethodSetFalse extends HasFallbackUrlForMethodSet
 
-    sealed trait HasStatusCallbackUrlForMethodSet   extends RequestAttribute
+    sealed trait HasStatusCallbackUrlForMethodSet
     sealed trait HasStatusCallbackUrlForMethodTrue  extends HasStatusCallbackUrlForMethodSet
     sealed trait HasStatusCallbackUrlForMethodFalse extends HasStatusCallbackUrlForMethodSet
 
-    type RequestRequiredAttributes = RequestAttribute
-      with RequestAccountSidAttribute
-      with RequestCallSidAttribute
-      with HasTwimlOrUrlSetTrue
-
     type BuilderStartState =
       Builder[
-        RequestAttribute,
+        AccountSidAttributeSetFalse,
+        CallSidAttributeSetFalse,
+        HasAtLeastOneMeaningfullyAttributeSetFalse,
         HasTwimlOrUrlSetFalse,
         HasUrlForMethodSetFalse,
         HasFallbackUrlForMethodSetFalse,
@@ -91,7 +107,9 @@ object CallUpdateRequestExecutor {
       ]
 
     final class Builder[
-        Attributes <: RequestAttribute,
+        AccountSidSet <: AccountSidAttributeSet,
+        CallSidSet <: CallSidAttributeSet,
+        OneMeaningfullyAttribute <: HasAtLeastOneMeaningfullyAttributeSet,
         TwimlOrUrl <: HasTwimlOrUrlSet,
         UrlAndMethod <: HasUrlForMethodSet,
         FallbackUrlAndMethod <: HasFallbackUrlForMethodSet,
@@ -113,7 +131,9 @@ object CallUpdateRequestExecutor {
       def withAccountSid(
           accountSid: TwilioAccount.Sid
       ): Builder[
-        Attributes with RequestAccountSidAttribute,
+        AccountSidAttributeSetTrue,
+        CallSidSet,
+        OneMeaningfullyAttribute,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -137,7 +157,9 @@ object CallUpdateRequestExecutor {
       def withCallSid(
           sid: Call.Sid
       ): Builder[
-        Attributes with RequestCallSidAttribute,
+        AccountSidSet,
+        CallSidAttributeSetTrue,
+        OneMeaningfullyAttribute,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -161,7 +183,9 @@ object CallUpdateRequestExecutor {
       def withUrl(url: CallbackUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
       ): Builder[
-        Attributes with HasTwimlOrUrlSetTrue,
+        AccountSidSet,
+        CallSidSet,
+        HasAtLeastOneMeaningfullyAttributeSetTrue,
         HasTwimlOrUrlSetTrue,
         HasUrlForMethodSetTrue,
         FallbackUrlAndMethod,
@@ -185,7 +209,9 @@ object CallUpdateRequestExecutor {
       def withMethod(method: HttpMethod)(
           implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue,
       ): Builder[
-        Attributes,
+        AccountSidSet,
+        CallSidSet,
+        OneMeaningfullyAttribute,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -206,7 +232,9 @@ object CallUpdateRequestExecutor {
         )
 
       def withStatus(status: Call.StatusUpdate): Builder[
-        Attributes,
+        AccountSidSet,
+        CallSidSet,
+        HasAtLeastOneMeaningfullyAttributeSetTrue,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -231,7 +259,9 @@ object CallUpdateRequestExecutor {
       def withFallbackUrl(fallbackUrl: CallbackUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
       ): Builder[
-        Attributes with HasTwimlOrUrlSetTrue with HasFallbackUrlForMethodSetTrue,
+        AccountSidSet,
+        CallSidSet,
+        HasAtLeastOneMeaningfullyAttributeSetTrue,
         HasTwimlOrUrlSetTrue,
         UrlAndMethod,
         HasFallbackUrlForMethodSetTrue,
@@ -255,7 +285,9 @@ object CallUpdateRequestExecutor {
       def withFallbackMethod(fallbackMethod: HttpMethod)(
           implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue,
       ): Builder[
-        Attributes,
+        AccountSidSet,
+        CallSidSet,
+        OneMeaningfullyAttribute,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -276,7 +308,9 @@ object CallUpdateRequestExecutor {
         )
 
       def withStatusCallBack(statusCallback: CallbackUrl): Builder[
-        Attributes with HasStatusCallbackUrlForMethodTrue,
+        AccountSidSet,
+        CallSidSet,
+        HasAtLeastOneMeaningfullyAttributeSetTrue,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -300,7 +334,9 @@ object CallUpdateRequestExecutor {
       def withStatusCallBackMethod(statusCallbackMethod: HttpMethod)(
           implicit ev: StatusCallbackUrlForMethod =:= HasStatusCallbackUrlForMethodTrue,
       ): Builder[
-        Attributes,
+        AccountSidSet,
+        CallSidSet,
+        OneMeaningfullyAttribute,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -324,7 +360,9 @@ object CallUpdateRequestExecutor {
       def withTwiml(twiml: Response.Verified)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
       ): Builder[
-        Attributes with HasTwimlOrUrlSetTrue,
+        AccountSidSet,
+        CallSidSet,
+        HasAtLeastOneMeaningfullyAttributeSetTrue,
         HasTwimlOrUrlSetTrue,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -345,7 +383,9 @@ object CallUpdateRequestExecutor {
         )
 
       def withTimeLimit(timeLimit: TimeLimit): Builder[
-        Attributes,
+        AccountSidSet,
+        CallSidSet,
+        HasAtLeastOneMeaningfullyAttributeSetTrue,
         TwimlOrUrl,
         UrlAndMethod,
         FallbackUrlAndMethod,
@@ -367,7 +407,9 @@ object CallUpdateRequestExecutor {
 
       @nowarn
       def build()(
-          implicit ev: Attributes =:= RequestRequiredAttributes
+          implicit ev: AccountSidSet =:= AccountSidAttributeSetTrue,
+          ev2: CallSidSet =:= CallSidAttributeSetTrue,
+          ev3: OneMeaningfullyAttribute =:= HasAtLeastOneMeaningfullyAttributeSetTrue
       ): CallUpdateRequest =
         CallUpdateRequestImpl(
           accountSid.get,
