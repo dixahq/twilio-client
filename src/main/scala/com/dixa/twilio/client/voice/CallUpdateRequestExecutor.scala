@@ -205,6 +205,28 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
+      def withStatus(status: Call.StatusUpdate): Builder[
+        Attributes,
+        TwimlOrUrl,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlForMethod
+      ] = {
+        new Builder(
+          accountSid,
+          sid,
+          url,
+          method,
+          Some(status),
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackMethod,
+          twiml,
+          timeLimit
+        )
+      }
+
       @nowarn
       def withFallbackUrl(fallbackUrl: CallbackUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
