@@ -23,6 +23,8 @@ trait ConferenceReadRequestExecutor
 
 object ConferenceReadRequestExecutor {
 
+  println("")
+
   sealed trait ConferenceReadRequest {
     def accountSid: TwilioAccount.Sid
     def dateCreated: Option[Iso8601DateTime]
