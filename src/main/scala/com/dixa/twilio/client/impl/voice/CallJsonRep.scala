@@ -48,7 +48,7 @@ private[impl] case class CallJsonRep(
     toFormatted = FormattedPhoneNumber.apply(to_formatted),
     from = Call.CallerId(from),
     fromFormatted = FormattedPhoneNumber.apply(from_formatted),
-    phoneNumberSid = phone_number_sid.map(TwilioPhoneNumber.Sid.unsafe),
+    phoneNumberSid = phone_number_sid.flatMap(s => TwilioPhoneNumber.Sid(s).toOption),
     status = Call.Status.fromTwilioStringUnsafe(status),
     startTime = start_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
     endTime = end_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
@@ -60,7 +60,7 @@ private[impl] case class CallJsonRep(
     groupSid = group_sid.flatMap(s => Group.Sid(s).toOption),
     callerName = caller_name.map(Call.Name),
     queueTime = Try(queue_time.toLong).map(Duration.ofMillis).getOrElse(Duration.ZERO),
-    trunkSid = trunk_sid.map(Trunk.Sid.unsafe)
+    trunkSid = trunk_sid.flatMap(s => Trunk.Sid(s).toOption)
   )
 
   private def optionStringToOptionLong(x: Option[String]): Option[Long] =
