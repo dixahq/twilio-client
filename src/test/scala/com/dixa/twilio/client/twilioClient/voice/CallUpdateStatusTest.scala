@@ -43,7 +43,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
             dateCreated = createdAtInstant,
             dateUpdate = updatedAtInstant,
             direction = Call.Direction.Inbound,
-            duration = Some(Call.Duration("15")),
+            duration = Some(Duration.ofSeconds(15)),
             endTime = Some(endTimeAtInstant),
             forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
             from = Call.CallerId("+14158675308"),
@@ -57,7 +57,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
             to = Call.CallerId("+14158675309"),
             toFormatted = Call.FormattedPhoneNumber("(415) 867-5309"),
             trunkSid = None,
-            queueTime = Call.QueueTime("1000"),
+            queueTime = Duration.ofSeconds(1),
           )
 
         val resultFut: Future[

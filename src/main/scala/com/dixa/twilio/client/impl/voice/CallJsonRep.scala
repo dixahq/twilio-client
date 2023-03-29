@@ -7,7 +7,8 @@ import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.{Call, Group, Trunk}
 import com.dixa.twilio.model.voice.Call.FormattedPhoneNumber
 
-import java.time.Instant
+import java.time.{Duration, Instant}
+import scala.util.Try
 
 /** Json representation of a Call */
 private[impl] case class CallJsonRep(
@@ -51,14 +52,17 @@ private[impl] case class CallJsonRep(
     status = Call.Status.fromTwilioStringUnsafe(status),
     startTime = start_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
     endTime = end_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
-    duration = duration.map(Call.Duration),
+    duration = optionStringToOptionLong(duration).map(Duration.ofSeconds),
     price = price.map(p => Call.Price(BigDecimal(p), Iso4127CountryCode.apply(price_unit))),
     direction = Call.Direction.fromTwilioStringUnsafe(direction),
     answeredBy = answered_by.map(Call.AnsweredBy.fromTwilioStringUnsafe),
     forwardedFrom = forwarded_from.map(Call.ForwardedFrom),
     groupSid = group_sid.flatMap(s => Group.Sid(s).toOption),
     callerName = caller_name.map(Call.Name),
-    queueTime = Call.QueueTime(queue_time),
+    queueTime = Try(queue_time.toLong).map(Duration.ofMillis).getOrElse(Duration.ZERO),
     trunkSid = trunk_sid.map(Trunk.Sid.unsafe)
   )
+
+  private def optionStringToOptionLong(x: Option[String]): Option[Long] =
+    x.flatMap(asString => Try(asString.toLong).toOption)
 }
