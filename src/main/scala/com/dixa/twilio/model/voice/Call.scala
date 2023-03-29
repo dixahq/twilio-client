@@ -10,7 +10,7 @@ import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
 
-import java.time.Instant
+import java.time.{Duration, Instant}
 import scala.collection.immutable
 
 final case class Call(
@@ -27,14 +27,14 @@ final case class Call(
     status: Call.Status,
     startTime: Option[Instant],
     endTime: Option[Instant],
-    duration: Option[Call.Duration],
+    duration: Option[Duration],
     price: Option[Call.Price],
     direction: Call.Direction,
     answeredBy: Option[Call.AnsweredBy],
     forwardedFrom: Option[Call.ForwardedFrom],
     groupSid: Option[Group.Sid],
     callerName: Option[Call.Name],
-    queueTime: Call.QueueTime,
+    queueTime: Duration,
     trunkSid: Option[Trunk.Sid],
 )
 
@@ -91,8 +91,6 @@ object Call {
     case object NoAnswer   extends Status("no-answer")
   }
 
-  final case class Duration(override val toString: String) extends TwilioStringValue
-
   final case class Price(amount: BigDecimal, unit: Iso4127CountryCode) extends TwilioStringValue {
     override def toString: String = s"$amount $unit"
   }
@@ -125,8 +123,6 @@ object Call {
   final case class ForwardedFrom(override val toString: String) extends TwilioStringValue
 
   final case class Name(override val toString: String) extends TwilioStringValue
-
-  final case class QueueTime(override val toString: String) extends TwilioStringValue
 
   final case class FormattedPhoneNumber(override val toString: String) extends TwilioStringValue
 }

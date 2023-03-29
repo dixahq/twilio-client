@@ -12,7 +12,15 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import java.net.URLEncoder
-import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
+import java.time.{
+  Duration,
+  Instant,
+  LocalDate,
+  LocalDateTime,
+  LocalTime,
+  OffsetDateTime,
+  ZoneOffset
+}
 import scala.concurrent.Future
 
 final class CallUpdateTwimlTest extends TwilioClientTest {
@@ -45,7 +53,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
             dateCreated = createdAtInstant,
             dateUpdate = updatedAtInstant,
             direction = Call.Direction.Inbound,
-            duration = Some(Call.Duration("15")),
+            duration = Some(Duration.ofSeconds(15)),
             endTime = Some(endTimeAtInstant),
             forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
             from = Call.CallerId("+14158675308"),
@@ -60,7 +68,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
             to = Call.CallerId("+14158675309"),
             toFormatted = Call.FormattedPhoneNumber("(415) 867-5309"),
             trunkSid = None,
-            queueTime = Call.QueueTime("1000"),
+            queueTime = Duration.ofSeconds(1),
           )
         )
 
