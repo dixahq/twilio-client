@@ -56,7 +56,7 @@ private[impl] case class CallJsonRep(
     direction = Call.Direction.fromTwilioStringUnsafe(direction),
     answeredBy = answered_by.map(Call.AnsweredBy.fromTwilioStringUnsafe),
     forwardedFrom = forwarded_from.map(Call.ForwardedFrom),
-    groupSid = group_sid.map(Group.Sid.unsafe),
+    groupSid = group_sid.flatMap(s => Group.Sid(s).toOption),
     callerName = caller_name.map(Call.Name),
     queueTime = Call.QueueTime(queue_time),
     trunkSid = trunk_sid.map(Trunk.Sid.unsafe)

@@ -119,6 +119,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
   }
 
   // `"phone_number_sid": null` is important, as it's an optional parameter, så test should ensure parsing handles that.
+  // `"group_sid": ""` is important because apparently twilio sometimes uses that instead of null
   private def twilioResponse1 =
     """{
       |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -133,7 +134,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
       |  "forwarded_from": "+141586753093",
       |  "from": "+14158675308",
       |  "from_formatted": "(415) 867-5308",
-      |  "group_sid": null,
+      |  "group_sid": "",
       |  "parent_call_sid": null,
       |  "phone_number_sid": null,
       |  "price": "-0.03000",
