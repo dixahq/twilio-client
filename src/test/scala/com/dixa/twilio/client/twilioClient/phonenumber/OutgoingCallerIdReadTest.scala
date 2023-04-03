@@ -29,7 +29,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val filter = OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequestFilter(
-          Some(PhoneNumberE164("+141586753096"))
+          Some(PhoneNumberE164.unsafe("+141586753096"))
         )
 
         wireMockServer.stubFor(
@@ -73,7 +73,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
     val outgoingCallerId = OutgoingCallerId(
       sid = OutgoingCallerId.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
       friendlyName = OutgoingCallerId.FriendlyName("(415) 867-5309"),
-      phoneNumber = PhoneNumberE164("+141586753096")
+      phoneNumber = PhoneNumberE164.unsafe("+141586753096")
     )
 
     val twilioResponse1 =

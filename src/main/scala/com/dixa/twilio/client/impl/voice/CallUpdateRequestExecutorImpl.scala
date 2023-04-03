@@ -11,7 +11,13 @@ import akka.http.scaladsl.model.{
   StatusCodes
 }
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString,
+  QueryParamBuilder
+}
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.{
   CallUpdateException,
@@ -20,16 +26,17 @@ import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.{
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Call
 import io.circe.generic.auto._
-import org.scalactic.TypeCheckedTripleEquals._
 
-import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 
 private[client] class CallUpdateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
-    override protected val executionContext: ExecutionContext
+    override protected val executionContext: ExecutionContext,
+    apiVersion: ApiVersion
 ) extends CallUpdateRequestExecutor {
+
+  import CallUpdateRequestExecutorImpl._
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
@@ -39,18 +46,28 @@ private[client] class CallUpdateRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: CallUpdateRequestExecutor.CallUpdateRequest
   ): Either[CallUpdateException, HttpRequest] = {
-    val postParamBuilder = new mutable.StringBuilder()
-    req.twiml.foreach(twiml => postParamBuilder.append(s"Twiml=${twiml.xmlCompact}&"))
-    req.url.foreach(url => postParamBuilder.append(s"Url=$url&"))
-    val postParamLastCharIndex = postParamBuilder.length - 1
-    if (postParamBuilder.charAt(postParamLastCharIndex) === '&')
-      postParamBuilder.deleteCharAt(postParamLastCharIndex)
-    val postParam = postParamBuilder.toString()
+    val params = QueryParamBuilder.empty
+      .withOptionalParam(urlParamKey, req.url)
+      .withOptionalParam(methodParamKey, req.method)
+      .withOptionalParam(statusParamKey, req.status)
+      .withOptionalParam(fallbackUrlParamKey, req.fallbackUrl)
+      .withOptionalParam(fallbackMethodParamKey, req.fallbackMethod)
+      .withOptionalParam(statusCallbackParamKey, req.statusCallback)
+      .withOptionalParam(statusCallbackMethodParamKey, req.statusCallbackMethod)
+      .withOptionalParam(timeLimitParamKey, req.timeLimit)
+
+    val paramsWithTwilio =
+      req.twiml
+        .map(t => params.withParam(twimlParamKey, t.xmlCompact))
+        .getOrElse(params)
+        .buildForPostParams
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Calls/${req.callSid}.json",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Calls/${req.sid}.json",
       connSettings
-    ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam)))
+    ).map(
+      _.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, paramsWithTwilio))
+    )
   }
 
   override protected def mapApiException(apiException: ApiException): CallUpdateException.Api =
@@ -66,10 +83,15 @@ private[client] class CallUpdateRequestExecutorImpl()(
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[CallUpdateException, Call] = httpResponse.status match {
-    case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
-    case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
-    case _                    => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
+  ): Either[CallUpdateException, Call] = {
+    println(s"entity: $entity")
+    println(s"httpResponse: $httpResponse")
+
+    httpResponse.status match {
+      case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
+      case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
+      case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
+    }
   }
 
   private def buildResultForNotFoundResponse(req: CallUpdateRequest, entity: HttpEntityString) = {
@@ -78,7 +100,7 @@ private[client] class CallUpdateRequestExecutorImpl()(
       .flatMap { decoded =>
         decoded.code match {
           case 20404L =>
-            Left(CallUpdateException.CallNotFound(req.accountSid, req.callSid))
+            Left(CallUpdateException.CallNotFound(req.accountSid, req.sid))
           case other =>
             Left(
               CallUpdateException.Unspecified(
@@ -89,4 +111,17 @@ private[client] class CallUpdateRequestExecutorImpl()(
         }
       }
   }
+}
+
+private object CallUpdateRequestExecutorImpl {
+  private val urlParamKey                  = "Url"
+  private val methodParamKey               = "Method"
+  private val statusParamKey               = "Status"
+  private val fallbackUrlParamKey          = "FallbackUrl"
+  private val fallbackMethodParamKey       = "FallbackMethod"
+  private val statusCallbackParamKey       = "StatusCallback"
+  private val statusCallbackMethodParamKey = "StatusCallbackMethod"
+  private val twimlParamKey                = "Twiml"
+  private val timeLimitParamKey            = "TimeLimit"
+
 }

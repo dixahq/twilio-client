@@ -5,6 +5,7 @@ import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,
+  ApiVersion,
   DefaultApiErrorEntityJsonRep,
   HttpEntityString,
   QueryParamBuilder
@@ -23,7 +24,8 @@ import scala.concurrent.ExecutionContext
 private[client] class QueueUpdateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
-    override protected val executionContext: ExecutionContext
+    override protected val executionContext: ExecutionContext,
+    apiVersion: ApiVersion
 ) extends QueueUpdateRequestExecutor {
 
   import QueueUpdateRequestExecutorImpl._
@@ -44,7 +46,7 @@ private[client] class QueueUpdateRequestExecutorImpl()(
       .buildForPostParams
 
     createHttpRequestFor(
-      s"/2010-04-01/Accounts/${req.accountSid}/Queues/${req.sid}.json",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Queues/${req.sid}.json",
       connSettings
     ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params)))
   }

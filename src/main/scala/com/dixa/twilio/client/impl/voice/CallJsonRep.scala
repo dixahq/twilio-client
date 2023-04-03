@@ -1,17 +1,68 @@
 package com.dixa.twilio.client.impl.voice
 
+import com.dixa.twilio.client.impl.Formatter
+import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.Call
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
+import com.dixa.twilio.model.voice.{Call, Group, Trunk}
+import com.dixa.twilio.model.voice.Call.FormattedPhoneNumber
+
+import java.time.{Duration, Instant}
+import scala.util.Try
 
 /** Json representation of a Call */
 private[impl] case class CallJsonRep(
     account_sid: String,
-    sid: String
-    // A lot more fields to add here, once needed.
+    answered_by: Option[String],
+    api_version: String,
+    caller_name: Option[String],
+    date_created: String,
+    date_updated: String,
+    direction: String,
+    duration: Option[String],
+    end_time: Option[String],
+    forwarded_from: Option[String],
+    from: String,
+    from_formatted: String,
+    group_sid: Option[String],
+    parent_call_sid: Option[String],
+    phone_number_sid: Option[String],
+    price: Option[String],
+    price_unit: String,
+    sid: String,
+    start_time: Option[String],
+    status: String,
+    to: String,
+    to_formatted: String,
+    trunk_sid: Option[String],
+    queue_time: String,
 ) {
 
   def toModel: Call = Call(
-    Call.Sid.unsafe(sid),
-    TwilioAccount.Sid.unsafe(account_sid)
+    sid = Call.Sid.unsafe(sid),
+    dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
+    dateUpdate = Instant.from(Formatter.dateTime.parse(date_updated)),
+    parentCallSid = parent_call_sid.map(Call.Sid.unsafe),
+    accountSid = TwilioAccount.Sid.unsafe(account_sid),
+    to = Call.CallerId(to),
+    toFormatted = FormattedPhoneNumber.apply(to_formatted),
+    from = Call.CallerId(from),
+    fromFormatted = FormattedPhoneNumber.apply(from_formatted),
+    phoneNumberSid = phone_number_sid.flatMap(s => TwilioPhoneNumber.Sid(s).toOption),
+    status = Call.Status.fromTwilioStringUnsafe(status),
+    startTime = start_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
+    endTime = end_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
+    duration = optionStringToOptionLong(duration).map(Duration.ofSeconds),
+    price = price.map(p => Call.Price(BigDecimal(p), Iso4127CountryCode.apply(price_unit))),
+    direction = Call.Direction.fromTwilioStringUnsafe(direction),
+    answeredBy = answered_by.map(Call.AnsweredBy.fromTwilioStringUnsafe),
+    forwardedFrom = forwarded_from.map(Call.ForwardedFrom),
+    groupSid = group_sid.flatMap(s => Group.Sid(s).toOption),
+    callerName = caller_name.map(Call.Name),
+    queueTime = Try(queue_time.toLong).map(Duration.ofMillis).getOrElse(Duration.ZERO),
+    trunkSid = trunk_sid.flatMap(s => Trunk.Sid(s).toOption)
   )
+
+  private def optionStringToOptionLong(x: Option[String]): Option[Long] =
+    x.flatMap(asString => Try(asString.toLong).toOption)
 }

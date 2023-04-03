@@ -5,31 +5,21 @@ import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateExceptio
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
-import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import java.net.URLEncoder
-import java.time.{
-  Duration,
-  Instant,
-  LocalDate,
-  LocalDateTime,
-  LocalTime,
-  OffsetDateTime,
-  ZoneOffset
-}
+import java.time._
 import scala.concurrent.Future
 
-final class CallUpdateTwimlTest extends TwilioClientTest {
+final class CallUpdateStatusTest extends TwilioClientTest {
 
   classOf[TwilioClientVoice].getSimpleName when {
 
     "ask to update a call" should {
 
-      "Support sending new TwiML to the call" in {
+      "Support sending a new status to end the call" in {
 
         val f = new Fixture
         import f._
@@ -44,7 +34,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(
+        val expected =
           Call(
             sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             accountSid = connSettings.accountSid,
@@ -60,8 +50,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
             fromFormatted = Call.FormattedPhoneNumber("(415) 867-5308"),
             groupSid = None,
             parentCallSid = None,
-            phoneNumberSid =
-              Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")),
+            phoneNumberSid = None,
             price = Some(Call.Price(BigDecimal("-0.0300"), Iso4127CountryCode("USD"))),
             startTime = Some(startTimeAtInstant),
             status = Call.Status.Completed,
@@ -70,25 +59,21 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
             trunkSid = None,
             queueTime = Duration.ofSeconds(1),
           )
-        )
 
         val resultFut: Future[
           Either[CallUpdateRequestExecutor.CallUpdateException, Call]
-        ] =
-          instance.run(connSettings, request)
-        resultFut.map { result =>
-          result.left.map { ex =>
-            ex.getStackTrace.map(println)
-            println(ex)
-
-          }
-
-          assert(result === expected)
+        ] = instance.run(connSettings, request)
+        resultFut.map {
+          case Left(e) =>
+            fail(e)
+          case Right(result) =>
+            assert(result === expected)
         }
       }
 
       "return a Left if the call does not exists" in {
         val f = new Fixture
+
         import f._
 
         wireMockServer.stubFor(
@@ -133,6 +118,8 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
     }
   }
 
+  // `"phone_number_sid": null` is important, as it's an optional parameter, så test should ensure parsing handles that.
+  // `"group_sid": ""` is important because apparently twilio sometimes uses that instead of null
   private def twilioResponse1 =
     """{
       |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -147,9 +134,9 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
       |  "forwarded_from": "+141586753093",
       |  "from": "+14158675308",
       |  "from_formatted": "(415) 867-5308",
-      |  "group_sid": null,
+      |  "group_sid": "",
       |  "parent_call_sid": null,
-      |  "phone_number_sid": "PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      |  "phone_number_sid": null,
       |  "price": "-0.03000",
       |  "price_unit": "USD",
       |  "sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -200,7 +187,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
     val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
-        .withTwiml(Response.build { _.addSay(_.withText("Ahoy there").build()).buildVerified() })
+        .withStatus(Call.StatusUpdate.Completed)
         .build
     )
 
@@ -240,10 +227,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
       )
       .withRequestBody(
         WireMock.containing(
-          s"""${URLEncoder.encode("Twiml", "utf-8")}=${URLEncoder.encode(
-              """<?xml version="1.0" encoding="UTF-8"?><Response><Say>Ahoy there</Say></Response>""",
-              "utf-8"
-            )}"""
+          s"""${URLEncoder.encode("Status", "utf-8")}=${URLEncoder.encode("completed", "utf-8")}"""
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")

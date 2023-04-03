@@ -83,21 +83,21 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
             TwilioPhoneNumber.Sid.unsafe("PNf691901a0361ccfb5e4c11dc073a7274"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("(459) 375-1435"),
-            PhoneNumberE164("+4593751435"),
+            PhoneNumberE164.unsafe("+4593751435"),
             PhoneNumberCapabilitiesSummary(voice = true, sms = true, mms = false, fax = false)
           ),
           TwilioIncomingPhoneNumber(
             TwilioPhoneNumber.Sid.unsafe("PNa6ab2f33d0ffca5a3fa907a4ce302607"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("uva_testing_sms_dk"),
-            PhoneNumberE164("+4581827622"),
+            PhoneNumberE164.unsafe("+4581827622"),
             PhoneNumberCapabilitiesSummary(voice = true, sms = true, mms = true, fax = true)
           ),
           TwilioIncomingPhoneNumber(
             TwilioPhoneNumber.Sid.unsafe("PN8ac53dd1867205c550ee4d41a35c0896"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("STAGING-2 NUMBER"),
-            PhoneNumberE164("+4578750614"),
+            PhoneNumberE164.unsafe("+4578750614"),
             PhoneNumberCapabilitiesSummary(voice = true, sms = false, mms = false, fax = false)
           )
         )

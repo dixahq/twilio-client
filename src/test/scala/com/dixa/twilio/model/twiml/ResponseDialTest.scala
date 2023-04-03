@@ -151,7 +151,7 @@ final class ResponseDialTest extends AnyWordSpec {
         val pn = "+4533442255"
         val result: Response.Verified = Response.build { responseBuilder =>
           responseBuilder.addDial { dialBuilder =>
-            dialBuilder.withPhoneNumber(PhoneNumberE164(pn)).build
+            dialBuilder.withPhoneNumber(PhoneNumberE164.unsafe(pn)).build
           }.buildVerified
         }
 

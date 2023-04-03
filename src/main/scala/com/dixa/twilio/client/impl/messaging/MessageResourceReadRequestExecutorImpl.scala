@@ -4,7 +4,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, ListJsonRep}
+import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString}
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -84,7 +84,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
     Either[MessageResourceReadRequestExecutor.MessageResourceReadException, MessageResource]
   ] = {
     responseEntity
-      .parse[ListJsonRep[MessageJsonRep]]() match {
+      .parse[MessageListJsonRep]() match {
       case Left(ex) =>
         List(
           Left(
@@ -115,8 +115,8 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
         dateUpdated = jsonRep.date_updated.flatMap(parseDate),
         dateSent = jsonRep.date_sent.flatMap(parseDate),
         accountSid = accountSid,
-        to = PhoneNumberE164(jsonRep.to),
-        from = MessageSender.E164(PhoneNumberE164(jsonRep.from)),
+        to = PhoneNumberE164.unsafe(jsonRep.to),
+        from = MessageSender.E164(PhoneNumberE164.unsafe(jsonRep.from)),
         messagingServiceSid = jsonRep.messaging_service_sid.flatMap(parseMessagingServiceSid),
         body = MessageBody(jsonRep.body),
         status = messageStatus,

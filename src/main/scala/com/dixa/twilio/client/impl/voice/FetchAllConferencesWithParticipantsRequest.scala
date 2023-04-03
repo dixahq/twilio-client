@@ -6,11 +6,17 @@ import akka.http.scaladsl.model.HttpMethods
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioPagingFlow, TwilioUri}
+import com.dixa.twilio.client.impl.voice.ConferenceJsonRep.TwilioConferenceJsonResp
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  HttpEntityString,
+  TwilioPagingFlow,
+  TwilioUri
+}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
-import com.dixa.twilio.model.voice.{Call, Conference}
+import com.dixa.twilio.model.voice.Conference
 import io.circe.generic.auto._
 
 import scala.annotation.nowarn
@@ -25,7 +31,8 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
   )(
       implicit http: HttpExt,
       materializer: Materializer,
-      executionContext: ExecutionContext
+      executionContext: ExecutionContext,
+      apiVersion: ApiVersion
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] = Flow[TwilioAccount.Sid]
     .flatMapMerge(
       connSettings.parallelFactor.asInt,
@@ -35,7 +42,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
           val initPath = TwilioUri.createPathUnsafe(
             ApiSubDomain.Api,
             HttpMethods.GET,
-            s"/2010-04-01/Accounts/$accountSid/Conferences.json?${statusParam}PageSize=1000"
+            s"/${apiVersion.twilioString}/Accounts/$accountSid/Conferences.json?${statusParam}PageSize=1000"
           )
           TwilioPagingFlow.createPagingSrc(connSettings, initPath)
         }
@@ -74,25 +81,10 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
     decoded.conferences
   }
 
-  // Only mapped the fields that we actually need for now, there is a lot more
-  // info in these responses, that we could map once needed.
-  private final case class TwilioConferenceParticipantJsonRep(
-      status: String,
-      call_sid: String
-  )
-  private final case class TwilioConferenceParticipantOuterJsonRep(
-      participants: Vector[TwilioConferenceParticipantJsonRep]
-  )
-
   private def entityToParticipantList(
       entity: HttpEntityString
   ): Seq[Conference.Participant] = {
-    val decoded = entity.parse[TwilioConferenceParticipantOuterJsonRep]()
-    decoded.toTry.get.participants.map { jsonRep =>
-      Conference.Participant(
-        Call.Sid.unsafe(jsonRep.call_sid),
-        Conference.ParticipantStatus.fromTwilioStringUnsafe(jsonRep.status)
-      )
-    }
+    val decoded = entity.parse[ParticipantListJsonRep]()
+    decoded.toTry.get.participants.map { _.toModel }
   }
 }

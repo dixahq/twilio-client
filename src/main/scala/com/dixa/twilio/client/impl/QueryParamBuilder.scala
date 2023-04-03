@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.impl
-import com.dixa.twilio.model.TwilioStringValue
+import com.dixa.twilio.model.Iso8601DateTime.{After, Before}
+import com.dixa.twilio.model.{Iso8601DateTime, TwilioStringValue}
 
 import java.net.URLEncoder
 
@@ -24,6 +25,23 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
   ): QueryParamBuilder = valueOpt match {
     case Some(value) => withParam(key, value.twilioString)
     case None        => this
+  }
+
+  def withOptionalBooleanParam(
+      key: String,
+      valueOpt: Option[Boolean]
+  ): QueryParamBuilder = valueOpt match {
+    case Some(value) => withParam(key, value.toString)
+    case None        => this
+  }
+
+  def withOptionalDateParam(
+      key: String,
+      valueOpt: Option[Iso8601DateTime]
+  ): QueryParamBuilder = valueOpt match {
+    case Some(before: Before) => withParam(s"$key<", s"${before.instant}")
+    case Some(after: After)   => withParam(s"$key>", s"${after.instant}")
+    case _                    => this
   }
 
   def build: String = paramStrings match {

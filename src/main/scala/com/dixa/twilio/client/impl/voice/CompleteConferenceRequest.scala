@@ -4,8 +4,8 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
 import akka.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.client.impl.voice.ConferenceJsonResp.TwilioConferenceJsonResp
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
+import com.dixa.twilio.client.impl.voice.ConferenceJsonRep.TwilioConferenceJsonResp
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioUri}
 import com.dixa.twilio.model.voice.Conference
 import io.circe.generic.auto._
 import org.scalactic.TypeCheckedTripleEquals._
@@ -20,13 +20,14 @@ private[impl] object CompleteConferenceRequest {
   )(
       implicit http: HttpExt,
       materializer: Materializer,
-      executionContext: ExecutionContext
+      executionContext: ExecutionContext,
+      apiVersion: ApiVersion
   ): Future[Conference] = {
     val req = TwilioUri
       .createPathUnsafe(
         ApiSubDomain.Api,
         HttpMethods.POST,
-        s"/2010-04-01/Accounts/${conference.accountSid}/Conferences/${conference.sid}.json"
+        s"/${apiVersion.twilioString}/Accounts/${conference.accountSid}/Conferences/${conference.sid}.json"
       )
       .createHttpRequestUnsafe(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, "Status=completed"))

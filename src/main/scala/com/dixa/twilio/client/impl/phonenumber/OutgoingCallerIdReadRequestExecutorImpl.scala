@@ -31,7 +31,6 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
   ): List[
     Either[OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadException, OutgoingCallerId]
   ] = {
-    println(s"response entity: $responseEntity")
     responseEntity.parse[OuterJsonRep]() match {
       case Left(ex) =>
         List(

@@ -1,9 +1,16 @@
 package com.dixa.twilio.model.voice
 
 import com.dixa.twilio.model.SidAbstract.Prefix
-import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract}
+import com.dixa.twilio.model.{
+  EnumWithTwilioString,
+  PublicEdgeLocation,
+  SidAbstract,
+  TwilioStringValue
+}
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.Conference.EndReason
 
+import java.time.Instant
 import scala.collection.immutable
 
 sealed trait Conference {
@@ -11,6 +18,11 @@ sealed trait Conference {
   def status: Conference.Status
   def friendlyName: Conference.FriendlyName
   def accountSid: TwilioAccount.Sid
+  def dateCreated: Instant
+  def dateUpdated: Instant
+  def edgeLocation: PublicEdgeLocation
+  def reasonConferenceEnded: Option[EndReason]
+  def callSidEndingConference: Option[Call.Sid]
 }
 
 object Conference {
@@ -20,13 +32,33 @@ object Conference {
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
-  ): DefaultImpl = DefaultImpl(sid, status, friendlyName, accountSid)
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      edgeLocation: PublicEdgeLocation,
+      reasonConferenceEnded: Option[EndReason],
+      callSidEndingConference: Option[Call.Sid]
+  ): DefaultImpl = DefaultImpl(
+    sid,
+    status,
+    friendlyName,
+    accountSid,
+    dateCreated,
+    dateUpdated,
+    edgeLocation,
+    reasonConferenceEnded,
+    callSidEndingConference
+  )
 
   final case class DefaultImpl(
       sid: Sid,
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      edgeLocation: PublicEdgeLocation,
+      reasonConferenceEnded: Option[EndReason],
+      callSidEndingConference: Option[Call.Sid]
   ) extends Conference
 
   final case class ConferenceWithParticipants(
@@ -34,6 +66,11 @@ object Conference {
       status: Status,
       friendlyName: FriendlyName,
       accountSid: TwilioAccount.Sid,
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      edgeLocation: PublicEdgeLocation,
+      reasonConferenceEnded: Option[EndReason],
+      callSidEndingConference: Option[Call.Sid],
       participants: Vector[Participant]
   ) extends Conference
 
@@ -58,30 +95,66 @@ object Conference {
     case object Completed  extends Status("completed", isActive = false)
   }
 
-  final case class FriendlyName(override val toString: String)
-
-  sealed abstract class ParticipantStatus(
+  sealed abstract class EndReason(
       override val twilioString: String,
-      /** Specifies if this status is one, where the participant are considered active
-        *
-        * By active means a state where the participant is either activily part of the conference,
-        * or is expected to be it in the future. So status like queued and connecting is also
-        * considered active.
-        */
-      val isActive: Boolean
   ) extends EnumWithTwilioString.EnumEntry
-  object ParticipantStatus extends EnumWithTwilioString[ParticipantStatus] {
-    override val values: immutable.IndexedSeq[ParticipantStatus] = findValues
 
-    case object Queued     extends ParticipantStatus("queued", isActive = true)
-    case object Connecting extends ParticipantStatus("connecting", isActive = true)
-    case object Ringing    extends ParticipantStatus("ringing", isActive = true)
-    case object Connected  extends ParticipantStatus("connected", isActive = true)
-    case object Complete   extends ParticipantStatus("complete", isActive = false)
-    case object Failed     extends ParticipantStatus("failed", isActive = false)
+  object EndReason extends EnumWithTwilioString[EndReason] {
+    override def values: immutable.IndexedSeq[EndReason] = findValues
+
+    case object ConferenceEndedViaApi extends EndReason("conference-ended-via-api")
+    case object ParticipantWithEndConferenceOnExitLeft
+        extends EndReason("participant-with-end-conference-on-exit-left")
+    case object ParticipantWithEndConferenceOnExitKicked
+        extends EndReason("participant-with-end-conference-on-exit-kicked")
+    case object LastParticipantKicked extends EndReason("last-participant-kicked")
+    case object LastParticipantLeft   extends EndReason("last-participant-left")
   }
 
-  final case class Participant(callSid: Call.Sid, status: ParticipantStatus)
+  final case class FriendlyName(override val toString: String) extends TwilioStringValue
+
+  final case class Participant(
+      accountSid: TwilioAccount.Sid,
+      callSid: Call.Sid,
+      label: Option[Participant.Label],
+      callSidToCoach: Option[Call.Sid],
+      coaching: Boolean,
+      conferenceSid: Conference.Sid,
+      dateCreated: Instant,
+      dateUpdated: Instant,
+      endConferenceOnExit: Boolean,
+      muted: Boolean,
+      hold: Boolean,
+      startConferenceOnEnter: Boolean,
+      status: Participant.Status,
+  )
+
+  object Participant {
+
+    final case class Label(override val toString: String) extends TwilioStringValue
+
+    sealed abstract class Status(
+        override val twilioString: String,
+
+        /** Specifies if this status is one, where the participant are considered active
+          *
+          * By active means a state where the participant is either activily part of the conference,
+          * or is expected to be it in the future. So status like queued and connecting is also
+          * considered active.
+          */
+        val isActive: Boolean
+    ) extends EnumWithTwilioString.EnumEntry
+
+    object Status extends EnumWithTwilioString[Status] {
+      override val values: immutable.IndexedSeq[Status] = findValues
+      case object Queued     extends Status("queued", isActive = true)
+      case object Connecting extends Status("connecting", isActive = true)
+      case object Ringing    extends Status("ringing", isActive = true)
+      case object Connected  extends Status("connected", isActive = true)
+      case object Complete   extends Status("complete", isActive = false)
+      case object Failed     extends Status("failed", isActive = false)
+    }
+  }
 
   /** Represent the Beep attribute of an conference.
     *
