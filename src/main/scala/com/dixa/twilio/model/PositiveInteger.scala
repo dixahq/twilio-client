@@ -4,10 +4,11 @@ import scala.annotation.nowarn
 
 /** Wrapper of an integer, that guaranty the wrapped integer to be positive.
   *
-  * In Twilio there is a lot of attributes that is of type integer, but requires it to be positive, and this type
-  * is therefore useful for representing such cases, as a method taking this type, can be sure that it represent a
-  * positive integer, and that potential errors for guarantying that, has already been handled.
-  * */
+  * In Twilio there is a lot of attributes that is of type integer, but requires it to be positive,
+  * and this type is therefore useful for representing such cases, as a method taking this type, can
+  * be sure that it represent a positive integer, and that potential errors for guarantying that,
+  * has already been handled.
+  */
 final case class PositiveInteger private (int: Int) extends AnyVal {
   override def toString: String = int.toString
 }
