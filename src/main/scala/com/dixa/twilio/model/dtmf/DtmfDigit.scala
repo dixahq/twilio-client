@@ -23,7 +23,6 @@ object DtmfDigit extends EnumWithTwilioString[DtmfDigit] {
   case object `0` extends DtmfDigit('0')
   case object `*` extends DtmfDigit('*')
   case object `#` extends DtmfDigit('#')
-  case object `w` extends DtmfDigit('w')
 
   sealed trait DtmfDigitException extends RuntimeException
   object DtmfDigitException {
@@ -41,4 +40,5 @@ object DtmfDigit extends EnumWithTwilioString[DtmfDigit] {
       .getOrElse(Left(DtmfDigitException.InvalidChar(char)))
 
   def fromCharUnsafe(char: Char): DtmfDigit = fromChar(char).fold(e => throw e, identity)
+
 }

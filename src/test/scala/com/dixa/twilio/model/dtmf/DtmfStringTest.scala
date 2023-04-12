@@ -1,44 +1,44 @@
 package com.dixa.twilio.model.dtmf
 import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
-import com.dixa.twilio.model.dtmf.DtmfString.DtmfStringException
+import com.dixa.twilio.model.dtmf.DtmfString.{DtmfStringElement, DtmfStringException}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class DtmfStringTest extends AnyWordSpec {
 
-  DtmfString.getClass.getSimpleName when {
+  classOf[DtmfString].getSimpleName when {
 
     "constructed from a string" should {
 
-      "return a Right(result) when all safe variant is called with valid string" in {
+      "return a Right(result) when fromString safe variant is called" in {
 
         val in       = "#8w6"
-        val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`w`, DtmfDigit.`6`)
-        val result   = DtmfString.fromString(in)
+        val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfString.`w`, DtmfDigit.`6`)
+        val result   = DtmfString.fromStringIncludeWaits(in)
         assert(result === Right(expected))
       }
 
-      "return a result when all unsafe variant is called with valid string" in {
+      "return a result when unsafe variant is called" in {
 
         val in       = "#8w6"
-        val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`w`, DtmfDigit.`6`)
-        val result   = DtmfString.fromStringUnsafe(in)
+        val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfString.`w`, DtmfDigit.`6`)
+        val result   = DtmfString.fromStringIncludeWaitsUnsafe(in)
         assert(result === expected)
       }
 
       "return a Left if safe variant is provided an empty string" in {
-        assert(DtmfString.fromString("") === Left(DtmfStringException.EmptyValue))
+        assert(DtmfString.fromStringIncludeWaits("") === Left(DtmfStringException.EmptyValue))
       }
 
       "throw exception if unsafe variant is provided an empty string" in {
         assertThrows[DtmfStringException.EmptyValue.type] {
-          DtmfString.fromStringUnsafe("")
+          DtmfString.fromStringIncludeWaitsUnsafe("")
         }
       }
 
       "return a Left if safe variant is provided a string with invalid char in it" in {
         val in = "45w*#23w4I"
         assert(
-          DtmfString.fromString(in) === Left(
+          DtmfString.fromStringIncludeWaits(in) === Left(
             DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('I'))
           )
         )
@@ -47,14 +47,60 @@ final class DtmfStringTest extends AnyWordSpec {
       "throw exception if unsafe variant is provided a string with invalid char in it" in {
         val in = "45w*#23w4I"
         assertThrows[DtmfStringException.InvalidChar] {
-          DtmfString.fromStringUnsafe(in)
+          DtmfString.fromStringIncludeWaitsUnsafe(in)
         }
       }
     }
 
-    "should provide a map method" in {
-      val in       = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
-      val expected = DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`)
+    "constructed with varargs" should {
+      "return a OnlyDtmfDigits instance when only constructed from DtmfDigit instances" in {
+
+        val result: DtmfString.OnlyDtmfDigits =
+          DtmfString(DtmfDigit.`#`, DtmfDigit.`3`, DtmfDigit.`*`, DtmfDigit.`5`)
+        assert(result.twilioString === "#3*5")
+      }
+
+      "return a IncludeWaits instance when only constructed with included waits beside DtmfDigit instances" in {
+        val result: DtmfString.IncludeWaits =
+          DtmfString(DtmfDigit.`#`, DtmfDigit.`3`, DtmfString.w, DtmfDigit.`5`)
+        assert(result.twilioString === "#3w5")
+      }
+    }
+
+    "constructed from a Seq" should {
+      "return a OnlyDtmfDigits instance when only constructed from DtmfDigit instances" in {
+
+        val result: DtmfString.OnlyDtmfDigits =
+          DtmfString.fromSeq(DtmfDigit.`#`, List(DtmfDigit.`3`, DtmfDigit.`*`, DtmfDigit.`5`))
+        assert(result.twilioString === "#3*5")
+      }
+
+      "return a IncludeWaits instance when only constructed with included waits beside DtmfDigit instances" in {
+        val result: DtmfString.IncludeWaits =
+          DtmfString.fromSeq(DtmfDigit.`#`, List(DtmfDigit.`3`, DtmfString.w, DtmfDigit.`5`))
+        assert(result.twilioString === "#3w5")
+      }
+    }
+
+    "allow map of an OnlyDtmfDigits instance into a IncludeWait instance" in {
+      val in: DtmfString.OnlyDtmfDigits = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected                      = DtmfString(DtmfString.`w`, DtmfDigit.`3`, DtmfDigit.`4`)
+      val result = in.map { d =>
+        if (d == DtmfDigit.`1`) DtmfString.w
+        else {
+          val asInt   = d.twilioString.toInt
+          val plusOne = asInt + 1
+          val digit   = DtmfDigit.fromCharUnsafe(plusOne.toString.head)
+          DtmfStringElement.fromDtmfDigit(digit)
+        }
+      }
+      assert(result == expected)
+    }
+
+    "allow map of an OnlyDtmfDigits instance into another OnlyDtmfDigits instance" in {
+      val in: DtmfString.OnlyDtmfDigits = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected: DtmfString.OnlyDtmfDigits =
+        DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`)
       val result = in.map { d =>
         val asInt   = d.twilioString.toInt
         val plusOne = asInt + 1
@@ -63,21 +109,100 @@ final class DtmfStringTest extends AnyWordSpec {
       assert(result == expected)
     }
 
-    "should provide a flatMap method" in {
-      val in = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
-      val expected = DtmfString(
+    "allow map of an IncludeWaits instance into another IncludeWaits instance" in {
+      val in: DtmfString.IncludeWaits = DtmfString(DtmfString.w, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected =
+        DtmfString(DtmfString.w, DtmfDigit.`3`, DtmfDigit.`4`)
+      val result: DtmfString.IncludeWaits = in.map {
+        case DtmfString.DtmfStringElement.WaitElement => DtmfString.w
+        case DtmfString.DtmfStringElement.DtmfDigitElement(d) =>
+          val asInt   = d.twilioString.toInt
+          val plusOne = asInt + 1
+          DtmfStringElement.fromDtmfDigit(DtmfDigit.fromCharUnsafe(plusOne.toString.head))
+      }
+      assert(result == expected)
+    }
+
+    "allow map of an IncludeWaits instance into another OnlyDtmfDigits instance" in {
+      val in: DtmfString.IncludeWaits = DtmfString(DtmfString.w, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected: DtmfString.OnlyDtmfDigits =
+        DtmfString(DtmfDigit.`4`, DtmfDigit.`4`, DtmfDigit.`4`)
+      val result: DtmfString.OnlyDtmfDigits = in.map(_ => DtmfDigit.`4`)
+      assert(result == expected)
+    }
+
+    "allow flatmap of an OnlyDtmfDigits instance into a IncludeWait instance" in {
+      val in: DtmfString.OnlyDtmfDigits = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected: DtmfString.IncludeWaits = DtmfString(
         DtmfDigit.`1`,
-        DtmfDigit.`w`,
-        DtmfDigit.`w`,
+        DtmfString.`w`,
+        DtmfString.`w`,
         DtmfDigit.`2`,
-        DtmfDigit.`w`,
-        DtmfDigit.`w`,
+        DtmfString.`w`,
+        DtmfString.`w`,
         DtmfDigit.`3`,
-        DtmfDigit.`w`,
-        DtmfDigit.`w`
+        DtmfString.`w`,
+        DtmfString.`w`
       )
-      val result = in.flatMap { d =>
-        DtmfString(d, DtmfDigit.`w`, DtmfDigit.`w`)
+      val result: DtmfString.IncludeWaits = in.flatMap { d =>
+        DtmfString(d, DtmfString.`w`, DtmfString.`w`)
+      }
+      assert(result == expected)
+    }
+
+    "allow flatmap of an OnlyDtmfDigits instance into another OnlyDtmfDigits instance" in {
+      val in: DtmfString.OnlyDtmfDigits = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected: DtmfString.OnlyDtmfDigits = DtmfString(
+        DtmfDigit.`1`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`2`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`3`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`
+      )
+      val result: DtmfString.OnlyDtmfDigits = in.flatMap { d =>
+        DtmfString(d, DtmfDigit.`#`, DtmfDigit.`#`)
+      }
+      assert(result == expected)
+    }
+
+    "allow flatmap of an IncludeWaits instance into another IncludeWaits instance" in {
+      val in: DtmfString.IncludeWaits = DtmfString(DtmfString.w, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected = DtmfString(
+        DtmfString.w,
+        DtmfString.w,
+        DtmfString.w,
+        DtmfDigit.`2`,
+        DtmfString.w,
+        DtmfString.w,
+        DtmfDigit.`3`,
+        DtmfString.w,
+        DtmfString.w
+      )
+      val result: DtmfString.IncludeWaits = in.flatMap { d =>
+        DtmfString(d, DtmfString.w, DtmfString.w)
+      }
+      assert(result == expected)
+    }
+
+    "allow flatmap of an IncludeWaits instance into another OnlyDtmfDigits instance" in {
+      val in: DtmfString.IncludeWaits = DtmfString(DtmfString.w, DtmfDigit.`2`, DtmfDigit.`3`)
+      val expected: DtmfString.OnlyDtmfDigits = DtmfString(
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`,
+        DtmfDigit.`#`
+      )
+      val result: DtmfString.OnlyDtmfDigits = in.flatMap { _ =>
+        DtmfString(DtmfDigit.`#`, DtmfDigit.`#`, DtmfDigit.`#`)
       }
       assert(result == expected)
     }
