@@ -2,6 +2,7 @@ package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.callback.CallbackUrl
+import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.TwimlElement
 
 /** Representation of the Gather Verb from TwiML
@@ -18,13 +19,16 @@ object GatherVerb {
 
   final class Builder private[GatherVerb] (
       nestedVerbs: Vector[TwimlElement.Verb] = Vector.empty,
-      action: Option[CallbackUrl] = None
+      action: Option[CallbackUrl] = None,
+      // Double option, as the value itself is actually an option
+      finishOnKey: Option[Option[DtmfDigit]] = None
   ) {
 
     private def copy(
         nestedVerbs: Vector[TwimlElement.Verb] = this.nestedVerbs,
-        action: Option[CallbackUrl] = this.action
-    ) = new Builder(nestedVerbs, action)
+        action: Option[CallbackUrl] = this.action,
+        finishOnKey: Option[Option[DtmfDigit]] = this.finishOnKey
+    ) = new Builder(nestedVerbs, action, finishOnKey)
 
     /** Add a nested Pause verb.
       *
@@ -57,7 +61,20 @@ object GatherVerb {
       */
     def withAction(callbackUrl: CallbackUrl): Builder = copy(action = Some(callbackUrl))
 
-    def build(): GatherVerb = GatherVerbImpl(nestedVerbs, action)
+    /** Sets the finishOnKey attribute.
+      *
+      * The default is '#' so not setting it at all would be the same as setting it to
+      * `Some(DtmfDiget.#)`. Setting it to None correspond to setting it to empty String, and that
+      * corresponds to no key ending the gather, and that will result in the gather only being ended
+      * by timeout.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#finishonkey
+      */
+    def withFinishOnKey(finishOnKey: Option[DtmfDigit]): Builder =
+      copy(finishOnKey = Some(finishOnKey))
+
+    def build(): GatherVerb = GatherVerbImpl(nestedVerbs, action, finishOnKey)
   }
 
   type BuilderStartState = Builder
@@ -69,15 +86,17 @@ object GatherVerb {
 
   private final case class GatherVerbImpl(
       nestedVerbs: Seq[TwimlElement.Verb],
-      action: Option[CallbackUrl]
+      action: Option[CallbackUrl],
+      finishOnKey: Option[Option[DtmfDigit]]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
-    private val gatherStart     = s"""<Gather$actionAttribute"""
+    private val finishOnKeyAttribute = finishOnKey
+      .map(x => s""" finishOnKey="${x.map(_.twilioString).getOrElse("")}"""")
+      .getOrElse("")
+    private val gatherStart = s"""<Gather$actionAttribute$finishOnKeyAttribute"""
 
     override def xmlCompact: String = {
-//      val loopAttribute = loopValue.map(l => s""" loop="$l"""").getOrElse("")
-//      s"""<Play$digitsAttribute$loopAttribute>${StringUtil.xmlEscape(url)}</Play>"""
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
       else s"""$gatherStart>${nestedVerbs.map(_.xmlCompact).mkString}</Gather>"""
     }

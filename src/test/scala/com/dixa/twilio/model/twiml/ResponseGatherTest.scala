@@ -1,6 +1,7 @@
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.callback.CallbackUrl
+import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.verb.{PauseVerb, PlayVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -45,6 +46,7 @@ final class ResponseGatherTest extends AnyWordSpec {
               playBuilder.withSoundFileUrl("http://localhost/soundfile.wav").build()
             }
             .withAction(CallbackUrl("http://localhost/gather-action"))
+            .withFinishOnKey(Some(DtmfDigit.`*`))
             .build()
         }.buildVerified
       }
@@ -52,7 +54,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action">
+           |  <Gather action="http://localhost/gather-action" finishOnKey="*">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -64,7 +66,7 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }
