@@ -46,6 +46,7 @@ final class ResponseGatherTest extends AnyWordSpec {
               playBuilder.withSoundFileUrl("http://localhost/soundfile.wav").build()
             }
             .withAction(CallbackUrl("http://localhost/gather-action"))
+            .withInputDtmfSpeech()
             .withFinishOnKey(Some(DtmfDigit.`*`))
             .build()
         }.buildVerified
@@ -54,7 +55,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action" finishOnKey="*">
+           |  <Gather action="http://localhost/gather-action" finishOnKey="*" input="dtmf speech">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -66,9 +67,33 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" input="dtmf speech"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
+    }
+
+    "Don't allow setting finishOnKey if input is set to speech" in {
+      assertDoesNotCompile("""Response.build { responseBuilder =>
+                             |        responseBuilder.addGather { gatherBuilder =>
+                             |          gatherBuilder
+                             |            .withInputSpeech()
+                             |            .withFinishOnKey(Some(DtmfDigit.`*`))
+                             |            .build()
+                             |        }.buildVerified
+                             |      }
+                             |""".stripMargin)
+    }
+
+    "Don't allow setting input to speech, if finishOnKey has already ben set" in {
+      assertDoesNotCompile("""Response.build { responseBuilder =>
+                             |        responseBuilder.addGather { gatherBuilder =>
+                             |          gatherBuilder
+                             |            .withFinishOnKey(Some(DtmfDigit.`*`))
+                             |            .withInputSpeech()
+                             |            .build()
+                             |        }.buildVerified
+                             |      }
+                             |""".stripMargin)
     }
   }
 }
