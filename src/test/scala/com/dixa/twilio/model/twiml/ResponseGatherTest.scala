@@ -1,5 +1,6 @@
 package com.dixa.twilio.model.twiml
 
+import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.twiml.verb.{PauseVerb, PlayVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -32,7 +33,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       }
     }
 
-    "be able to nest pause, play and say verbs" in {
+    "be able to include all attribute and to nest pause, play and say verbs" in {
       val result: Response.Verified = Response.build { responseBuilder =>
         responseBuilder.addGather { gatherBuilder =>
           gatherBuilder
@@ -43,14 +44,15 @@ final class ResponseGatherTest extends AnyWordSpec {
             .addPlay { playBuilder: PlayVerb.BuilderStartState =>
               playBuilder.withSoundFileUrl("http://localhost/soundfile.wav").build()
             }
-            .build
+            .withAction(CallbackUrl("http://localhost/gather-action"))
+            .build()
         }.buildVerified
       }
 
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather>
+           |  <Gather action="http://localhost/gather-action">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -62,7 +64,7 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }
