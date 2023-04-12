@@ -48,6 +48,9 @@ final class ResponseGatherTest extends AnyWordSpec {
             .withAction(CallbackUrl("http://localhost/gather-action"))
             .withInputDtmfSpeech()
             .withFinishOnKey(Some(DtmfDigit.`*`))
+            .addHint("This is a hint phrase")
+            .addHint("keyword1")
+            .addHint("keyword2")
             .build()
         }.buildVerified
       }
@@ -55,7 +58,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action" finishOnKey="*" input="dtmf speech">
+           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -67,33 +70,57 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" input="dtmf speech"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }
 
     "Don't allow setting finishOnKey if input is set to speech" in {
-      assertDoesNotCompile("""Response.build { responseBuilder =>
-                             |        responseBuilder.addGather { gatherBuilder =>
-                             |          gatherBuilder
-                             |            .withInputSpeech()
-                             |            .withFinishOnKey(Some(DtmfDigit.`*`))
-                             |            .build()
-                             |        }.buildVerified
-                             |      }
-                             |""".stripMargin)
+      assertTypeError("""Response.build { responseBuilder =>
+                        |        responseBuilder.addGather { gatherBuilder =>
+                        |          gatherBuilder
+                        |            .withInputSpeech()
+                        |            .withFinishOnKey(Some(DtmfDigit.`*`))
+                        |            .build()
+                        |        }.buildVerified
+                        |      }
+                        |""".stripMargin)
     }
 
     "Don't allow setting input to speech, if finishOnKey has already ben set" in {
-      assertDoesNotCompile("""Response.build { responseBuilder =>
-                             |        responseBuilder.addGather { gatherBuilder =>
-                             |          gatherBuilder
-                             |            .withFinishOnKey(Some(DtmfDigit.`*`))
-                             |            .withInputSpeech()
-                             |            .build()
-                             |        }.buildVerified
-                             |      }
-                             |""".stripMargin)
+      assertTypeError("""Response.build { responseBuilder =>
+                        |        responseBuilder.addGather { gatherBuilder =>
+                        |          gatherBuilder
+                        |            .withFinishOnKey(Some(DtmfDigit.`*`))
+                        |            .withInputSpeech()
+                        |            .build()
+                        |        }.buildVerified
+                        |      }
+                        |""".stripMargin)
+    }
+
+    "Don't allow adding hint, if input has been set to Dtmf" in {
+      assertTypeError("""Response.build { responseBuilder =>
+                        |        responseBuilder.addGather { gatherBuilder =>
+                        |          gatherBuilder
+                        |            .withInputDtmf()
+                        |            .addHint("ntufywntyfw")
+                        |            .build()
+                        |        }.buildVerified
+                        |      }
+                        |""".stripMargin)
+    }
+
+    "Don't allow setting input to Dtmf, if hints has been added" in {
+      assertTypeError("""Response.build { responseBuilder =>
+                        |        responseBuilder.addGather { gatherBuilder =>
+                        |          gatherBuilder
+                        |            .addHint("nufwynt")
+                        |            .withInputDtmf()
+                        |            .build()
+                        |        }.buildVerified
+                        |      }
+                        |""".stripMargin)
     }
   }
 }
