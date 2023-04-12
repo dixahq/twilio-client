@@ -50,6 +50,11 @@ object GatherVerb {
     def addSay(fun: SayVerb.BuildFunction): Builder =
       copy(nestedVerbs = nestedVerbs :+ SayVerb.build(fun))
 
+    /** Sets the action attribute
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#action
+      */
     def withAction(callbackUrl: CallbackUrl): Builder = copy(action = Some(callbackUrl))
 
     def build(): GatherVerb = GatherVerbImpl(nestedVerbs, action)
