@@ -11,7 +11,7 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
   VerifiedFalse,
   VerifiedTrue
 }
-import com.dixa.twilio.model.twiml.verb.{DialVerb, PlayVerb, RedirectVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{DialVerb, PauseVerb, PlayVerb, RedirectVerb, SayVerb}
 
 import scala.annotation.nowarn
 
@@ -151,6 +151,16 @@ object Response {
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ SayVerb.build(fun))
+
+    /** Add a Pause verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/pause
+      */
+    @nowarn(value = "cat=unused-params")
+    def addPause(fun: PauseVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] = new Builder(verbs :+ PauseVerb.build(fun))
 
     @nowarn(value = "cat=unused-params")
     def addPlay(fun: PlayVerb.BuildFunction)(
