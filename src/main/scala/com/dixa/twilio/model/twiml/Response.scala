@@ -11,7 +11,14 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
   VerifiedFalse,
   VerifiedTrue
 }
-import com.dixa.twilio.model.twiml.verb.{DialVerb, PauseVerb, PlayVerb, RedirectVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{
+  DialVerb,
+  GatherVerb,
+  PauseVerb,
+  PlayVerb,
+  RedirectVerb,
+  SayVerb
+}
 
 import scala.annotation.nowarn
 
@@ -146,6 +153,11 @@ object Response {
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
       new Builder(verbs :+ RedirectVerb.build(fun))
 
+    /** Add a Say verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/say
+      */
     @nowarn(value = "cat=unused-params")
     def addSay(fun: SayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
@@ -162,6 +174,11 @@ object Response {
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] = new Builder(verbs :+ PauseVerb.build(fun))
 
+    /** Add a Play verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/play
+      */
     @nowarn(value = "cat=unused-params")
     def addPlay(fun: PlayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
@@ -182,6 +199,17 @@ object Response {
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, VerifiedFalse, L] =
       new Builder(verbs :+ verb)
+
+    /** Add a Gather verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather
+      */
+    @nowarn(value = "cat=unused-params")
+    def addGather(fun: GatherVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ GatherVerb.build(fun))
 
     /** Build a verified [[Response]]
       *
