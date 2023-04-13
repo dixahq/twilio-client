@@ -441,7 +441,8 @@ object GatherVerb {
       input: Option[String] = None,
       language: Option[LanguageCode] = None,
       method: Option[HttpMethod] = None,
-      numDigits: Option[Int] = None
+      numDigits: Option[Int] = None,
+      partialResultCallback: Option[CallbackUrl] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -462,7 +463,8 @@ object GatherVerb {
         input: Option[String] = this.input,
         language: Option[LanguageCode] = this.language,
         method: Option[HttpMethod] = this.method,
-        numDigits: Option[Int] = this.numDigits
+        numDigits: Option[Int] = this.numDigits,
+        partialResultCallback: Option[CallbackUrl] = this.partialResultCallback
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -477,7 +479,8 @@ object GatherVerb {
       input,
       language,
       method,
-      numDigits
+      numDigits,
+      partialResultCallback
     )
 
     /** Add a nested Pause verb.
@@ -655,6 +658,13 @@ object GatherVerb {
         implicit ev: ActionHasBeenSet =:= PhantomTypes.ActionHasBeenSetTrue
     ): BuilderWithSameTypes = copy(method = Some(method))
 
+    /** Set the numDigits attribute
+      *
+      * Can only be set if input includes DTMF
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#numdigits
+      */
     @nowarn(value = "cat=unused-params")
     def withNumDigits(numDigits: Int)(
         implicit ev: DtmfInput =:= PhantomTypes.HasDtmfInputTrue
@@ -666,8 +676,26 @@ object GatherVerb {
       ActionHasBeenSet
     ] = copy(numDigits = Some(numDigits))
 
+    /** Sets the partialResultCallback attribute
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#partialresultcallback
+      */
+    def withPartialResultCallback(callbackUrl: CallbackUrl): BuilderWithSameTypes =
+      copy(partialResultCallback = Some(callbackUrl))
+
     def build(): GatherVerb =
-      GatherVerbImpl(nestedVerbs, action, finishOnKey, hints, input, language, method, numDigits)
+      GatherVerbImpl(
+        nestedVerbs,
+        action,
+        finishOnKey,
+        hints,
+        input,
+        language,
+        method,
+        numDigits,
+        partialResultCallback
+      )
   }
 
   // Dtmf is default input, so set HasDtmfInputTrue to begin with.
@@ -692,7 +720,8 @@ object GatherVerb {
       input: Option[String],
       language: Option[LanguageCode],
       method: Option[HttpMethod],
-      numDigits: Option[Int]
+      numDigits: Option[Int],
+      partialResultCallback: Option[CallbackUrl]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -705,8 +734,11 @@ object GatherVerb {
       language.map(x => s""" language="${x.twilioString}"""").getOrElse("")
     private val methodAttribute = method.map(x => s""" method="${x.twilioString}"""").getOrElse("")
     private val numDigitsAttribute = numDigits.map(x => s""" numDigits="$x"""").getOrElse("")
+    private val partialResultAttribute = partialResultCallback
+      .map(x => s""" partialResultCallback="${x.twilioString}"""")
+      .getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
