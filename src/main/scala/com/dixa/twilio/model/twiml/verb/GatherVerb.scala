@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.{EnumWithTwilioString, StringUtil}
+import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, StringUtil}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.TwimlElement
@@ -38,6 +38,10 @@ object GatherVerb {
     sealed trait SpeechInputRequired
     sealed trait SpeechInputRequiredTrue  extends SpeechInputRequired
     sealed trait SpeechInputRequiredFalse extends SpeechInputRequired
+
+    sealed trait ActionHasBeenSet
+    sealed trait ActionHasBeenSetTrue  extends ActionHasBeenSet
+    sealed trait ActionHasBeenSetFalse extends ActionHasBeenSet
   }
 
   /** Enum entry, representing a Language code that the Gather verb support */
@@ -426,7 +430,8 @@ object GatherVerb {
       DtmfInput <: PhantomTypes.HasDtmfInput,
       SpeechInput <: PhantomTypes.HasSpeechInput,
       DtmfInputRequired <: PhantomTypes.DtmfInputRequired,
-      SpeechInputRequired <: PhantomTypes.SpeechInputRequired
+      SpeechInputRequired <: PhantomTypes.SpeechInputRequired,
+      ActionHasBeenSet <: PhantomTypes.ActionHasBeenSet
   ] private[GatherVerb] (
       nestedVerbs: Vector[TwimlElement.Verb] = Vector.empty,
       action: Option[CallbackUrl] = None,
@@ -434,28 +439,42 @@ object GatherVerb {
       finishOnKey: Option[Option[DtmfDigit]] = None,
       hints: Vector[String] = Vector.empty,
       input: Option[String] = None,
-      language: Option[LanguageCode] = None
+      language: Option[LanguageCode] = None,
+      method: Option[HttpMethod] = None
   ) {
+
+    @nowarn(value = "cat=unused")
+    private type BuilderWithSameTypes =
+      Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired, ActionHasBeenSet]
 
     private def copy[
         DtmfInput2 <: PhantomTypes.HasDtmfInput,
         SpeechInput2 <: PhantomTypes.HasSpeechInput,
         DtmfInputRequired2 <: PhantomTypes.DtmfInputRequired,
-        SpeechInputRequired2 <: PhantomTypes.SpeechInputRequired
+        SpeechInputRequired2 <: PhantomTypes.SpeechInputRequired,
+        ActionHasBeenSet2 <: PhantomTypes.ActionHasBeenSet
     ](
         nestedVerbs: Vector[TwimlElement.Verb] = this.nestedVerbs,
         action: Option[CallbackUrl] = this.action,
         finishOnKey: Option[Option[DtmfDigit]] = this.finishOnKey,
         hints: Vector[String] = this.hints,
         input: Option[String] = this.input,
-        language: Option[LanguageCode] = this.language
-    ) = new Builder[DtmfInput2, SpeechInput2, DtmfInputRequired2, SpeechInputRequired2](
+        language: Option[LanguageCode] = this.language,
+        method: Option[HttpMethod] = this.method
+    ) = new Builder[
+      DtmfInput2,
+      SpeechInput2,
+      DtmfInputRequired2,
+      SpeechInputRequired2,
+      ActionHasBeenSet2
+    ](
       nestedVerbs,
       action,
       finishOnKey,
       hints,
       input,
-      language
+      language,
+      method
     )
 
     /** Add a nested Pause verb.
@@ -465,7 +484,7 @@ object GatherVerb {
       */
     def addPause(
         fun: PauseVerb.BuildFunction
-    ): Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired] =
+    ): BuilderWithSameTypes =
       copy(nestedVerbs = nestedVerbs :+ PauseVerb.build(fun))
 
     /** Add a nested Play verb.
@@ -475,7 +494,7 @@ object GatherVerb {
       */
     def addPlay(
         fun: PlayVerb.BuildFunction
-    ): Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired] =
+    ): BuilderWithSameTypes =
       copy(nestedVerbs = nestedVerbs :+ PlayVerb.build(fun))
 
     /** Add a nested Say verb.
@@ -485,7 +504,7 @@ object GatherVerb {
       */
     def addSay(
         fun: SayVerb.BuildFunction
-    ): Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired] =
+    ): BuilderWithSameTypes =
       copy(nestedVerbs = nestedVerbs :+ SayVerb.build(fun))
 
     /** Sets the action attribute
@@ -495,7 +514,13 @@ object GatherVerb {
       */
     def withAction(
         callbackUrl: CallbackUrl
-    ): Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired] =
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      SpeechInputRequired,
+      PhantomTypes.ActionHasBeenSetTrue
+    ] =
       copy(action = Some(callbackUrl))
 
     /** Sets the finishOnKey attribute.
@@ -511,7 +536,13 @@ object GatherVerb {
     @nowarn(value = "cat=unused-params")
     def withFinishOnKey(finishOnKey: Option[DtmfDigit])(
         implicit ev: DtmfInput =:= PhantomTypes.HasDtmfInputTrue
-    ): Builder[DtmfInput, SpeechInput, PhantomTypes.DtmfInputRequiredTrue, SpeechInputRequired] =
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      PhantomTypes.DtmfInputRequiredTrue,
+      SpeechInputRequired,
+      ActionHasBeenSet
+    ] =
       copy(finishOnKey = Some(finishOnKey))
 
     /** Add a hint to the hint attribute.
@@ -530,7 +561,13 @@ object GatherVerb {
     @nowarn(value = "cat=unused-params")
     def addHint(hint: String)(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
-    ): Builder[DtmfInput, SpeechInput, DtmfInputRequired, PhantomTypes.SpeechInputRequiredTrue] =
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet
+    ] =
       copy(hints = this.hints :+ hint)
 
     /** Sets the input attribute value to: dtmf
@@ -549,7 +586,8 @@ object GatherVerb {
       PhantomTypes.HasDtmfInputTrue,
       PhantomTypes.HasSpeechInputFalse,
       DtmfInputRequired,
-      SpeechInputRequired
+      SpeechInputRequired,
+      ActionHasBeenSet
     ] = copy(input = Some("dtmf"))
 
     /** Sets the input attribute value to: speech
@@ -568,9 +606,9 @@ object GatherVerb {
       PhantomTypes.HasDtmfInputFalse,
       PhantomTypes.HasSpeechInputTrue,
       DtmfInputRequired,
-      SpeechInputRequired
-    ] =
-      copy(input = Some("speech"))
+      SpeechInputRequired,
+      ActionHasBeenSet
+    ] = copy(input = Some("speech"))
 
     /** Sets the input attribute value to: dtmf speech
       *
@@ -585,7 +623,8 @@ object GatherVerb {
       PhantomTypes.HasDtmfInputTrue,
       PhantomTypes.HasSpeechInputTrue,
       DtmfInputRequired,
-      SpeechInputRequired
+      SpeechInputRequired,
+      ActionHasBeenSet
     ] = copy(input = Some("dtmf speech"))
 
     /** Set the language attribute.
@@ -597,11 +636,24 @@ object GatherVerb {
       */
     def withLanguage(
         language: LanguageCode
-    ): Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired] =
+    ): BuilderWithSameTypes =
       copy(language = Some(language))
 
+    /** Sets the method attribute.
+      *
+      * Can only be set if you have set an Action URL, as it only has an effect on callbacks to that
+      * URL.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#method
+      */
+    @nowarn(value = "cat=unused-params")
+    def withMethod(method: HttpMethod)(
+        implicit ev: ActionHasBeenSet =:= PhantomTypes.ActionHasBeenSetTrue
+    ): BuilderWithSameTypes = copy(method = Some(method))
+
     def build(): GatherVerb =
-      GatherVerbImpl(nestedVerbs, action, finishOnKey, hints, input, language)
+      GatherVerbImpl(nestedVerbs, action, finishOnKey, hints, input, language, method)
   }
 
   // Dtmf is default input, so set HasDtmfInputTrue to begin with.
@@ -609,7 +661,8 @@ object GatherVerb {
     PhantomTypes.HasDtmfInputTrue,
     PhantomTypes.HasSpeechInputFalse,
     PhantomTypes.DtmfInputRequiredFalse,
-    PhantomTypes.SpeechInputRequiredFalse
+    PhantomTypes.SpeechInputRequiredFalse,
+    PhantomTypes.ActionHasBeenSetFalse
   ]
   type BuildFunction = BuilderStartState => GatherVerb
 
@@ -623,7 +676,8 @@ object GatherVerb {
       finishOnKey: Option[Option[DtmfDigit]],
       hints: Seq[String],
       input: Option[String],
-      language: Option[LanguageCode]
+      language: Option[LanguageCode],
+      method: Option[HttpMethod]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -634,8 +688,9 @@ object GatherVerb {
     private val inputAttribute = input.map(x => s""" input="$x"""").getOrElse("")
     private val languageAttribute =
       language.map(x => s""" language="${x.twilioString}"""").getOrElse("")
+    private val methodAttribute = method.map(x => s""" method="${x.twilioString}"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
