@@ -298,5 +298,96 @@ final class ResponseGatherTest extends AnyWordSpec {
                           |""".stripMargin)
       }
     }
+
+    "Dealing with speechModel phone_call" should {
+
+      "Generate the correct XML when used" in {
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder.addGather { gatherBuilder =>
+            gatherBuilder
+              .withInputSpeech()
+              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
+              .build()
+          }.buildVerified
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Gather input="speech" language="en-GB" speechModel="phone_call" />
+             |</Response>""".stripMargin
+
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather input="speech" language="en-GB" speechModel="phone_call"/></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Don't allow setting this value if language as already been set" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputSpeech()
+                          |              .withLanguage(GatherVerb.LanguageCode.`ar-JO`)
+                          |              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
+      "Don't allow calling withLanguage() after setting this value" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputSpeech()
+                          |              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
+                          |              .withLanguage(GatherVerb.LanguageCode.`ar-JO`)
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
+      "Don't allow calling it with a language code that does not support this phone_call model" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputSpeech()
+                          |              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`ar-BH`)
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
+      "Don't allow to set attribute if speech is not part of the input attribute" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputDtmf()
+                          |              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
+      "Don't allow to set input to DTMF only, if speechModelDefault has been called" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputSpeech()
+                          |              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
+                          |              .withInputDtmf()
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+    }
   }
 }

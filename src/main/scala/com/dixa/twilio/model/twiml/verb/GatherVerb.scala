@@ -42,6 +42,10 @@ object GatherVerb {
     sealed trait ActionHasBeenSet
     sealed trait ActionHasBeenSetTrue  extends ActionHasBeenSet
     sealed trait ActionHasBeenSetFalse extends ActionHasBeenSet
+
+    sealed trait LanguageHasBeenSet
+    sealed trait LanguageHasBeenSetTrue  extends LanguageHasBeenSet
+    sealed trait LanguageHasBeenSetFalse extends LanguageHasBeenSet
   }
 
   /** Enum entry, representing a Language code that the Gather verb support */
@@ -51,6 +55,11 @@ object GatherVerb {
   /** Enum representing all the Language codes that the Gather verb support */
   // noinspection ScalaUnusedSymbol
   object LanguageCode extends EnumWithTwilioString[LanguageCode] {
+
+    sealed trait SupportsEnhancedModel     extends LanguageCode
+    sealed trait SupportsExperimentalModel extends LanguageCode
+    sealed trait SupportsPhoneCallModel    extends LanguageCode
+
     val values: immutable.IndexedSeq[LanguageCode] = findValues
 
     // I generated all of these, by downloading the csv from here:
@@ -67,6 +76,10 @@ object GatherVerb {
     //        |""".stripMargin
     //    }
     //  println(split.mkString(System.lineSeparator()))
+    //
+    // However the CSV did not include information about support enhanced or experimental models,
+    // soo I manually made them mix in those trait, based on the information from the twilio site,
+    // already linked to.
 
     /** Afrikaans (South Africa) */
     case object `af-ZA` extends LanguageCode("af-ZA")
@@ -99,13 +112,16 @@ object GatherVerb {
     case object `cs-CZ` extends LanguageCode("cs-CZ")
 
     /** Danish (Denmark) */
-    case object `da-DK` extends LanguageCode("da-DK")
+    case object `da-DK` extends LanguageCode("da-DK") with SupportsExperimentalModel
 
     /** German (Germany) */
-    case object `de-DE` extends LanguageCode("de-DE")
+    case object `de-DE` extends LanguageCode("de-DE") with SupportsExperimentalModel
 
     /** English (Australia) */
-    case object `en-AU` extends LanguageCode("en-AU")
+    case object `en-AU`
+        extends LanguageCode("en-AU")
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** English (Canada) */
     case object `en-CA` extends LanguageCode("en-CA")
@@ -114,10 +130,14 @@ object GatherVerb {
     case object `en-GH` extends LanguageCode("en-GH")
 
     /** English (United Kingdom) */
-    case object `en-GB` extends LanguageCode("en-GB")
+    case object `en-GB`
+        extends LanguageCode("en-GB")
+        with SupportsEnhancedModel
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** English (India) */
-    case object `en-IN` extends LanguageCode("en-IN")
+    case object `en-IN` extends LanguageCode("en-IN") with SupportsExperimentalModel
 
     /** English (Ireland) */
     case object `en-IE` extends LanguageCode("en-IE")
@@ -141,7 +161,11 @@ object GatherVerb {
     case object `en-TZ` extends LanguageCode("en-TZ")
 
     /** English (United States) */
-    case object `en-US` extends LanguageCode("en-US")
+    case object `en-US`
+        extends LanguageCode("en-US")
+        with SupportsEnhancedModel
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** Spanish (Argentina) */
     case object `es-AR` extends LanguageCode("es-AR")
@@ -165,10 +189,18 @@ object GatherVerb {
     case object `es-SV` extends LanguageCode("es-SV")
 
     /** Spanish (Spain) */
-    case object `es-ES` extends LanguageCode("es-ES")
+    case object `es-ES`
+        extends LanguageCode("es-ES")
+        with SupportsEnhancedModel
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** Spanish (United States) */
-    case object `es-US` extends LanguageCode("es-US")
+    case object `es-US`
+        extends LanguageCode("es-US")
+        with SupportsEnhancedModel
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** Spanish (Guatemala) */
     case object `es-GT` extends LanguageCode("es-GT")
@@ -210,10 +242,20 @@ object GatherVerb {
     case object `fil-PH` extends LanguageCode("fil-PH")
 
     /** French (Canada) */
-    case object `fr-CA` extends LanguageCode("fr-CA")
+    case object `fr-CA`
+        extends LanguageCode("fr-CA")
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** French (France) */
-    case object `fr-FR` extends LanguageCode("fr-FR")
+    case object `fr-FR`
+        extends LanguageCode("fr-FR")
+        with SupportsEnhancedModel
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
+
+    /** French (Switzerland) */
+    case object `fr-CH` extends LanguageCode("fr-CH") with SupportsEnhancedModel
 
     /** Galician (Spain) */
     case object `gl-ES` extends LanguageCode("gl-ES")
@@ -254,6 +296,9 @@ object GatherVerb {
     /** Lithuanian (Lithuania) */
     case object `lt-LT` extends LanguageCode("lt-LT")
 
+    /** Macedonian (North Macedonia) */
+    case object `mk-MK` extends LanguageCode("mk-MK") with SupportsExperimentalModel
+
     /** Hungarian (Hungary) */
     case object `hu-HU` extends LanguageCode("hu-HU")
 
@@ -264,25 +309,31 @@ object GatherVerb {
     case object `mr-IN` extends LanguageCode("mr-IN")
 
     /** Dutch (Netherlands) */
-    case object `nl-NL` extends LanguageCode("nl-NL")
+    case object `nl-NL` extends LanguageCode("nl-NL") with SupportsExperimentalModel
 
     /** Nepali (Nepal) */
     case object `ne-NP` extends LanguageCode("ne-NP")
 
     /** Norwegian Bokmål (Norway) */
-    case object `nb-NO` extends LanguageCode("nb-NO")
+    case object `nb-NO` extends LanguageCode("nb-NO") with SupportsExperimentalModel
 
     /** Polish (Poland) */
-    case object `pl-PL` extends LanguageCode("pl-PL")
+    case object `pl-PL` extends LanguageCode("pl-PL") with SupportsExperimentalModel
 
     /** Portuguese (Brazil) */
-    case object `pt-BR` extends LanguageCode("pt-BR")
+    case object `pt-BR`
+        extends LanguageCode("pt-BR")
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** Portuguese (Portugal) */
-    case object `pt-PT` extends LanguageCode("pt-PT")
+    case object `pt-PT` extends LanguageCode("pt-PT") with SupportsExperimentalModel
+
+    /** Punjabi (Gurmukhi India) */
+    case object `pa-guru-IN` extends LanguageCode("pa-guru-IN")
 
     /** Romanian (Romania) */
-    case object `ro-RO` extends LanguageCode("ro-RO")
+    case object `ro-RO` extends LanguageCode("ro-RO") with SupportsExperimentalModel
 
     /** Sinhala (Sri Lanka) */
     case object `si-LK` extends LanguageCode("si-LK")
@@ -303,7 +354,7 @@ object GatherVerb {
     case object `sw-KE` extends LanguageCode("sw-KE")
 
     /** Finnish (Finland) */
-    case object `fi-FI` extends LanguageCode("fi-FI")
+    case object `fi-FI` extends LanguageCode("fi-FI") with SupportsExperimentalModel
 
     /** Swedish (Sweden) */
     case object `sv-SE` extends LanguageCode("sv-SE")
@@ -324,10 +375,10 @@ object GatherVerb {
     case object `te-IN` extends LanguageCode("te-IN")
 
     /** Vietnamese (Vietnam) */
-    case object `vi-VN` extends LanguageCode("vi-VN")
+    case object `vi-VN` extends LanguageCode("vi-VN") with SupportsExperimentalModel
 
     /** Turkish (Turkey) */
-    case object `tr-TR` extends LanguageCode("tr-TR")
+    case object `tr-TR` extends LanguageCode("tr-TR") with SupportsExperimentalModel
 
     /** Urdu (Pakistan) */
     case object `ur-PK` extends LanguageCode("ur-PK")
@@ -342,73 +393,82 @@ object GatherVerb {
     case object `bg-BG` extends LanguageCode("bg-BG")
 
     /** Russian (Russia) */
-    case object `ru-RU` extends LanguageCode("ru-RU")
+    case object `ru-RU`
+        extends LanguageCode("ru-RU")
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** Serbian (Serbia) */
     case object `sr-RS` extends LanguageCode("sr-RS")
 
     /** Ukrainian (Ukraine) */
-    case object `uk-UA` extends LanguageCode("uk-UA")
+    case object `uk-UA` extends LanguageCode("uk-UA") with SupportsExperimentalModel
 
     /** Hebrew (Israel) */
     case object `he-IL` extends LanguageCode("he-IL")
 
     /** Arabic (Israel) */
-    case object `ar-IL` extends LanguageCode("ar-IL")
+    case object `ar-IL` extends LanguageCode("ar-IL") with SupportsExperimentalModel
 
     /** Arabic (Jordan) */
-    case object `ar-JO` extends LanguageCode("ar-JO")
+    case object `ar-JO` extends LanguageCode("ar-JO") with SupportsExperimentalModel
 
     /** Arabic (United Arab Emirates) */
-    case object `ar-AE` extends LanguageCode("ar-AE")
+    case object `ar-AE` extends LanguageCode("ar-AE") with SupportsExperimentalModel
+
+    /** Arabic (Yemen) */
+    case object `ar-YE` extends LanguageCode("ar-YE") with SupportsExperimentalModel
 
     /** Arabic (Bahrain) */
-    case object `ar-BH` extends LanguageCode("ar-BH")
+    case object `ar-BH` extends LanguageCode("ar-BH") with SupportsExperimentalModel
 
     /** Arabic (Algeria) */
-    case object `ar-DZ` extends LanguageCode("ar-DZ")
+    case object `ar-DZ` extends LanguageCode("ar-DZ") with SupportsExperimentalModel
 
     /** Arabic (Saudi Arabia) */
-    case object `ar-SA` extends LanguageCode("ar-SA")
+    case object `ar-SA` extends LanguageCode("ar-SA") with SupportsExperimentalModel
 
     /** Arabic (Iraq) */
-    case object `ar-IQ` extends LanguageCode("ar-IQ")
+    case object `ar-IQ` extends LanguageCode("ar-IQ") with SupportsExperimentalModel
 
     /** Arabic (Kuwait) */
-    case object `ar-KW` extends LanguageCode("ar-KW")
+    case object `ar-KW` extends LanguageCode("ar-KW") with SupportsExperimentalModel
 
     /** Arabic (Morocco) */
-    case object `ar-MA` extends LanguageCode("ar-MA")
+    case object `ar-MA` extends LanguageCode("ar-MA") with SupportsExperimentalModel
 
     /** Arabic (Tunisia) */
-    case object `ar-TN` extends LanguageCode("ar-TN")
+    case object `ar-TN` extends LanguageCode("ar-TN") with SupportsExperimentalModel
 
     /** Arabic (Oman) */
-    case object `ar-OM` extends LanguageCode("ar-OM")
+    case object `ar-OM` extends LanguageCode("ar-OM") with SupportsExperimentalModel
 
     /** Arabic (State of Palestine) */
-    case object `ar-PS` extends LanguageCode("ar-PS")
+    case object `ar-PS` extends LanguageCode("ar-PS") with SupportsExperimentalModel
 
     /** Arabic (Qatar) */
-    case object `ar-QA` extends LanguageCode("ar-QA")
+    case object `ar-QA` extends LanguageCode("ar-QA") with SupportsExperimentalModel
 
     /** Arabic (Lebanon) */
-    case object `ar-LB` extends LanguageCode("ar-LB")
+    case object `ar-LB` extends LanguageCode("ar-LB") with SupportsExperimentalModel
+
+    /** Arabic (Mauritania) */
+    case object `ar-MR` extends LanguageCode("ar-MR") with SupportsExperimentalModel
 
     /** Arabic (Egypt) */
-    case object `ar-EG` extends LanguageCode("ar-EG")
+    case object `ar-EG` extends LanguageCode("ar-EG") with SupportsExperimentalModel
 
     /** Persian (Iran) */
     case object `fa-IR` extends LanguageCode("fa-IR")
 
     /** Hindi (India) */
-    case object `hi-IN` extends LanguageCode("hi-IN")
+    case object `hi-IN` extends LanguageCode("hi-IN") with SupportsExperimentalModel
 
     /** Thai (Thailand) */
-    case object `th-TH` extends LanguageCode("th-TH")
+    case object `th-TH` extends LanguageCode("th-TH") with SupportsExperimentalModel
 
     /** Korean (South Korea) */
-    case object `ko-KR` extends LanguageCode("ko-KR")
+    case object `ko-KR` extends LanguageCode("ko-KR") with SupportsExperimentalModel
 
     /** "Chinese, Mandarin (Traditional, Taiwan)" */
     case object `cmn-Hant-TW` extends LanguageCode("cmn-Hant-TW")
@@ -417,7 +477,11 @@ object GatherVerb {
     case object `yue-Hant-HK` extends LanguageCode("yue-Hant-HK")
 
     /** Japanese (Japan) */
-    case object `ja-JP` extends LanguageCode("ja-JP")
+    case object `ja-JP`
+        extends LanguageCode("ja-JP")
+        with SupportsEnhancedModel
+        with SupportsExperimentalModel
+        with SupportsPhoneCallModel
 
     /** "Chinese, Mandarin (Simplified, Hong Kong)" */
     case object `cmn-Hans-HK` extends LanguageCode("cmn-Hans-HK")
@@ -434,6 +498,8 @@ object GatherVerb {
     case object Default extends SpeechModelType("default")
 
     case object NumbersAndCommands extends SpeechModelType("numbers_and_commands")
+
+    case object PhoneCall extends SpeechModelType("phone_call")
   }
 
   final class Builder[
@@ -441,7 +507,8 @@ object GatherVerb {
       SpeechInput <: PhantomTypes.HasSpeechInput,
       DtmfInputRequired <: PhantomTypes.DtmfInputRequired,
       SpeechInputRequired <: PhantomTypes.SpeechInputRequired,
-      ActionHasBeenSet <: PhantomTypes.ActionHasBeenSet
+      ActionHasBeenSet <: PhantomTypes.ActionHasBeenSet,
+      LanguageHasBeenSet <: PhantomTypes.LanguageHasBeenSet
   ] private[GatherVerb] (
       nestedVerbs: Vector[TwimlElement.Verb] = Vector.empty,
       action: Option[CallbackUrl] = None,
@@ -461,14 +528,22 @@ object GatherVerb {
 
     @nowarn(value = "cat=unused")
     private type BuilderWithSameTypes =
-      Builder[DtmfInput, SpeechInput, DtmfInputRequired, SpeechInputRequired, ActionHasBeenSet]
+      Builder[
+        DtmfInput,
+        SpeechInput,
+        DtmfInputRequired,
+        SpeechInputRequired,
+        ActionHasBeenSet,
+        LanguageHasBeenSet
+      ]
 
     private def copy[
         DtmfInput2 <: PhantomTypes.HasDtmfInput,
         SpeechInput2 <: PhantomTypes.HasSpeechInput,
         DtmfInputRequired2 <: PhantomTypes.DtmfInputRequired,
         SpeechInputRequired2 <: PhantomTypes.SpeechInputRequired,
-        ActionHasBeenSet2 <: PhantomTypes.ActionHasBeenSet
+        ActionHasBeenSet2 <: PhantomTypes.ActionHasBeenSet,
+        LanguageHasBeenSet2 <: PhantomTypes.LanguageHasBeenSet
     ](
         nestedVerbs: Vector[TwimlElement.Verb] = this.nestedVerbs,
         action: Option[CallbackUrl] = this.action,
@@ -488,7 +563,8 @@ object GatherVerb {
       SpeechInput2,
       DtmfInputRequired2,
       SpeechInputRequired2,
-      ActionHasBeenSet2
+      ActionHasBeenSet2,
+      LanguageHasBeenSet2
     ](
       nestedVerbs,
       action,
@@ -547,9 +623,9 @@ object GatherVerb {
       SpeechInput,
       DtmfInputRequired,
       SpeechInputRequired,
-      PhantomTypes.ActionHasBeenSetTrue
-    ] =
-      copy(action = Some(callbackUrl))
+      PhantomTypes.ActionHasBeenSetTrue,
+      LanguageHasBeenSet
+    ] = copy(action = Some(callbackUrl))
 
     /** Sets the finishOnKey attribute.
       *
@@ -569,9 +645,9 @@ object GatherVerb {
       SpeechInput,
       PhantomTypes.DtmfInputRequiredTrue,
       SpeechInputRequired,
-      ActionHasBeenSet
-    ] =
-      copy(finishOnKey = Some(finishOnKey))
+      ActionHasBeenSet,
+      LanguageHasBeenSet
+    ] = copy(finishOnKey = Some(finishOnKey))
 
     /** Add a hint to the hint attribute.
       *
@@ -594,9 +670,9 @@ object GatherVerb {
       SpeechInput,
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
-      ActionHasBeenSet
-    ] =
-      copy(hints = this.hints :+ hint)
+      ActionHasBeenSet,
+      LanguageHasBeenSet
+    ] = copy(hints = this.hints :+ hint)
 
     /** Sets the input attribute value to: dtmf
       *
@@ -615,7 +691,8 @@ object GatherVerb {
       PhantomTypes.HasSpeechInputFalse,
       DtmfInputRequired,
       SpeechInputRequired,
-      ActionHasBeenSet
+      ActionHasBeenSet,
+      LanguageHasBeenSet
     ] = copy(input = Some("dtmf"))
 
     /** Sets the input attribute value to: speech
@@ -635,7 +712,8 @@ object GatherVerb {
       PhantomTypes.HasSpeechInputTrue,
       DtmfInputRequired,
       SpeechInputRequired,
-      ActionHasBeenSet
+      ActionHasBeenSet,
+      LanguageHasBeenSet
     ] = copy(input = Some("speech"))
 
     /** Sets the input attribute value to: dtmf speech
@@ -652,7 +730,8 @@ object GatherVerb {
       PhantomTypes.HasSpeechInputTrue,
       DtmfInputRequired,
       SpeechInputRequired,
-      ActionHasBeenSet
+      ActionHasBeenSet,
+      LanguageHasBeenSet
     ] = copy(input = Some("dtmf speech"))
 
     /** Set the language attribute.
@@ -662,10 +741,17 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#language
       */
-    def withLanguage(
-        language: LanguageCode
-    ): BuilderWithSameTypes =
-      copy(language = Some(language))
+    @nowarn(value = "cat=unused-params")
+    def withLanguage(language: LanguageCode)(
+        implicit ev: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      SpeechInputRequired,
+      ActionHasBeenSet,
+      PhantomTypes.LanguageHasBeenSetTrue
+    ] = copy(language = Some(language))
 
     /** Sets the method attribute.
       *
@@ -695,7 +781,8 @@ object GatherVerb {
       SpeechInput,
       PhantomTypes.DtmfInputRequiredTrue,
       SpeechInputRequired,
-      ActionHasBeenSet
+      ActionHasBeenSet,
+      LanguageHasBeenSet
     ] = copy(numDigits = Some(numDigits))
 
     /** Sets the partialResultCallback attribute
@@ -721,9 +808,9 @@ object GatherVerb {
       SpeechInput,
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
-      ActionHasBeenSet
-    ] =
-      copy(profanityFilter = Some(bool))
+      ActionHasBeenSet,
+      LanguageHasBeenSet
+    ] = copy(profanityFilter = Some(bool))
 
     /** Set the speechTimeout attribute.
       *
@@ -740,9 +827,9 @@ object GatherVerb {
       SpeechInput,
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
-      ActionHasBeenSet
-    ] =
-      copy(speechTimeout = Some(positiveInteger))
+      ActionHasBeenSet,
+      LanguageHasBeenSet
+    ] = copy(speechTimeout = Some(positiveInteger))
 
     /** Set the timeout attribute.
       *
@@ -767,7 +854,8 @@ object GatherVerb {
       SpeechInput,
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
-      ActionHasBeenSet
+      ActionHasBeenSet,
+      LanguageHasBeenSet
     ] = copy(speechModelType = Some(SpeechModelType.Default))
 
     /** Set the speechModel attribute to numbers_and_commands.
@@ -785,8 +873,33 @@ object GatherVerb {
       SpeechInput,
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
-      ActionHasBeenSet
+      ActionHasBeenSet,
+      LanguageHasBeenSet
     ] = copy(speechModelType = Some(SpeechModelType.NumbersAndCommands))
+
+    /** Set the speechModel attribute to phone_call.
+      *
+      * This will require speech to be part of the input attribute.
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language, and is not allowed to call the withLanguage() method if you call this
+      * one, so that we can enforce this constraint compile time.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSpeechModelPhoneCall(language: LanguageCode.SupportsPhoneCallModel)(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
+        ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet,
+      PhantomTypes.LanguageHasBeenSetTrue
+    ] = copy(speechModelType = Some(SpeechModelType.PhoneCall), language = Some(language))
 
     def build(): GatherVerb =
       GatherVerbImpl(
@@ -812,7 +925,8 @@ object GatherVerb {
     PhantomTypes.HasSpeechInputFalse,
     PhantomTypes.DtmfInputRequiredFalse,
     PhantomTypes.SpeechInputRequiredFalse,
-    PhantomTypes.ActionHasBeenSetFalse
+    PhantomTypes.ActionHasBeenSetFalse,
+    PhantomTypes.LanguageHasBeenSetFalse
   ]
   type BuildFunction = BuilderStartState => GatherVerb
 
