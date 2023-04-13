@@ -524,7 +524,8 @@ object GatherVerb {
       speechTimeout: Option[PositiveInteger] = None,
       timeout: Option[PositiveInteger] = None,
       speechModelType: Option[SpeechModelType] = None,
-      enhanced: Option[Boolean] = None
+      enhanced: Option[Boolean] = None,
+      actionOnEmptyResult: Option[Boolean] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -559,7 +560,8 @@ object GatherVerb {
         speechTimeout: Option[PositiveInteger] = this.speechTimeout,
         timeout: Option[PositiveInteger] = this.timeout,
         speechModelType: Option[SpeechModelType] = this.speechModelType,
-        enhanced: Option[Boolean] = this.enhanced
+        enhanced: Option[Boolean] = this.enhanced,
+        actionOnEmptyResult: Option[Boolean] = this.actionOnEmptyResult
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -581,7 +583,8 @@ object GatherVerb {
       speechTimeout,
       timeout,
       speechModelType,
-      enhanced
+      enhanced,
+      actionOnEmptyResult
     )
 
     /** Add a nested Pause verb.
@@ -996,6 +999,9 @@ object GatherVerb {
       language = Some(language)
     )
 
+    def withActionOnEmptyResult(bool: Boolean): BuilderWithSameTypes =
+      copy(actionOnEmptyResult = Some(bool))
+
     def build(): GatherVerb =
       GatherVerbImpl(
         nestedVerbs,
@@ -1011,7 +1017,8 @@ object GatherVerb {
         speechTimeout,
         timeout,
         speechModelType,
-        enhanced
+        enhanced,
+        actionOnEmptyResult
       )
   }
 
@@ -1044,7 +1051,8 @@ object GatherVerb {
       speechTimeout: Option[PositiveInteger],
       timeout: Option[PositiveInteger],
       speechModelType: Option[SpeechModelType],
-      enhanced: Option[Boolean]
+      enhanced: Option[Boolean],
+      actionOnEmptyResult: Option[Boolean]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -1068,8 +1076,10 @@ object GatherVerb {
     private val speechModelAttribute =
       speechModelType.map(x => s""" speechModel="${x.twilioString}"""").getOrElse("")
     private val enhancedAttribute = enhanced.map(x => s""" enhanced="$x"""").getOrElse("")
+    private val actionOnEmptyResultAttribute =
+      actionOnEmptyResult.map(x => s""" actionOnEmptyResult="$x"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute$enhancedAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute$enhancedAttribute$actionOnEmptyResultAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
