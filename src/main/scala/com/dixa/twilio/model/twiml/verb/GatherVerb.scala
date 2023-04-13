@@ -442,7 +442,8 @@ object GatherVerb {
       language: Option[LanguageCode] = None,
       method: Option[HttpMethod] = None,
       numDigits: Option[Int] = None,
-      partialResultCallback: Option[CallbackUrl] = None
+      partialResultCallback: Option[CallbackUrl] = None,
+      profanityFilter: Option[Boolean] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -464,7 +465,8 @@ object GatherVerb {
         language: Option[LanguageCode] = this.language,
         method: Option[HttpMethod] = this.method,
         numDigits: Option[Int] = this.numDigits,
-        partialResultCallback: Option[CallbackUrl] = this.partialResultCallback
+        partialResultCallback: Option[CallbackUrl] = this.partialResultCallback,
+        profanityFilter: Option[Boolean] = this.profanityFilter
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -480,7 +482,8 @@ object GatherVerb {
       language,
       method,
       numDigits,
-      partialResultCallback
+      partialResultCallback,
+      profanityFilter
     )
 
     /** Add a nested Pause verb.
@@ -684,6 +687,25 @@ object GatherVerb {
     def withPartialResultCallback(callbackUrl: CallbackUrl): BuilderWithSameTypes =
       copy(partialResultCallback = Some(callbackUrl))
 
+    /** Set the profanityFilter attribute.
+      *
+      * Not allowed to be set, if input don't include speech, as this only has effect on speech.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#profanityfilter
+      */
+    @nowarn(value = "cat=unused-params")
+    def withProfanityFilter(bool: Boolean)(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet
+    ] =
+      copy(profanityFilter = Some(bool))
+
     def build(): GatherVerb =
       GatherVerbImpl(
         nestedVerbs,
@@ -694,7 +716,8 @@ object GatherVerb {
         language,
         method,
         numDigits,
-        partialResultCallback
+        partialResultCallback,
+        profanityFilter
       )
   }
 
@@ -721,7 +744,8 @@ object GatherVerb {
       language: Option[LanguageCode],
       method: Option[HttpMethod],
       numDigits: Option[Int],
-      partialResultCallback: Option[CallbackUrl]
+      partialResultCallback: Option[CallbackUrl],
+      profanityFilter: Option[Boolean]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -737,8 +761,10 @@ object GatherVerb {
     private val partialResultAttribute = partialResultCallback
       .map(x => s""" partialResultCallback="${x.twilioString}"""")
       .getOrElse("")
+    private val profanityFilterAttribute =
+      profanityFilter.map(x => s""" profanityFilter="$x"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
