@@ -495,13 +495,11 @@ object GatherVerb {
   private[GatherVerb] object SpeechModelType extends EnumWithTwilioString[SpeechModelType] {
     override def values: immutable.IndexedSeq[SpeechModelType] = findValues
 
-    case object Default extends SpeechModelType("default")
-
-    case object NumbersAndCommands extends SpeechModelType("numbers_and_commands")
-
-    case object PhoneCall extends SpeechModelType("phone_call")
-
+    case object Default                   extends SpeechModelType("default")
+    case object NumbersAndCommands        extends SpeechModelType("numbers_and_commands")
+    case object PhoneCall                 extends SpeechModelType("phone_call")
     case object ExperimentalConversations extends SpeechModelType("experimental_conversations")
+    case object ExperimentalUtterances    extends SpeechModelType("experimental_utterances")
   }
 
   final class Builder[
@@ -927,6 +925,33 @@ object GatherVerb {
       PhantomTypes.LanguageHasBeenSetTrue
     ] = copy(
       speechModelType = Some(SpeechModelType.ExperimentalConversations),
+      language = Some(language)
+    )
+
+    /** Set the speechModel attribute to experimental_utterances.
+      *
+      * This will require speech to be part of the input attribute.
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language, and is not allowed to call the withLanguage() method if you call this
+      * one, so that we can enforce this constraint compile time.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSpeechModelExperimentalUtterances(language: LanguageCode.SupportsExperimentalModel)(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
+        ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet,
+      PhantomTypes.LanguageHasBeenSetTrue
+    ] = copy(
+      speechModelType = Some(SpeechModelType.ExperimentalUtterances),
       language = Some(language)
     )
 
