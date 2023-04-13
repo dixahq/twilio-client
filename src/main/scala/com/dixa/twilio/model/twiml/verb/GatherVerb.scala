@@ -426,6 +426,14 @@ object GatherVerb {
     case object `cmn-Hans-CN` extends LanguageCode("cmn-Hans-CN")
   }
 
+  private sealed abstract class SpeechModelType(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
+  private[GatherVerb] object SpeechModelType extends EnumWithTwilioString[SpeechModelType] {
+    override def values: immutable.IndexedSeq[SpeechModelType] = findValues
+
+    case object Default extends SpeechModelType("default")
+  }
+
   final class Builder[
       DtmfInput <: PhantomTypes.HasDtmfInput,
       SpeechInput <: PhantomTypes.HasSpeechInput,
@@ -445,7 +453,8 @@ object GatherVerb {
       partialResultCallback: Option[CallbackUrl] = None,
       profanityFilter: Option[Boolean] = None,
       speechTimeout: Option[PositiveInteger] = None,
-      timeout: Option[PositiveInteger] = None
+      timeout: Option[PositiveInteger] = None,
+      speechModelType: Option[SpeechModelType] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -470,7 +479,8 @@ object GatherVerb {
         partialResultCallback: Option[CallbackUrl] = this.partialResultCallback,
         profanityFilter: Option[Boolean] = this.profanityFilter,
         speechTimeout: Option[PositiveInteger] = this.speechTimeout,
-        timeout: Option[PositiveInteger] = this.timeout
+        timeout: Option[PositiveInteger] = this.timeout,
+        speechModelType: Option[SpeechModelType] = this.speechModelType
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -489,7 +499,8 @@ object GatherVerb {
       partialResultCallback,
       profanityFilter,
       speechTimeout,
-      timeout
+      timeout,
+      speechModelType
     )
 
     /** Add a nested Pause verb.
@@ -731,8 +742,32 @@ object GatherVerb {
     ] =
       copy(speechTimeout = Some(positiveInteger))
 
+    /** Set the timeout attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#timeout
+      */
     def withTimeout(positiveInteger: PositiveInteger): BuilderWithSameTypes =
       copy(timeout = Some(positiveInteger))
+
+    /** Set the speechModel attribute to default.
+      *
+      * This will require speech to be part of the input attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSpeechModelDefault()(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet
+    ] =
+      copy(speechModelType = Some(SpeechModelType.Default))
 
     def build(): GatherVerb =
       GatherVerbImpl(
@@ -747,7 +782,8 @@ object GatherVerb {
         partialResultCallback,
         profanityFilter,
         speechTimeout,
-        timeout
+        timeout,
+        speechModelType
       )
   }
 
@@ -777,7 +813,8 @@ object GatherVerb {
       partialResultCallback: Option[CallbackUrl],
       profanityFilter: Option[Boolean],
       speechTimeout: Option[PositiveInteger],
-      timeout: Option[PositiveInteger]
+      timeout: Option[PositiveInteger],
+      speechModelType: Option[SpeechModelType]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -798,8 +835,10 @@ object GatherVerb {
     private val speechTimeoutAttribute =
       speechTimeout.map(x => s""" speechTimeout="${x.int}"""").getOrElse("")
     private val timeoutAttribute = timeout.map(x => s""" timeout="${x.int}"""").getOrElse("")
+    private val speechModelAttribute =
+      speechModelType.map(x => s""" speechModel="${x.twilioString}"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""

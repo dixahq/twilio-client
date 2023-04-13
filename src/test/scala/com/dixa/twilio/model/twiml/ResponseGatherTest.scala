@@ -59,6 +59,7 @@ final class ResponseGatherTest extends AnyWordSpec {
             .withProfanityFilter(false)
             .withSpeechTimeout(PositiveInteger.unsafe(24))
             .withTimeout(PositiveInteger.unsafe(34))
+            .withSpeechModelDefault()
             .build()
         }.buildVerified
       }
@@ -66,7 +67,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34">
+           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34" speechModel="default">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -78,7 +79,7 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34" speechModel="default"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }
@@ -212,6 +213,37 @@ final class ResponseGatherTest extends AnyWordSpec {
                         |        }.buildVerified
                         |      }
                         |""".stripMargin)
+    }
+
+    "dealing with speachModel default" should {
+
+      // Test for actually setting this successfully is covered by the test that sets all attriutes.
+
+      "Don't allow to set attribute if speech is not part of the input attribute" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputDtmf()
+                          |              .withSpeechModelDefault()
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
+      "Don't allow to set input to DTMF only, if speechModelDefault has been called" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputSpeech()
+                          |              .withSpeechModelDefault()
+                          |              .withInputDtmf()
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
     }
   }
 }
