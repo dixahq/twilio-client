@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.twiml
 
-import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.{HttpMethod, PositiveInteger}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.verb.{GatherVerb, PauseVerb, PlayVerb, SayVerb}
@@ -57,6 +57,7 @@ final class ResponseGatherTest extends AnyWordSpec {
             .withNumDigits(47)
             .withPartialResultCallback(CallbackUrl("http://localhost/partial-result"))
             .withProfanityFilter(false)
+            .withSpeechTimeout(PositiveInteger.unsafe(24))
             .build()
         }.buildVerified
       }
@@ -64,7 +65,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false">
+           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -76,7 +77,7 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }
@@ -181,6 +182,30 @@ final class ResponseGatherTest extends AnyWordSpec {
                         |        responseBuilder.addGather { gatherBuilder =>
                         |          gatherBuilder
                         |            .withProfanityFilter(true)
+                        |            .withInputDtmf()
+                        |            .build()
+                        |        }.buildVerified
+                        |      }
+                        |""".stripMargin)
+    }
+
+    "Don't allow to set speechTimeout if input does not include speech" in {
+      assertTypeError("""Response.build { responseBuilder =>
+                        |        responseBuilder.addGather { gatherBuilder =>
+                        |          gatherBuilder
+                        |            .withInputDtmf()
+                        |            .withSpeechTimeout(PositiveInteger.unsafe(88))
+                        |            .build()
+                        |        }.buildVerified
+                        |      }
+                        |""".stripMargin)
+    }
+
+    "Don't allow to set input to DTMF only, if speechTimeout has been set" in {
+      assertTypeError("""Response.build { responseBuilder =>
+                        |        responseBuilder.addGather { gatherBuilder =>
+                        |          gatherBuilder
+                        |            .withSpeechTimeout(PositiveInteger.unsafe(88))
                         |            .withInputDtmf()
                         |            .build()
                         |        }.buildVerified

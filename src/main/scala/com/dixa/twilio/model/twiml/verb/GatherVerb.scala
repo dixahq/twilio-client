@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, StringUtil}
+import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, PositiveInteger, StringUtil}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.TwimlElement
@@ -443,7 +443,8 @@ object GatherVerb {
       method: Option[HttpMethod] = None,
       numDigits: Option[Int] = None,
       partialResultCallback: Option[CallbackUrl] = None,
-      profanityFilter: Option[Boolean] = None
+      profanityFilter: Option[Boolean] = None,
+      speechTimeout: Option[PositiveInteger] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -466,7 +467,8 @@ object GatherVerb {
         method: Option[HttpMethod] = this.method,
         numDigits: Option[Int] = this.numDigits,
         partialResultCallback: Option[CallbackUrl] = this.partialResultCallback,
-        profanityFilter: Option[Boolean] = this.profanityFilter
+        profanityFilter: Option[Boolean] = this.profanityFilter,
+        speechTimeout: Option[PositiveInteger] = this.speechTimeout
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -483,7 +485,8 @@ object GatherVerb {
       method,
       numDigits,
       partialResultCallback,
-      profanityFilter
+      profanityFilter,
+      speechTimeout
     )
 
     /** Add a nested Pause verb.
@@ -706,6 +709,25 @@ object GatherVerb {
     ] =
       copy(profanityFilter = Some(bool))
 
+    /** Set the speechTimeout attribute.
+      *
+      * You cannot set this attribute, if the input attribute do not include speech.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechtimeout
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSpeechTimeout(positiveInteger: PositiveInteger)(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet
+    ] =
+      copy(speechTimeout = Some(positiveInteger))
+
     def build(): GatherVerb =
       GatherVerbImpl(
         nestedVerbs,
@@ -717,7 +739,8 @@ object GatherVerb {
         method,
         numDigits,
         partialResultCallback,
-        profanityFilter
+        profanityFilter,
+        speechTimeout
       )
   }
 
@@ -745,7 +768,8 @@ object GatherVerb {
       method: Option[HttpMethod],
       numDigits: Option[Int],
       partialResultCallback: Option[CallbackUrl],
-      profanityFilter: Option[Boolean]
+      profanityFilter: Option[Boolean],
+      speechTimeout: Option[PositiveInteger]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -763,8 +787,10 @@ object GatherVerb {
       .getOrElse("")
     private val profanityFilterAttribute =
       profanityFilter.map(x => s""" profanityFilter="$x"""").getOrElse("")
+    private val speechTimeoutAttribute =
+      speechTimeout.map(x => s""" speechTimeout="${x.int}"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
