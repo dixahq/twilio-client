@@ -999,6 +999,11 @@ object GatherVerb {
       language = Some(language)
     )
 
+    /** Set the actionOnEmptyResult attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#actiononemptyresult
+      */
     def withActionOnEmptyResult(bool: Boolean): BuilderWithSameTypes =
       copy(actionOnEmptyResult = Some(bool))
 
