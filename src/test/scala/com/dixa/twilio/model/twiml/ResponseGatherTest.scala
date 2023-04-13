@@ -2,7 +2,7 @@ package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
-import com.dixa.twilio.model.twiml.verb.{PauseVerb, PlayVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{GatherVerb, PauseVerb, PlayVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ResponseGatherTest extends AnyWordSpec {
@@ -51,6 +51,7 @@ final class ResponseGatherTest extends AnyWordSpec {
             .addHint("This is a hint phrase")
             .addHint("keyword1")
             .addHint("keyword2")
+            .withLanguage(GatherVerb.LanguageCode.`ar-BH`)
             .build()
         }.buildVerified
       }
@@ -58,7 +59,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech">
+           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -70,7 +71,7 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }
