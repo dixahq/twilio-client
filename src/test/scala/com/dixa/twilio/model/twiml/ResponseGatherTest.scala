@@ -245,5 +245,58 @@ final class ResponseGatherTest extends AnyWordSpec {
       }
 
     }
+
+    "Dealing with speechModel numbers_and_commands" should {
+
+      "Generate the correct XML when used" in {
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder.addGather { gatherBuilder =>
+            gatherBuilder
+              .withInputSpeech()
+              .withSpeechModelNumbersAndCommands()
+              .build()
+          }.buildVerified
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Gather input="speech" speechModel="numbers_and_commands" />
+             |</Response>""".stripMargin
+
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather input="speech" speechModel="numbers_and_commands"/></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Don't allow to set attribute if speech is not part of the input attribute" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputDtmf()
+                          |              .withSpeechModelNumbersAndCommands()
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+
+      "Don't allow to set input to DTMF only, if speechModelDefault has been called" in {
+        assertTypeError("""Response.build { responseBuilder =>
+                          |          responseBuilder.addGather { gatherBuilder =>
+                          |            gatherBuilder
+                          |              .withInputSpeech()
+                          |              .withSpeechModelNumbersAndCommands()
+                          |              .withInputDtmf()
+                          |              .build()
+                          |          }.buildVerified
+                          |        }
+                          |""".stripMargin)
+      }
+    }
   }
 }

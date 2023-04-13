@@ -432,6 +432,8 @@ object GatherVerb {
     override def values: immutable.IndexedSeq[SpeechModelType] = findValues
 
     case object Default extends SpeechModelType("default")
+
+    case object NumbersAndCommands extends SpeechModelType("numbers_and_commands")
   }
 
   final class Builder[
@@ -766,8 +768,25 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet
-    ] =
-      copy(speechModelType = Some(SpeechModelType.Default))
+    ] = copy(speechModelType = Some(SpeechModelType.Default))
+
+    /** Set the speechModel attribute to numbers_and_commands.
+      *
+      * This will require speech to be part of the input attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSpeechModelNumbersAndCommands()(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet
+    ] = copy(speechModelType = Some(SpeechModelType.NumbersAndCommands))
 
     def build(): GatherVerb =
       GatherVerbImpl(
