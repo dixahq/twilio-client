@@ -56,9 +56,9 @@ object GatherVerb {
   // noinspection ScalaUnusedSymbol
   object LanguageCode extends EnumWithTwilioString[LanguageCode] {
 
-    sealed trait SupportsEnhancedModel     extends LanguageCode
-    sealed trait SupportsExperimentalModel extends LanguageCode
-    sealed trait SupportsPhoneCallModel    extends LanguageCode
+    sealed trait SupportsEnhancedModel
+    sealed trait SupportsExperimentalModel
+    sealed trait SupportsPhoneCallModel
 
     val values: immutable.IndexedSeq[LanguageCode] = findValues
 
@@ -523,7 +523,8 @@ object GatherVerb {
       profanityFilter: Option[Boolean] = None,
       speechTimeout: Option[PositiveInteger] = None,
       timeout: Option[PositiveInteger] = None,
-      speechModelType: Option[SpeechModelType] = None
+      speechModelType: Option[SpeechModelType] = None,
+      enhanced: Option[Boolean] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -557,7 +558,8 @@ object GatherVerb {
         profanityFilter: Option[Boolean] = this.profanityFilter,
         speechTimeout: Option[PositiveInteger] = this.speechTimeout,
         timeout: Option[PositiveInteger] = this.timeout,
-        speechModelType: Option[SpeechModelType] = this.speechModelType
+        speechModelType: Option[SpeechModelType] = this.speechModelType,
+        enhanced: Option[Boolean] = this.enhanced
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -578,7 +580,8 @@ object GatherVerb {
       profanityFilter,
       speechTimeout,
       timeout,
-      speechModelType
+      speechModelType,
+      enhanced
     )
 
     /** Add a nested Pause verb.
@@ -889,7 +892,7 @@ object GatherVerb {
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
     @nowarn(value = "cat=unused-params")
-    def withSpeechModelPhoneCall(language: LanguageCode.SupportsPhoneCallModel)(
+    def withSpeechModelPhoneCall(language: LanguageCode with LanguageCode.SupportsPhoneCallModel)(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
         ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
     ): Builder[
@@ -900,6 +903,40 @@ object GatherVerb {
       ActionHasBeenSet,
       PhantomTypes.LanguageHasBeenSetTrue
     ] = copy(speechModelType = Some(SpeechModelType.PhoneCall), language = Some(language))
+
+    /** Set the speechModel attribute to phone_call + the enhanced attribute to true
+      *
+      * This will require speech to be part of the input attribute.
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language, and is not allowed to call the withLanguage() method if you call this
+      * one, so that we can enforce this constraint compile time.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#enhanced
+      */
+    @nowarn(value = "cat=unused-params")
+    def withSpeechModelPhoneCallPlusEnhanced(
+        language: LanguageCode
+          with LanguageCode.SupportsPhoneCallModel
+          with LanguageCode.SupportsEnhancedModel
+    )(
+        implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
+        ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      PhantomTypes.SpeechInputRequiredTrue,
+      ActionHasBeenSet,
+      PhantomTypes.LanguageHasBeenSetTrue
+    ] = copy(
+      speechModelType = Some(SpeechModelType.PhoneCall),
+      language = Some(language),
+      enhanced = Some(true)
+    )
 
     /** Set the speechModel attribute to experimental_conversations.
       *
@@ -913,7 +950,9 @@ object GatherVerb {
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
     @nowarn(value = "cat=unused-params")
-    def withSpeechModelExperimentalConversation(language: LanguageCode.SupportsExperimentalModel)(
+    def withSpeechModelExperimentalConversation(
+        language: LanguageCode with LanguageCode.SupportsExperimentalModel
+    )(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
         ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
     ): Builder[
@@ -940,7 +979,9 @@ object GatherVerb {
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
     @nowarn(value = "cat=unused-params")
-    def withSpeechModelExperimentalUtterances(language: LanguageCode.SupportsExperimentalModel)(
+    def withSpeechModelExperimentalUtterances(
+        language: LanguageCode with LanguageCode.SupportsExperimentalModel
+    )(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
         ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
     ): Builder[
@@ -969,7 +1010,8 @@ object GatherVerb {
         profanityFilter,
         speechTimeout,
         timeout,
-        speechModelType
+        speechModelType,
+        enhanced
       )
   }
 
@@ -1001,7 +1043,8 @@ object GatherVerb {
       profanityFilter: Option[Boolean],
       speechTimeout: Option[PositiveInteger],
       timeout: Option[PositiveInteger],
-      speechModelType: Option[SpeechModelType]
+      speechModelType: Option[SpeechModelType],
+      enhanced: Option[Boolean]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -1024,8 +1067,9 @@ object GatherVerb {
     private val timeoutAttribute = timeout.map(x => s""" timeout="${x.int}"""").getOrElse("")
     private val speechModelAttribute =
       speechModelType.map(x => s""" speechModel="${x.twilioString}"""").getOrElse("")
+    private val enhancedAttribute = enhanced.map(x => s""" enhanced="$x"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute$enhancedAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
