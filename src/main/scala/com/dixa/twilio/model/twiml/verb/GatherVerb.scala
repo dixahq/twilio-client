@@ -440,7 +440,8 @@ object GatherVerb {
       hints: Vector[String] = Vector.empty,
       input: Option[String] = None,
       language: Option[LanguageCode] = None,
-      method: Option[HttpMethod] = None
+      method: Option[HttpMethod] = None,
+      numDigits: Option[Int] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -460,7 +461,8 @@ object GatherVerb {
         hints: Vector[String] = this.hints,
         input: Option[String] = this.input,
         language: Option[LanguageCode] = this.language,
-        method: Option[HttpMethod] = this.method
+        method: Option[HttpMethod] = this.method,
+        numDigits: Option[Int] = this.numDigits
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -474,7 +476,8 @@ object GatherVerb {
       hints,
       input,
       language,
-      method
+      method,
+      numDigits
     )
 
     /** Add a nested Pause verb.
@@ -652,8 +655,19 @@ object GatherVerb {
         implicit ev: ActionHasBeenSet =:= PhantomTypes.ActionHasBeenSetTrue
     ): BuilderWithSameTypes = copy(method = Some(method))
 
+    @nowarn(value = "cat=unused-params")
+    def withNumDigits(numDigits: Int)(
+        implicit ev: DtmfInput =:= PhantomTypes.HasDtmfInputTrue
+    ): Builder[
+      DtmfInput,
+      SpeechInput,
+      PhantomTypes.DtmfInputRequiredTrue,
+      SpeechInputRequired,
+      ActionHasBeenSet
+    ] = copy(numDigits = Some(numDigits))
+
     def build(): GatherVerb =
-      GatherVerbImpl(nestedVerbs, action, finishOnKey, hints, input, language, method)
+      GatherVerbImpl(nestedVerbs, action, finishOnKey, hints, input, language, method, numDigits)
   }
 
   // Dtmf is default input, so set HasDtmfInputTrue to begin with.
@@ -677,7 +691,8 @@ object GatherVerb {
       hints: Seq[String],
       input: Option[String],
       language: Option[LanguageCode],
-      method: Option[HttpMethod]
+      method: Option[HttpMethod],
+      numDigits: Option[Int]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -689,8 +704,9 @@ object GatherVerb {
     private val languageAttribute =
       language.map(x => s""" language="${x.twilioString}"""").getOrElse("")
     private val methodAttribute = method.map(x => s""" method="${x.twilioString}"""").getOrElse("")
+    private val numDigitsAttribute = numDigits.map(x => s""" numDigits="$x"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
