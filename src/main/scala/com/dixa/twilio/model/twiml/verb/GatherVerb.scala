@@ -444,7 +444,8 @@ object GatherVerb {
       numDigits: Option[Int] = None,
       partialResultCallback: Option[CallbackUrl] = None,
       profanityFilter: Option[Boolean] = None,
-      speechTimeout: Option[PositiveInteger] = None
+      speechTimeout: Option[PositiveInteger] = None,
+      timeout: Option[PositiveInteger] = None
   ) {
 
     @nowarn(value = "cat=unused")
@@ -468,7 +469,8 @@ object GatherVerb {
         numDigits: Option[Int] = this.numDigits,
         partialResultCallback: Option[CallbackUrl] = this.partialResultCallback,
         profanityFilter: Option[Boolean] = this.profanityFilter,
-        speechTimeout: Option[PositiveInteger] = this.speechTimeout
+        speechTimeout: Option[PositiveInteger] = this.speechTimeout,
+        timeout: Option[PositiveInteger] = this.timeout
     ) = new Builder[
       DtmfInput2,
       SpeechInput2,
@@ -486,7 +488,8 @@ object GatherVerb {
       numDigits,
       partialResultCallback,
       profanityFilter,
-      speechTimeout
+      speechTimeout,
+      timeout
     )
 
     /** Add a nested Pause verb.
@@ -728,6 +731,9 @@ object GatherVerb {
     ] =
       copy(speechTimeout = Some(positiveInteger))
 
+    def withTimeout(positiveInteger: PositiveInteger): BuilderWithSameTypes =
+      copy(timeout = Some(positiveInteger))
+
     def build(): GatherVerb =
       GatherVerbImpl(
         nestedVerbs,
@@ -740,7 +746,8 @@ object GatherVerb {
         numDigits,
         partialResultCallback,
         profanityFilter,
-        speechTimeout
+        speechTimeout,
+        timeout
       )
   }
 
@@ -769,7 +776,8 @@ object GatherVerb {
       numDigits: Option[Int],
       partialResultCallback: Option[CallbackUrl],
       profanityFilter: Option[Boolean],
-      speechTimeout: Option[PositiveInteger]
+      speechTimeout: Option[PositiveInteger],
+      timeout: Option[PositiveInteger]
   ) extends GatherVerb {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
@@ -789,8 +797,9 @@ object GatherVerb {
       profanityFilter.map(x => s""" profanityFilter="$x"""").getOrElse("")
     private val speechTimeoutAttribute =
       speechTimeout.map(x => s""" speechTimeout="${x.int}"""").getOrElse("")
+    private val timeoutAttribute = timeout.map(x => s""" timeout="${x.int}"""").getOrElse("")
     private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute"""
+      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute"""
 
     override def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
