@@ -20,6 +20,9 @@ sealed trait GatherVerb extends TwimlElement.Verb
 
 object GatherVerb {
 
+  sealed trait Verified   extends GatherVerb
+  sealed trait Unverified extends GatherVerb
+
   /** GatherVerb specific phantom types, used to enforce build constraints compile time. */
   object PhantomTypes {
 
@@ -1007,7 +1010,7 @@ object GatherVerb {
     def withActionOnEmptyResult(bool: Boolean): BuilderWithSameTypes =
       copy(actionOnEmptyResult = Some(bool))
 
-    def build(): GatherVerb =
+    def build(): GatherVerb.Verified =
       GatherVerbImpl(
         nestedVerbs,
         action,
@@ -1024,7 +1027,7 @@ object GatherVerb {
         speechModelType,
         enhanced,
         actionOnEmptyResult
-      )
+      ).toVerified
   }
 
   // Dtmf is default input, so set HasDtmfInputTrue to begin with.
@@ -1036,13 +1039,13 @@ object GatherVerb {
     PhantomTypes.ActionHasBeenSetFalse,
     PhantomTypes.LanguageHasBeenSetFalse
   ]
-  type BuildFunction = BuilderStartState => GatherVerb
+  type BuildFunction = BuilderStartState => GatherVerb.Verified
 
-  def build(fun: BuildFunction): GatherVerb = fun(
+  def build(fun: BuildFunction): GatherVerb.Verified = fun(
     new BuilderStartState()
   )
 
-  private final case class GatherVerbImpl(
+  private case class GatherVerbImpl(
       nestedVerbs: Seq[TwimlElement.Verb],
       action: Option[CallbackUrl],
       finishOnKey: Option[Option[DtmfDigit]],
@@ -1058,7 +1061,7 @@ object GatherVerb {
       speechModelType: Option[SpeechModelType],
       enhanced: Option[Boolean],
       actionOnEmptyResult: Option[Boolean]
-  ) extends GatherVerb {
+  ) {
 
     private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
     private val finishOnKeyAttribute = finishOnKey
@@ -1086,12 +1089,12 @@ object GatherVerb {
     private val gatherStart =
       s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute$enhancedAttribute$actionOnEmptyResultAttribute"""
 
-    override def xmlCompact: String = {
+    def xmlCompact: String = {
       if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
       else s"""$gatherStart>${nestedVerbs.map(_.xmlCompact).mkString}</Gather>"""
     }
 
-    override def xmlPretty: String = if (nestedVerbs.isEmpty) s"""$gatherStart />"""
+    def xmlPretty: String = if (nestedVerbs.isEmpty) s"""$gatherStart />"""
     else {
       val verbsAsXmlList = nestedVerbs.map(v => StringUtil.indentEveryLineWith2Spaces(v.xmlPretty))
       s"""$gatherStart>
@@ -1099,5 +1102,17 @@ object GatherVerb {
          |</Gather>
          |""".stripMargin
     }
+
+    def toVerified: Verified     = VerifiedImpl(xmlCompact, xmlPretty)
+    def toUnverified: Unverified = UnverifiedImpl(xmlCompact, xmlPretty)
   }
+
+  private final case class VerifiedImpl(
+      override val xmlCompact: String,
+      override val xmlPretty: String
+  ) extends Verified
+  private final case class UnverifiedImpl(
+      override val xmlCompact: String,
+      override val xmlPretty: String
+  ) extends Unverified
 }
