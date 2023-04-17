@@ -14,6 +14,7 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{
 import com.dixa.twilio.model.twiml.verb.{
   DialVerb,
   GatherVerb,
+  HangupVerb,
   PauseVerb,
   PlayVerb,
   RedirectVerb,
@@ -210,6 +211,27 @@ object Response {
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ GatherVerb.build(fun))
+
+    /** Add the Hangup verb to the response.
+      *
+      * After this, no other verbs will be allowed on the response.
+      *
+      * The Hangup verb ends a call. If used as the first verb in a TwiML response it does not
+      * prevent Twilio from answering the call and billing your account. The only way to not answer
+      * a call and prevent billing is to use the Reject verb.
+      *
+      * A Hangup verb don't have any attributes and don't support nesting any verbs.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/hangup
+      */
+    @nowarn(value = "cat=unused-params")
+    def addHangup(
+        fun: HangupVerb.BuildFunction
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
+      new Builder(verbs :+ HangupVerb.build(fun))
 
     /** Build a verified [[Response]]
       *
