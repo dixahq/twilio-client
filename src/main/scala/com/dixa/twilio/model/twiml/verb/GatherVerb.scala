@@ -20,7 +20,15 @@ sealed trait GatherVerb extends TwimlElement.Verb
 
 object GatherVerb {
 
-  sealed trait Verified   extends GatherVerb
+  /** Sub type of GatherVerb that indicates that it's an instance guaranteed to be valid.
+    *
+    * By valid is only meant that it will produce valid TwiML, not that the TwiML necessarily would
+    * work. You can still make it fail, by providing unreachable URLs etc, but the TwiML itself will
+    * be valid.
+    */
+  sealed trait Verified extends GatherVerb
+
+  /** Sub type of GatherVerb that is not guaranteed to be valid */
   sealed trait Unverified extends GatherVerb
 
   /** GatherVerb specific phantom types, used to enforce build constraints compile time. */
@@ -49,6 +57,10 @@ object GatherVerb {
     sealed trait LanguageHasBeenSet
     sealed trait LanguageHasBeenSetTrue  extends LanguageHasBeenSet
     sealed trait LanguageHasBeenSetFalse extends LanguageHasBeenSet
+
+    sealed trait ValidForVerified
+    sealed trait ValidForVerifiedTrue  extends ValidForVerified
+    sealed trait ValidForVerifiedFalse extends ValidForVerified
   }
 
   /** Enum entry, representing a Language code that the Gather verb support */
@@ -511,7 +523,8 @@ object GatherVerb {
       DtmfInputRequired <: PhantomTypes.DtmfInputRequired,
       SpeechInputRequired <: PhantomTypes.SpeechInputRequired,
       ActionHasBeenSet <: PhantomTypes.ActionHasBeenSet,
-      LanguageHasBeenSet <: PhantomTypes.LanguageHasBeenSet
+      LanguageHasBeenSet <: PhantomTypes.LanguageHasBeenSet,
+      ValidForVerified <: PhantomTypes.ValidForVerified
   ] private[GatherVerb] (
       nestedVerbs: Vector[TwimlElement.Verb] = Vector.empty,
       action: Option[CallbackUrl] = None,
@@ -539,7 +552,8 @@ object GatherVerb {
         DtmfInputRequired,
         SpeechInputRequired,
         ActionHasBeenSet,
-        LanguageHasBeenSet
+        LanguageHasBeenSet,
+        ValidForVerified
       ]
 
     private def copy[
@@ -548,7 +562,8 @@ object GatherVerb {
         DtmfInputRequired2 <: PhantomTypes.DtmfInputRequired,
         SpeechInputRequired2 <: PhantomTypes.SpeechInputRequired,
         ActionHasBeenSet2 <: PhantomTypes.ActionHasBeenSet,
-        LanguageHasBeenSet2 <: PhantomTypes.LanguageHasBeenSet
+        LanguageHasBeenSet2 <: PhantomTypes.LanguageHasBeenSet,
+        Verified2 <: PhantomTypes.ValidForVerified
     ](
         nestedVerbs: Vector[TwimlElement.Verb] = this.nestedVerbs,
         action: Option[CallbackUrl] = this.action,
@@ -571,7 +586,8 @@ object GatherVerb {
       DtmfInputRequired2,
       SpeechInputRequired2,
       ActionHasBeenSet2,
-      LanguageHasBeenSet2
+      LanguageHasBeenSet2,
+      Verified2
     ](
       nestedVerbs,
       action,
@@ -633,7 +649,8 @@ object GatherVerb {
       DtmfInputRequired,
       SpeechInputRequired,
       PhantomTypes.ActionHasBeenSetTrue,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(action = Some(callbackUrl))
 
     /** Sets the finishOnKey attribute.
@@ -655,7 +672,8 @@ object GatherVerb {
       PhantomTypes.DtmfInputRequiredTrue,
       SpeechInputRequired,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(finishOnKey = Some(finishOnKey))
 
     /** Add a hint to the hint attribute.
@@ -680,7 +698,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(hints = this.hints :+ hint)
 
     /** Sets the input attribute value to: dtmf
@@ -701,7 +720,8 @@ object GatherVerb {
       DtmfInputRequired,
       SpeechInputRequired,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(input = Some("dtmf"))
 
     /** Sets the input attribute value to: speech
@@ -722,7 +742,8 @@ object GatherVerb {
       DtmfInputRequired,
       SpeechInputRequired,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(input = Some("speech"))
 
     /** Sets the input attribute value to: dtmf speech
@@ -740,7 +761,8 @@ object GatherVerb {
       DtmfInputRequired,
       SpeechInputRequired,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(input = Some("dtmf speech"))
 
     /** Set the language attribute.
@@ -759,7 +781,8 @@ object GatherVerb {
       DtmfInputRequired,
       SpeechInputRequired,
       ActionHasBeenSet,
-      PhantomTypes.LanguageHasBeenSetTrue
+      PhantomTypes.LanguageHasBeenSetTrue,
+      ValidForVerified
     ] = copy(language = Some(language))
 
     /** Sets the method attribute.
@@ -791,7 +814,8 @@ object GatherVerb {
       PhantomTypes.DtmfInputRequiredTrue,
       SpeechInputRequired,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(numDigits = Some(numDigits))
 
     /** Sets the partialResultCallback attribute
@@ -818,7 +842,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(profanityFilter = Some(bool))
 
     /** Set the speechTimeout attribute.
@@ -837,7 +862,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(speechTimeout = Some(positiveInteger))
 
     /** Set the timeout attribute.
@@ -864,7 +890,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(speechModelType = Some(SpeechModelType.Default))
 
     /** Set the speechModel attribute to numbers_and_commands.
@@ -883,7 +910,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      LanguageHasBeenSet
+      LanguageHasBeenSet,
+      ValidForVerified
     ] = copy(speechModelType = Some(SpeechModelType.NumbersAndCommands))
 
     /** Set the speechModel attribute to phone_call.
@@ -907,7 +935,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      PhantomTypes.LanguageHasBeenSetTrue
+      PhantomTypes.LanguageHasBeenSetTrue,
+      ValidForVerified
     ] = copy(speechModelType = Some(SpeechModelType.PhoneCall), language = Some(language))
 
     /** Set the speechModel attribute to phone_call + the enhanced attribute to true
@@ -937,7 +966,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      PhantomTypes.LanguageHasBeenSetTrue
+      PhantomTypes.LanguageHasBeenSetTrue,
+      ValidForVerified
     ] = copy(
       speechModelType = Some(SpeechModelType.PhoneCall),
       language = Some(language),
@@ -967,7 +997,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      PhantomTypes.LanguageHasBeenSetTrue
+      PhantomTypes.LanguageHasBeenSetTrue,
+      ValidForVerified
     ] = copy(
       speechModelType = Some(SpeechModelType.ExperimentalConversations),
       language = Some(language)
@@ -996,7 +1027,8 @@ object GatherVerb {
       DtmfInputRequired,
       PhantomTypes.SpeechInputRequiredTrue,
       ActionHasBeenSet,
-      PhantomTypes.LanguageHasBeenSetTrue
+      PhantomTypes.LanguageHasBeenSetTrue,
+      ValidForVerified
     ] = copy(
       speechModelType = Some(SpeechModelType.ExperimentalUtterances),
       language = Some(language)
@@ -1010,7 +1042,35 @@ object GatherVerb {
     def withActionOnEmptyResult(bool: Boolean): BuilderWithSameTypes =
       copy(actionOnEmptyResult = Some(bool))
 
-    def build(): GatherVerb.Verified =
+    def addCustomVerb(verb: TwimlElement.Verb): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      SpeechInputRequired,
+      ActionHasBeenSet,
+      LanguageHasBeenSet,
+      PhantomTypes.ValidForVerifiedFalse
+    ] = copy(nestedVerbs = nestedVerbs :+ verb)
+
+    def addCustomVerbs(verbs: Seq[TwimlElement.Verb]): Builder[
+      DtmfInput,
+      SpeechInput,
+      DtmfInputRequired,
+      SpeechInputRequired,
+      ActionHasBeenSet,
+      LanguageHasBeenSet,
+      PhantomTypes.ValidForVerifiedFalse
+    ] = copy(nestedVerbs = nestedVerbs ++ verbs)
+
+    /** Build a [[GatherVerb.Verified]] instance from this builder.
+      *
+      * You can only call this if you have not called [[addCustomVerb]] or [[addCustomVerbs]]. In
+      * such case you must call [[buildUnverified]] instead.
+      */
+    @nowarn(value = "cat=unused-params")
+    def build()(
+        implicit ev: ValidForVerified =:= PhantomTypes.ValidForVerifiedTrue
+    ): GatherVerb.Verified =
       GatherVerbImpl(
         nestedVerbs,
         action,
@@ -1028,6 +1088,33 @@ object GatherVerb {
         enhanced,
         actionOnEmptyResult
       ).toVerified
+
+    /** Build a [[GatherVerb.Unverified]] instance from this builder.
+      *
+      * You can only call this, if you have called either [[addCustomVerb]] or [[addCustomVerbs]].
+      * If not you should call [[build]] instead.
+      */
+    @nowarn(value = "cat=unused-params")
+    def buildUnverified()(
+        implicit ev: ValidForVerified =:= PhantomTypes.ValidForVerifiedFalse
+    ): GatherVerb.Unverified =
+      GatherVerbImpl(
+        nestedVerbs,
+        action,
+        finishOnKey,
+        hints,
+        input,
+        language,
+        method,
+        numDigits,
+        partialResultCallback,
+        profanityFilter,
+        speechTimeout,
+        timeout,
+        speechModelType,
+        enhanced,
+        actionOnEmptyResult
+      ).toUnverified
   }
 
   // Dtmf is default input, so set HasDtmfInputTrue to begin with.
@@ -1037,13 +1124,15 @@ object GatherVerb {
     PhantomTypes.DtmfInputRequiredFalse,
     PhantomTypes.SpeechInputRequiredFalse,
     PhantomTypes.ActionHasBeenSetFalse,
-    PhantomTypes.LanguageHasBeenSetFalse
+    PhantomTypes.LanguageHasBeenSetFalse,
+    PhantomTypes.ValidForVerifiedTrue
   ]
-  type BuildFunction = BuilderStartState => GatherVerb.Verified
+  type BuildFunction           = BuilderStartState => GatherVerb.Verified
+  type BuildFunctionUnverified = BuilderStartState => GatherVerb.Unverified
 
-  def build(fun: BuildFunction): GatherVerb.Verified = fun(
-    new BuilderStartState()
-  )
+  def build(fun: BuildFunction): GatherVerb.Verified = fun(new BuilderStartState())
+
+  def build(fun: BuildFunctionUnverified): GatherVerb.Unverified = fun(new BuilderStartState)
 
   private case class GatherVerbImpl(
       nestedVerbs: Seq[TwimlElement.Verb],

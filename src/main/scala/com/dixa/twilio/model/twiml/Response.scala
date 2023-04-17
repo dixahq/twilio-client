@@ -218,7 +218,7 @@ object Response {
     ): Builder[BuildableTrue, VerifiedFalse, L] =
       new Builder(verbs ++ verbsToAdd)
 
-    /** Add a Gather verb to the response.
+    /** Add a [[GatherVerb.Verified]] to the response.
       *
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather
@@ -227,6 +227,23 @@ object Response {
     def addGather(fun: GatherVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ GatherVerb.build(fun))
+
+    /** Add a [[GatherVerb.Unverified]] to the response.
+      *
+      * Calling this will prevent you from calling [[buildVerified]] and instead limit you to
+      * [[buildUnverified]]. For that reason it's recommended to call [[addGather]] instead if
+      * possible. However in some situations it might not be possible, such as if you create the
+      * nested verbs of the gather from very dynamic input data, it might not be possible, or at
+      * least a lot more easy to call this instead.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather
+      */
+    @nowarn(value = "cat=unused-params")
+    def addGatherUnverified(fun: GatherVerb.BuildFunctionUnverified)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, TwimlConstraints.VerifiedFalse, L] =
       new Builder(verbs :+ GatherVerb.build(fun))
 
     /** Add the Hangup verb to the response.
