@@ -119,7 +119,7 @@ final class ResponseMiscTest extends AnyWordSpec {
         val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
           responseBuilder
             .addDial(_.withPhoneNumber(PhoneNumberE164("+4522334455").get).build())
-            .addCustomVerb(verbSeq)
+            .addCustomVerbs(verbSeq)
             .buildUnverified()
         }
         assert(result.isInstanceOf[Response.FromModel])
