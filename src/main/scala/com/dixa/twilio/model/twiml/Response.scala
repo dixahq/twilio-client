@@ -186,12 +186,22 @@ object Response {
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ PlayVerb.build(fun))
 
-    /** A a custom Verb to the builder (not recommended)
+    /** Add any Verb to the builder (try to avoid this, unless you have good reasons not to)
       *
-      * This will allow you to add you own custom implemented [[TwimlElement.Verb]], but as soon as
-      * you do that, then the builder can no longer guaranty to produce a verified response, and as
-      * such the generated [[Response]] may generate TwiML that is not valid, without detecting it
-      * compile time.
+      * This will allow you to add you own custom implemented [[TwimlElement.Verb]], or to add pre
+      * created verbs, but as soon as you do that, then the builder can no longer guaranty to
+      * produce a verified response, and as such the generated [[Response]] may generate TwiML that
+      * is not valid, without detecting it compile time.
+      *
+      * For the above reason, it is recommended to add the verbs you need via the respective `addX`
+      * methods, because then most mistakes will be caught compile time. However in some situations
+      * this may not be feasible, for example in cases where you construct Twiml based on very
+      * dynamic input values, that you don't have control of compile time. In such cases you can use
+      * this method instead.
+      *
+      * You can also use this for adding you own completely custom verbs, but in such case, you
+      * should consider if it would make sense to contribute that verb to this project instead, so
+      * it would not need to be a custom verb anymore.
       */
     @nowarn(value = "cat=unused-params")
     def addCustomVerb(
@@ -200,6 +210,17 @@ object Response {
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, VerifiedFalse, L] =
       new Builder(verbs :+ verb)
+
+    /** Same as version of [[addCustomVerb]] that just takes a single Verb, just for multiple verbs
+      * at once.
+      */
+    @nowarn(value = "cat=unused-params")
+    def addCustomVerb(
+        verbsToAdd: Seq[TwimlElement.Verb]
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, VerifiedFalse, L] =
+      new Builder(verbs ++ verbsToAdd)
 
     /** Add a Gather verb to the response.
       *
