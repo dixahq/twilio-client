@@ -218,7 +218,7 @@ object Response {
     ): Builder[BuildableTrue, VerifiedFalse, L] =
       new Builder(verbs ++ verbsToAdd)
 
-    /** Add a [[GatherVerb.Verified]] to the response.
+    /** Add a [[com.dixa.twilio.model.twiml.verb.GatherVerb.Verified]] to the response.
       *
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather
@@ -229,7 +229,7 @@ object Response {
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ GatherVerb.build(fun))
 
-    /** Add a [[GatherVerb.Unverified]] to the response.
+    /** Add a [[com.dixa.twilio.model.twiml.verb.GatherVerb.Unverified]] to the response.
       *
       * Calling this will prevent you from calling [[buildVerified]] and instead limit you to
       * [[buildUnverified]]. For that reason it's recommended to call [[addGather]] instead if
