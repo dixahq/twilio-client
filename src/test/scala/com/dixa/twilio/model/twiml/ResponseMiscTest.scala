@@ -75,7 +75,7 @@ final class ResponseMiscTest extends AnyWordSpec {
                           |  responseBuilder.addCustomVerb(new TestCustomVerb).buildUnverified()
                           |}
                           |i.copy(verbs = Seq.empty)
-                           |""".stripMargin)
+                          |""".stripMargin)
       }
 
       "not allow to call buildVerified" in {
