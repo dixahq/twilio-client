@@ -51,26 +51,24 @@ import scala.annotation.nowarn
   *    }
   * }}}
   * [[Response.Builder.buildVerified]] can only be called, as long as you have not called
-  * [[Response.Builder.addCustomVerb]]. If you find you self building official TwiML, but still
-  * need to use a custom Verb, or create a Response from a String, then please contribute to
-  * this library instead, and make it support building the needed TwiMl in a typesafe way.
-  * 
-  * If you instead need to build a Response from a string, you simply just use call 
+  * [[Response.Builder.addCustomVerbs]].
+  *
+  * If you instead need to build a Response from a string, you simply just use call
   * [[Response.fromString]]. This will give you an instance of [[Response.UnverifiedFromString]].
   * In Contrast you will get a [[Response.Verified]] if you are building it via the [[Response.build]]
   * method without adding a custom [[TwimlElement.Verb]]. If you do add a custom verb, you end up
-  * with a [[Response.UnverifiedFromModel]]. 
-  * 
+  * with a [[Response.UnverifiedFromModel]].
+  *
   * Note that getting a [[Response.Verified]] is only guaranteeing that the TwiML is formatted
   * correctly, and is following the schema rules of Twiml. However we cannot guarantee that
   * the TwiML will not produce an error in Twilio at runtime, as a lot of TwiML elements can point
   * to external resources, that we have no way of checking at compile time. An example of this is Play,
-  * that can point to external downloadable files. 
-  * 
+  * that can point to external downloadable files.
+  *
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
-  * provides the builder to. But as many of the things added to the builder are objects themselves 
+  * provides the builder to. But as many of the things added to the builder are objects themselves
   * that need to be build using another builder, which provides a pleasant syntax for clients.
-  * Instead of them needing to find the correct builder to create 
+  * Instead of them needing to find the correct builder to create
   * and provide, they can just provide a function, give the argument (the builder) a name, and
   * start using it. This works really well with autocompletion in editors, after calling
   * [[Response.build]], autocompletion can show all of the possibilities, without clients needing
@@ -186,12 +184,22 @@ object Response {
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ PlayVerb.build(fun))
 
-    /** A a custom Verb to the builder (not recommended)
+    /** Add any Verb to the builder (try to avoid this, unless you have good reasons not to)
       *
-      * This will allow you to add you own custom implemented [[TwimlElement.Verb]], but as soon as
-      * you do that, then the builder can no longer guaranty to produce a verified response, and as
-      * such the generated [[Response]] may generate TwiML that is not valid, without detecting it
-      * compile time.
+      * This will allow you to add you own custom implemented [[TwimlElement.Verb]], or to add pre
+      * created verbs, but as soon as you do that, then the builder can no longer guaranty to
+      * produce a verified response, and as such the generated [[Response]] may generate TwiML that
+      * is not valid, without detecting it compile time.
+      *
+      * For the above reason, it is recommended to add the verbs you need via the respective `addX`
+      * methods, because then most mistakes will be caught compile time. However in some situations
+      * this may not be feasible, for example in cases where you construct Twiml based on very
+      * dynamic input values, that you don't have control of compile time. In such cases you can use
+      * this method instead.
+      *
+      * You can also use this for adding you own completely custom verbs, but in such case, you
+      * should consider if it would make sense to contribute that verb to this project instead, so
+      * it would not need to be a custom verb anymore.
       */
     @nowarn(value = "cat=unused-params")
     def addCustomVerb(
@@ -200,6 +208,15 @@ object Response {
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, VerifiedFalse, L] =
       new Builder(verbs :+ verb)
+
+    /** Same as [[addCustomVerb]] just for multiple verbs at once. */
+    @nowarn(value = "cat=unused-params")
+    def addCustomVerbs(
+        verbsToAdd: Seq[TwimlElement.Verb]
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, VerifiedFalse, L] =
+      new Builder(verbs ++ verbsToAdd)
 
     /** Add a Gather verb to the response.
       *
@@ -240,7 +257,7 @@ object Response {
       *
       * To call this method you must have:
       *   1. Added at least one verb.
-      *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
+      *   1. Added no custom verb - [[Response.Builder.addCustomVerbs]].
       */
     @nowarn(value = "cat=unused-params")
     def buildVerified()(
@@ -254,7 +271,7 @@ object Response {
       *
       * To call this method you must have:
       *   1. Added at least one verb
-      *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
+      *   1. Added a custom vert via [[Response.Builder.addCustomVerbs]]
       */
     @nowarn(value = "cat=unused-params")
     def buildUnverified()(
