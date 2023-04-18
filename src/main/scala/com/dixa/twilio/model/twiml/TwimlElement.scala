@@ -3,6 +3,13 @@ package com.dixa.twilio.model.twiml
 /** Represent a element in TwiML (everything within <>) */
 sealed trait TwimlElement {
 
+  override final def hashCode(): Int = xmlCompact.hashCode
+
+  override final def equals(obj: Any): Boolean = obj match {
+    case other: TwimlElement => xmlCompact == other.xmlCompact
+    case _                   => false
+  }
+
   def xmlCompact: String
   def xmlPretty: String
 }
