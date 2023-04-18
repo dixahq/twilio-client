@@ -3,7 +3,7 @@ package com.dixa.twilio.model.twiml
 import com.dixa.twilio.model.{HttpMethod, PositiveInteger}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
-import com.dixa.twilio.model.twiml.verb.{GatherVerb, PauseVerb, PlayVerb, SayVerb}
+import com.dixa.twilio.model.twiml.verb.{GatherVerb, HangupVerb, PauseVerb, PlayVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ResponseGatherTest extends AnyWordSpec {
@@ -33,6 +33,64 @@ final class ResponseGatherTest extends AnyWordSpec {
         // format: on
         assert(result.xmlCompact == expectedCompactXml)
       }
+    }
+
+    "be able to construct a Unverified instance by supplying the gather builder with a single custom verb" in {
+      val result: Response.Unverified = Response.build { responseBuilder =>
+        responseBuilder
+          .addGatherUnverified(_.addCustomVerb(PauseVerb.build(_.build())).buildUnverified())
+          .buildUnverified()
+      }
+
+      val expectedPrettyXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?>
+           |<Response>
+           |  <Gather>
+           |    <Pause />
+           |  </Gather>
+           |</Response>""".stripMargin
+
+      println(result.xmlPretty)
+      assert(result.xmlPretty === expectedPrettyXml)
+
+      // format: off
+      val expectedCompactXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather><Pause/></Gather></Response>"""
+      // format: on
+      assert(result.xmlCompact == expectedCompactXml)
+    }
+
+    "be able to construct a Unverified instance by supplying the gather builder with a Seq of custom verbs" in {
+      val verbList = List(
+        PauseVerb.build(_.build()),
+        HangupVerb.build(_.build())
+      )
+      val result: Response.Unverified = Response.build { responseBuilder =>
+        responseBuilder
+          .addGatherUnverified(
+            _.addSay(_.withText("aa").build()).addCustomVerbs(verbList).buildUnverified()
+          )
+          .buildUnverified()
+      }
+
+      val expectedPrettyXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?>
+           |<Response>
+           |  <Gather>
+           |    <Say>aa</Say>
+           |    <Pause />
+           |    <Hangup />
+           |  </Gather>
+           |</Response>""".stripMargin
+
+      println(result.xmlPretty)
+      assert(result.xmlPretty === expectedPrettyXml)
+
+      // format: off
+      val expectedCompactXml =
+        s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather><Say>aa</Say><Pause/><Hangup/></Gather></Response>"""
+      // format: on
+      assert(result.xmlCompact == expectedCompactXml)
     }
 
     "be able to include all attribute and to nest pause, play and say verbs" in {
