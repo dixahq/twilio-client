@@ -2,6 +2,7 @@ package com.dixa.twilio.model.dtmf
 import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
 import com.dixa.twilio.model.dtmf.DtmfString.{DtmfStringElement, DtmfStringException}
 import org.scalatest.wordspec.AnyWordSpec
+import scala.collection.immutable
 
 final class DtmfStringTest extends AnyWordSpec {
 
@@ -94,6 +95,13 @@ final class DtmfStringTest extends AnyWordSpec {
           DtmfStringElement.fromDtmfDigit(digit)
         }
       }
+      assert(result == expected)
+    }
+
+    "in the onlyDtmfDigits instance, provide a way to just get a Seq[DtmfDigit] out of it" in {
+      val in: DtmfString.OnlyDtmfDigits    = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
+      val result: immutable.Seq[DtmfDigit] = in.asSeqDtmfDigit
+      val expected                         = List(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
       assert(result == expected)
     }
 

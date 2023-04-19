@@ -2,6 +2,7 @@ package com.dixa.twilio.model.dtmf
 import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.dtmf.DtmfDigit.DtmfDigitException
 
+import scala.collection.immutable
 import scala.language.implicitConversions
 
 /** Represent a string of DTMF digits and potentially waits.
@@ -72,6 +73,8 @@ object DtmfString {
       extends DtmfString {
 
     override lazy val twilioString: String = seq.mkString
+
+    def asSeqDtmfDigit: immutable.Seq[DtmfDigit] = seq
 
     def map(fun: DtmfDigit => DtmfDigit): DtmfString.OnlyDtmfDigits = new OnlyDtmfDigits(
       seq.map(fun)
