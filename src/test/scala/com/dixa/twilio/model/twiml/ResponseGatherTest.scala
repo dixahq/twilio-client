@@ -93,6 +93,30 @@ final class ResponseGatherTest extends AnyWordSpec {
       assert(result.xmlCompact == expectedCompactXml)
     }
 
+    "be able to report two instances as equal, if they produce the same TwiML even when one of them is Unverified and the other Verified" in {
+      val verbList = List(
+        PauseVerb.build(_.build()),
+      )
+      val unverified: Response.Unverified = Response.build { responseBuilder =>
+        responseBuilder
+          .addGatherUnverified(
+            _.addSay(_.withText("aa").build()).addCustomVerbs(verbList).buildUnverified()
+          )
+          .buildUnverified()
+      }
+      val verified: Response.Verified = Response.build { responseBuilder =>
+        responseBuilder
+          .addGather(
+            _.addSay(_.withText("aa").build())
+              .addPause(_.build())
+              .build()
+          )
+          .buildVerified()
+      }
+      assert(unverified == verified)
+      assert(unverified.hashCode() == verified.hashCode())
+    }
+
     "be able to include all attribute and to nest pause, play and say verbs" in {
       val result: Response.Verified = Response.build { responseBuilder =>
         responseBuilder.addGather { gatherBuilder =>
