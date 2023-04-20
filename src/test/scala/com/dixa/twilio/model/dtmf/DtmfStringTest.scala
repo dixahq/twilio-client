@@ -10,7 +10,7 @@ final class DtmfStringTest extends AnyWordSpec {
 
     "constructed from a string" should {
 
-      "return a Right(result) when fromString safe variant is called" in {
+      "return a Right(result) when fromStringIncludeWaits safe variant is called" in {
 
         val in       = "#8w6"
         val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfString.`w`, DtmfDigit.`6`)
@@ -18,7 +18,7 @@ final class DtmfStringTest extends AnyWordSpec {
         assert(result === Right(expected))
       }
 
-      "return a result when unsafe variant is called" in {
+      "return a result when fromStringIncludeWaitsUnsafe is called" in {
 
         val in       = "#8w6"
         val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfString.`w`, DtmfDigit.`6`)
@@ -26,17 +26,17 @@ final class DtmfStringTest extends AnyWordSpec {
         assert(result === expected)
       }
 
-      "return a Left if safe variant is provided an empty string" in {
+      "return a Left if fromStringIncludeWaits safe variant is provided an empty string" in {
         assert(DtmfString.fromStringIncludeWaits("") === Left(DtmfStringException.EmptyValue))
       }
 
-      "throw exception if unsafe variant is provided an empty string" in {
+      "throw exception if fromStringIncludeWaitsUnsafe is provided an empty string" in {
         assertThrows[DtmfStringException.EmptyValue.type] {
           DtmfString.fromStringIncludeWaitsUnsafe("")
         }
       }
 
-      "return a Left if safe variant is provided a string with invalid char in it" in {
+      "return a Left if fromStringIncludeWaits safe variant is provided a string with invalid char in it" in {
         val in = "45w*#23w4I"
         assert(
           DtmfString.fromStringIncludeWaits(in) === Left(
@@ -45,10 +45,68 @@ final class DtmfStringTest extends AnyWordSpec {
         )
       }
 
-      "throw exception if unsafe variant is provided a string with invalid char in it" in {
+      "throw exception if fromStringIncludeWaitsUnsafe is provided a string with invalid char in it" in {
         val in = "45w*#23w4I"
         assertThrows[DtmfStringException.InvalidChar] {
           DtmfString.fromStringIncludeWaitsUnsafe(in)
+        }
+      }
+
+      "return a Right(result) when fromStringOnlyDtmfDigits safe variant is called" in {
+
+        val in       = "#86"
+        val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`6`)
+        val result   = DtmfString.fromStringOnlyDtmfDigits(in)
+        assert(result === Right(expected))
+      }
+
+      "return a result when fromStringOnlyDtmfDigitsUnsafe is called" in {
+
+        val in       = "#86"
+        val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`6`)
+        val result   = DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
+        assert(result === expected)
+      }
+
+      "return a Left if fromStringOnlyDtmfDigits safe variant is provided an empty string" in {
+        assert(DtmfString.fromStringOnlyDtmfDigits("") === Left(DtmfStringException.EmptyValue))
+      }
+
+      "throw exception if fromStringOnlyDtmfDigitsUnsafe is provided an empty string" in {
+        assertThrows[DtmfStringException.EmptyValue.type] {
+          DtmfString.fromStringOnlyDtmfDigitsUnsafe("")
+        }
+      }
+
+      "return a Left if fromStringOnlyDtmfDigits safe variant is provided a string with invalid char in it" in {
+        val in = "45*#234I"
+        assert(
+          DtmfString.fromStringOnlyDtmfDigits(in) === Left(
+            DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('I'))
+          )
+        )
+      }
+
+      "throw exception if fromStringOnlyDtmfDigitsUnsafe is provided a string with invalid char in it" in {
+        val in = "45*#234I"
+        assertThrows[DtmfStringException.InvalidChar] {
+          DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
+        }
+      }
+
+      "return a Left if fromStringOnlyDtmfDigits safe variant is provided a string with wait char w" in {
+        val in = "45w*#234I"
+        assert(
+          DtmfString.fromStringOnlyDtmfDigits(in) === Left(
+            DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('w'))
+          )
+        )
+      }
+
+      "throw exception if fromStringOnlyDtmfDigitsUnsafe is provided a string with wait char w" in {
+        val in = "45w*#234I"
+        assertThrows[DtmfStringException.InvalidChar] {
+          DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
         }
       }
     }
