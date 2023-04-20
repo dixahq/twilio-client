@@ -169,4 +169,20 @@ object DtmfString {
   def fromStringIncludeWaitsUnsafe(s: String): DtmfString =
     fromStringIncludeWaits(s).fold(e => throw e, identity)
 
+  def fromStringOnlyDtmfDigits(s: String): Either[DtmfStringException, OnlyDtmfDigits] = s match {
+    case empty if empty == null || empty.isEmpty => Left(DtmfStringException.EmptyValue)
+    case charString =>
+      val mapped = charString.map { possibleDigit =>
+        DtmfDigit.fromChar(possibleDigit)
+      }
+      mapped.find(_.isLeft) match {
+        case Some(e) => Left(DtmfStringException.InvalidChar(e.left.get))
+        case None    => Right(new OnlyDtmfDigits(mapped.map(_.right.get).toVector))
+
+      }
+  }
+
+  def fromStringOnlyDtmfDigitsUnsafe(s: String): DtmfString =
+    fromStringOnlyDtmfDigits(s).fold(e => throw e, identity)
+
 }
