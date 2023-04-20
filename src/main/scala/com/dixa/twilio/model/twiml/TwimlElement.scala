@@ -26,7 +26,8 @@ sealed trait TwimlElement {
     * This is used when building the XML of the TwiMLElement.
     *
     * @see
-    *   [[TagAttributeBuilder]] for an easy way to create this value in implementations.
+    *   [[TwimlElement.TagAttributeBuilder]] for an easy way to create this value in
+    *   implementations.
     */
   protected def tagAttributes: immutable.Seq[(String, String)]
 
