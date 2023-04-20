@@ -54,7 +54,7 @@ final class DtmfStringTest extends AnyWordSpec {
 
       "return a Right(result) when fromStringOnlyDtmfDigits safe variant is called" in {
 
-        val in       = "#86"
+        val in       = "#8w6"
         val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`6`)
         val result   = DtmfString.fromStringOnlyDtmfDigits(in)
         assert(result === Right(expected))
@@ -62,7 +62,7 @@ final class DtmfStringTest extends AnyWordSpec {
 
       "return a result when fromStringOnlyDtmfDigitsUnsafe is called" in {
 
-        val in       = "#86"
+        val in       = "#8w6"
         val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`6`)
         val result   = DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
         assert(result === expected)
@@ -79,7 +79,7 @@ final class DtmfStringTest extends AnyWordSpec {
       }
 
       "return a Left if fromStringOnlyDtmfDigits safe variant is provided a string with invalid char in it" in {
-        val in = "45*#234I"
+        val in = "45w*#23w4I"
         assert(
           DtmfString.fromStringOnlyDtmfDigits(in) === Left(
             DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('I'))
@@ -88,23 +88,7 @@ final class DtmfStringTest extends AnyWordSpec {
       }
 
       "throw exception if fromStringOnlyDtmfDigitsUnsafe is provided a string with invalid char in it" in {
-        val in = "45*#234I"
-        assertThrows[DtmfStringException.InvalidChar] {
-          DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
-        }
-      }
-
-      "return a Left if fromStringOnlyDtmfDigits safe variant is provided a string with wait char w" in {
-        val in = "45*#234I"
-        assert(
-          DtmfString.fromStringOnlyDtmfDigits(in) === Left(
-            DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('I'))
-          )
-        )
-      }
-
-      "throw exception if fromStringOnlyDtmfDigitsUnsafe is provided a string with wait char w" in {
-        val in = "45w*#234I"
+        val in = "45w*#23w4I"
         assertThrows[DtmfStringException.InvalidChar] {
           DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
         }

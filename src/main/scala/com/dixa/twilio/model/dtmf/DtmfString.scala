@@ -172,7 +172,7 @@ object DtmfString {
   def fromStringOnlyDtmfDigits(s: String): Either[DtmfStringException, OnlyDtmfDigits] = s match {
     case empty if empty == null || empty.isEmpty => Left(DtmfStringException.EmptyValue)
     case charString =>
-      val mapped = charString.map { possibleDigit =>
+      val mapped = charString.replace("w", "").map { possibleDigit =>
         DtmfDigit.fromChar(possibleDigit)
       }
       mapped.find(_.isLeft) match {
