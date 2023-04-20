@@ -158,9 +158,7 @@ final class ResponseDialTest extends AnyWordSpec {
         val expectedPrettyXml =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
-             |  <Dial>
-             |    $pn
-             |  </Dial>
+             |  <Dial>$pn</Dial>
              |</Response>""".stripMargin
 
         println(result.xmlPretty)

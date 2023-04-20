@@ -128,7 +128,8 @@ final class ResponseGatherTest extends AnyWordSpec {
             .addPlay { playBuilder: PlayVerb.BuilderStartState =>
               playBuilder.withSoundFileUrl("http://localhost/soundfile.wav").build()
             }
-            .withAction(CallbackUrl("http://localhost/gather-action"))
+            // include & to make sure xml gets escaped properly
+            .withAction(CallbackUrl("""http://localhost/gather-action?q1=v1&q2=v2"""))
             .withInputDtmfSpeech()
             .withFinishOnKey(Some(DtmfDigit.`*`))
             .addHint("This is a hint phrase")
@@ -150,7 +151,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       val expectedPrettyXml =
         s"""<?xml version="1.0" encoding="UTF-8"?>
            |<Response>
-           |  <Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34" speechModel="default" actionOnEmptyResult="true">
+           |  <Gather action="http://localhost/gather-action?q1=v1&amp;q2=v2" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34" speechModel="default" actionOnEmptyResult="true">
            |    <Say>Say text</Say>
            |    <Pause />
            |    <Play>http://localhost/soundfile.wav</Play>
@@ -162,7 +163,7 @@ final class ResponseGatherTest extends AnyWordSpec {
 
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34" speechModel="default" actionOnEmptyResult="true"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather action="http://localhost/gather-action?q1=v1&amp;q2=v2" finishOnKey="*" hints="This is a hint phrase, keyword1, keyword2" input="dtmf speech" language="ar-BH" method="POST" numDigits="47" partialResultCallback="http://localhost/partial-result" profanityFilter="false" speechTimeout="24" timeout="34" speechModel="default" actionOnEmptyResult="true"><Say>Say text</Say><Pause/><Play>http://localhost/soundfile.wav</Play></Gather></Response>"""
         // format: on
       assert(result.xmlCompact == expectedCompactXml)
     }

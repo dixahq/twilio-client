@@ -1,16 +1,22 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
 import scala.annotation.nowarn
+import scala.collection.immutable
 
 /** Representation of the Say Verb from TwiML
   *
   * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
   * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
-sealed trait SayVerb extends TwimlElement.Verb {}
+sealed trait SayVerb extends TwimlElement.Verb {
+  override final protected val tagName: String = "Say"
+
+  override final protected val tagAttributes: immutable.Seq[(String, String)] = Nil
+
+  override final protected val tagSubElements: immutable.Seq[TwimlElement] = Nil
+}
 
 object SayVerb {
 
@@ -32,8 +38,6 @@ object SayVerb {
   )
 
   private final case class SayVerbImpl(text: String) extends SayVerb {
-    override val xmlCompact: String = s"""<Say>${StringUtil.xmlEscape(text)}</Say>"""
-
-    override def xmlPretty: String = xmlCompact
+    override protected def tagValue: Option[String] = Some(text)
   }
 }
