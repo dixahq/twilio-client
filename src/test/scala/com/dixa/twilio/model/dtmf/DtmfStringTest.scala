@@ -95,10 +95,10 @@ final class DtmfStringTest extends AnyWordSpec {
       }
 
       "return a Left if fromStringOnlyDtmfDigits safe variant is provided a string with wait char w" in {
-        val in = "45*#234I"
+        val in = "45w*#234I"
         assert(
           DtmfString.fromStringOnlyDtmfDigits(in) === Left(
-            DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('I'))
+            DtmfStringException.InvalidChar(DtmfDigitException.InvalidChar('w'))
           )
         )
       }
