@@ -7,7 +7,19 @@ final class DtmfDigitTest extends AnyWordSpec with TableDrivenPropertyChecks {
 
   "DtmfDigit" should {
 
-    val numericalValues = Table("numerical value", DtmfDigit.`0`, DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`, DtmfDigit.`5`, DtmfDigit.`6`, DtmfDigit.`7`, DtmfDigit.`8`, DtmfDigit.`9`)
+    val numericalValues = Table(
+      "numerical value",
+      DtmfDigit.`0`,
+      DtmfDigit.`1`,
+      DtmfDigit.`2`,
+      DtmfDigit.`3`,
+      DtmfDigit.`4`,
+      DtmfDigit.`5`,
+      DtmfDigit.`6`,
+      DtmfDigit.`7`,
+      DtmfDigit.`8`,
+      DtmfDigit.`9`
+    )
     val nonNumericalValues = Table("non-numerical value", DtmfDigit.`#`, DtmfDigit.`*`)
 
     "provide a list of all possible numerical values" in {
