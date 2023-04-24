@@ -852,7 +852,7 @@ object SayVerb {
         extends Voice("Polly.Miguel", Gender.Male)
         with SupportsPolly
         with SupportsEsUS
-    case object `Polly.Penélope`
+    case object `Polly.Penelope`
         extends Voice("Polly.Penélope", Gender.Female)
         with SupportsPolly
         with SupportsEsUS
