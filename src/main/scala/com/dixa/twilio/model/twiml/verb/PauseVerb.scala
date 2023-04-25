@@ -2,8 +2,10 @@ package com.dixa.twilio.model.twiml.verb
 
 import com.dixa.twilio.model.PositiveInteger
 import com.dixa.twilio.model.twiml.TwimlElement
+import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 
 import java.time.Duration
+import scala.collection.immutable
 
 /** Representation of the Pause Verb from TwiML
   *
@@ -13,7 +15,13 @@ import java.time.Duration
   * @see
   *   https://www.twilio.com/docs/voice/twiml/pause
   */
-sealed trait PauseVerb extends TwimlElement.Verb
+sealed trait PauseVerb extends TwimlElement.Verb {
+  override final protected val tagName: String = "Pause"
+
+  override final protected val tagSubElements: immutable.Seq[TwimlElement] = Nil
+
+  override final protected val tagValue: Option[String] = None
+}
 
 object PauseVerb {
   final class Builder private[PauseVerb] (length: Option[Long] = None) {
@@ -36,12 +44,9 @@ object PauseVerb {
 
   private final case class PauseVerbImpl(lengthInSeconds: Option[Long]) extends PauseVerb {
 
-    private val lengthAttribute = lengthInSeconds.map(i => s""" length="$i"""").getOrElse("")
-
-    override def xmlCompact: String =
-      s"""<Pause$lengthAttribute/>"""
-
-    override def xmlPretty: String =
-      s"""<Pause$lengthAttribute />""".stripMargin
+    override protected def tagAttributes: immutable.Seq[(String, String)] =
+      new TagAttributeBuilder()
+        .addLong("length", lengthInSeconds)
+        .build
   }
 }

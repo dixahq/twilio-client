@@ -4,6 +4,8 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.model.twiml.verb.{HangupVerb, PauseVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
 
+import scala.collection.immutable
+
 final class ResponseMiscTest extends AnyWordSpec {
   s"${classOf[Response].getSimpleName}" when {
 
@@ -94,9 +96,10 @@ final class ResponseMiscTest extends AnyWordSpec {
 
       "support creating Response from a single completly custom verb" in {
         final class TestCustomVerb extends TwimlElement.Verb {
-          override def xmlCompact: String = """<CustomVerb>Hello<CustomVerb>"""
-
-          override def xmlPretty: String = xmlCompact
+          override protected def tagName: String                                = "CustomVerb"
+          override protected def tagAttributes: immutable.Seq[(String, String)] = Nil
+          override protected def tagSubElements: immutable.Seq[TwimlElement]    = Nil
+          override protected def tagValue: Option[String]                       = Some("Hello")
         }
         val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
           responseBuilder.addCustomVerb(new TestCustomVerb).buildUnverified()
@@ -106,7 +109,7 @@ final class ResponseMiscTest extends AnyWordSpec {
           result.xmlPretty ==
             s"""<?xml version="1.0" encoding="UTF-8"?>
                |<Response>
-               |  <CustomVerb>Hello<CustomVerb>
+               |  <CustomVerb>Hello</CustomVerb>
                |</Response>""".stripMargin
         )
       }

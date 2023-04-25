@@ -1,9 +1,10 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, PositiveInteger, StringUtil}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.TwimlElement
+import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
+import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, PositiveInteger}
 
 import scala.annotation.nowarn
 import scala.collection.immutable
@@ -16,7 +17,12 @@ import scala.collection.immutable
   * @see
   *   https://www.twilio.com/docs/voice/twiml/gather
   */
-sealed trait GatherVerb extends TwimlElement.Verb
+sealed trait GatherVerb extends TwimlElement.Verb {
+
+  override protected def tagName: String = "Gather"
+
+  override final protected val tagValue: Option[String] = None
+}
 
 object GatherVerb {
 
@@ -1071,7 +1077,7 @@ object GatherVerb {
     def build()(
         implicit ev: ValidForVerified =:= PhantomTypes.ValidForVerifiedTrue
     ): GatherVerb.Verified =
-      GatherVerbImpl(
+      new GatherVerbImpl(
         nestedVerbs,
         action,
         finishOnKey,
@@ -1098,7 +1104,7 @@ object GatherVerb {
     def buildUnverified()(
         implicit ev: ValidForVerified =:= PhantomTypes.ValidForVerifiedFalse
     ): GatherVerb.Unverified =
-      GatherVerbImpl(
+      new GatherVerbImpl(
         nestedVerbs,
         action,
         finishOnKey,
@@ -1134,8 +1140,8 @@ object GatherVerb {
 
   def build(fun: BuildFunctionUnverified): GatherVerb.Unverified = fun(new BuilderStartState)
 
-  private case class GatherVerbImpl(
-      nestedVerbs: Seq[TwimlElement.Verb],
+  private class GatherVerbImpl(
+      nestedVerbs: immutable.Seq[TwimlElement.Verb],
       action: Option[CallbackUrl],
       finishOnKey: Option[Option[DtmfDigit]],
       hints: Seq[String],
@@ -1152,56 +1158,33 @@ object GatherVerb {
       actionOnEmptyResult: Option[Boolean]
   ) {
 
-    private val actionAttribute = action.map(x => s""" action="${x.twilioString}"""").getOrElse("")
-    private val finishOnKeyAttribute = finishOnKey
-      .map(x => s""" finishOnKey="${x.map(_.twilioString).getOrElse("")}"""")
-      .getOrElse("")
-    private val hintsAttribute = if (hints.isEmpty) "" else s""" hints="${hints.mkString(", ")}""""
-    private val inputAttribute = input.map(x => s""" input="$x"""").getOrElse("")
-    private val languageAttribute =
-      language.map(x => s""" language="${x.twilioString}"""").getOrElse("")
-    private val methodAttribute = method.map(x => s""" method="${x.twilioString}"""").getOrElse("")
-    private val numDigitsAttribute = numDigits.map(x => s""" numDigits="$x"""").getOrElse("")
-    private val partialResultAttribute = partialResultCallback
-      .map(x => s""" partialResultCallback="${x.twilioString}"""")
-      .getOrElse("")
-    private val profanityFilterAttribute =
-      profanityFilter.map(x => s""" profanityFilter="$x"""").getOrElse("")
-    private val speechTimeoutAttribute =
-      speechTimeout.map(x => s""" speechTimeout="${x.int}"""").getOrElse("")
-    private val timeoutAttribute = timeout.map(x => s""" timeout="${x.int}"""").getOrElse("")
-    private val speechModelAttribute =
-      speechModelType.map(x => s""" speechModel="${x.twilioString}"""").getOrElse("")
-    private val enhancedAttribute = enhanced.map(x => s""" enhanced="$x"""").getOrElse("")
-    private val actionOnEmptyResultAttribute =
-      actionOnEmptyResult.map(x => s""" actionOnEmptyResult="$x"""").getOrElse("")
-    private val gatherStart =
-      s"""<Gather$actionAttribute$finishOnKeyAttribute$hintsAttribute$inputAttribute$languageAttribute$methodAttribute$numDigitsAttribute$partialResultAttribute$profanityFilterAttribute$speechTimeoutAttribute$timeoutAttribute$speechModelAttribute$enhancedAttribute$actionOnEmptyResultAttribute"""
+    private val attributes = new TagAttributeBuilder()
+      .add("action", action)
+      .addString("finishOnKey", finishOnKey.map(_.map(_.twilioString).getOrElse("")))
+      .addString("hints", if (hints.isEmpty) None else Some(hints.mkString(", ")))
+      .addString("input", input)
+      .add("language", language)
+      .add("method", method)
+      .addInt("numDigits", numDigits)
+      .add("partialResultCallback", partialResultCallback)
+      .addBoolean("profanityFilter", profanityFilter)
+      .add("speechTimeout", speechTimeout)
+      .add("timeout", timeout)
+      .add("speechModel", speechModelType)
+      .addBoolean("enhanced", enhanced)
+      .addBoolean("actionOnEmptyResult", actionOnEmptyResult)
+      .build
 
-    def xmlCompact: String = {
-      if (nestedVerbs.isEmpty) s"""$gatherStart/>"""
-      else s"""$gatherStart>${nestedVerbs.map(_.xmlCompact).mkString}</Gather>"""
-    }
-
-    def xmlPretty: String = if (nestedVerbs.isEmpty) s"""$gatherStart />"""
-    else {
-      val verbsAsXmlList = nestedVerbs.map(v => StringUtil.indentEveryLineWith2Spaces(v.xmlPretty))
-      s"""$gatherStart>
-         |${verbsAsXmlList.mkString(System.lineSeparator())}
-         |</Gather>
-         |""".stripMargin
-    }
-
-    def toVerified: Verified     = VerifiedImpl(xmlCompact, xmlPretty)
-    def toUnverified: Unverified = UnverifiedImpl(xmlCompact, xmlPretty)
+    def toVerified: Verified     = VerifiedImpl(attributes, nestedVerbs)
+    def toUnverified: Unverified = UnverifiedImpl(attributes, nestedVerbs)
   }
 
   private final case class VerifiedImpl(
-      override val xmlCompact: String,
-      override val xmlPretty: String
+      override protected val tagAttributes: immutable.Seq[(String, String)],
+      override protected val tagSubElements: immutable.Seq[TwimlElement],
   ) extends Verified
   private final case class UnverifiedImpl(
-      override val xmlCompact: String,
-      override val xmlPretty: String
+      override protected val tagAttributes: immutable.Seq[(String, String)],
+      override protected val tagSubElements: immutable.Seq[TwimlElement],
   ) extends Unverified
 }

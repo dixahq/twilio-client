@@ -1,27 +1,10 @@
 package com.dixa.twilio.model.twiml
 
-import com.dixa.twilio.model.StringUtil
-import com.dixa.twilio.model.twiml.TwimlConstraints.{
-  Buildable,
-  BuildableFalse,
-  BuildableTrue,
-  LastAddedVerbProhibitMoreVerbs,
-  LastAddedVerbProhibitMoreVerbsFalse,
-  LastAddedVerbProhibitMoreVerbsTrue,
-  VerifiedFalse,
-  VerifiedTrue
-}
-import com.dixa.twilio.model.twiml.verb.{
-  DialVerb,
-  GatherVerb,
-  HangupVerb,
-  PauseVerb,
-  PlayVerb,
-  RedirectVerb,
-  SayVerb
-}
+import com.dixa.twilio.model.twiml.TwimlConstraints._
+import com.dixa.twilio.model.twiml.verb._
 
 import scala.annotation.nowarn
+import scala.collection.immutable
 
 // format: off
 /** Class represent the TwiML Response element (the root element of TwiML)
@@ -75,34 +58,31 @@ import scala.annotation.nowarn
   * to look up anything elsewhere.
   */
 // format: on
-sealed trait Response extends TwimlElement.Root
+sealed trait Response extends TwimlElement.Root {
+
+  override protected def tagName: String = "Response"
+
+  override protected def tagAttributes: immutable.Seq[(String, String)] = Nil
+
+  override protected def tagValue: Option[String] = None
+}
 
 object Response {
 
   sealed trait FromModel extends Response {
 
-    def verbs: Seq[TwimlElement.Verb]
+    def verbs: immutable.Seq[TwimlElement.Verb]
+
+    override protected def tagSubElements: immutable.Seq[TwimlElement] = verbs
 
     override final def toString = s"Response.${getClass.getSimpleName}($verbs)"
 
-    // format: off
-    override lazy val xmlCompact: String =
-      s"""<?xml version="1.0" encoding="UTF-8"?><Response>${verbs.map(_.xmlCompact).mkString("")}</Response>"""
-    // format: on
-
-    override lazy val xmlPretty: String = {
-      val verbsAsXmlList = verbs.map(v => StringUtil.indentEveryLineWith2Spaces(v.xmlPretty))
-      s"""<?xml version="1.0" encoding="UTF-8"?>
-         |<Response>
-         |${verbsAsXmlList.mkString(System.lineSeparator())}
-         |</Response>""".stripMargin
-    }
   }
 
   sealed trait Verified extends FromModel
 
   private final case class VerifiedImpl(
-      override val verbs: Seq[TwimlElement.Verb]
+      override val verbs: immutable.Seq[TwimlElement.Verb]
   ) extends Verified
 
   sealed trait Unverified extends Response
@@ -110,11 +90,12 @@ object Response {
   sealed trait UnverifiedFromModel extends FromModel with Unverified
 
   private final case class UnverifiedFromModelImpl(
-      override val verbs: Seq[TwimlElement.Verb]
+      override val verbs: immutable.Seq[TwimlElement.Verb]
   ) extends UnverifiedFromModel
 
   sealed trait UnverifiedFromString extends Unverified {
     def suppliedTwiml: String
+    override protected def tagSubElements: immutable.Seq[TwimlElement] = Nil
   }
 
   private final case class UnverifiedFromStringImpl(suppliedTwiml: String)
