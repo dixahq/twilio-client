@@ -784,7 +784,7 @@ object SayVerb {
         extends Voice("Polly.Ricardo", Gender.Male)
         with SupportsPolly
         with SupportsPtBR
-    case object `Polly.Vitória`
+    case object `Polly.Vitoria`
         extends Voice("Polly.Vitória", Gender.Female)
         with SupportsPolly
         with SupportsPtBR
@@ -800,7 +800,7 @@ object SayVerb {
         extends Voice("Polly.Cristiano", Gender.Male)
         with SupportsPolly
         with SupportsPtPT
-    case object `Polly.Inês`
+    case object `Polly.Ines`
         extends Voice("Polly.Inês", Gender.Female)
         with SupportsPolly
         with SupportsPtPT
