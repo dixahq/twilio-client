@@ -77,8 +77,8 @@ object SayVerb {
     sealed trait SupportsPollyAyandaNeural
     sealed trait SupportsPollyGeraint
     sealed trait SupportsPollySuviNeural
-    sealed trait SupportsPollyCéline
-    sealed trait SupportsPollyLéa
+    sealed trait SupportsPollyCeline
+    sealed trait SupportsPollyLea
     sealed trait SupportsPollyMathieu
     sealed trait SupportsPollyLeaNeural
     sealed trait SupportsPollyChantal
@@ -90,7 +90,7 @@ object SayVerb {
     sealed trait SupportsPollyVickiNeural
     sealed trait SupportsPollyDanielNeural
     sealed trait SupportsPollyHannahNeural
-    sealed trait SupportsPollyDóra
+    sealed trait SupportsPollyDora
     sealed trait SupportsPollyKarl
     sealed trait SupportsPollyBianca
     sealed trait SupportsPollyCarla
@@ -110,11 +110,11 @@ object SayVerb {
     sealed trait SupportsPollyOlaNeural
     sealed trait SupportsPollyCamila
     sealed trait SupportsPollyRicardo
-    sealed trait SupportsPollyVitória
+    sealed trait SupportsPollyVitoria
     sealed trait SupportsPollyCamilaNeural
     sealed trait SupportsPollyVitoriaNeural
     sealed trait SupportsPollyCristiano
-    sealed trait SupportsPollyInês
+    sealed trait SupportsPollyInes
     sealed trait SupportsPollyInesNeural
     sealed trait SupportsPollyCarmen
     sealed trait SupportsPollyMaxim
@@ -127,7 +127,7 @@ object SayVerb {
     sealed trait SupportsPollyMiaNeural
     sealed trait SupportsPollyLupe
     sealed trait SupportsPollyMiguel
-    sealed trait SupportsPollyPenélope
+    sealed trait SupportsPollyPenelope
     sealed trait SupportsPollyLupeNeural
     sealed trait SupportsPollyPedroNeural
     sealed trait SupportsPollyAstrid
@@ -240,8 +240,8 @@ object SayVerb {
     case object `fr-FR`
         extends LanguageCode("fr-FR")
         with SupportsAliceVoice
-        with SupportsPollyCéline
-        with SupportsPollyLéa
+        with SupportsPollyCeline
+        with SupportsPollyLea
         with SupportsPollyMathieu
         with SupportsPollyLeaNeural
 
@@ -273,7 +273,7 @@ object SayVerb {
         with SupportsPollyKajalNeural
 
     /** "Icelandic, Iceland" */
-    case object `is-IS` extends LanguageCode("is-IS") with SupportsPollyDóra with SupportsPollyKarl
+    case object `is-IS` extends LanguageCode("is-IS") with SupportsPollyDora with SupportsPollyKarl
 
     /** "Italian, Italy" */
     case object `it-IT`
@@ -311,7 +311,7 @@ object SayVerb {
         extends LanguageCode("es-US")
         with SupportsPollyLupe
         with SupportsPollyMiguel
-        with SupportsPollyPenélope
+        with SupportsPollyPenelope
         with SupportsPollyLupeNeural
         with SupportsPollyPedroNeural
 
@@ -349,7 +349,7 @@ object SayVerb {
         with SupportsAliceVoice
         with SupportsPollyCamila
         with SupportsPollyRicardo
-        with SupportsPollyVitória
+        with SupportsPollyVitoria
         with SupportsPollyCamilaNeural
         with SupportsPollyVitoriaNeural
 
@@ -358,7 +358,7 @@ object SayVerb {
         extends LanguageCode("pt-PT")
         with SupportsAliceVoice
         with SupportsPollyCristiano
-        with SupportsPollyInês
+        with SupportsPollyInes
         with SupportsPollyInesNeural
 
     /** "Romanian, Romania" */
@@ -642,11 +642,11 @@ object SayVerb {
         extends Voice("Polly.Suvi - Neural", Gender.Female)
         with SupportsPolly
         with SupportsFiFI
-    case object `Polly.Céline`
+    case object `Polly.Celine`
         extends Voice("Polly.Céline", Gender.Female)
         with SupportsPolly
         with SupportsFrFR
-    case object `Polly.Léa`
+    case object `Polly.Lea`
         extends Voice("Polly.Léa", Gender.Female)
         with SupportsPolly
         with SupportsFrFR
