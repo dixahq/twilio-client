@@ -704,7 +704,7 @@ object SayVerb {
         with SupportsPolly
         with SupportsHiIN
         with SupportsEnIN
-    case object `Polly.Dóra`
+    case object `Polly.Dora`
         extends Voice("Polly.Dóra", Gender.Female)
         with SupportsPolly
         with SupportsIsIS
