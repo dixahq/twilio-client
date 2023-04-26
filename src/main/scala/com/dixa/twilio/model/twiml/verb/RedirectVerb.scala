@@ -1,17 +1,23 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.{HttpMethod, StringUtil}
+import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
+import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
 import scala.annotation.nowarn
+import scala.collection.immutable
 
 /** Representation of the Redirect Verb from TwiML
   *
   * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
   * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
-sealed trait RedirectVerb extends TwimlElement.Verb {}
+sealed trait RedirectVerb extends TwimlElement.Verb {
+  override final protected def tagName: String = "Redirect"
+
+  override final protected def tagSubElements: immutable.Seq[TwimlElement] = Nil
+}
 
 object RedirectVerb {
 
@@ -42,12 +48,12 @@ object RedirectVerb {
   private final case class RedirectVerbImpl(callbackUrl: CallbackUrl, method: Option[HttpMethod])
       extends RedirectVerb {
 
-    override val xmlCompact: String = {
-      val methodAtt = method.map(m => s""" method="$m"""").getOrElse("")
-      s"""<Redirect$methodAtt>${StringUtil.xmlEscape(callbackUrl.toString)}</Redirect>"""
-    }
+    override protected def tagAttributes: immutable.Seq[(String, String)] =
+      new TagAttributeBuilder()
+        .add("method", method)
+        .build
 
-    override def xmlPretty: String = xmlCompact
+    override protected def tagValue: Option[String] = Some(callbackUrl.twilioString)
   }
 
 }

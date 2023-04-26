@@ -9,7 +9,7 @@ import scala.annotation.nowarn
   * be sure that it represent a positive integer, and that potential errors for guarantying that,
   * has already been handled.
   */
-final case class PositiveInteger private (int: Int) extends AnyVal {
+final case class PositiveInteger private (int: Int) extends TwilioStringValue {
   override def toString: String = int.toString
 }
 
