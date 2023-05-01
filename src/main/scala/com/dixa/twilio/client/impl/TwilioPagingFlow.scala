@@ -7,7 +7,6 @@ import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{Materializer, SourceShape}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import io.circe.generic.auto._
-import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.util.Try
 
@@ -57,7 +56,7 @@ private[impl] object TwilioPagingFlow {
             val tryResp = tuple2._1
             // Just fail the stream on non 200 request, as we would always expect 200 here
             val resp = tryResp.get
-            if (resp.status !== StatusCodes.OK)
+            if (resp.status != StatusCodes.OK)
               throw new RuntimeException(s"Non 200 response code from twilio: ${resp.status}")
             resp
           }

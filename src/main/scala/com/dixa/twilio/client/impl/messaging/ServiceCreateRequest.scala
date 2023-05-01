@@ -9,7 +9,6 @@ import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 import io.circe.generic.auto._
-import org.scalactic.TypeCheckedTripleEquals._
 
 import java.net.URLEncoder
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +33,7 @@ private[impl] final class ServiceCreateRequest()(
       .createHttpRequestUnsafe(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParams))
     http.singleRequest(httpReq).flatMap { httpResp =>
-      if (httpResp.status !== StatusCodes.Created) {
+      if (httpResp.status != StatusCodes.Created) {
         throw new RuntimeException(
           s"Could not create service: $req, due to getting status code ${httpResp.status} from Twilio"
         )
