@@ -1,7 +1,6 @@
 package com.dixa.twilio.model
 
 import scala.collection.immutable
-import org.scalactic.TypeCheckedTripleEquals._
 
 sealed abstract class PublicEdgeLocation(
     val edgeId: String,
@@ -26,11 +25,11 @@ object PublicEdgeLocation extends EnumWithTwilioString[PublicEdgeLocation] {
   case object Roaming   extends PublicEdgeLocation("roaming", Some(LegacyRegion.Gll))
 
   def withEdgeOrRegionIdOption(s: String): Option[PublicEdgeLocation] = {
-    values.find(a => a.edgeId === s || a.legacyRegionId.exists(_.id === s))
+    values.find(a => a.edgeId == s || a.legacyRegionId.exists(_.id == s))
   }
 
   def withEdgeOrRegionId(s: String): PublicEdgeLocation = {
-    values.find(a => a.edgeId === s || a.legacyRegionId.exists(_.id === s)) match {
+    values.find(a => a.edgeId == s || a.legacyRegionId.exists(_.id == s)) match {
       case Some(r) => r
       case None    => throw new NoSuchElementException(s"$s is not a member of Region enum")
     }
