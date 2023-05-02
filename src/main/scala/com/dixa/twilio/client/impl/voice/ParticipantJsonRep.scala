@@ -4,6 +4,7 @@ import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference.Participant
 import com.dixa.twilio.model.voice.{Call, Conference}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
 
@@ -20,7 +21,7 @@ private[voice] final case class ParticipantJsonRep(
     status: String,
     start_conference_on_enter: Boolean,
     coaching: Boolean,
-    call_sid_to_coach: Option[String]
+    call_sid_to_coach: Option[String] = None
 ) {
   private[voice] def toModel: Participant = {
     Participant(
@@ -39,4 +40,10 @@ private[voice] final case class ParticipantJsonRep(
       status = Participant.Status.fromTwilioStringUnsafe(status)
     )
   }
+}
+
+private[voice] object ParticipantJsonRep {
+
+  implicit val participantJsonRepReader: Reader[ParticipantJsonRep] =
+    macroR[ParticipantJsonRep]
 }

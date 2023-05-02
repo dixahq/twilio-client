@@ -2,6 +2,7 @@ package com.dixa.twilio.client.impl.iam
 
 import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
 
@@ -75,4 +76,9 @@ private[iam] final case class TwilioAccountJsonRep(
 
   override def toString =
     s"TwilioAccountJsonRep($status, $date_updated, ***, $friendly_name, $owner_account_sid, $sid, $date_created, ${`type`})"
+}
+
+private[impl] object TwilioAccountJsonRep {
+
+  implicit val upickleReader: Reader[TwilioAccountJsonRep] = macroR[TwilioAccountJsonRep]
 }

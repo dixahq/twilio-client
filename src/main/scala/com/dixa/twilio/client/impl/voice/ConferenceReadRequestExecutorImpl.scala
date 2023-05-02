@@ -3,18 +3,11 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.voice.ConferenceReadRequestExecutorImpl.{
-  dateCreatedParamKey,
-  dateUpdatedParamKey,
-  friendlyNameParamKey,
-  statusParamKey
-}
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceReadRequestExecutor.ConferenceReadException
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Conference
-import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 

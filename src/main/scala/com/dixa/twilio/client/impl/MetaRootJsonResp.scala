@@ -1,5 +1,10 @@
 package com.dixa.twilio.client.impl
 
+import com.dixa.twilio.client.impl.TwilioClientPickler.macroR
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+
+import scala.annotation.nowarn
+
 //  Full meta json object looks like this, but for now we only need the nex_page_url:
 //  "meta": {
 //    "page": 1,
@@ -18,4 +23,11 @@ private[client] final case class MetaRootJsonResp(meta: MetaRootJsonResp.MetaJso
 
 private[client] object MetaRootJsonResp {
   final case class MetaJsonRep(next_page_url: Option[String])
+
+  @nowarn(value = "cat=unused") // is used by the macro called in upickleRw
+  private implicit val metaJsonRepUpickleRW: Reader[MetaJsonRep] =
+    macroR[MetaJsonRep]
+
+  implicit val upickleRW: Reader[MetaRootJsonResp] =
+    macroR[MetaRootJsonResp]
 }

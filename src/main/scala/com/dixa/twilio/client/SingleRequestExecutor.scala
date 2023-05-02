@@ -2,8 +2,7 @@ package com.dixa.twilio.client
 
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
 import com.dixa.twilio.client.impl.{DefaultApiErrorEntityJsonRep, HttpEntityString}
-import io.circe.Decoder
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.Reader
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -154,7 +153,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
   }
 
   /** Helper method for parsing entity as Json, wrapping errors in UnspecifiedException. */
-  protected final def parseEntityAs[A: ClassTag: Decoder](
+  protected final def parseEntityAs[A: ClassTag: Reader](
       entity: HttpEntityString
   ): Either[UnspecifiedException, A] = {
     entity.parse[A]().left.map(e => createUnspecifiedException(None, Some(e)))

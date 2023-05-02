@@ -9,11 +9,10 @@ import com.dixa.twilio.client.impl.voice.ConferenceParticipantReadRequestExecuto
   mutedParamKey
 }
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
-import com.dixa.twilio.client.voice.ConferenceParticipantReadRequestExecutor.ConferenceParticipantsReadException
 import com.dixa.twilio.client.voice.ConferenceParticipantReadRequestExecutor
+import com.dixa.twilio.client.voice.ConferenceParticipantReadRequestExecutor.ConferenceParticipantsReadException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Conference
-import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 

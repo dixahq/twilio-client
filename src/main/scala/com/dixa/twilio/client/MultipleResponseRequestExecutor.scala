@@ -12,7 +12,7 @@ import com.dixa.twilio.client.impl.{
   TwilioResponseNextPageJsonRep,
   TwilioUri
 }
-import io.circe.generic.auto._
+import upickle.core.AbortException
 
 import scala.concurrent.Future
 import scala.util.Failure
@@ -174,10 +174,9 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
       .parse[TwilioResponseNextPageJsonRep]()
       .map(_.next_page_uri)
       .left
-      .map(
+      .map(t =>
         createUnspecifiedException(
-          "Failed to parse response for getting the next page element",
-          _
+          s"Failed to parse response for getting the next page element: ${t.getMessage}",
         )
       )
   }
@@ -187,8 +186,10 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
       .parse[MetaRootJsonResp]()
       .map(_.meta.next_page_url)
       .left
-      .map(
-        createUnspecifiedException("Failed to parse response for getting the next page element", _)
+      .map(t =>
+        createUnspecifiedException(
+          s"Failed to parse response for getting the next page element: ${t.getMessage}"
+        )
       )
   }
 
@@ -203,10 +204,9 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
           .flatMap(_.createHttpRequest(connectionSettings))
           .map(Some(_))
           .left
-          .map(
+          .map(t =>
             createUnspecifiedException(
-              s"Error creating HttpRequest for nextPage: $nextPage",
-              _
+              s"Error creating HttpRequest for nextPage: $nextPage - ${t.getMessage}"
             )
           )
       case None => Right(None)
@@ -265,6 +265,9 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
             .superPool[NotUsed]()
             .map(
               _._1 match {
+                case Failure(exception: AbortException) =>
+                  // Don't expose upickle exception, as upickle is a implementation detail.
+                  Left(createUnspecifiedException(Some(exception.getMessage), None))
                 case Failure(exception: RuntimeException) =>
                   Left(createUnspecifiedException(Some(exception.getMessage), Some(exception)))
                 // If the exception returned if more server then a RuntimeException, we want it thrown to clearly signal that something is very wrong
@@ -305,7 +308,7 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
     resp.status match {
       case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
       case StatusCodes.Conflict =>
-        httpEntityString.parse[DefaultApiErrorEntityJsonRep] match {
+        httpEntityString.parse[DefaultApiErrorEntityJsonRep]() match {
           case Right(DefaultApiErrorEntityJsonRep(20409L, _, _, _)) =>
             Left(ApiException.Conflict())
           case _ => Right((resp, httpEntityString))
