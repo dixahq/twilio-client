@@ -1,4 +1,16 @@
 import sbt.Test
+import com.dixa.sbt.ReleaseStateTransformations.{
+  dixaAddGitHistoryToReleaseTag,
+  dixaCheckSnapshotDependencies,
+  dixaDetermineVersion,
+  dixaPushReleaseTag
+}
+import sbtrelease.ReleasePlugin.autoImport.{
+  releaseProcess,
+  releaseStepCommandAndRemaining,
+  ReleaseStep
+}
+import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
 val scala2_12          = "2.12.17"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
@@ -49,13 +61,6 @@ lazy val `twilio-client` = project
       ),
       crossScalaVersions := Seq(scala2_12),
       releaseCrossBuild  := true,
-      publishTo := {
-        if (version.value.trim.endsWith("SNAPSHOT")) {
-          Some(snapshotsRepository)
-        } else {
-          Some(releasesRepository)
-        }
-      },
       libraryDependencies ++= Seq(
         // Akka
         "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka     % Provided,
@@ -76,9 +81,21 @@ lazy val `twilio-client` = project
         "org.scalamock"         %% "scalamock-scalatest-support" % "3.6.0"  % Test,
         "com.github.tomakehurst" % "wiremock"                    % "2.27.2" % Test
       ),
-      coverageMinimumStmtTotal := 70,
-      coverageFailOnMinimum    := false,
-      coverageHighlighting     := false,
+
+      publish / skip := false,
+      releaseProcess :=
+        Seq[ReleaseStep](
+          dixaCheckSnapshotDependencies,
+          runClean,
+          dixaDetermineVersion,
+          releaseStepCommandAndRemaining("+test"),
+          releaseStepCommandAndRemaining("+publish"),
+          tagRelease,
+          dixaAddGitHistoryToReleaseTag,
+          dixaPushReleaseTag
+        ),
+
+      // Test
       Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
