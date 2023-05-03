@@ -12,7 +12,7 @@ import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.concurrent.ExecutionContext
 
@@ -88,4 +88,7 @@ private object PhoneNumberCreateRequestExecutorImpl {
         TwilioMessagingService.Sid.unsafe(service_sid)
       )
   }
+
+  private implicit val messagingPhoneNumberJsonRepReader: Reader[MessagingPhoneNumberJsonRep] =
+    macroR[MessagingPhoneNumberJsonRep]
 }

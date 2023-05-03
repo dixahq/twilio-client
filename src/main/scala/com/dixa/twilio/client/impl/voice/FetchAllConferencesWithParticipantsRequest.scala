@@ -7,17 +7,11 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.voice.ConferenceJsonRep.TwilioConferenceJsonResp
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  ApiVersion,
-  HttpEntityString,
-  TwilioPagingFlow,
-  TwilioUri
-}
+import com.dixa.twilio.client.impl._
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.model.voice.Conference
-import io.circe.generic.auto._
+import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext
@@ -75,6 +69,9 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
   private final case class TwilioConferenceOuterJsonRep(
       conferences: Vector[TwilioConferenceJsonResp]
   )
+
+  private implicit val twilioConferenceOuterJsonRepReader: Reader[TwilioConferenceOuterJsonRep] =
+    macroR[TwilioConferenceOuterJsonRep]
 
   private def entityToConferenceJsonRep(entity: HttpEntityString): Seq[TwilioConferenceJsonResp] = {
     val decoded = entity.parse[TwilioConferenceOuterJsonRep]().toTry.get

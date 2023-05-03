@@ -23,8 +23,6 @@ import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import io.circe.generic.auto._
-import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
@@ -83,7 +81,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       entity: HttpEntityString
   ): Either[MessageSendException, MessageResource] = {
     parseEntityAs[MessageJsonRep](entity).flatMap { decoded =>
-      MessageDirection.values.find(_.twilioString === decoded.direction) match {
+      MessageDirection.values.find(_.twilioString == decoded.direction) match {
         case None =>
           Left(
             new MessageSendException.Unspecified(
@@ -91,7 +89,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
             )
           )
         case Some(direction) =>
-          req.from.asString === decoded.from match {
+          req.from.asString == decoded.from match {
             case false =>
               Left(
                 new MessageSendException.Unspecified(
@@ -99,7 +97,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                 )
               )
             case true =>
-              MessageStatus.values.find(_.twilioString === decoded.status) match {
+              MessageStatus.values.find(_.twilioString == decoded.status) match {
                 case None =>
                   Left(
                     new MessageSendException.Unspecified(

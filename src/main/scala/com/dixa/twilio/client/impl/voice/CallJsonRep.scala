@@ -4,8 +4,9 @@ import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
-import com.dixa.twilio.model.voice.{Call, Group, Trunk}
 import com.dixa.twilio.model.voice.Call.FormattedPhoneNumber
+import com.dixa.twilio.model.voice.{Call, Group, Trunk}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.{Duration, Instant}
 import scala.util.Try
@@ -13,28 +14,28 @@ import scala.util.Try
 /** Json representation of a Call */
 private[impl] case class CallJsonRep(
     account_sid: String,
-    answered_by: Option[String],
+    answered_by: Option[String] = None,
     api_version: String,
-    caller_name: Option[String],
+    caller_name: Option[String] = None,
     date_created: String,
     date_updated: String,
     direction: String,
-    duration: Option[String],
-    end_time: Option[String],
-    forwarded_from: Option[String],
+    duration: Option[String] = None,
+    end_time: Option[String] = None,
+    forwarded_from: Option[String] = None,
     from: String,
     from_formatted: String,
     group_sid: Option[String],
-    parent_call_sid: Option[String],
-    phone_number_sid: Option[String],
-    price: Option[String],
+    parent_call_sid: Option[String] = None,
+    phone_number_sid: Option[String] = None,
+    price: Option[String] = None,
     price_unit: String,
     sid: String,
-    start_time: Option[String],
+    start_time: Option[String] = None,
     status: String,
     to: String,
     to_formatted: String,
-    trunk_sid: Option[String],
+    trunk_sid: Option[String] = None,
     queue_time: String,
 ) {
 
@@ -65,4 +66,9 @@ private[impl] case class CallJsonRep(
 
   private def optionStringToOptionLong(x: Option[String]): Option[Long] =
     x.flatMap(asString => Try(asString.toLong).toOption)
+}
+
+private[voice] object CallJsonRep {
+  implicit val upickleReader: Reader[CallJsonRep] =
+    macroR[CallJsonRep]
 }

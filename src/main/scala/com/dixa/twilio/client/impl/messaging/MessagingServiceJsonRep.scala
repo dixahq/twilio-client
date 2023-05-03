@@ -4,19 +4,20 @@ import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
 import com.dixa.twilio.model.messaging.{StatusCallback, TwilioMessagingService}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.net.URL
 
 private[messaging] final case class MessagingServiceJsonRep(
     sid: String,
     account_sid: String,
-    friendly_name: Option[String],
-    inbound_request_url: Option[String],
-    inbound_method: Option[String],
-    fallback_url: Option[String],
-    fallback_method: Option[String],
-    status_callback: Option[String],
-    use_inbound_webhook_on_number: Option[Boolean]
+    friendly_name: Option[String] = None,
+    inbound_request_url: Option[String] = None,
+    inbound_method: Option[String] = None,
+    fallback_url: Option[String] = None,
+    fallback_method: Option[String] = None,
+    status_callback: Option[String] = None,
+    use_inbound_webhook_on_number: Option[Boolean] = None
 ) {
 
   private def toInboundRequestWebhook = {
@@ -60,4 +61,10 @@ private[messaging] final case class MessagingServiceJsonRep(
       use_inbound_webhook_on_number.getOrElse(false)
     )
   )
+}
+
+private[messaging] object MessagingServiceJsonRep {
+
+  implicit val messagingServiceJsonRepReader: Reader[MessagingServiceJsonRep] =
+    macroR[MessagingServiceJsonRep]
 }

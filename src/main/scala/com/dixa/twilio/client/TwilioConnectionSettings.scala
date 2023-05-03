@@ -5,7 +5,6 @@ import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import enumeratum.{Enum, EnumEntry}
-import org.scalactic.TypeCheckedTripleEquals._
 
 import scala.collection.immutable
 import scala.concurrent.duration.{DurationInt, FiniteDuration}
@@ -52,7 +51,7 @@ final case class TwilioConnectionSettings(
     * Wiremock, where the request should just go to localhost without a subdomain appended.
     */
   private[client] def hostNameFor(subDomain: ApiSubDomain): String = {
-    if (endpoint.baseHostName === "localhost" || endpoint.baseHostName === "127.0.0.1")
+    if (endpoint.baseHostName == "localhost" || endpoint.baseHostName == "127.0.0.1")
       endpoint.baseHostName
     else s"$subDomain.${endpoint.baseHostName}"
   }
@@ -79,8 +78,8 @@ object TwilioConnectionSettings {
       */
     lazy val halfCpuCores: ParallelFactor = {
       val halfCpu = Runtime.getRuntime.availableProcessors() match {
-        case numberOfCores if numberOfCores === 1 => 1
-        case numberOfCores                        => numberOfCores / 2
+        case numberOfCores if numberOfCores == 1 => 1
+        case numberOfCores                       => numberOfCores / 2
       }
       ParallelFactor(halfCpu)
     }

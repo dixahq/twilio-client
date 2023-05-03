@@ -3,10 +3,12 @@ package com.dixa.twilio.client.impl.voice
 import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.PublicEdgeLocation
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.{Call, Conference}
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
+import com.dixa.twilio.model.voice.{Call, Conference}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
+import scala.annotation.nowarn
 
 private[voice] object ConferenceJsonRep {
 
@@ -15,6 +17,10 @@ private[voice] object ConferenceJsonRep {
     * This is a sub resource of [[TwilioConferenceJsonResp]] so see that for details.
     */
   private[voice] final case class TwilioConferenceSubUrisRep(participants: String)
+
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val twilioConferenceSubUrisRepReader: Reader[TwilioConferenceSubUrisRep] =
+    macroR[TwilioConferenceSubUrisRep]
 
   /** Class representing the Twilio JSON representation of a conference.
     *
@@ -34,8 +40,8 @@ private[voice] object ConferenceJsonRep {
       region: String,
       sid: String,
       status: String,
-      reason_conference_ended: Option[String],
-      call_sid_ending_conference: Option[String],
+      reason_conference_ended: Option[String] = None,
+      call_sid_ending_conference: Option[String] = None,
       subresource_uris: TwilioConferenceSubUrisRep
   ) {
     private[voice] def toModel(
@@ -68,5 +74,11 @@ private[voice] object ConferenceJsonRep {
         call_sid_ending_conference.map(Call.Sid.unsafe),
       )
     }
+  }
+
+  private[voice] object TwilioConferenceJsonResp {
+
+    implicit val upickleReader: Reader[TwilioConferenceJsonResp] =
+      macroR[TwilioConferenceJsonResp]
   }
 }

@@ -14,9 +14,10 @@ import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, Message}
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
+import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
@@ -46,18 +47,6 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
       cause: Option[Throwable]
   ): UnspecifiedException = MessageMediaResourceReadException.Unspecified(msg, cause)
 
-  private case class MediaResourceListJsonRep(
-      first_page_uri: String,
-      end: Int,
-      media_list: List[MediaResourcesReferenceJsonRep],
-      previous_page_uri: Option[String],
-      uri: String,
-      page_size: Int,
-      start: Int,
-      next_page_uri: Option[String],
-      page: Int
-  )
-
   private case class MediaResourcesReferenceJsonRep(
       sid: String,
       account_sid: String,
@@ -84,6 +73,26 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
       )
     }
   }
+
+  @nowarn(value = "cat=unused") // Used by macro code
+  private implicit val mediaResourcesReferenceJsonRepReader
+      : Reader[MediaResourcesReferenceJsonRep] =
+    macroR[MediaResourcesReferenceJsonRep]
+
+  private case class MediaResourceListJsonRep(
+      first_page_uri: String,
+      end: Int,
+      media_list: List[MediaResourcesReferenceJsonRep],
+      previous_page_uri: Option[String] = None,
+      uri: String,
+      page_size: Int,
+      start: Int,
+      next_page_uri: Option[String] = None,
+      page: Int
+  )
+
+  private implicit val mediaResourceListJsonRepReader: Reader[MediaResourceListJsonRep] =
+    macroR[MediaResourceListJsonRep]
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,
