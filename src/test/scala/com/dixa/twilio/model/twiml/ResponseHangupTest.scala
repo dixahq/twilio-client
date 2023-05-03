@@ -11,7 +11,7 @@ final class ResponseHangupTest extends AnyWordSpec {
 
       "be able to create the Response" in {
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addHangup(_.build()).buildVerified
+          responseBuilder.addHangup(_.build()).buildVerified()
         }
 
         val expectedPrettyXml =

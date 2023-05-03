@@ -89,8 +89,8 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
         val resultFut = instance.run(connSettings, toDelete)
         resultFut.map { result =>
           assert(result.isLeft)
-          result.left.get match {
-            case e: PhoneNumberDeleteException.UnspecifiedError =>
+          result match {
+            case Left(e: PhoneNumberDeleteException.UnspecifiedError) =>
               assert(e.getMessage.contains("AErrorEntityThatShouldBePartOfTheErrorsMsg"))
             case other => fail(s"Wrong error returned: $other")
           }
@@ -127,8 +127,8 @@ final class MessagingPhoneNumberDeleteTest extends TwilioClientTest {
         val resultFut = instance.run(connSettings, toDelete)
         resultFut.map { result =>
           assert(result.isLeft)
-          result.left.get match {
-            case e: PhoneNumberDeleteException.NotFound =>
+          result match {
+            case Left(e: PhoneNumberDeleteException.NotFound) =>
               assert(e.getMessage === twilioErrMessage)
             case other => fail(s"Wrong error returned: $other")
           }

@@ -5,7 +5,6 @@ import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
-import scala.annotation.nowarn
 import scala.collection.immutable
 
 /** Representation of the Redirect Verb from TwiML
@@ -31,7 +30,6 @@ object RedirectVerb {
 
     def withMethod(method: HttpMethod): Builder[B] = new Builder(callbackUrl, Some(method))
 
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): RedirectVerb =

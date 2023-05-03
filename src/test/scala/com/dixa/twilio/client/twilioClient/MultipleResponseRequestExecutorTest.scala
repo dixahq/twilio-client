@@ -10,7 +10,6 @@ import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, matching}
-import org.scalamock.scalatest.AsyncMockFactory
 import org.scalatest.Assertion
 import org.scalatest.wordspec.AsyncWordSpec
 
@@ -21,7 +20,6 @@ import scala.concurrent.ExecutionContext
 final class MultipleResponseRequestExecutorTest
     extends AsyncWordSpec
     with WireMockTest
-    with AsyncMockFactory
     with TestActorSystem {
 
   import MultipleResponseRequestExecutorTest._

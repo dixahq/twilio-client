@@ -17,7 +17,7 @@ import com.dixa.twilio.client.{
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import org.scalamock.scalatest.AsyncMockFactory
+import org.scalamock.scalatest.proxy.AsyncMockFactory
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
@@ -269,9 +269,9 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         impl.run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
           result =>
             assert(result.isLeft)
-            result.left.get match {
-              case ue: AbstractTestException.Undefined => assert(ue.getCause === toThrow)
-              case _                                   => fail("Wrong cause in Exception")
+            result match {
+              case Left(ue: AbstractTestException.Undefined) => assert(ue.getCause === toThrow)
+              case _                                         => fail("Wrong cause in Exception")
             }
         }
       }
@@ -307,13 +307,14 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           TwilioConnectionSettings.Timeouts.default
         )
 
-        val twilioClientIam = stub[TwilioClientIam]
+        val twilioClientIam: TwilioClientIam = stub[TwilioClientIam]("testTwilioClientIam")
 
-        val client = stub[TwilioClient]
-        (client.iam _).when().returns(twilioClientIam)
+        val client: TwilioClient = stub[TwilioClient]("testTwilioClient")
+        (() => client.iam).when().returns(twilioClientIam)
 
-        val accountFetchReqExecutor = stub[AccountFetchRequestExecutor]
-        (twilioClientIam.accountFetch _).when().returns(accountFetchReqExecutor)
+        val accountFetchReqExecutor: AccountFetchRequestExecutor =
+          stub[AccountFetchRequestExecutor]("testAccountFetchRequestExecutor")
+        (() => twilioClientIam.accountFetch).when().returns(accountFetchReqExecutor)
 
         val fetchReq = AccountFetchRequest(accountSid = accountSid)
 
