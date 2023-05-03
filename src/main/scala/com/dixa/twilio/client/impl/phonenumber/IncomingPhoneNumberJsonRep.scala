@@ -8,6 +8,9 @@ import com.dixa.twilio.model.phonenumber.{
   TwilioIncomingPhoneNumber,
   TwilioPhoneNumber
 }
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+
+import scala.annotation.nowarn
 
 private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     sid: String,
@@ -31,11 +34,19 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
   )
 }
 
-object IncomingPhoneNumberJsonRep {
-  private[phonenumber] final case class IncomingNumberCapabilitiesJsonRep(
+private[phonenumber] object IncomingPhoneNumberJsonRep {
+  final case class IncomingNumberCapabilitiesJsonRep(
       voice: Boolean,
       sms: Boolean,
       mms: Boolean,
-      fax: Option[Boolean],
+      fax: Option[Boolean] = None,
   )
+
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val incomingNumberCapabilitiesJsonRepReader
+      : Reader[IncomingNumberCapabilitiesJsonRep] =
+    macroR[IncomingNumberCapabilitiesJsonRep]
+
+  implicit val incomingPhoneNumberJsonRepReader: Reader[IncomingPhoneNumberJsonRep] =
+    macroR[IncomingPhoneNumberJsonRep]
 }

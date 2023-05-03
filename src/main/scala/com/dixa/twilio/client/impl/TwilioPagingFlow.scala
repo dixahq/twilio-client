@@ -6,7 +6,6 @@ import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusC
 import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
 import akka.stream.{Materializer, SourceShape}
 import com.dixa.twilio.client.TwilioConnectionSettings
-import io.circe.generic.auto._
 
 import scala.util.Try
 
@@ -89,8 +88,6 @@ private[impl] object TwilioPagingFlow {
     })
   }
 
-  private final case class TwilioResponseNextPageJsonRep(next_page_uri: Option[String])
-
 //  Full meta json object likes like this, but for now we only need the nex_page_url:
 //  "meta": {
 //    "page": 1,
@@ -109,7 +106,7 @@ private[impl] object TwilioPagingFlow {
     val optionalUri = apiSubDomain.pagingStyle match {
       case PagingStyle.NoPaging => None
       case PagingStyle.PagingAttributesInRootJson =>
-        in.parse[TwilioResponseNextPageJsonRep]().toTry.get.next_page_uri
+        in.parseUnsafe[TwilioResponseNextPageJsonRep]().next_page_uri
       case PagingStyle.MetaObject =>
         in.parse[MetaRootJsonResp]().toTry.get.meta.next_page_url
     }

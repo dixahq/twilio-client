@@ -3,13 +3,7 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.{
-  ApiSubDomain,
-  ApiVersion,
-  DefaultApiErrorEntityJsonRep,
-  HttpEntityString,
-  QueryParamBuilder
-}
+import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.voice.QueueUpdateRequestExecutor
 import com.dixa.twilio.client.voice.QueueUpdateRequestExecutor.{
   QueueUpdateException,
@@ -17,7 +11,6 @@ import com.dixa.twilio.client.voice.QueueUpdateRequestExecutor.{
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Queue
-import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 

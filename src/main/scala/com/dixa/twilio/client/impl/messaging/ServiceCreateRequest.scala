@@ -8,7 +8,6 @@ import com.dixa.twilio.client.impl.messaging.ServiceCreateRequest.createPostPara
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.model.messaging.TwilioMessagingService
-import io.circe.generic.auto._
 
 import java.net.URLEncoder
 import scala.concurrent.{ExecutionContext, Future}

@@ -6,6 +6,9 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberCapabilities._
 import com.dixa.twilio.model.phonenumber.PhoneNumberRegulatoryRequirement.AddressRequirementType
 import com.dixa.twilio.model.phonenumber._
 import com.neovisionaries.i18n.CountryCode
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+
+import scala.annotation.nowarn
 
 private[phonenumber] final case class ActivePhoneNumberJsonRep(
     sid: String,
@@ -83,7 +86,7 @@ private[phonenumber] final case class ActivePhoneNumberJsonRep(
   )
 }
 
-object ActivePhoneNumberJsonRep {
+private[phonenumber] object ActivePhoneNumberJsonRep {
   private[phonenumber] final case class PhoneNumberVoiceCapabilitiesJsonRep(
       inbound_connectivity: Boolean,
       outbound_connectivity: Boolean,
@@ -99,6 +102,11 @@ object ActivePhoneNumberJsonRep {
       inbound_reachability: String,
   )
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberVoiceCapabilitiesJsonRepReader
+      : Reader[PhoneNumberVoiceCapabilitiesJsonRep] =
+    macroR[PhoneNumberVoiceCapabilitiesJsonRep]
+
   private[phonenumber] final case class PhoneNumberSmsCapabilitiesJsonRep(
       inbound_connectivity: Boolean,
       outbound_connectivity: Boolean,
@@ -109,6 +117,11 @@ object ActivePhoneNumberJsonRep {
       inbound_mps: Int,
   )
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberSmsCapabilitiesJsonRepReader
+      : Reader[PhoneNumberSmsCapabilitiesJsonRep] =
+    macroR[PhoneNumberSmsCapabilitiesJsonRep]
+
   private[phonenumber] final case class PhoneNumberMmsCapabilitiesJsonRep(
       inbound_connectivity: Boolean,
       outbound_connectivity: Boolean,
@@ -116,52 +129,88 @@ object ActivePhoneNumberJsonRep {
       inbound_mps: Int,
   )
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberMmsCapabilitiesJsonRepReader
+      : Reader[PhoneNumberMmsCapabilitiesJsonRep] =
+    macroR[PhoneNumberMmsCapabilitiesJsonRep]
+
   private[phonenumber] final case class PhoneNumberCapabilitiesJsonRep(
       voice: PhoneNumberVoiceCapabilitiesJsonRep,
       sms: PhoneNumberSmsCapabilitiesJsonRep,
       mms: PhoneNumberMmsCapabilitiesJsonRep,
   )
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberCapabilitiesJsonRepReader
+      : Reader[PhoneNumberCapabilitiesJsonRep] =
+    macroR[PhoneNumberCapabilitiesJsonRep]
+
   private[phonenumber] final case class PhoneNumberGeographyJsonRep(
       iso_country: String,
-      lata: Option[String],
-      rate_center: Option[String],
-      latitude: Option[String],
-      longitude: Option[String],
-      region: Option[String],
-      locality: Option[String],
-      postal_code: Option[String],
+      lata: Option[String] = None,
+      rate_center: Option[String] = None,
+      latitude: Option[String] = None,
+      longitude: Option[String] = None,
+      region: Option[String] = None,
+      locality: Option[String] = None,
+      postal_code: Option[String] = None,
   )
+
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val outerJsonRepReader: Reader[PhoneNumberGeographyJsonRep] =
+    macroR[PhoneNumberGeographyJsonRep]
 
   private[phonenumber] final case class PhoneNumberRegulatoryJsonRep(
       address_requirements: String,
   )
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberRegulatoryJsonRepReader: Reader[PhoneNumberRegulatoryJsonRep] =
+    macroR[PhoneNumberRegulatoryJsonRep]
+
   private[phonenumber] final case class PhoneNumberVoiceConfigurationJsonRep(
-      url: Option[String],
-      method: Option[String],
-      fallback_url: Option[String],
-      fallback_method: Option[String],
-      application_sid: Option[String],
-      trunk_sid: Option[String],
-      emergency_address_sid: Option[String],
-      emergency_status: Option[String],
-      caller_id_lookup: Option[Boolean],
+      url: Option[String] = None,
+      method: Option[String] = None,
+      fallback_url: Option[String] = None,
+      fallback_method: Option[String] = None,
+      application_sid: Option[String] = None,
+      trunk_sid: Option[String] = None,
+      emergency_address_sid: Option[String] = None,
+      emergency_status: Option[String] = None,
+      caller_id_lookup: Option[Boolean] = None,
   )
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberVoiceConfigurationJsonRepReader
+      : Reader[PhoneNumberVoiceConfigurationJsonRep] =
+    macroR[PhoneNumberVoiceConfigurationJsonRep]
+
   private[phonenumber] final case class PhoneNumberSmsConfigurationJsonRep(
-      url: Option[String],
-      method: Option[String],
-      fallback_url: Option[String],
-      fallback_method: Option[String],
-      application_sid: Option[String],
+      url: Option[String] = None,
+      method: Option[String] = None,
+      fallback_url: Option[String] = None,
+      fallback_method: Option[String] = None,
+      application_sid: Option[String] = None,
   )
+
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberSmsConfigurationJsonRepReader
+      : Reader[PhoneNumberSmsConfigurationJsonRep] =
+    macroR[PhoneNumberSmsConfigurationJsonRep]
 
   private[phonenumber] final case class PhoneNumberConfigurationJsonRep(
       friendly_name: String,
-      status_callback_url: Option[String],
-      status_callback_method: Option[String],
+      status_callback_url: Option[String] = None,
+      status_callback_method: Option[String] = None,
       voice: PhoneNumberVoiceConfigurationJsonRep,
       sms: PhoneNumberSmsConfigurationJsonRep,
   )
+
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val phoneNumberConfigurationJsonRepReader
+      : Reader[PhoneNumberConfigurationJsonRep] =
+    macroR[PhoneNumberConfigurationJsonRep]
+
+  implicit val activePhoneNumberJsonRepReader: Reader[ActivePhoneNumberJsonRep] =
+    macroR[ActivePhoneNumberJsonRep]
 }

@@ -11,7 +11,7 @@ import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.{
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.concurrent.ExecutionContext
 
@@ -44,6 +44,9 @@ private[impl] class ReadAllAccountsRequestExecutorImpl(
   ): UnspecifiedException = ReadAllAccountsException.Unspecified(msg, cause)
 
   private case class TwilioAccountsOuterJsonRep(accounts: Vector[TwilioAccountJsonRep])
+
+  private implicit val twilioAccountsOuterJsonRepReader: Reader[TwilioAccountsOuterJsonRep] =
+    macroR[TwilioAccountsOuterJsonRep]
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,

@@ -5,9 +5,10 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Queue
 
 import java.time.{Duration, Instant}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 /** Json representation of a Call */
-private[impl] case class QueueJsonRep(
+private[voice] case class QueueJsonRep(
     account_sid: String,
     average_wait_time: Int,
     current_size: Int,
@@ -28,4 +29,9 @@ private[impl] case class QueueJsonRep(
     Instant.from(Formatter.dateTime.parse(date_created)),
     Instant.from(Formatter.dateTime.parse(date_updated))
   )
+}
+
+private[voice] object QueueJsonRep {
+
+  implicit val queueJsonRepReader: Reader[QueueJsonRep] = macroR[QueueJsonRep]
 }

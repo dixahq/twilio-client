@@ -62,10 +62,8 @@ lazy val `twilio-client` = project
         "com.typesafe.akka" %% "akka-stream"      % Version.Akka     % Provided,
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
-        // Circe
-        "io.circe" %% "circe-core"    % Version.Circe,
-        "io.circe" %% "circe-generic" % Version.Circe,
-        "io.circe" %% "circe-parser"  % Version.Circe,
+        // Json serialization / deserialization
+        "com.lihaoyi" %% "upickle"       % "3.1.0",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",

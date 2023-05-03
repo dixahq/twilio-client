@@ -7,7 +7,6 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.voice.ConferenceJsonRep.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioUri}
 import com.dixa.twilio.model.voice.Conference
-import io.circe.generic.auto._
 
 import scala.concurrent.{ExecutionContext, Future}
 

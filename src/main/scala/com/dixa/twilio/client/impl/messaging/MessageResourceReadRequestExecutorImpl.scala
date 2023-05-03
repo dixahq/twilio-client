@@ -12,7 +12,6 @@ import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import io.circe.generic.auto._
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext

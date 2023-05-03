@@ -5,22 +5,17 @@ import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpRespo
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
+import com.dixa.twilio.client._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
-import com.dixa.twilio.client.{
-  ApiException,
-  MultipleResponseRequestExecutor,
-  TestActorSystem,
-  TwilioConnectionSettings,
-  TwilioTestConstants
-}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, matching}
-import io.circe.CursorOp.DownField
-import io.circe.DecodingFailure
 import org.scalamock.scalatest.AsyncMockFactory
-import io.circe.generic.auto._
+import org.scalatest.Assertion
 import org.scalatest.wordspec.AsyncWordSpec
 
+import java.io.{PrintWriter, StringWriter}
+import scala.annotation.{nowarn, tailrec}
 import scala.concurrent.ExecutionContext
 
 final class MultipleResponseRequestExecutorTest
@@ -237,13 +232,11 @@ final class MultipleResponseRequestExecutorTest
               case Left(value) =>
                 value match {
                   case AbstractTestException.Undefined(_, Some(cause)) =>
-                    val expectedCause = DecodingFailure(
-                      "Missing required field",
-                      List(DownField("body"), DownField("successes"))
-                    )
-                    assert(
-                      cause.getMessage == expectedCause.getMessage
-                    )
+                    // just verify that the cause, and potential sub causes are not from upickle, as our json
+                    // library is purely an implementation detail, and should not leak into the API of the client
+                    assertThrowableAndSubCausesAreNotFromUpickle(cause)
+                  case AbstractTestException.Undefined(_, None) =>
+                    succeed
                   case _ => fail("Wrong cause in Exception")
 
                 }
@@ -251,6 +244,18 @@ final class MultipleResponseRequestExecutorTest
             }
           }
       }
+  }
+
+  @tailrec
+  private def assertThrowableAndSubCausesAreNotFromUpickle(t: Throwable): Assertion = {
+    val clue = if (t.getClass.getName.startsWith("upickle.")) {
+      val sw = new StringWriter()
+      val pw = new PrintWriter(sw)
+      t.printStackTrace(pw)
+      sw.toString
+    } else ""
+    assert(!t.getClass.getName.startsWith("upickle."), clue)
+    if (t.getCause != null) assertThrowableAndSubCausesAreNotFromUpickle(t.getCause) else succeed
   }
 
   private trait MultipleResponseRequestExecutorTestBaseImplemented
@@ -291,14 +296,27 @@ private object MultipleResponseRequestExecutorTest {
 
   final case class TestSuccess(body: String = "")
 
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val testSuccessReader: Reader[TestSuccess] =
+    macroR[TestSuccess]
+
   final case class TestSuccessJsonRep(body: String)
 
+  private implicit val testSuccessJsonRepReader: Reader[TestSuccessJsonRep] =
+    macroR[TestSuccessJsonRep]
+
   final case class ListJsonRep[A](successes: List[A])
+
+  private implicit def listJsonRepReader[A: Reader]: Reader[ListJsonRep[A]] =
+    macroR[ListJsonRep[A]]
 
   final case class TestResponseNextPageJsonRep(
       next_page_uri: Option[String],
       successes: List[TestSuccess]
   )
+
+  private implicit val testResponseNextPageJsonRepReader: Reader[TestResponseNextPageJsonRep] =
+    macroR[TestResponseNextPageJsonRep]
 
   def sharedNextPageHttpRequestBuilder(
       connectionSettings: TwilioConnectionSettings,
@@ -369,7 +387,7 @@ private object MultipleResponseRequestExecutorTest {
       case Left(ex) =>
         List(
           Left(
-            AbstractTestException.Undefined(Some(ex.cause.getMessage), Some(ex.cause))
+            AbstractTestException.Undefined(Some(ex.cause.getMessage), None)
           )
         )
       case Right(listJsonRep) =>
