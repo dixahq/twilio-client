@@ -9,13 +9,13 @@ on:
 
 jobs:
   build-test:
-    if: ${{ !endsWith(github.ref,'/master')
+    if: github.ref != 'refs/heads/master'
     uses: dixahq/github-actions/.github/workflows/sbt-release.yml@main
     secrets: inherit
     with:
       sbt_task: '"+test"'
   release:
-    if: ${{ endsWith(github.ref,'/master')
+    if: github.ref == 'refs/heads/master'
     uses: dixahq/github-actions/.github/workflows/sbt-release.yml@main
     secrets: inherit
     with:
