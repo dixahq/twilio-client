@@ -8,7 +8,6 @@ import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceUpdateRequestExecutor.ConferenceUpdateException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Conference
-import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 

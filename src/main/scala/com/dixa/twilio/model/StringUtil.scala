@@ -18,5 +18,4 @@ private[model] object StringUtil {
     .replace("'", "&apos;")
     .replace("<", "&lt;")
     .replace(">", "&gt;")
-
 }

@@ -1,6 +1,6 @@
 import sbt.Test
 
-val scala2_12          = "2.12.17"
+val scala2_12          = "2.13.10"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -11,9 +11,6 @@ val Version = new AnyRef {
   val Akka     = "2.6.20"
   val AkkaHttp = "10.2.10"
   val Circe    = "0.14.5"
-
-  // test
-  val ScalatestScalactic = "3.2.15"
 }
 
 lazy val `twilio-client` = project
@@ -65,22 +62,19 @@ lazy val `twilio-client` = project
         "com.typesafe.akka" %% "akka-stream"      % Version.Akka     % Provided,
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
-        // Circe
-        "io.circe" %% "circe-core"    % Version.Circe,
-        "io.circe" %% "circe-generic" % Version.Circe,
-        "io.circe" %% "circe-parser"  % Version.Circe,
+        // Json serialization / deserialization
+        "com.lihaoyi" %% "upickle"       % "3.1.0",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
-        "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
-        "com.beachape"  %% "enumeratum" % "1.7.2",
+        "com.beachape" %% "enumeratum" % "1.7.2",
 
         // Test
-        "org.scalatest" %% "scalatest"                   % Version.ScalatestScalactic % Test,
-        "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0"                    % Test,
-        "com.github.tomakehurst" % "wiremock" % "2.27.2" % Test
+        "org.scalatest"         %% "scalatest"                   % "3.2.15" % Test,
+        "org.scalamock"         %% "scalamock-scalatest-support" % "3.6.0"  % Test,
+        "com.github.tomakehurst" % "wiremock"                    % "2.27.2" % Test
       ),
       coverageMinimumStmtTotal := 70,
       coverageFailOnMinimum    := false,

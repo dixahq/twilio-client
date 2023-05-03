@@ -11,7 +11,6 @@ import com.dixa.twilio.client.voice.ConferenceParticipantDeleteRequestExecutor.{
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Funit
-import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 

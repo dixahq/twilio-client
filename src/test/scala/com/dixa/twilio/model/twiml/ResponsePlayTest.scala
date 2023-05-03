@@ -39,7 +39,7 @@ final class ResponsePlayTest extends AnyWordSpec {
           responseBuilder
             .addPlay { playBuilder =>
               playBuilder
-                .withDigits(DtmfString(DtmfDigit.`1`, DtmfDigit.w, DtmfDigit.`*`))
+                .withDigits(DtmfString(DtmfDigit.`1`, DtmfString.w, DtmfDigit.`*`))
                 .build()
             }
             .buildVerified()

@@ -1,19 +1,10 @@
 package com.dixa.twilio.model.twiml
 
-import com.dixa.twilio.model.StringUtil
-import com.dixa.twilio.model.twiml.TwimlConstraints.{
-  Buildable,
-  BuildableFalse,
-  BuildableTrue,
-  LastAddedVerbProhibitMoreVerbs,
-  LastAddedVerbProhibitMoreVerbsFalse,
-  LastAddedVerbProhibitMoreVerbsTrue,
-  VerifiedFalse,
-  VerifiedTrue
-}
-import com.dixa.twilio.model.twiml.verb.{DialVerb, PlayVerb, RedirectVerb, SayVerb}
+import com.dixa.twilio.model.twiml.TwimlConstraints._
+import com.dixa.twilio.model.twiml.verb._
 
 import scala.annotation.nowarn
+import scala.collection.immutable
 
 // format: off
 /** Class represent the TwiML Response element (the root element of TwiML)
@@ -43,60 +34,55 @@ import scala.annotation.nowarn
   *    }
   * }}}
   * [[Response.Builder.buildVerified]] can only be called, as long as you have not called
-  * [[Response.Builder.addCustomVerb]]. If you find you self building official TwiML, but still
-  * need to use a custom Verb, or create a Response from a String, then please contribute to
-  * this library instead, and make it support building the needed TwiMl in a typesafe way.
-  * 
-  * If you instead need to build a Response from a string, you simply just use call 
+  * [[Response.Builder.addCustomVerbs]].
+  *
+  * If you instead need to build a Response from a string, you simply just use call
   * [[Response.fromString]]. This will give you an instance of [[Response.UnverifiedFromString]].
   * In Contrast you will get a [[Response.Verified]] if you are building it via the [[Response.build]]
   * method without adding a custom [[TwimlElement.Verb]]. If you do add a custom verb, you end up
-  * with a [[Response.UnverifiedFromModel]]. 
-  * 
+  * with a [[Response.UnverifiedFromModel]].
+  *
   * Note that getting a [[Response.Verified]] is only guaranteeing that the TwiML is formatted
   * correctly, and is following the schema rules of Twiml. However we cannot guarantee that
   * the TwiML will not produce an error in Twilio at runtime, as a lot of TwiML elements can point
   * to external resources, that we have no way of checking at compile time. An example of this is Play,
-  * that can point to external downloadable files. 
-  * 
+  * that can point to external downloadable files.
+  *
   * It may seem like an extra unnecessary step, that the build method takes a function, that it then
-  * provides the builder to. But as many of the things added to the builder are objects themselves 
+  * provides the builder to. But as many of the things added to the builder are objects themselves
   * that need to be build using another builder, which provides a pleasant syntax for clients.
-  * Instead of them needing to find the correct builder to create 
+  * Instead of them needing to find the correct builder to create
   * and provide, they can just provide a function, give the argument (the builder) a name, and
   * start using it. This works really well with autocompletion in editors, after calling
   * [[Response.build]], autocompletion can show all of the possibilities, without clients needing
   * to look up anything elsewhere.
   */
 // format: on
-sealed trait Response extends TwimlElement.Root
+sealed trait Response extends TwimlElement.Root {
+
+  override protected def tagName: String = "Response"
+
+  override protected def tagAttributes: immutable.Seq[(String, String)] = Nil
+
+  override protected def tagValue: Option[String] = None
+}
 
 object Response {
 
   sealed trait FromModel extends Response {
 
-    def verbs: Seq[TwimlElement.Verb]
+    def verbs: immutable.Seq[TwimlElement.Verb]
+
+    override protected def tagSubElements: immutable.Seq[TwimlElement] = verbs
 
     override final def toString = s"Response.${getClass.getSimpleName}($verbs)"
 
-    // format: off
-    override lazy val xmlCompact: String =
-      s"""<?xml version="1.0" encoding="UTF-8"?><Response>${verbs.map(_.xmlCompact).mkString("")}</Response>"""
-    // format: on
-
-    override lazy val xmlPretty: String = {
-      val verbsAsXmlList = verbs.map(v => StringUtil.indentEveryLineWith2Spaces(v.xmlPretty))
-      s"""<?xml version="1.0" encoding="UTF-8"?>
-         |<Response>
-         |${verbsAsXmlList.mkString(System.lineSeparator())}
-         |</Response>""".stripMargin
-    }
   }
 
   sealed trait Verified extends FromModel
 
   private final case class VerifiedImpl(
-      override val verbs: Seq[TwimlElement.Verb]
+      override val verbs: immutable.Seq[TwimlElement.Verb]
   ) extends Verified
 
   sealed trait Unverified extends Response
@@ -104,11 +90,12 @@ object Response {
   sealed trait UnverifiedFromModel extends FromModel with Unverified
 
   private final case class UnverifiedFromModelImpl(
-      override val verbs: Seq[TwimlElement.Verb]
+      override val verbs: immutable.Seq[TwimlElement.Verb]
   ) extends UnverifiedFromModel
 
   sealed trait UnverifiedFromString extends Unverified {
     def suppliedTwiml: String
+    override protected def tagSubElements: immutable.Seq[TwimlElement] = Nil
   }
 
   private final case class UnverifiedFromStringImpl(suppliedTwiml: String)
@@ -146,24 +133,54 @@ object Response {
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
       new Builder(verbs :+ RedirectVerb.build(fun))
 
+    /** Add a Say verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/say
+      */
     @nowarn(value = "cat=unused-params")
     def addSay(fun: SayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ SayVerb.build(fun))
 
+    /** Add a Pause verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/pause
+      */
+    @nowarn(value = "cat=unused-params")
+    def addPause(fun: PauseVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] = new Builder(verbs :+ PauseVerb.build(fun))
+
+    /** Add a Play verb to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/play
+      */
     @nowarn(value = "cat=unused-params")
     def addPlay(fun: PlayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
       new Builder(verbs :+ PlayVerb.build(fun))
 
-    /** A a custom Verb to the builder (not recommended)
+    /** Add any Verb to the builder (try to avoid this, unless you have good reasons not to)
       *
-      * This will allow you to add you own custom implemented [[TwimlElement.Verb]], but as soon as
-      * you do that, then the builder can no longer guaranty to produce a verified response, and as
-      * such the generated [[Response]] may generate TwiML that is not valid, without detecting it
-      * compile time.
+      * This will allow you to add you own custom implemented [[TwimlElement.Verb]], or to add pre
+      * created verbs, but as soon as you do that, then the builder can no longer guaranty to
+      * produce a verified response, and as such the generated [[Response]] may generate TwiML that
+      * is not valid, without detecting it compile time.
+      *
+      * For the above reason, it is recommended to add the verbs you need via the respective `addX`
+      * methods, because then most mistakes will be caught compile time. However in some situations
+      * this may not be feasible, for example in cases where you construct Twiml based on very
+      * dynamic input values, that you don't have control of compile time. In such cases you can use
+      * this method instead.
+      *
+      * You can also use this for adding you own completely custom verbs, but in such case, you
+      * should consider if it would make sense to contribute that verb to this project instead, so
+      * it would not need to be a custom verb anymore.
       */
     @nowarn(value = "cat=unused-params")
     def addCustomVerb(
@@ -173,6 +190,64 @@ object Response {
     ): Builder[BuildableTrue, VerifiedFalse, L] =
       new Builder(verbs :+ verb)
 
+    /** Same as [[addCustomVerb]] just for multiple verbs at once. */
+    @nowarn(value = "cat=unused-params")
+    def addCustomVerbs(
+        verbsToAdd: Seq[TwimlElement.Verb]
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, VerifiedFalse, L] =
+      new Builder(verbs ++ verbsToAdd)
+
+    /** Add a [[com.dixa.twilio.model.twiml.verb.GatherVerb.Verified]] to the response.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather
+      */
+    @nowarn(value = "cat=unused-params")
+    def addGather(fun: GatherVerb.BuildFunction)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, L] =
+      new Builder(verbs :+ GatherVerb.build(fun))
+
+    /** Add a [[com.dixa.twilio.model.twiml.verb.GatherVerb.Unverified]] to the response.
+      *
+      * Calling this will prevent you from calling [[buildVerified]] and instead limit you to
+      * [[buildUnverified]]. For that reason it's recommended to call [[addGather]] instead if
+      * possible. However in some situations it might not be possible, such as if you create the
+      * nested verbs of the gather from very dynamic input data, it might not be possible, or at
+      * least a lot more easy to call this instead.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather
+      */
+    @nowarn(value = "cat=unused-params")
+    def addGatherUnverified(fun: GatherVerb.BuildFunctionUnverified)(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, TwimlConstraints.VerifiedFalse, L] =
+      new Builder(verbs :+ GatherVerb.build(fun))
+
+    /** Add the Hangup verb to the response.
+      *
+      * After this, no other verbs will be allowed on the response.
+      *
+      * The Hangup verb ends a call. If used as the first verb in a TwiML response it does not
+      * prevent Twilio from answering the call and billing your account. The only way to not answer
+      * a call and prevent billing is to use the Reject verb.
+      *
+      * A Hangup verb don't have any attributes and don't support nesting any verbs.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/hangup
+      */
+    @nowarn(value = "cat=unused-params")
+    def addHangup(
+        fun: HangupVerb.BuildFunction
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
+      new Builder(verbs :+ HangupVerb.build(fun))
+
     /** Build a verified [[Response]]
       *
       * By verified we mean an instance of a [[Response]], that is guaranteed to produce valid
@@ -180,7 +255,7 @@ object Response {
       *
       * To call this method you must have:
       *   1. Added at least one verb.
-      *   1. Added no custom verb - [[Response.Builder.addCustomVerb]].
+      *   1. Added no custom verb - [[Response.Builder.addCustomVerbs]].
       */
     @nowarn(value = "cat=unused-params")
     def buildVerified()(
@@ -194,7 +269,7 @@ object Response {
       *
       * To call this method you must have:
       *   1. Added at least one verb
-      *   1. Added a custom vert via [[Response.Builder.addCustomVerb]]
+      *   1. Added a custom vert via [[Response.Builder.addCustomVerbs]]
       */
     @nowarn(value = "cat=unused-params")
     def buildUnverified()(

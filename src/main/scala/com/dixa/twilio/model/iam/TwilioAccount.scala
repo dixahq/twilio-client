@@ -2,7 +2,6 @@ package com.dixa.twilio.model.iam
 
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract, TwilioStringValue}
-import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
 import scala.collection.immutable
@@ -20,7 +19,7 @@ final case class TwilioAccount(
     timeCreated: Instant,
     timeUpdated: Instant
 ) {
-  def isActive: Boolean = status === TwilioAccount.Status.Active
+  def isActive: Boolean = status == TwilioAccount.Status.Active
 }
 
 object TwilioAccount {

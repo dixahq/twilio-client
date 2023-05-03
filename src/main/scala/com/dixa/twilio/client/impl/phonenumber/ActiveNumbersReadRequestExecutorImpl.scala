@@ -11,7 +11,7 @@ import com.dixa.twilio.client.phonenumber.ActiveNumbersReadRequestExecutor.{
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.phonenumber.TwilioActivePhoneNumber
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.concurrent.ExecutionContext
 
@@ -44,6 +44,9 @@ private[impl] class ActiveNumbersReadRequestExecutorImpl(
   ): UnspecifiedException = ActiveNumbersReadException.Unspecified(msg, cause)
 
   private case class OuterJsonRep(items: List[ActivePhoneNumberJsonRep])
+
+  private implicit val outerJsonRepReader: Reader[OuterJsonRep] =
+    macroR[OuterJsonRep]
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,

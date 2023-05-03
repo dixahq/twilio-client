@@ -1,5 +1,7 @@
 package com.dixa.twilio.client.impl
 
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+
 /** Json representation of the standard error entity that Twilio will send back on none 200
   * responses.
   *
@@ -11,3 +13,9 @@ private[client] final case class DefaultApiErrorEntityJsonRep(
     more_info: String,
     status: Int
 )
+
+private[client] object DefaultApiErrorEntityJsonRep {
+
+  private[client] implicit val upickleRW: Reader[DefaultApiErrorEntityJsonRep] =
+    macroR[DefaultApiErrorEntityJsonRep]
+}

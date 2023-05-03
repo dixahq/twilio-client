@@ -1,11 +1,12 @@
 package com.dixa.twilio.model.twiml.noun
 
-import com.dixa.twilio.model.StringUtil
+import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.verb.DialVerb
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 import com.dixa.twilio.model.voice.Conference
 
 import scala.annotation.nowarn
+import scala.collection.immutable
 
 /** Represent the Conference noun in TwiML
   *
@@ -67,13 +68,17 @@ object ConferenceNoun {
       waitUrl: Option[String],
       conferenceFriendlyName: Conference.FriendlyName
   ) extends ConferenceNoun {
-    override val xmlCompact: String = {
-      val beepAtt             = beep.map(x => s""" beep="${x.twilioString}"""").getOrElse("")
-      val waitUrlAtt          = waitUrl.map(x => s""" waitUrl="$x"""").getOrElse("")
-      val escapedFriendlyName = StringUtil.xmlEscape(conferenceFriendlyName.toString)
-      s"""<Conference$beepAtt$waitUrlAtt>$escapedFriendlyName</Conference>"""
-    }
 
-    override def xmlPretty: String = xmlCompact
+    override protected def tagName: String = "Conference"
+
+    override protected def tagAttributes: immutable.Seq[(String, String)] =
+      new TagAttributeBuilder()
+        .add("beep", beep)
+        .addString("waitUrl", waitUrl)
+        .build
+
+    override protected def tagSubElements: immutable.Seq[TwimlElement] = Nil
+
+    override protected def tagValue: Option[String] = Some(conferenceFriendlyName.toString)
   }
 }

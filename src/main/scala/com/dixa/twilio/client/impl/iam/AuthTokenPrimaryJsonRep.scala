@@ -2,6 +2,7 @@ package com.dixa.twilio.client.impl.iam
 
 import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
 
@@ -25,4 +26,9 @@ private[iam] final case class AuthTokenPrimaryJsonRep(
 
   override def toString =
     s"AuthTokenJsonRep(account_sid=$account_sid, date_created=$date_created, date_updated=$date_updated, auth_token=***)"
+}
+
+private[impl] object AuthTokenPrimaryJsonRep {
+
+  implicit val upickleRW: Reader[AuthTokenPrimaryJsonRep] = macroR[AuthTokenPrimaryJsonRep]
 }
