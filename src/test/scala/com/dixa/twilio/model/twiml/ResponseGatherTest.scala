@@ -15,7 +15,7 @@ final class ResponseGatherTest extends AnyWordSpec {
       "be able to construct a default gather without attributes or nested elements" in {
         // According to documentation, all attributes on gather have default values, so it should be allowed to create an completly empty gather verb.
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addGather(_.build()).buildVerified
+          responseBuilder.addGather(_.build()).buildVerified()
         }
 
         val expectedPrettyXml =
@@ -119,33 +119,35 @@ final class ResponseGatherTest extends AnyWordSpec {
 
     "be able to include all attribute and to nest pause, play and say verbs" in {
       val result: Response.Verified = Response.build { responseBuilder =>
-        responseBuilder.addGather { gatherBuilder =>
-          gatherBuilder
-            .addSay { sayBuilder: SayVerb.BuilderStartState =>
-              sayBuilder.withText("Say text").build()
-            }
-            .addPause { pauseBuilder: PauseVerb.BuilderStartState => pauseBuilder.build() }
-            .addPlay { playBuilder: PlayVerb.BuilderStartState =>
-              playBuilder.withSoundFileUrl("http://localhost/soundfile.wav").build()
-            }
-            // include & to make sure xml gets escaped properly
-            .withAction(CallbackUrl("""http://localhost/gather-action?q1=v1&q2=v2"""))
-            .withInputDtmfSpeech()
-            .withFinishOnKey(Some(DtmfDigit.`*`))
-            .addHint("This is a hint phrase")
-            .addHint("keyword1")
-            .addHint("keyword2")
-            .withLanguage(GatherVerb.LanguageCode.`ar-BH`)
-            .withMethod(HttpMethod.Post)
-            .withNumDigits(47)
-            .withPartialResultCallback(CallbackUrl("http://localhost/partial-result"))
-            .withProfanityFilter(false)
-            .withSpeechTimeout(PositiveInteger.unsafe(24))
-            .withTimeout(PositiveInteger.unsafe(34))
-            .withSpeechModelDefault()
-            .withActionOnEmptyResult(true)
-            .build()
-        }.buildVerified
+        responseBuilder
+          .addGather { gatherBuilder =>
+            gatherBuilder
+              .addSay { sayBuilder: SayVerb.BuilderStartState =>
+                sayBuilder.withText("Say text").build()
+              }
+              .addPause { pauseBuilder: PauseVerb.BuilderStartState => pauseBuilder.build() }
+              .addPlay { playBuilder: PlayVerb.BuilderStartState =>
+                playBuilder.withSoundFileUrl("http://localhost/soundfile.wav").build()
+              }
+              // include & to make sure xml gets escaped properly
+              .withAction(CallbackUrl("""http://localhost/gather-action?q1=v1&q2=v2"""))
+              .withInputDtmfSpeech()
+              .withFinishOnKey(Some(DtmfDigit.`*`))
+              .addHint("This is a hint phrase")
+              .addHint("keyword1")
+              .addHint("keyword2")
+              .withLanguage(GatherVerb.LanguageCode.`ar-BH`)
+              .withMethod(HttpMethod.Post)
+              .withNumDigits(47)
+              .withPartialResultCallback(CallbackUrl("http://localhost/partial-result"))
+              .withProfanityFilter(false)
+              .withSpeechTimeout(PositiveInteger.unsafe(24))
+              .withTimeout(PositiveInteger.unsafe(34))
+              .withSpeechModelDefault()
+              .withActionOnEmptyResult(true)
+              .build()
+          }
+          .buildVerified()
       }
 
       val expectedPrettyXml =
@@ -334,12 +336,14 @@ final class ResponseGatherTest extends AnyWordSpec {
 
       "Generate the correct XML when used" in {
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addGather { gatherBuilder =>
-            gatherBuilder
-              .withInputSpeech()
-              .withSpeechModelNumbersAndCommands()
-              .build()
-          }.buildVerified
+          responseBuilder
+            .addGather { gatherBuilder =>
+              gatherBuilder
+                .withInputSpeech()
+                .withSpeechModelNumbersAndCommands()
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -387,12 +391,14 @@ final class ResponseGatherTest extends AnyWordSpec {
 
       "Generate the correct XML when used" in {
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addGather { gatherBuilder =>
-            gatherBuilder
-              .withInputSpeech()
-              .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
-              .build()
-          }.buildVerified
+          responseBuilder
+            .addGather { gatherBuilder =>
+              gatherBuilder
+                .withInputSpeech()
+                .withSpeechModelPhoneCall(GatherVerb.LanguageCode.`en-GB`)
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -478,12 +484,14 @@ final class ResponseGatherTest extends AnyWordSpec {
 
       "Generate the correct XML when used" in {
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addGather { gatherBuilder =>
-            gatherBuilder
-              .withInputSpeech()
-              .withSpeechModelExperimentalConversation(GatherVerb.LanguageCode.`en-GB`)
-              .build()
-          }.buildVerified
+          responseBuilder
+            .addGather { gatherBuilder =>
+              gatherBuilder
+                .withInputSpeech()
+                .withSpeechModelExperimentalConversation(GatherVerb.LanguageCode.`en-GB`)
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -579,12 +587,14 @@ final class ResponseGatherTest extends AnyWordSpec {
 
       "Generate the correct XML when used" in {
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addGather { gatherBuilder =>
-            gatherBuilder
-              .withInputSpeech()
-              .withSpeechModelExperimentalUtterances(GatherVerb.LanguageCode.`en-GB`)
-              .build()
-          }.buildVerified
+          responseBuilder
+            .addGather { gatherBuilder =>
+              gatherBuilder
+                .withInputSpeech()
+                .withSpeechModelExperimentalUtterances(GatherVerb.LanguageCode.`en-GB`)
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -680,12 +690,14 @@ final class ResponseGatherTest extends AnyWordSpec {
 
       "Generate the correct XML when used" in {
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addGather { gatherBuilder =>
-            gatherBuilder
-              .withInputSpeech()
-              .withSpeechModelPhoneCallPlusEnhanced(GatherVerb.LanguageCode.`en-GB`)
-              .build()
-          }.buildVerified
+          responseBuilder
+            .addGather { gatherBuilder =>
+              gatherBuilder
+                .withInputSpeech()
+                .withSpeechModelPhoneCallPlusEnhanced(GatherVerb.LanguageCode.`en-GB`)
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =

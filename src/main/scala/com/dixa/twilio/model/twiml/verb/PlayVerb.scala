@@ -5,7 +5,6 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{Buildable, BuildableFalse, 
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
-import scala.annotation.nowarn
 import scala.collection.immutable
 
 /** Representation of the Play Verb from TwiML
@@ -55,7 +54,6 @@ object PlayVerb {
       * You can add both this and [[withDigits]], and in such cases the digits are played before the
       * sound file.
       */
-    @nowarn(value = "cat=unused-params")
     def withSoundFileUrl(url: String)(
         implicit ev: S =:= SoundFileAddedFalse
     ): Builder[BuildableTrue, SoundFileAddedTrue, D, L] =
@@ -69,7 +67,6 @@ object PlayVerb {
       * You can add both this and [[withSoundFileUrl]], and in such cases the digits are played
       * before the sound file.
       */
-    @nowarn(value = "cat=unused-params")
     def withDigits(dtmfString: DtmfString)(
         implicit ev: D =:= DigitsAddedFalse
     ): Builder[BuildableTrue, S, DigitsAddedTrue, L] =
@@ -82,13 +79,11 @@ object PlayVerb {
       *
       * 0 will make Twilio loop it 1000 times, or until the call is hang up.
       */
-    @nowarn(value = "cat=unused-params")
     def withLoop(loopValue: Int)(
         implicit ev: L =:= LoopAddedFalse
     ): Builder[B, S, D, LoopAddedTrue] =
       new Builder[B, S, D, LoopAddedTrue](url, digits, Some(loopValue))
 
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): PlayVerb = PlayVerbImpl(url, digits, loopValue)

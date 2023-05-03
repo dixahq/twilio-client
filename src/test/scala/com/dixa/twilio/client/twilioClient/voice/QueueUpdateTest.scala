@@ -140,7 +140,7 @@ final class QueueUpdateTest extends TwilioClientTest {
       _.withAccountSid(connSettings.accountSid)
         .withSid(queueSid)
         .withMaxSize(Queue.MaxSize(5000))
-        .build
+        .build()
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock

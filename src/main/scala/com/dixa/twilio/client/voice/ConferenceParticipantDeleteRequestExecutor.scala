@@ -5,8 +5,6 @@ import com.dixa.twilio.model.Funit
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 
-import scala.annotation.nowarn
-
 trait ConferenceParticipantDeleteRequestExecutor
     extends SingleRequestExecutor[
       ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest,
@@ -79,7 +77,6 @@ object ConferenceParticipantDeleteRequestExecutor {
       ] =
         new Builder(accountSid, conferenceSid, Some(callSid))
 
-      @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ConferenceParticipantDeleteRequest =

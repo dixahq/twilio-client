@@ -13,6 +13,7 @@ import sbtrelease.ReleasePlugin.autoImport.{
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
 val scala2_12          = "2.12.17"
+val scala2_13          = "2.13.10"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -25,12 +26,25 @@ val Version = new AnyRef {
   val Circe    = "0.14.5"
 }
 
+val scalacOpt = Seq(
+  "-feature",
+  "-unchecked",
+  "-deprecation",
+  "-encoding",
+  "utf8",
+  "-Xlint",
+  "-Xfatal-warnings",
+  "-release",
+  "8",
+  "-Wconf:msg=discarding unmoored doc comment:s"
+)
+
 lazy val `twilio-client` = project
   .in(file("."))
   .settings(
     Seq(
       organization := "com.dixa",
-      scalaVersion := scala2_12,
+      scalaVersion := scala2_13,
       resolvers ++= Seq(
         releasesRepository,
         twitterHttpsRepo,
@@ -48,18 +62,13 @@ lazy val `twilio-client` = project
       } getOrElse {
         Credentials(Path.userHome / ".sbt" / ".credentials")
       },
-      scalacOptions := Seq(
-        "-feature",
-        "-unchecked",
-        "-deprecation",
-        "-encoding",
-        "utf8",
-        "-Xlint",
-        "-Xfatal-warnings",
-        "-target:jvm-1.8",
-        "-Wconf:msg=discarding unmoored doc comment:s"
-      ),
-      crossScalaVersions := Seq(scala2_12),
+      scalacOptions := {
+        if (scalaVersion.value == scala2_12)
+          scalacOpt :+ "-Wconf:cat=unused-params:s"
+        else
+          scalacOpt
+      },
+      crossScalaVersions := Seq(scala2_12, scala2_13),
       releaseCrossBuild  := true,
       libraryDependencies ++= Seq(
         // Akka
@@ -68,7 +77,7 @@ lazy val `twilio-client` = project
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle"       % "3.1.0",
+        "com.lihaoyi" %% "upickle" % "3.1.0",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
@@ -77,9 +86,9 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.2",
 
         // Test
-        "org.scalatest"         %% "scalatest"                   % "3.2.15" % Test,
-        "org.scalamock"         %% "scalamock-scalatest-support" % "3.6.0"  % Test,
-        "com.github.tomakehurst" % "wiremock"                    % "2.27.2" % Test
+        "org.scalatest"         %% "scalatest" % "3.2.15" % Test,
+        "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
+        "com.github.tomakehurst" % "wiremock"  % "2.27.2" % Test
       ),
 
       publish / skip := false,
