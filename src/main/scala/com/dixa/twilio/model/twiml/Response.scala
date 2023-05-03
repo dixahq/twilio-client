@@ -3,7 +3,6 @@ package com.dixa.twilio.model.twiml
 import com.dixa.twilio.model.twiml.TwimlConstraints._
 import com.dixa.twilio.model.twiml.verb._
 
-import scala.annotation.nowarn
 import scala.collection.immutable
 
 // format: off
@@ -116,7 +115,6 @@ object Response {
       verbs: Vector[TwimlElement.Verb]
   ) {
 
-    @nowarn(value = "cat=unused-params")
     def addDial(fun: DialVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -127,7 +125,6 @@ object Response {
       * Calling this, will prevent you from adding more verbs to builder, as it makes no sense to
       * have anything after a redirect in TwiML.
       */
-    @nowarn(value = "cat=unused-params")
     def addRedirect(fun: RedirectVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
@@ -138,7 +135,6 @@ object Response {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/say
       */
-    @nowarn(value = "cat=unused-params")
     def addSay(fun: SayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -149,7 +145,6 @@ object Response {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/pause
       */
-    @nowarn(value = "cat=unused-params")
     def addPause(fun: PauseVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] = new Builder(verbs :+ PauseVerb.build(fun))
@@ -159,7 +154,6 @@ object Response {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/play
       */
-    @nowarn(value = "cat=unused-params")
     def addPlay(fun: PlayVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -182,7 +176,6 @@ object Response {
       * should consider if it would make sense to contribute that verb to this project instead, so
       * it would not need to be a custom verb anymore.
       */
-    @nowarn(value = "cat=unused-params")
     def addCustomVerb(
         verb: TwimlElement.Verb
     )(
@@ -191,7 +184,6 @@ object Response {
       new Builder(verbs :+ verb)
 
     /** Same as [[addCustomVerb]] just for multiple verbs at once. */
-    @nowarn(value = "cat=unused-params")
     def addCustomVerbs(
         verbsToAdd: Seq[TwimlElement.Verb]
     )(
@@ -204,7 +196,6 @@ object Response {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather
       */
-    @nowarn(value = "cat=unused-params")
     def addGather(fun: GatherVerb.BuildFunction)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, V, L] =
@@ -221,7 +212,6 @@ object Response {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather
       */
-    @nowarn(value = "cat=unused-params")
     def addGatherUnverified(fun: GatherVerb.BuildFunctionUnverified)(
         implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
     ): Builder[BuildableTrue, TwimlConstraints.VerifiedFalse, L] =
@@ -240,7 +230,6 @@ object Response {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/hangup
       */
-    @nowarn(value = "cat=unused-params")
     def addHangup(
         fun: HangupVerb.BuildFunction
     )(
@@ -257,7 +246,6 @@ object Response {
       *   1. Added at least one verb.
       *   1. Added no custom verb - [[Response.Builder.addCustomVerbs]].
       */
-    @nowarn(value = "cat=unused-params")
     def buildVerified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedTrue
@@ -271,7 +259,6 @@ object Response {
       *   1. Added at least one verb
       *   1. Added a custom vert via [[Response.Builder.addCustomVerbs]]
       */
-    @nowarn(value = "cat=unused-params")
     def buildUnverified()(
         implicit evB: B =:= TwimlConstraints.BuildableTrue,
         evV: V =:= TwimlConstraints.VerifiedFalse

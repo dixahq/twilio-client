@@ -25,7 +25,7 @@ final class ResponseSayTest extends AnyWordSpec {
                   .withLanguage(language)
                   .withVoice(voice)
                   .withLoop(5)
-                  .build
+                  .build()
               }
               .buildVerified()
           }

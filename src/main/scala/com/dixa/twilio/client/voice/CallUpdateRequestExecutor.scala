@@ -8,8 +8,6 @@ import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.Call
 import com.dixa.twilio.model.voice.Call.TimeLimit
 
-import scala.annotation.nowarn
-
 trait CallUpdateRequestExecutor
     extends SingleRequestExecutor[
       CallUpdateRequestExecutor.CallUpdateRequest,
@@ -177,7 +175,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withUrl(url: CallbackUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
       ): Builder[
@@ -203,7 +200,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withMethod(method: HttpMethod)(
           implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue,
       ): Builder[
@@ -253,7 +249,6 @@ object CallUpdateRequestExecutor {
         )
       }
 
-      @nowarn
       def withFallbackUrl(fallbackUrl: CallbackUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
       ): Builder[
@@ -279,7 +274,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withFallbackMethod(fallbackMethod: HttpMethod)(
           implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue,
       ): Builder[
@@ -328,7 +322,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withStatusCallBackMethod(statusCallbackMethod: HttpMethod)(
           implicit ev: StatusCallbackUrlForMethod =:= HasStatusCallbackUrlForMethodTrue,
       ): Builder[
@@ -354,7 +347,6 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      @nowarn
       def withTwiml(twiml: Response.Verified)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
       ): Builder[
@@ -403,7 +395,6 @@ object CallUpdateRequestExecutor {
           Some(timeLimit)
         )
 
-      @nowarn
       def build()(
           implicit ev: AccountSidSet =:= AccountSidAttributeSetTrue,
           ev2: CallSidSet =:= CallSidAttributeSetTrue,

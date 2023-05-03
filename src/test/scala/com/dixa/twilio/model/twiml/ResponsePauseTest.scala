@@ -13,7 +13,7 @@ final class ResponsePauseTest extends AnyWordSpec {
         val result: Response.Verified = Response.build { responseBuilder =>
           responseBuilder
             .addPause { pauseBuilder =>
-              pauseBuilder.build
+              pauseBuilder.build()
             }
             .buildVerified()
         }
@@ -38,7 +38,7 @@ final class ResponsePauseTest extends AnyWordSpec {
         val result: Response.Verified = Response.build { responseBuilder =>
           responseBuilder
             .addPause { pauseBuilder =>
-              pauseBuilder.withLengthInSeconds(length).build
+              pauseBuilder.withLengthInSeconds(length).build()
             }
             .buildVerified()
         }
@@ -63,7 +63,7 @@ final class ResponsePauseTest extends AnyWordSpec {
         val result: Response.Verified = Response.build { responseBuilder =>
           responseBuilder
             .addPause { pauseBuilder =>
-              pauseBuilder.withLength(duration).build
+              pauseBuilder.withLength(duration).build()
             }
             .buildVerified()
         }

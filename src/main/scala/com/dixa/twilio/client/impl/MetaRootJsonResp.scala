@@ -1,6 +1,5 @@
 package com.dixa.twilio.client.impl
 
-import com.dixa.twilio.client.impl.TwilioClientPickler.macroR
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.annotation.nowarn

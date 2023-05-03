@@ -100,9 +100,9 @@ final class ConferenceParticipantReadTest extends TwilioClientTest with Matchers
           }
           result.size shouldBe 1
           result.head.isRight shouldBe true
-          result.head.right.get shouldBe expected
-          result.head.right.get.dateCreated.toString shouldBe "2020-07-01T11:23:45Z"
-          result.head.right.get.dateUpdated.toString shouldBe "2020-07-01T11:23:45Z"
+          result.head shouldBe Right(expected)
+          result.head.map { _.dateCreated.toString } shouldBe Right("2020-07-01T11:23:45Z")
+          result.head.map { _.dateUpdated.toString } shouldBe Right("2020-07-01T11:23:45Z")
         }
       }
 

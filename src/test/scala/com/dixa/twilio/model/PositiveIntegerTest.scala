@@ -71,20 +71,20 @@ final class PositiveIntegerTest extends AnyWordSpec {
       "return a instance if called with 1" in {
         val instance: Either[PositiveInteger.Err, PositiveInteger] = PositiveInteger.safe(1)
         assert(instance.isRight)
-        assert(instance.right.get.int == 1)
+        assert(instance.map { _.int } == Right(1))
       }
 
       "return a instance if called with 547484" in {
         val instance: Either[PositiveInteger.Err, PositiveInteger] = PositiveInteger.safe(547484)
         assert(instance.isRight)
-        assert(instance.right.get.int == 547484)
+        assert(instance.map { _.int } == Right(547484))
       }
 
       "return a instance if called with Int.MaxValue" in {
         val instance: Either[PositiveInteger.Err, PositiveInteger] =
           PositiveInteger.safe(Int.MaxValue)
         assert(instance.isRight)
-        assert(instance.right.get.int == Int.MaxValue)
+        assert(instance.map { _.int } == Right(Int.MaxValue))
       }
     }
 

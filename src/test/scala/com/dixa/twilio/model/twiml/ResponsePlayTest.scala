@@ -15,7 +15,7 @@ final class ResponsePlayTest extends AnyWordSpec {
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addPlay { playBuilder =>
-                playBuilder.withSoundFileUrl(urlAsString).build
+                playBuilder.withSoundFileUrl(urlAsString).build()
               }
               .buildVerified()
           }

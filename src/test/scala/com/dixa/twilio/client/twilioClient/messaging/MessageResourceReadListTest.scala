@@ -76,14 +76,12 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
           result.head.left.map(ex => println(ex.getMessage))
           result.size shouldBe 1
           result.head.isRight shouldBe true
-          result.head.right.get shouldBe expected
-          result.head.right.get.dateCreated
-            .map { _.toString }
-            .getOrElse("") shouldBe "2022-02-01T13:44:20Z"
-          result.head.right.get.dateUpdated
-            .map { _.toString }
-            .getOrElse("") shouldBe "2022-02-02T15:42:20Z"
-          result.head.right.get.body.toString shouldBe "testing"
+          result.head shouldBe Right(expected)
+          result.head.toOption
+            .flatMap { _.dateCreated.map(_.toString) } shouldBe Some("2022-02-01T13:44:20Z")
+          result.head.toOption
+            .flatMap { _.dateUpdated.map(_.toString) } shouldBe Some("2022-02-02T15:42:20Z")
+          result.head.map { _.body.toString } shouldBe Right("testing")
         }
       }
 

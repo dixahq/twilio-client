@@ -15,15 +15,19 @@ final class ResponseDialTest extends AnyWordSpec {
         val conferenceFriendlyName = Conference.FriendlyName("Test_conference")
 
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addDial { dialBuilder =>
-            dialBuilder.withConference { conferenceBuilder =>
-              conferenceBuilder
-                .withBeep(Conference.Beep.False)
-                .withWaitUrlEmpty()
-                .withConferenceFriendlyName(conferenceFriendlyName)
-                .build
-            }.build
-          }.buildVerified
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withConference { conferenceBuilder =>
+                  conferenceBuilder
+                    .withBeep(Conference.Beep.False)
+                    .withWaitUrlEmpty()
+                    .withConferenceFriendlyName(conferenceFriendlyName)
+                    .build()
+                }
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -49,15 +53,19 @@ final class ResponseDialTest extends AnyWordSpec {
         val conferenceFriendlyName = Conference.FriendlyName("Test_conference")
 
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addDial { dialBuilder =>
-            dialBuilder.withConference { conferenceBuilder =>
-              conferenceBuilder
-                .withBeep(Conference.Beep.True)
-                .withWaitUrlEmpty()
-                .withConferenceFriendlyName(conferenceFriendlyName)
-                .build
-            }.build
-          }.buildVerified
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withConference { conferenceBuilder =>
+                  conferenceBuilder
+                    .withBeep(Conference.Beep.True)
+                    .withWaitUrlEmpty()
+                    .withConferenceFriendlyName(conferenceFriendlyName)
+                    .build()
+                }
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -83,15 +91,19 @@ final class ResponseDialTest extends AnyWordSpec {
         val conferenceFriendlyName = Conference.FriendlyName("Test_conference")
 
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addDial { dialBuilder =>
-            dialBuilder.withConference { conferenceBuilder =>
-              conferenceBuilder
-                .withBeep(Conference.Beep.OnEnter)
-                .withWaitUrlEmpty()
-                .withConferenceFriendlyName(conferenceFriendlyName)
-                .build
-            }.build
-          }.buildVerified
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withConference { conferenceBuilder =>
+                  conferenceBuilder
+                    .withBeep(Conference.Beep.OnEnter)
+                    .withWaitUrlEmpty()
+                    .withConferenceFriendlyName(conferenceFriendlyName)
+                    .build()
+                }
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -117,15 +129,19 @@ final class ResponseDialTest extends AnyWordSpec {
         val conferenceFriendlyName = Conference.FriendlyName("Test_conference")
 
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addDial { dialBuilder =>
-            dialBuilder.withConference { conferenceBuilder =>
-              conferenceBuilder
-                .withBeep(Conference.Beep.OnExit)
-                .withWaitUrlEmpty()
-                .withConferenceFriendlyName(conferenceFriendlyName)
-                .build
-            }.build
-          }.buildVerified
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withConference { conferenceBuilder =>
+                  conferenceBuilder
+                    .withBeep(Conference.Beep.OnExit)
+                    .withWaitUrlEmpty()
+                    .withConferenceFriendlyName(conferenceFriendlyName)
+                    .build()
+                }
+                .build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -150,9 +166,11 @@ final class ResponseDialTest extends AnyWordSpec {
 
         val pn = "+4533442255"
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addDial { dialBuilder =>
-            dialBuilder.withPhoneNumber(PhoneNumberE164.unsafe(pn)).build
-          }.buildVerified
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder.withPhoneNumber(PhoneNumberE164.unsafe(pn)).build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -178,13 +196,17 @@ final class ResponseDialTest extends AnyWordSpec {
       val conferenceEscapedName  = "Test_&quot;&apos;&lt;&gt;&amp;_conference"
 
       val result: Response.Verified = Response.build { responseBuilder =>
-        responseBuilder.addDial { dialBuilder =>
-          dialBuilder.withConference { conferenceBuilder =>
-            conferenceBuilder
-              .withConferenceFriendlyName(conferenceFriendlyName)
-              .build
-          }.build
-        }.buildVerified
+        responseBuilder
+          .addDial { dialBuilder =>
+            dialBuilder
+              .withConference { conferenceBuilder =>
+                conferenceBuilder
+                  .withConferenceFriendlyName(conferenceFriendlyName)
+                  .build()
+              }
+              .build()
+          }
+          .buildVerified()
       }
 
       val expectedPrettyXml =
