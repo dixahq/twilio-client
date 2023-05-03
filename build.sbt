@@ -14,6 +14,19 @@ val Version = new AnyRef {
   val Circe    = "0.14.5"
 }
 
+val scalacOpt = Seq(
+  "-feature",
+  "-unchecked",
+  "-deprecation",
+  "-encoding",
+  "utf8",
+  "-Xlint",
+  "-Xfatal-warnings",
+  "-release",
+  "8",
+  "-Wconf:msg=discarding unmoored doc comment:s"
+)
+
 lazy val `twilio-client` = project
   .in(file("."))
   .settings(
@@ -37,18 +50,12 @@ lazy val `twilio-client` = project
       } getOrElse {
         Credentials(Path.userHome / ".sbt" / ".credentials")
       },
-      scalacOptions := Seq(
-        "-feature",
-        "-unchecked",
-        "-deprecation",
-        "-encoding",
-        "utf8",
-        "-Xlint",
-        "-Xfatal-warnings",
-        "-release",
-        "8",
-        "-Wconf:msg=discarding unmoored doc comment:s"
-      ),
+      scalacOptions := {
+        if (scalaVersion.value == scala2_12)
+          scalacOpt :+ "-Wconf:cat=unused-params:s"
+        else
+          scalacOpt
+      },
       crossScalaVersions := Seq(scala2_12, scala2_13),
       releaseCrossBuild  := true,
       publishTo := {
