@@ -83,7 +83,19 @@ lazy val `twilio-client` = project
         // Test
         "org.scalatest"         %% "scalatest" % "3.2.15" % Test,
         "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
-        "com.github.tomakehurst" % "wiremock"  % "2.27.2" % Test
+        "com.github.tomakehurst" % "wiremock"  % "2.27.2" % Test,
+
+        // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
+        "com.fasterxml.jackson.core" % "jackson-databind"   % "2.15.0",   // From wiremock
+        "net.minidev"                % "json-smart"         % "2.4.10",   // From wiremock
+        "commons-fileupload"         % "commons-fileupload" % "1.5",      // From wiremock
+        "org.eclipse.jetty"          % "jetty-server"       % "11.0.15",  // From wiremock
+        "org.eclipse.jetty"          % "jetty-webapp"       % "11.0.15",  // From wiremock
+        "org.eclipse.jetty"          % "jetty-io"           % "11.0.15",  // From wiremock
+        "org.eclipse.jetty"          % "jetty-servlets"     % "11.0.15",  // From wiremock
+        "com.google.guava"           % "guava"              % "31.1-jre", // From wiremock
+        "org.apache.httpcomponents"  % "httpclient"         % "4.5.14",   // From wiremock
+
       ),
       coverageMinimumStmtTotal := 70,
       coverageFailOnMinimum    := false,
