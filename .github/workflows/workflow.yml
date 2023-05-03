@@ -6,81 +6,18 @@ on:
   pull_request:
     branches: [ master, main, develop ]
     types: [opened, reopened, synchronize]
-env:
-  GIT_SHA_LONG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  MAVEN_REPO_USER: ${{ secrets.MAVEN_REPO_USER }}
-  MAVEN_REPO_PASSWORD: ${{ secrets.MAVEN_REPO_PASSWORD }}
+
 jobs:
-  build:
-    runs-on: ["self-hosted", "default"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ env.GIT_SHA_LONG }}
+  build-test:
+    if: ${{ !endsWith(github.ref,'/master')
+    uses: dixahq/github-actions/.github/workflows/sbt-release.yml@main
+    secrets: inherit
+    with:
+      sbt_task: '"+test"'
+  release:
+    if: ${{ endsWith(github.ref,'/master')
+    uses: dixahq/github-actions/.github/workflows/sbt-release.yml@main
+    secrets: inherit
+    with:
+      sbt_task: '"release with-defaults"'
 
-      - name: Checkout GitHub Actions Repo
-        uses: actions/checkout@v2
-        with:
-          repository: dixahq/github-actions
-          path: .github/actions
-          token: ${{ secrets.DIXAROBOT_GITHUB_READONLY_TOKEN }}
-
-      - name: Setup Scala and sbt
-        uses: olafurpg/setup-scala@v11
-        with:
-          java-version: amazon-corretto@1.17
-
-      - name: Run test wtih coverage
-        run: sbt -Dfile.encoding=utf-8 coverage test coverageReport
-
-      - name: Upload test coverage report
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: Scoverage Report
-          path: target/scala*/scoverage-report/scoverage.xml
-
-      - name: Verify test coverage
-        id: test_coverage
-        run: |
-          echo "::set-output name=coverage-minimum::$(grep coverageMinimumStmtTotal build.sbt | cut -d"=" -f 2 | tr -d " " | tr -d ")" | head -n 1)"
-          echo "::set-output name=coverage-actual::$(sed -n 2p target/scala*/scoverage-report/scoverage.xml | sed "s/=/ /g" | cut -d" " -f6 | cut -d"\"" -f2)"
-
-      - name: Report test coverage
-        uses: actions/github-script@0.3.0
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const currentTestCov = parseFloat(${{ steps.test_coverage.outputs.coverage-actual }})
-            const minTestCov = parseFloat(${{ steps.test_coverage.outputs.coverage-minimum }})
-            const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
-            if (currentTestCov < minTestCov) {
-              const body = "Insufficient test coverage " + currentTestCov + "%, minimum required of " + minTestCov + "% ❌";
-              await(github.issues.createComment({ issue_number, owner, repo, body }));
-              process.exit(1);
-            } else {
-              const body = "Acceptable test coverage " + currentTestCov + "%, minimum required of " + minTestCov + "% ✅";
-              await(github.issues.createComment({ issue_number, owner, repo, body }));
-            }
-
-      # Release and publish modules
-      - name: Get the email of the commit author
-        if: ${{ endsWith(github.ref,'/master') && !contains(steps.commit-author.outputs.email, 'hello@dixa.com') }}
-        run: echo "::set-output name=email::$(git show -s --format='%ae')"
-        id: commit-author
-
-      - name: Setting DixaRobot as the Git user
-        if: ${{ endsWith(github.ref,'/master') && !contains(steps.commit-author.outputs.email, 'hello@dixa.com') }}
-        run: git config --global user.email "hello@dixa.com" && git config --global user.name "DixaRobot"
-
-      - name: Checkout master branch
-        if: ${{ endsWith(github.ref,'/master') && !contains(steps.commit-author.outputs.email, 'hello@dixa.com') }}
-        uses: actions/checkout@v2
-        with:
-          ref: 'master'
-          token: ${{ secrets.DIXAROBOT_GITHUB_READONLY_TOKEN }}
-
-      - name: Release and publish artifacts
-        if: ${{ endsWith(github.ref,'/master') && !contains(steps.commit-author.outputs.email, 'hello@dixa.com') }}
-        run: sbt "release cross with-defaults skip-tests"
