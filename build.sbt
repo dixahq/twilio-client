@@ -86,15 +86,15 @@ lazy val `twilio-client` = project
         "com.github.tomakehurst" % "wiremock"  % "2.27.2" % Test,
 
         // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
-        "com.fasterxml.jackson.core" % "jackson-databind"   % "2.15.0",   // From wiremock
-        "net.minidev"                % "json-smart"         % "2.4.10",   // From wiremock
-        "commons-fileupload"         % "commons-fileupload" % "1.5",      // From wiremock
-        "org.eclipse.jetty"          % "jetty-server"       % "11.0.15",  // From wiremock
-        "org.eclipse.jetty"          % "jetty-webapp"       % "11.0.15",  // From wiremock
-        "org.eclipse.jetty"          % "jetty-io"           % "11.0.15",  // From wiremock
-        "org.eclipse.jetty"          % "jetty-servlets"     % "11.0.15",  // From wiremock
-        "com.google.guava"           % "guava"              % "31.1-jre", // From wiremock
-        "org.apache.httpcomponents"  % "httpclient"         % "4.5.14",   // From wiremock
+        "com.fasterxml.jackson.core" % "jackson-databind"   % "2.15.0"   % Test, // From wiremock
+        "net.minidev"                % "json-smart"         % "2.4.10"   % Test, // From wiremock
+        "commons-fileupload"         % "commons-fileupload" % "1.5"      % Test, // From wiremock
+        "org.eclipse.jetty"          % "jetty-server"       % "11.0.15"  % Test, // From wiremock
+        "org.eclipse.jetty"          % "jetty-webapp"       % "11.0.15"  % Test, // From wiremock
+        "org.eclipse.jetty"          % "jetty-io"           % "11.0.15"  % Test, // From wiremock
+        "org.eclipse.jetty"          % "jetty-servlets"     % "11.0.15"  % Test, // From wiremock
+        "com.google.guava"           % "guava"              % "31.1-jre" % Test, // From wiremock
+        "org.apache.httpcomponents"  % "httpclient"         % "4.5.14"   % Test, // From wiremock
 
       ),
       coverageMinimumStmtTotal := 70,
