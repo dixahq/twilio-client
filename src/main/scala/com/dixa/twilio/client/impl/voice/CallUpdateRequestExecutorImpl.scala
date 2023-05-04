@@ -69,9 +69,6 @@ private[client] class CallUpdateRequestExecutorImpl()(
       httpResponse: HttpResponse,
       entity: HttpEntityString
   ): Either[CallUpdateException, Call] = {
-    println(s"entity: $entity")
-    println(s"httpResponse: $httpResponse")
-
     httpResponse.status match {
       case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
       case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
