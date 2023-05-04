@@ -1,4 +1,16 @@
 import sbt.Test
+import com.dixa.sbt.ReleaseStateTransformations.{
+  dixaAddGitHistoryToReleaseTag,
+  dixaCheckSnapshotDependencies,
+  dixaDetermineVersion,
+  dixaPushReleaseTag
+}
+import sbtrelease.ReleasePlugin.autoImport.{
+  releaseProcess,
+  releaseStepCommandAndRemaining,
+  ReleaseStep
+}
+import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
 val scala2_12          = "2.12.17"
 val scala2_13          = "2.13.10"
@@ -58,13 +70,6 @@ lazy val `twilio-client` = project
       },
       crossScalaVersions := Seq(scala2_12, scala2_13),
       releaseCrossBuild  := true,
-      publishTo := {
-        if (version.value.trim.endsWith("SNAPSHOT")) {
-          Some(snapshotsRepository)
-        } else {
-          Some(releasesRepository)
-        }
-      },
       libraryDependencies ++= Seq(
         // Akka
         "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka     % Provided,
@@ -85,9 +90,21 @@ lazy val `twilio-client` = project
         "org.scalamock"         %% "scalamock"     % "5.2.0"  % Test,
         "com.github.tomakehurst" % "wiremock-jre8" % "2.35.0" % Test,
       ),
-      coverageMinimumStmtTotal := 70,
-      coverageFailOnMinimum    := false,
-      coverageHighlighting     := false,
+
+      publish / skip := false,
+      releaseProcess :=
+        Seq[ReleaseStep](
+          dixaCheckSnapshotDependencies,
+          runClean,
+          dixaDetermineVersion,
+          releaseStepCommandAndRemaining("+test"),
+          releaseStepCommandAndRemaining("+publish"),
+          tagRelease,
+          dixaAddGitHistoryToReleaseTag,
+          dixaPushReleaseTag
+        ),
+
+      // Test
       Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
