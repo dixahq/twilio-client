@@ -81,20 +81,28 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.2",
 
         // Test
-        "org.scalatest"         %% "scalatest" % "3.2.15" % Test,
-        "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
-        "com.github.tomakehurst" % "wiremock"  % "2.27.2" % Test,
+        "org.scalatest"         %% "scalatest"     % "3.2.15" % Test,
+        "org.scalamock"         %% "scalamock"     % "5.2.0"  % Test,
+        "com.github.tomakehurst" % "wiremock-jre8" % "2.35.0" % Test,
 
         // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
-        "com.fasterxml.jackson.core" % "jackson-databind"   % "2.15.0"   % Test, // From wiremock
-        "net.minidev"                % "json-smart"         % "2.4.10"   % Test, // From wiremock
-        "commons-fileupload"         % "commons-fileupload" % "1.5"      % Test, // From wiremock
-        "org.eclipse.jetty"          % "jetty-server"       % "11.0.15"  % Test, // From wiremock
-        "org.eclipse.jetty"          % "jetty-webapp"       % "11.0.15"  % Test, // From wiremock
-        "org.eclipse.jetty"          % "jetty-io"           % "11.0.15"  % Test, // From wiremock
-        "org.eclipse.jetty"          % "jetty-servlets"     % "11.0.15"  % Test, // From wiremock
-        "com.google.guava"           % "guava"              % "31.1-jre" % Test, // From wiremock
-        "org.apache.httpcomponents"  % "httpclient"         % "4.5.14"   % Test, // From wiremock
+//        "com.fasterxml.jackson.core" % "jackson-annotations" % "2.15.0"  % Test, // From wiremock
+//        "com.fasterxml.jackson.core" % "jackson-core"        % "2.15.0"  % Test, // From wiremock
+//        "com.fasterxml.jackson.core" % "jackson-databind"    % "2.15.0"  % Test, // From wiremock
+//        "net.minidev"                % "json-smart"          % "2.4.10"  % Test, // From wiremock
+//        "commons-fileupload"         % "commons-fileupload"  % "1.5"     % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-server"        % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-webapp"        % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-io"            % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-servlets"      % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-proxy"         % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-client"        % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-http"          % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-util"          % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-security"      % "10.0.15" % Test, // From wiremock
+//        "org.eclipse.jetty"          % "jetty-xml"           % "10.0.15" % Test, // From wiremock
+//        "com.google.guava"           % "guava"               % "31.1-jre" % Test, // From wiremock
+//        "org.apache.httpcomponents"  % "httpclient"          % "4.5.14"   % Test, // From wiremock
 
       ),
       coverageMinimumStmtTotal := 70,

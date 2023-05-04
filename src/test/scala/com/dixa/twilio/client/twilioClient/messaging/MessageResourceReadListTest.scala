@@ -135,7 +135,11 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
-            .withQueryParams(filterMapBuilder(filter))
+            .withQueryParam("DateSent>", equalTo(createdAtInstant.toString))
+            .withQueryParam("DateSent<", equalTo(updatedAtInstant.toString))
+            .withQueryParam("To", equalTo(expected.to.toString))
+            .withQueryParam("From", equalTo(expected.from.asString))
+            .withQueryParam("PageSize", equalTo(filter.pageSize.toString))
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
