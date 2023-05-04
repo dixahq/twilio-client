@@ -4,8 +4,6 @@ import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 
-import scala.annotation.nowarn
-
 trait ConferenceParticipantReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       ConferenceParticipantReadRequestExecutor.ConferenceParticipantsReadRequest,
@@ -83,7 +81,6 @@ object ConferenceParticipantReadRequestExecutor {
       ): Builder[Attributes] =
         new Builder(accountSid, conferenceSid, muted, hold, Some(coaching))
 
-      @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ConferenceParticipantsReadRequest =

@@ -188,7 +188,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withStatus(Call.StatusUpdate.Completed)
-        .build
+        .build()
     )
 
     val createdAtInstant = Instant.from(

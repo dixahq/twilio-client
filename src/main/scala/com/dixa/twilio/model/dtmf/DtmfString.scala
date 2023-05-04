@@ -159,9 +159,9 @@ object DtmfString {
         case possibleDigit => DtmfDigit.fromChar(possibleDigit).map(DtmfStringElement.fromDtmfDigit)
       }
       mapped.find(_.isLeft) match {
-        case Some(e) => Left(DtmfStringException.InvalidChar(e.left.get))
-        case None =>
-          val mappedUnwrapped = mapped.map(_.right.get)
+        case Some(Left(e)) => Left(DtmfStringException.InvalidChar(e))
+        case _ =>
+          val mappedUnwrapped = mapped.flatMap(_.toOption)
           Right(new IncludeWaits(mappedUnwrapped.toVector))
       }
   }
@@ -176,8 +176,8 @@ object DtmfString {
         DtmfDigit.fromChar(possibleDigit)
       }
       mapped.find(_.isLeft) match {
-        case Some(e) => Left(DtmfStringException.InvalidChar(e.left.get))
-        case None    => Right(new OnlyDtmfDigits(mapped.map(_.right.get).toVector))
+        case Some(Left(e)) => Left(DtmfStringException.InvalidChar(e))
+        case _             => Right(new OnlyDtmfDigits(mapped.flatMap(_.toOption).toVector))
 
       }
   }

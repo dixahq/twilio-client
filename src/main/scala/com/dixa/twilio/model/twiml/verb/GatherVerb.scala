@@ -669,7 +669,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#finishonkey
       */
-    @nowarn(value = "cat=unused-params")
     def withFinishOnKey(finishOnKey: Option[DtmfDigit])(
         implicit ev: DtmfInput =:= PhantomTypes.HasDtmfInputTrue
     ): Builder[
@@ -695,7 +694,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#hints
       */
-    @nowarn(value = "cat=unused-params")
     def addHint(hint: String)(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
     ): Builder[
@@ -717,7 +715,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#input
       */
-    @nowarn(value = "cat=unused-params")
     def withInputDtmf()(
         implicit ev: SpeechInputRequired =:= PhantomTypes.SpeechInputRequiredFalse
     ): Builder[
@@ -739,7 +736,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#input
       */
-    @nowarn(value = "cat=unused-params")
     def withInputSpeech()(
         implicit ev: DtmfInputRequired =:= PhantomTypes.DtmfInputRequiredFalse
     ): Builder[
@@ -778,7 +774,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#language
       */
-    @nowarn(value = "cat=unused-params")
     def withLanguage(language: LanguageCode)(
         implicit ev: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
     ): Builder[
@@ -799,7 +794,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#method
       */
-    @nowarn(value = "cat=unused-params")
     def withMethod(method: HttpMethod)(
         implicit ev: ActionHasBeenSet =:= PhantomTypes.ActionHasBeenSetTrue
     ): BuilderWithSameTypes = copy(method = Some(method))
@@ -811,7 +805,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#numdigits
       */
-    @nowarn(value = "cat=unused-params")
     def withNumDigits(numDigits: Int)(
         implicit ev: DtmfInput =:= PhantomTypes.HasDtmfInputTrue
     ): Builder[
@@ -839,7 +832,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#profanityfilter
       */
-    @nowarn(value = "cat=unused-params")
     def withProfanityFilter(bool: Boolean)(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
     ): Builder[
@@ -859,7 +851,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#speechtimeout
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechTimeout(positiveInteger: PositiveInteger)(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
     ): Builder[
@@ -887,7 +878,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechModelDefault()(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
     ): Builder[
@@ -907,7 +897,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechModelNumbersAndCommands()(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue
     ): Builder[
@@ -931,7 +920,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechModelPhoneCall(language: LanguageCode with LanguageCode.SupportsPhoneCallModel)(
         implicit ev: SpeechInput =:= PhantomTypes.HasSpeechInputTrue,
         ev2: LanguageHasBeenSet =:= PhantomTypes.LanguageHasBeenSetFalse
@@ -958,7 +946,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#enhanced
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechModelPhoneCallPlusEnhanced(
         language: LanguageCode
           with LanguageCode.SupportsPhoneCallModel
@@ -991,7 +978,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechModelExperimentalConversation(
         language: LanguageCode with LanguageCode.SupportsExperimentalModel
     )(
@@ -1021,7 +1007,6 @@ object GatherVerb {
       * @see
       *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
       */
-    @nowarn(value = "cat=unused-params")
     def withSpeechModelExperimentalUtterances(
         language: LanguageCode with LanguageCode.SupportsExperimentalModel
     )(
@@ -1073,7 +1058,6 @@ object GatherVerb {
       * You can only call this if you have not called [[addCustomVerb]] or [[addCustomVerbs]]. In
       * such case you must call [[buildUnverified]] instead.
       */
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: ValidForVerified =:= PhantomTypes.ValidForVerifiedTrue
     ): GatherVerb.Verified =
@@ -1100,7 +1084,6 @@ object GatherVerb {
       * You can only call this, if you have called either [[addCustomVerb]] or [[addCustomVerbs]].
       * If not you should call [[build]] instead.
       */
-    @nowarn(value = "cat=unused-params")
     def buildUnverified()(
         implicit ev: ValidForVerified =:= PhantomTypes.ValidForVerifiedFalse
     ): GatherVerb.Unverified =

@@ -5,8 +5,6 @@ import com.dixa.twilio.model.Iso8601DateTime
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 
-import scala.annotation.nowarn
-
 trait ConferenceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       ConferenceReadRequestExecutor.ConferenceReadRequest,
@@ -22,8 +20,6 @@ trait ConferenceReadRequestExecutor
 }
 
 object ConferenceReadRequestExecutor {
-
-  println("")
 
   sealed trait ConferenceReadRequest {
     def accountSid: TwilioAccount.Sid
@@ -73,7 +69,6 @@ object ConferenceReadRequestExecutor {
       def withStatus(status: Conference.Status): Builder[Attributes] =
         new Builder(accountSid, dateCreated, dateUpdated, friendlyName, Some(status))
 
-      @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ConferenceReadRequest =

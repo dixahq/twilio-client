@@ -4,8 +4,6 @@ import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Queue
 
-import scala.annotation.nowarn
-
 trait QueueUpdateRequestExecutor
     extends SingleRequestExecutor[
       QueueUpdateRequestExecutor.QueueUpdateRequest,
@@ -79,7 +77,6 @@ object QueueUpdateRequestExecutor {
       def withMaxSize(maxSize: Queue.MaxSize): Builder[Attributes] =
         new Builder(accountSid, sid, friendlyName, Some(maxSize))
 
-      @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): QueueUpdateRequest =
