@@ -61,7 +61,6 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
           instance.outgoingCallerIdList.source(twilioConnectionSetting, req).runWith(Sink.seq)
 
         resultFut.flatMap { seq =>
-          println(s"result : $seq")
           assert(seq === Seq(Right(outgoingCallerId)))
         }
       }
