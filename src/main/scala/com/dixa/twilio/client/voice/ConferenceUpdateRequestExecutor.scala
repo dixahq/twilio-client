@@ -6,8 +6,6 @@ import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 
-import scala.annotation.nowarn
-
 trait ConferenceUpdateRequestExecutor
     extends SingleRequestExecutor[
       ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
@@ -85,13 +83,11 @@ object ConferenceUpdateRequestExecutor {
       ): Builder[Attributes, HasUrlForMethodSetTrue] =
         new Builder(accountSid, conferenceSid, status, Some(announceUrl), announceMethod)
 
-      @nowarn
       def withAnnounceMethod(announceMethod: HttpMethod)(
           implicit ev: Attributes =:= HasUrlForMethodSetTrue
       ): Builder[Attributes, UrlForMethod] =
         new Builder(accountSid, conferenceSid, status, announceUrl, Some(announceMethod))
 
-      @nowarn
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ConferenceUpdateRequest =

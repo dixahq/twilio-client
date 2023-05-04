@@ -1,7 +1,6 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import akka.stream.scaladsl.Sink
-import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter
 import com.dixa.twilio.client.messaging.{MessageResourceReadRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
@@ -11,11 +10,9 @@ import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo}
-import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.scalatest.matchers.should.Matchers
 
 import java.time._
-import java.util.{HashMap => JavaMap}
 
 final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
 
@@ -58,7 +55,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
-            .withQueryParams(filterMapBuilder(req(accountSid).filter))
+            .withQueryParam("PageSize", equalTo(s"${filter.pageSize.toString}"))
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
@@ -76,14 +73,12 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
           result.head.left.map(ex => println(ex.getMessage))
           result.size shouldBe 1
           result.head.isRight shouldBe true
-          result.head.right.get shouldBe expected
-          result.head.right.get.dateCreated
-            .map { _.toString }
-            .getOrElse("") shouldBe "2022-02-01T13:44:20Z"
-          result.head.right.get.dateUpdated
-            .map { _.toString }
-            .getOrElse("") shouldBe "2022-02-02T15:42:20Z"
-          result.head.right.get.body.toString shouldBe "testing"
+          result.head shouldBe Right(expected)
+          result.head.toOption
+            .flatMap { _.dateCreated.map(_.toString) } shouldBe Some("2022-02-01T13:44:20Z")
+          result.head.toOption
+            .flatMap { _.dateUpdated.map(_.toString) } shouldBe Some("2022-02-02T15:42:20Z")
+          result.head.map { _.body.toString } shouldBe Right("testing")
         }
       }
 
@@ -137,7 +132,11 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
-            .withQueryParams(filterMapBuilder(filter))
+            .withQueryParam("DateSent>", equalTo(createdAtInstant.toString))
+            .withQueryParam("DateSent<", equalTo(updatedAtInstant.toString))
+            .withQueryParam("To", equalTo(expected.to.toString))
+            .withQueryParam("From", equalTo(expected.from.asString))
+            .withQueryParam("PageSize", equalTo(filter.pageSize.toString))
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
@@ -287,24 +286,4 @@ private object MessageResourceReadListTest {
        |    "page": 0
        |}
        |""".stripMargin
-
-  private def filterMapBuilder(
-      filter: MessageResourcesReadRequestFilter
-  ): JavaMap[String, StringValuePattern] = {
-    val filterMap = new JavaMap[String, StringValuePattern]()
-    filter.dateSentAfter.map { date =>
-      filterMap.put("DateSent%3E", equalTo(date.toString))
-    }
-    filter.dateSentBefore.map { date =>
-      filterMap.put("DateSent%3C", equalTo(date.toString))
-    }
-    filter.to.map { number =>
-      filterMap.put("To", equalTo(number.toString))
-    }
-    filter.from.map { number =>
-      filterMap.put("From", equalTo(number.toString))
-    }
-    filterMap.put("PageSize", equalTo(filter.pageSize.toString))
-    filterMap
-  }
 }

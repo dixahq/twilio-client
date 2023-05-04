@@ -5,7 +5,6 @@ import com.dixa.twilio.model.twiml.verb.DialVerb
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 import com.dixa.twilio.model.voice.Conference
 
-import scala.annotation.nowarn
 import scala.collection.immutable
 
 /** Represent the Conference noun in TwiML
@@ -49,7 +48,6 @@ object ConferenceNoun {
     // At time of writing, there is still a huge list of attribute that can be used, but
     // this class is missing support for. So add then when needed.
 
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit evb: B =:= TwimlConstraints.BuildableTrue
     ): ConferenceNoun = ConferenceNounImpl(beep, waitUrl, conferenceFriendlyName)

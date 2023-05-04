@@ -201,7 +201,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withTwiml(Response.build { _.addSay(_.withText("Ahoy there").build()).buildVerified() })
-        .build
+        .build()
     )
 
     val createdAtInstant = Instant.from(

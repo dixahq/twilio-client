@@ -5,7 +5,6 @@ import com.dixa.twilio.model.twiml.TwimlConstraints.{Buildable, BuildableFalse, 
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
-import scala.annotation.nowarn
 import scala.collection.immutable
 
 /** Representation of the Say Verb from TwiML
@@ -921,7 +920,6 @@ object SayVerb {
     def withLoop(loop: Int): Builder[B, L, V] =
       new Builder[B, L, V](text, language, voice, loop = Some(loop))
 
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): SayVerb = SayVerbImpl(text, language, voice, loop)
