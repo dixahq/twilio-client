@@ -12,6 +12,16 @@ trait TwilioClientPhoneNumber {
     */
   def incomingPhoneNumberList: IncomingNumbersReadRequestExecutor
 
+  /** Delete an incoming phone number from twilio account.
+    *
+    * An IncomingPhoneNumber instance resource represents a Twilio phone number provisioned from
+    * Twilio, ported or hosted to Twilio.
+    *
+    * @see
+    *   https://www.twilio.com/docs/phone-numbers/api/incomingphonenumber-resource#delete-an-incomingphonenumber-resource
+    */
+  def incomingPhoneNumberDelete: IncomingPhoneNumberDeleteRequestExecutor
+
   /** Lists active phone numbers for a particular Twilio subaccount as a Source.
     *
     * An active phone number is a number that is active in twilio, and is usable for voice

@@ -5,6 +5,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.phonenumber.{
   ActiveNumbersReadRequestExecutor,
   IncomingNumbersReadRequestExecutor,
+  IncomingPhoneNumberDeleteRequestExecutor,
   OutgoingCallerIdDeleteRequestExecutor,
   OutgoingCallerIdReadRequestExecutor,
   TwilioClientPhoneNumber
@@ -20,6 +21,9 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
 
   override val incomingPhoneNumberList: IncomingNumbersReadRequestExecutor =
     new IncomingNumbersReadRequestExecutorImpl()
+
+  override val incomingPhoneNumberDelete: IncomingPhoneNumberDeleteRequestExecutor =
+    new IncomingPhoneNumberDeleteRequestExecutorImpl()
 
   override val activePhoneNumberList: ActiveNumbersReadRequestExecutor =
     new ActiveNumbersReadRequestExecutorImpl()
