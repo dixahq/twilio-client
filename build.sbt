@@ -90,11 +90,10 @@ lazy val `twilio-client` = project
         "org.scalamock"         %% "scalamock"     % "5.2.0"  % Test,
         "com.github.tomakehurst" % "wiremock-jre8" % "2.35.0" % Test,
         // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
-        "net.minidev"        % "json-smart"         % "2.4.10"           % Test, // From wiremock
-        "commons-fileupload" % "commons-fileupload" % "1.5"              % Test, // From wiremock
-        "org.eclipse.jetty"  % "jetty-server"       % "9.4.51.v20230217" % Test, // From wiremock
+        "net.minidev"        % "json-smart"         % "2.4.10"  % Test, // From wiremock
+        "commons-fileupload" % "commons-fileupload" % "1.5"     % Test, // From wiremock
+        "org.eclipse.jetty"  % "jetty-server"       % "11.0.15" % Test, // From wiremock
       ),
-
       publish / skip := false,
       releaseProcess :=
         Seq[ReleaseStep](
@@ -109,6 +108,6 @@ lazy val `twilio-client` = project
         ),
 
       // Test
-      Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
+      Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
