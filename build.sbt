@@ -94,7 +94,6 @@ lazy val `twilio-client` = project
         "commons-fileupload" % "commons-fileupload" % "1.5"              % Test, // From wiremock
         "org.eclipse.jetty"  % "jetty-server"       % "9.4.51.v20230217" % Test, // From wiremock
       ),
-
       publish / skip := false,
       releaseProcess :=
         Seq[ReleaseStep](
@@ -109,6 +108,6 @@ lazy val `twilio-client` = project
         ),
 
       // Test
-      Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
+      Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
   )
