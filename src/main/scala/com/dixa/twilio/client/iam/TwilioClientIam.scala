@@ -3,11 +3,25 @@ package com.dixa.twilio.client.iam
 trait TwilioClientIam {
 
   /** Fetch a single account for an account sid.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api/account#fetch-an-account-resource
     */
   def accountFetch: AccountFetchRequestExecutor
 
-  /** Read all Twilio accounts */
+  /** Read all Twilio accounts
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api/account#read-multiple-account-resources
+    */
   def accountRead: ReadAllAccountsRequestExecutor
+
+  /** Allows you to modify the properties of an account.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api/account#update-an-account-resource
+    */
+  def accountUpdate: AccountUpdateRequestExecutor
 
   /** Create a secondary auth token.
     *
