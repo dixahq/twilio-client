@@ -38,9 +38,10 @@ final class WiremockPostParamMatcher(expectedParams: Map[String, String])
         case e: Exception => return MatchResult.noMatch()
       }
     val bodyParamsAsArray = bodyAsString.split('&').filter(_.nonEmpty)
-    if (
-      bodyParamsAsArray.exists(x => !x.contains("=") || x.startsWith("=") || x.count(_ == '=') > 1)
-    ) return MatchResult.noMatch()
+    if (bodyParamsAsArray.exists(x => x.count(_ == '=') != 1 || x.startsWith("=")))
+      // This is expected to be a key value pair, so needs exactly one =, that is not at the start of the line because
+      // then there no key, however no value is OK, so = as last char is allowed.
+      return MatchResult.noMatch()
     val bodyParamsAsMap = bodyParamsAsArray.map { keyValueAsString =>
       val keyValueAsArray =
         keyValueAsString
