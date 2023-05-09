@@ -4,6 +4,7 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import com.dixa.twilio.client.iam.{
   AccountFetchRequestExecutor,
+  AccountUpdateRequestExecutor,
   AuthTokenPromoteRequestExecutor,
   AuthTokenSecondaryCreateRequestExecutor,
   AuthTokenSecondaryDeleteRequestExecutor,
@@ -24,12 +25,14 @@ private[impl] final class TwilioClientIamImpl()(
   override val accountRead: ReadAllAccountsRequestExecutor =
     new ReadAllAccountsRequestExecutorImpl()
 
-  override def authTokenSecondaryCreate: AuthTokenSecondaryCreateRequestExecutor =
+  override val accountUpdate: AccountUpdateRequestExecutor = new AccountUpdateRequestExecutorImpl()
+
+  override val authTokenSecondaryCreate: AuthTokenSecondaryCreateRequestExecutor =
     new AuthTokenSecondaryCreateRequestExecutorImpl()
 
-  override def authTokenSecondaryDelete: AuthTokenSecondaryDeleteRequestExecutor =
+  override val authTokenSecondaryDelete: AuthTokenSecondaryDeleteRequestExecutor =
     new AuthTokenSecondaryDeleteRequestExecutorImpl()
 
-  override def authTokenPromote: AuthTokenPromoteRequestExecutor =
+  override val authTokenPromote: AuthTokenPromoteRequestExecutor =
     new AuthTokenPromoteRequestExecutorImpl()
 }

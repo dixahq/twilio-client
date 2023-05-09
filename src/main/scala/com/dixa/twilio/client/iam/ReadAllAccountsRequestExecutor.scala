@@ -4,6 +4,11 @@ import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.ReadAllAccounts
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 
+/** Read all Twilio accounts
+  *
+  * @see
+  *   https://www.twilio.com/docs/iam/api/account#read-multiple-account-resources
+  */
 trait ReadAllAccountsRequestExecutor
     extends MultipleResponseRequestExecutor[
       ReadAllAccountsRequestExecutor.ReadAllAccountsRequest,

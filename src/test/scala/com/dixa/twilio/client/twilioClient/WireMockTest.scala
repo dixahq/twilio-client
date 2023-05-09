@@ -17,4 +17,7 @@ trait WireMockTest extends BeforeAndAfterAll with BeforeAndAfterEach { this: Sui
     wireMockServer.stop()
     super.afterAll()
   }
+
+  def postParamMatcher(expectedParams: Map[String, String]): WiremockPostParamMatcher =
+    new WiremockPostParamMatcher(expectedParams)
 }
