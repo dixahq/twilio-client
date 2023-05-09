@@ -47,7 +47,7 @@ object AccountUpdateRequestExecutor {
 
     final case class ClosedAccountCannotBeReopened(accountSid: TwilioAccount.Sid)
         extends RuntimeException(
-          s"Account with sid $accountSid is permanently closed, and cannot be reopened"
+          s"Account with sid $accountSid is permanently closed and cannot be reopened"
         )
         with AccountUpdateException
     final case class UnspecifiedError(msg: Option[String], cause: Option[Throwable])
