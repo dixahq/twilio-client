@@ -123,13 +123,13 @@ object ConferenceParticipantUpdateRequestExecutor {
     ) {
 
       private def copy[
-          AccountSidSet2 <: AccountSidSetBool,
-          ConferenceSidSet2 <: ConferenceSidSetBool,
-          CallIdSet2 <: CallIdSetBool,
-          HoldSet2 <: HoldSetBool,
-          HoldUrlSet2 <: HoldUrlSetBool,
-          AnnounceUrlSet2 <: AnnounceUrlSetBool,
-          WaitUrlSet2 <: WaitUrlSetBool
+          AccountSidSetNew <: AccountSidSetBool,
+          ConferenceSidSetNew <: ConferenceSidSetBool,
+          CallIdSetNew <: CallIdSetBool,
+          HoldSetNew <: HoldSetBool,
+          HoldUrlSetNew <: HoldUrlSetBool,
+          AnnounceUrlSetNew <: AnnounceUrlSetBool,
+          WaitUrlSetNew <: WaitUrlSetBool
       ](
           accountSid: Option[TwilioAccount.Sid] = this.accountSid,
           conferenceSid: Option[Conference.Sid] = this.conferenceSid,
@@ -147,13 +147,13 @@ object ConferenceParticipantUpdateRequestExecutor {
           endConferenceOnExit: Option[Boolean] = this.endConferenceOnExit,
           callSidToCoach: Option[Call.Sid] = this.callSidToCoach
       ) = new Builder[
-        AccountSidSet2,
-        ConferenceSidSet2,
-        CallIdSet2,
-        HoldSet2,
-        HoldUrlSet2,
-        AnnounceUrlSet2,
-        WaitUrlSet2
+        AccountSidSetNew,
+        ConferenceSidSetNew,
+        CallIdSetNew,
+        HoldSetNew,
+        HoldUrlSetNew,
+        AnnounceUrlSetNew,
+        WaitUrlSetNew
       ](
         accountSid,
         conferenceSid,
