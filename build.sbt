@@ -90,7 +90,7 @@ lazy val `twilio-client` = project
         "org.scalamock"         %% "scalamock" % "5.2.0"        % Test,
         "com.github.tomakehurst" % "wiremock"  % "3.0.0-beta-8" % Test,
       ),
-      dependenciesOverrides ++= Seq(
+      dependencyOverrides ++= Seq(
         // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
         "org.eclipse.jetty.http2" % "http2-server" % "11.0.14", // From Wiremock
         "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.15.1", // From Wiremock
