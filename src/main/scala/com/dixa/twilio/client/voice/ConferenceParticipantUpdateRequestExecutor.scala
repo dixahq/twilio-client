@@ -295,7 +295,7 @@ object ConferenceParticipantUpdateRequestExecutor {
         * GET.
         */
       def withHoldMethod(holdMethod: HttpMethod)(
-          ev: HoldUrlSet =:= HoldUrlSetTrue
+          implicit ev: HoldUrlSet =:= HoldUrlSetTrue
       ): BuilderWithSameTypes = copy(holdMethod = Some(holdMethod))
 
       /** The URL we call using the announce_method for an announcement to the participant. The URL
