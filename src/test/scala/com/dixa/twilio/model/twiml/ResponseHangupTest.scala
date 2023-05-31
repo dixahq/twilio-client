@@ -27,30 +27,31 @@ final class ResponseHangupTest extends AnyWordSpec {
         // format: on
         assert(result.xmlCompact == expectedCompactXml)
       }
+
+      "not allow more verbs to be added to the response after a hangup" in {
+        assertTypeError(
+          """Response.build { responseBuilder =>
+            |        responseBuilder
+            |          .addHangup(_.build())
+            |          .addSay(_.withText("hefntfw").build())
+            |          .buildVerified
+            |      }
+            |""".stripMargin
+        )
+      }
+
+      "not allow adding a hangup if something else prohibits more verbs to be added" in {
+        assertTypeError(
+          """Response.build { responseBuilder =>
+            |        responseBuilder
+            |          .addRedirect(_.withCallbackUrl(CallbackUrl("http://localhost")).build())
+            |          .addHangup(_.build())
+            |          .buildVerified
+            |      }
+            |""".stripMargin
+        )
+      }
     }
 
-    "not allow more verbs to be added to the response after a hangup" in {
-      assertTypeError(
-        """Response.build { responseBuilder =>
-          |        responseBuilder
-          |          .addHangup(_.build())
-          |          .addSay(_.withText("hefntfw").build())
-          |          .buildVerified
-          |      }
-          |""".stripMargin
-      )
-    }
-
-    "not allow adding a hangup if something else prohibits more verbs to be added" in {
-      assertTypeError(
-        """Response.build { responseBuilder =>
-          |        responseBuilder
-          |          .addRedirect(_.withCallbackUrl(CallbackUrl("http://localhost")).build())
-          |          .addHangup(_.build())
-          |          .buildVerified
-          |      }
-          |""".stripMargin
-      )
-    }
   }
 }
