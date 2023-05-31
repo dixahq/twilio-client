@@ -134,7 +134,11 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
                 s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid/Participants/testLabel.json"
               )
             )
-            .andMatching(postParamMatcher(Map("Hold" -> "true")))
+            .andMatching(
+              postParamMatcher(
+                Map("Hold" -> "true", "HoldUrl" -> "http://localhost/test", "HoldMethod" -> "POST")
+              )
+            )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
             .willReturn(
