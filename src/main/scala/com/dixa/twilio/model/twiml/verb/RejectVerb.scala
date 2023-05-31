@@ -37,7 +37,7 @@ object RejectVerb {
   sealed abstract class RejectReason(override val toString: String)
       extends EnumWithTwilioString.EnumEntry
   object RejectReason extends EnumWithTwilioString[RejectReason] {
-    override def values: IndexedSeq[RejectReason] = findValues
+    override def values: immutable.IndexedSeq[RejectReason] = findValues
 
     case object Rejected extends RejectReason("rejected")
     case object Busy     extends RejectReason("busy")
@@ -68,8 +68,8 @@ object RejectVerb {
 
   private final case class RejectVerbImpl(rejectReason: Option[RejectReason]) extends RejectVerb {
 
-    override protected def tagAttributes: Seq[(String, String)] =
-      rejectReason.map(r => List("reason" -> r.twilioString)).getOrElse(Seq.empty)
+    override protected def tagAttributes: immutable.Seq[(String, String)] =
+      rejectReason.map(r => List("reason" -> r.twilioString)).getOrElse(Nil)
   }
 
 }
