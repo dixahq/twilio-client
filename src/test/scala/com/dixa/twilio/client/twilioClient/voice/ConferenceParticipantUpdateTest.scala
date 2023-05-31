@@ -4,6 +4,8 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateException
 import com.dixa.twilio.client.voice.{ConferenceParticipantUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -104,6 +106,8 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
               .withConferenceSid(conferenceSid)
               .withLabel(label)
               .withHoldTrue()
+              .withHoldUrl(CallbackUrl("http://localhost/test"))
+              .withHoldMethod(HttpMethod.Post)
               .build()
           )
 
