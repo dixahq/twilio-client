@@ -13,6 +13,7 @@ import com.dixa.twilio.client.voice.{
   CallUpdateRequestExecutor,
   ConferenceParticipantDeleteRequestExecutor,
   ConferenceParticipantReadRequestExecutor,
+  ConferenceParticipantUpdateRequestExecutor,
   ConferenceReadRequestExecutor,
   ConferenceUpdateRequestExecutor,
   QueueUpdateRequestExecutor,
@@ -39,10 +40,13 @@ private[impl] final class TwilioClientVoiceImpl()(
   override val conferenceUpdate: ConferenceUpdateRequestExecutor =
     new ConferenceUpdateRequestExecutorImpl()
 
-  override def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor =
+  override val conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor =
     new ConferenceParticipantReadRequestExecutorImpl()
 
-  override def conferenceParticipantDelete: ConferenceParticipantDeleteRequestExecutor =
+  override val conferenceParticipantUpdate: ConferenceParticipantUpdateRequestExecutor =
+    new ConferenceParticipantUpdateRequestExecutorImpl()
+
+  override val conferenceParticipantDelete: ConferenceParticipantDeleteRequestExecutor =
     new ConferenceParticipantDeleteRequestExecutorImpl()
 
   override def fetchAllConferencesWithParticipants(
