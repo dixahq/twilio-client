@@ -3,6 +3,7 @@ package com.dixa.twilio.client.twilioClient
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
@@ -342,7 +343,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
     override protected implicit def executionContext: ExecutionContext =
       actorSystemProvider.classicSystem.dispatcher
 
-    override protected type ApiExceptionWrapper = AbstractTestException
+    override protected type ApiExceptionWrapper = AbstractTestException.Api
 
     override protected type UnspecifiedException = AbstractTestException.Undefined
 
@@ -363,7 +364,7 @@ private object SingleRequestExecutorTest {
   sealed trait AbstractTestException extends RuntimeException
   object AbstractTestException {
     final case class ConcreateTestException() extends AbstractTestException
-    final case class Api(cause: ApiException) extends AbstractTestException
+    final case class Api(cause: ApiException) extends AbstractTestException with ApiExceptionWrapper
     final case class Undefined(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(msg.orNull, cause.orNull)
         with AbstractTestException

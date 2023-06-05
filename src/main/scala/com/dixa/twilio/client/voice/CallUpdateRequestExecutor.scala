@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.voice
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
@@ -425,6 +426,8 @@ object CallUpdateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with CallUpdateException
+        with ApiExceptionWrapper
+
     final case class CallNotFound(accountSid: TwilioAccount.Sid, callSid: Call.Sid)
         extends RuntimeException(s"Call with sid $callSid was not found in account: $accountSid")
         with CallUpdateException

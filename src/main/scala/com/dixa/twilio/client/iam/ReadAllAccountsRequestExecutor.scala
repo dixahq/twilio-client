@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.iam
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.ReadAllAccountsException
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -42,6 +43,8 @@ object ReadAllAccountsRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ReadAllAccountsException
+        with ApiExceptionWrapper
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(

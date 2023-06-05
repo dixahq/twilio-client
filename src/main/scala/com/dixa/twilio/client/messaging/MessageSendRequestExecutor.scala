@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.messaging
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
-
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -35,6 +35,8 @@ object MessageSendRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with MessageSendException
+        with ApiExceptionWrapper
+
     final case class ToNumberNotValid()
         extends IllegalStateException(
           "Invalid 'To' Phone Number. More info: https://www.twilio.com/docs/api/errors/21211"

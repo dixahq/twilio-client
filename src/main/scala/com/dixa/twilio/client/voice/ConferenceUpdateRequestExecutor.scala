@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.voice
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.HttpMethod
@@ -109,6 +110,8 @@ object ConferenceUpdateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ConferenceUpdateException
+        with ApiExceptionWrapper
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(

@@ -21,7 +21,7 @@ trait RequestExecutor[Req, Err <: RuntimeException] {
     * All implementations is expected to have there own Exception ADT, where one of the possible
     * values should be a ApiException wrapper
     */
-  protected type ApiExceptionWrapper <: Err
+  protected type ApiExceptionWrapper <: Err with RequestExecutor.ApiExceptionWrapper
 
   /** Type for the request specific UnspecifiedException.
     *
@@ -79,4 +79,10 @@ trait RequestExecutor[Req, Err <: RuntimeException] {
     .left
     .map(createUnspecifiedException("Error creating HttpRequest", _))
 
+}
+
+object RequestExecutor {
+  trait ApiExceptionWrapper {
+    def cause: ApiException
+  }
 }
