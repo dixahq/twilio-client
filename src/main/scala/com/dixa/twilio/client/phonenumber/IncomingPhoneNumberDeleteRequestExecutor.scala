@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.phonenumber
 
 import akka.Done
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber
@@ -47,6 +48,7 @@ object IncomingPhoneNumberDeleteRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with IncomingPhoneNumberDeleteException
+        with ApiExceptionWrapper
 
     final case class PhoneNumberNotFound(
         accountSid: TwilioAccount.Sid,

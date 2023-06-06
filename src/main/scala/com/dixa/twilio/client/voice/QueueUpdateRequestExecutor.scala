@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.voice
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Queue
@@ -93,6 +94,8 @@ object QueueUpdateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with QueueUpdateException
+        with ApiExceptionWrapper
+
     final case class QueueNotFound(accountSid: TwilioAccount.Sid, sid: Queue.Sid)
         extends RuntimeException(s"Queue with sid $sid was not found in account: $accountSid")
         with QueueUpdateException

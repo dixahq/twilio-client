@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.voice
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.Iso8601DateTime
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -84,6 +85,8 @@ object ConferenceReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ConferenceReadException
+        with ApiExceptionWrapper
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(

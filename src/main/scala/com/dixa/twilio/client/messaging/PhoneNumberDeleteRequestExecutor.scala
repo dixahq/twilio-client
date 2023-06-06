@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.messaging
 
 import akka.Done
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.PhoneNumberDeleteException
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.messaging.TwilioMessagingService
@@ -30,6 +31,7 @@ object PhoneNumberDeleteRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with PhoneNumberDeleteException
+        with ApiExceptionWrapper
 
     final case class NotFound(msg: String)
         extends IllegalStateException(msg)

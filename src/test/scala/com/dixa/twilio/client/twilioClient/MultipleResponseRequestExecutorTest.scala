@@ -5,6 +5,7 @@ import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpRespo
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client._
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
@@ -265,7 +266,7 @@ final class MultipleResponseRequestExecutorTest
     override protected implicit def executionContext: ExecutionContext =
       actorSystemProvider.classicSystem.dispatcher
 
-    override protected type ApiExceptionWrapper = AbstractTestException
+    override protected type ApiExceptionWrapper = AbstractTestException.Api
 
     override protected type UnspecifiedException = AbstractTestException.Undefined
 
@@ -286,7 +287,7 @@ private object MultipleResponseRequestExecutorTest {
   sealed trait AbstractTestException extends RuntimeException
   object AbstractTestException {
     final case class ConcreateTestException() extends AbstractTestException
-    final case class Api(cause: ApiException) extends AbstractTestException
+    final case class Api(cause: ApiException) extends AbstractTestException with ApiExceptionWrapper
     final case class Undefined(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(msg.orNull, cause.orNull)
         with AbstractTestException

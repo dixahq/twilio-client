@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.voice
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
@@ -444,6 +445,7 @@ object ConferenceParticipantUpdateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ConferenceParticipantUpdateException
+        with ApiExceptionWrapper
 
     final case class ParticipantNotFound(
         accountSid: TwilioAccount.Sid,
