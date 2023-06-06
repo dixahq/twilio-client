@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.iam
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 
@@ -40,6 +41,7 @@ object AccountUpdateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with AccountUpdateException
+        with ApiExceptionWrapper
 
     final case class AccountNotFound(accountSid: TwilioAccount.Sid)
         extends RuntimeException(s"Account with sid $accountSid was not found.")

@@ -237,6 +237,30 @@ object Response {
     ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] =
       new Builder(verbs :+ HangupVerb.build(fun))
 
+    /** Add the Reject verb to the response.
+      *
+      * The <Reject> verb rejects an incoming call to your Twilio number without billing you. This
+      * is very useful for blocking unwanted calls.
+      *
+      * If the first verb in a TwiML document is <Reject>, Twilio will not pick up the call. The
+      * call ends with a status of busy or no-answer, depending on the verb’s reason attribute. Any
+      * verbs after <Reject> are unreachable and ignored.
+      *
+      * Using <Reject> as the first verb in your response is the only way to prevent Twilio from
+      * answering a call. Any other response will result in an answered call and your account will
+      * be billed.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/reject
+      */
+    def addReject(
+        fun: RejectVerb.BuildFunction
+    )(
+        implicit ev: L =:= LastAddedVerbProhibitMoreVerbsFalse
+    ): Builder[BuildableTrue, V, LastAddedVerbProhibitMoreVerbsTrue] = new Builder(
+      verbs :+ RejectVerb.build(fun)
+    )
+
     /** Build a verified [[Response]]
       *
       * By verified we mean an instance of a [[Response]], that is guaranteed to produce valid

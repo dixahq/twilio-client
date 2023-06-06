@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.voice
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.Funit
 import com.dixa.twilio.model.iam.TwilioAccount
@@ -95,6 +96,8 @@ object ConferenceParticipantDeleteRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ConferenceParticipantDeleteException
+        with ApiExceptionWrapper
+
     final case class CallNotFound(conferenceSid: Conference.Sid, callSid: Call.Sid)
         extends RuntimeException(
           s"Call with sid $callSid was not found in conference: $conferenceSid"

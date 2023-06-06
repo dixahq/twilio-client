@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.messaging
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadException
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.messaging.{MediaResourceReference, Message}
@@ -26,6 +27,8 @@ object MessageMediaResourceReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with MessageMediaResourceReadException
+        with ApiExceptionWrapper
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
