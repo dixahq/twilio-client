@@ -924,13 +924,16 @@ object SayVerb {
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): SayVerb = SayVerbImpl(text, language, voice, loop)
   }
+
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState("", None, None, None)
+  }
+
   type BuilderStartState =
     Builder[BuildableFalse, RequiredMatchingLanguageAddedFalse, RequiredMatchingVoiceAddedFalse]
   type BuildFunction = BuilderStartState => SayVerb
 
-  def build(fun: BuildFunction): SayVerb = fun(
-    new BuilderStartState("", None, None, None)
-  )
+  def build(fun: BuildFunction): SayVerb = fun(Builder.empty)
 
   private final case class SayVerbImpl(
       text: String,

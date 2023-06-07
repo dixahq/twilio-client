@@ -45,10 +45,14 @@ object DialVerb {
     ): DialVerb = DialVerbImpl(value)
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState(NotSetValue)
+  }
+
   type BuilderStartState = Builder[BuildableFalse, HasSingleAllowedValueAlreadyFalse]
   type BuildFunction     = BuilderStartState => DialVerb
 
-  def build(fun: BuildFunction): DialVerb = fun(new BuilderStartState(NotSetValue))
+  def build(fun: BuildFunction): DialVerb = fun(Builder.empty)
 
   private sealed abstract class ValueToUse
   private object NotSetValue                                     extends ValueToUse

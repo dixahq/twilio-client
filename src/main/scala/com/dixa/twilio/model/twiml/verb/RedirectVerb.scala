@@ -36,12 +36,14 @@ object RedirectVerb {
       RedirectVerbImpl(callbackUrl.get, method)
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState(None, None)
+  }
+
   type BuilderStartState = Builder[TwimlConstraints.BuildableFalse]
   type BuildFunction     = BuilderStartState => RedirectVerb
 
-  def build(fun: BuildFunction): RedirectVerb = fun(
-    new BuilderStartState(None, None)
-  )
+  def build(fun: BuildFunction): RedirectVerb = fun(Builder.empty)
 
   private final case class RedirectVerbImpl(callbackUrl: CallbackUrl, method: Option[HttpMethod])
       extends RedirectVerb {

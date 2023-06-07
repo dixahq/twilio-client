@@ -1106,6 +1106,10 @@ object GatherVerb {
       ).toUnverified
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState
+  }
+
   // Dtmf is default input, so set HasDtmfInputTrue to begin with.
   type BuilderStartState = Builder[
     PhantomTypes.HasDtmfInputTrue,
@@ -1119,9 +1123,9 @@ object GatherVerb {
   type BuildFunction           = BuilderStartState => GatherVerb.Verified
   type BuildFunctionUnverified = BuilderStartState => GatherVerb.Unverified
 
-  def build(fun: BuildFunction): GatherVerb.Verified = fun(new BuilderStartState())
+  def build(fun: BuildFunction): GatherVerb.Verified = fun(Builder.empty)
 
-  def build(fun: BuildFunctionUnverified): GatherVerb.Unverified = fun(new BuilderStartState)
+  def build(fun: BuildFunctionUnverified): GatherVerb.Unverified = fun(Builder.empty)
 
   private class GatherVerbImpl(
       nestedVerbs: immutable.Seq[TwimlElement.Verb],

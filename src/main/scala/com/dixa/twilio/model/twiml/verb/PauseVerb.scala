@@ -35,12 +35,14 @@ object PauseVerb {
     def build(): PauseVerb = PauseVerbImpl(length)
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState
+  }
+
   type BuilderStartState = Builder
   type BuildFunction     = BuilderStartState => PauseVerb
 
-  def build(fun: BuildFunction): PauseVerb = fun(
-    new BuilderStartState()
-  )
+  def build(fun: BuildFunction): PauseVerb = fun(Builder.empty)
 
   private final case class PauseVerbImpl(lengthInSeconds: Option[Long]) extends PauseVerb {
 

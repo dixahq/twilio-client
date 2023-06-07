@@ -29,12 +29,14 @@ object HangupVerb {
     def build(): HangupVerb = HangupVerbImpl
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState
+  }
+
   type BuilderStartState = Builder
   type BuildFunction     = BuilderStartState => HangupVerb
 
-  private val singleTonBuilderStartState = new BuilderStartState()
-
-  def build(fun: BuildFunction): HangupVerb = fun(singleTonBuilderStartState)
+  def build(fun: BuildFunction): HangupVerb = fun(Builder.empty)
 
   private final case object HangupVerbImpl extends HangupVerb
 

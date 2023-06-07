@@ -59,12 +59,14 @@ object RejectVerb {
     def build(): RejectVerb = RejectVerbImpl(rejectReason)
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState
+  }
+
   type BuilderStartState = Builder
   type BuildFunction     = BuilderStartState => RejectVerb
 
-  private val singleTonBuilderStartState = new BuilderStartState()
-
-  def build(fun: BuildFunction): RejectVerb = fun(singleTonBuilderStartState)
+  def build(fun: BuildFunction): RejectVerb = fun(Builder.empty)
 
   private final case class RejectVerbImpl(rejectReason: Option[RejectReason]) extends RejectVerb {
 
