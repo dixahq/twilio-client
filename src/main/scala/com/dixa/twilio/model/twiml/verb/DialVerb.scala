@@ -26,7 +26,7 @@ object DialVerb {
   final class Builder[
       B <: Buildable,
       S <: HasSingleAllowedValueAlready
-  ](value: ValueToUse) {
+  ] private (value: ValueToUse) {
 
     def withPhoneNumber(pn: PhoneNumberE164)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse

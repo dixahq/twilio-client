@@ -43,7 +43,7 @@ object RejectVerb {
     case object Busy     extends RejectReason("busy")
   }
 
-  final class Builder private[RejectVerb] (rejectReason: Option[RejectReason] = None) {
+  final class Builder private (rejectReason: Option[RejectReason] = None) {
 
     /** Add reason for rejecting call.
       *

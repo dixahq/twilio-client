@@ -24,7 +24,7 @@ sealed trait PauseVerb extends TwimlElement.Verb {
 }
 
 object PauseVerb {
-  final class Builder private[PauseVerb] (length: Option[Long] = None) {
+  final class Builder private (length: Option[Long] = None) {
 
     def withLengthInSeconds(length: PositiveInteger): Builder =
       new Builder(Some(length.int.longValue()))

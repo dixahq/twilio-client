@@ -20,7 +20,7 @@ sealed trait RedirectVerb extends TwimlElement.Verb {
 
 object RedirectVerb {
 
-  final class Builder[B <: TwimlConstraints.Buildable] private[RedirectVerb] (
+  final class Builder[B <: TwimlConstraints.Buildable] private (
       callbackUrl: Option[CallbackUrl],
       method: Option[HttpMethod]
   ) {

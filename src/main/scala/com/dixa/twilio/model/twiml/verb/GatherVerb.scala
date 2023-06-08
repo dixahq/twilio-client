@@ -531,7 +531,7 @@ object GatherVerb {
       ActionHasBeenSet <: PhantomTypes.ActionHasBeenSet,
       LanguageHasBeenSet <: PhantomTypes.LanguageHasBeenSet,
       ValidForVerified <: PhantomTypes.ValidForVerified
-  ] private[GatherVerb] (
+  ] private (
       nestedVerbs: Vector[TwimlElement.Verb] = Vector.empty,
       action: Option[CallbackUrl] = None,
       // Double option, as the value itself is actually an option

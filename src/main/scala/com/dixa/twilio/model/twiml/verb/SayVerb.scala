@@ -901,7 +901,7 @@ object SayVerb {
       B <: Buildable,
       L <: RequiredMatchingLanguageAdded,
       V <: RequiredMatchingVoiceAdded
-  ] private[SayVerb] (
+  ] private (
       text: String,
       language: Option[LanguageCode],
       voice: Option[Voice],

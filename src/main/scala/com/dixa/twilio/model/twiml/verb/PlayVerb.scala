@@ -40,7 +40,7 @@ object PlayVerb {
       S <: SoundFileAdded,
       D <: DigitsAdded,
       L <: LoopAdded
-  ] private[PlayVerb] (
+  ] private (
       url: String,
       digits: Option[DtmfString],
       loopValue: Option[Int]

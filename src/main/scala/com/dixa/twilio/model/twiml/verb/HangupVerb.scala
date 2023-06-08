@@ -24,7 +24,7 @@ sealed trait HangupVerb extends TwimlElement.Verb {
 
 object HangupVerb {
 
-  final class Builder private[HangupVerb] () {
+  final class Builder private () {
 
     def build(): HangupVerb = HangupVerbImpl
   }
