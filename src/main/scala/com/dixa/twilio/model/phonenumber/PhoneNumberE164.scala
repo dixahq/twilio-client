@@ -1,8 +1,10 @@
 package com.dixa.twilio.model.phonenumber
 
+import com.dixa.twilio.model.TwilioStringValue
+
 import scala.util.Try
 
-sealed trait PhoneNumberE164 {
+sealed trait PhoneNumberE164 extends TwilioStringValue {
 
   def asString: String
 

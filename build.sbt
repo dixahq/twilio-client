@@ -92,8 +92,8 @@ lazy val `twilio-client` = project
       ),
       dependencyOverrides ++= Seq(
         // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
-        "org.eclipse.jetty.http2" % "http2-server" % "11.0.14", // From Wiremock
-        "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.15.1", // From Wiremock
+        "org.eclipse.jetty.http2"          % "http2-server"            % "11.0.14", // From Wiremock
+        "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.15.1",  // From Wiremock
       ),
       publish / skip := false,
       releaseProcess :=
