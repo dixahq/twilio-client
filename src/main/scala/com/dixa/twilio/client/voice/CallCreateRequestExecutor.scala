@@ -145,7 +145,25 @@ object CallCreateRequestExecutor {
       url: Option[CallbackUrl],
       twiml: Option[Response.Verified],
       applicationSid: Option[Application.Sid]
-  ) extends CallCreateRequest {}
+  ) extends CallCreateRequest
+
+  object CallCreateRequest {
+
+    /** Phantom type Used to require account sid to be supplied before build can be called */
+    sealed trait AccountSidAttributeSet
+    sealed trait AccountSidAttributeSetTrue  extends AccountSidAttributeSet
+    sealed trait AccountSidAttributeSetFalse extends AccountSidAttributeSet
+
+    /** Phantom type Used to require to caller id to be supplied before build can be called */
+    sealed trait ToCallerIdAttributeSet
+    sealed trait ToCallerIdAttributeSetTrue  extends ToCallerIdAttributeSet
+    sealed trait ToCallerIdAttributeSetFalse extends ToCallerIdAttributeSet
+
+    /** Phantom type Used to require from caller id to be supplied before build can be called */
+    sealed trait FromCallerIdAttributeSet
+    sealed trait FromCallerIdAttributeSetTrue extends FromCallerIdAttributeSet
+    sealed trait FromCallerIdAttributeSetFalse extends FromCallerIdAttributeSet
+  }
 
   sealed trait CallCreateException extends RuntimeException
 
