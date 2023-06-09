@@ -36,10 +36,8 @@ class CallReadRequestExecutorImpl()(
       .withOptionalParam(fromParamKey, req.from)
       .withOptionalParam(parentCallSidParamKey, req.parentCallSid)
       .withOptionalParam(statusParamKey, req.status)
-      .withOptionalDateParam(startTimeBeforeParamKey, req.startTimeBefore)
-      .withOptionalDateParam(startTimeAfterParamKey, req.startTimeAfter)
-      .withOptionalDateParam(endTimeBeforeParamKey, req.endTimeBefore)
-      .withOptionalDateParam(endTimeAfterParamKey, req.endTimeAfter)
+      .withOptionalDateParam(startTimeParamKey, req.startTime)
+      .withOptionalDateParam(endTimeParamKey, req.endTime)
       .build
 
     createHttpRequestFor(
@@ -87,12 +85,10 @@ class CallReadRequestExecutorImpl()(
 }
 
 private object CallReadRequestExecutorImpl {
-  private val toParamKey              = "To"
-  private val fromParamKey            = "From"
-  private val parentCallSidParamKey   = "ParentCallSid"
-  private val statusParamKey          = "Status"
-  private val startTimeBeforeParamKey = "StartTime<="
-  private val startTimeAfterParamKey  = "StartTime>="
-  private val endTimeBeforeParamKey   = "EndTime<="
-  private val endTimeAfterParamKey    = "EndTime>="
+  private val toParamKey            = "To"
+  private val fromParamKey          = "From"
+  private val parentCallSidParamKey = "ParentCallSid"
+  private val statusParamKey        = "Status"
+  private val startTimeParamKey     = "StartTime"
+  private val endTimeParamKey       = "EndTime"
 }
