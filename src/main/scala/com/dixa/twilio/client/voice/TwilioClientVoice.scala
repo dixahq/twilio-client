@@ -9,6 +9,8 @@ import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 
 trait TwilioClientVoice {
 
+  def callCreate: CallCreateRequestExecutor
+
   def callUpdate: CallUpdateRequestExecutor
 
   def queueUpdate: QueueUpdateRequestExecutor
