@@ -11,6 +11,7 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
 
 import java.time.{Duration, Instant}
+import scala.annotation.nowarn
 import scala.collection.immutable
 
 final case class Call(
@@ -125,4 +126,228 @@ object Call {
   final case class Name(override val toString: String) extends TwilioStringValue
 
   final case class FormattedPhoneNumber(override val toString: String) extends TwilioStringValue
+
+  sealed abstract class RecordingChannels(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
+
+  object RecordingChannels extends EnumWithTwilioString[RecordingChannels] {
+    override val values: immutable.IndexedSeq[RecordingChannels] = findValues
+
+    case object Mono extends RecordingChannels("mono")
+
+    case object Dual extends RecordingChannels("dual")
+
+  }
+
+  // FIXME twilioString or toString ?
+  sealed abstract class MachineDetection(override val toString: String)
+      extends EnumWithTwilioString.EnumEntry
+
+  object MachineDetection extends EnumWithTwilioString[RecordingChannels] {
+    override val values: immutable.IndexedSeq[RecordingChannels] = findValues
+
+    case object Enable extends MachineDetection("enable")
+
+    case object DetectMessageEnd extends MachineDetection("detect-message-end")
+
+  }
+
+  sealed abstract class ProgressEvent(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object ProgressEvent extends EnumWithTwilioString[ProgressEvent] {
+    override val values: immutable.IndexedSeq[ProgressEvent] = findValues
+
+    case object Initiated extends ProgressEvent("initiated")
+
+    case object Ringing extends ProgressEvent("ringing")
+
+    case object Answered extends ProgressEvent("answered")
+
+    case object Completed extends ProgressEvent("completed")
+  }
+
+  sealed abstract class RecordingEvent(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object RecordingEvent extends EnumWithTwilioString[RecordingEvent] {
+    override val values: immutable.IndexedSeq[RecordingEvent] = findValues
+
+    case object InProgress extends RecordingEvent("in-progress")
+
+    case object Completed extends RecordingEvent("completed")
+
+    case object Absent extends RecordingEvent("absent")
+  }
+
+  sealed abstract class Trim(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object Trim extends EnumWithTwilioString[Trim] {
+    override val values: immutable.IndexedSeq[Trim] = findValues
+
+    case object TrimSilence extends Trim("trim-silence")
+
+    case object DoNotTrim extends Trim("do-not-trim")
+  }
+
+  final case class Reason(override val toString: String) extends TwilioStringValue
+
+  final case class Token(override val toString: String) extends TwilioStringValue
+
+  sealed abstract class RecordingTrack(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object RecordingTrack extends EnumWithTwilioString[RecordingTrack] {
+    override val values: immutable.IndexedSeq[RecordingTrack] = findValues
+
+    case object Inbound extends RecordingTrack("inbound")
+
+    case object Outbound extends RecordingTrack("outbound")
+
+    case object Both extends RecordingTrack("both")
+  }
+
+  /** Timeout can only be positive and not larger than 600 seconds. Default is 60 seconds. For some
+    * call flows Twilio will add extra 5 seconds.
+    */
+  final case class Timeout private (int: Int) extends TwilioStringValue {
+    override def toString: String = int.toString
+  }
+
+  object Timeout {
+
+    sealed trait Err extends RuntimeException
+
+    object Err {
+      case class NotPositive(int: Int)
+          extends RuntimeException(s"$int is not a positive integer ( > 0 )")
+          with Err
+
+      case class MaximumReached(int: Int)
+          extends RuntimeException(s"Timeout cannot be more than 600 seconds")
+          with Err
+    }
+
+    // override apply method as private, to ensure clients cannot create invalid instance.
+    @nowarn(value = "cat=unused")
+    private def apply(int: Int): Timeout = new Timeout(int)
+
+    def safe(int: Int): Either[Err, Timeout] = {
+      if (int < 0) Left(Err.NotPositive(int))
+      else if (int > 600) Left(Err.MaximumReached(int))
+      else Right(new Timeout(int))
+    }
+
+    def unsafe(int: Int): Timeout = safe(int).toTry.get
+  }
+
+  /** Default threshold: 2400
+    */
+  final case class MachineDetectionSpeechThreshold private (int: Int) extends TwilioStringValue {
+    override def toString: String = int.toString
+  }
+
+  object MachineDetectionSpeechThreshold {
+
+    sealed trait Err extends RuntimeException
+
+    object Err {
+      case class ValueBelowAllowed(int: Int)
+          extends RuntimeException("Machine detection speech threshold cannot be less than 1000")
+          with Err
+
+      case class ValueAboveAllowed(int: Int)
+          extends RuntimeException("Machine detection speech threshold cannot be more than 6000")
+          with Err
+    }
+
+    // override apply method as private, to ensure clients cannot create invalid instance.
+    @nowarn(value = "cat=unused")
+    private def apply(int: Int): MachineDetectionSpeechThreshold =
+      new MachineDetectionSpeechThreshold(int)
+
+    def safe(int: Int): Either[Err, MachineDetectionSpeechThreshold] = {
+      if (int < 1000) Left(Err.ValueBelowAllowed(int))
+      else if (int > 6000) Left(Err.ValueAboveAllowed(int))
+      else Right(new MachineDetectionSpeechThreshold(int))
+    }
+
+    def unsafe(int: Int): MachineDetectionSpeechThreshold = safe(int).toTry.get
+  }
+
+  /** Default threshold: 1200
+    */
+  final case class MachineDetectionSpeechEndThreshold private (int: Int) extends TwilioStringValue {
+    override def toString: String = int.toString
+  }
+
+  object MachineDetectionSpeechEndThreshold {
+
+    sealed trait Err extends RuntimeException
+
+    object Err {
+      case class ValueBelowAllowed(int: Int)
+          extends RuntimeException("Machine detection speech end threshold cannot be less than 500")
+          with Err
+
+      case class ValueAboveAllowed(int: Int)
+          extends RuntimeException(
+            "Machine detection speech end threshold cannot be more than 5000"
+          )
+          with Err
+    }
+
+    // override apply method as private, to ensure clients cannot create invalid instance.
+    @nowarn(value = "cat=unused")
+    private def apply(int: Int): MachineDetectionSpeechEndThreshold =
+      new MachineDetectionSpeechEndThreshold(int)
+
+    def safe(int: Int): Either[Err, MachineDetectionSpeechEndThreshold] = {
+      if (int < 500) Left(Err.ValueBelowAllowed(int))
+      else if (int > 5000) Left(Err.ValueAboveAllowed(int))
+      else Right(new MachineDetectionSpeechEndThreshold(int))
+    }
+
+    def unsafe(int: Int): MachineDetectionSpeechEndThreshold = safe(int).toTry.get
+  }
+
+  /** Default threshold: 5000
+    */
+  final case class MachineDetectionSilenceTimeout private (int: Int) extends TwilioStringValue {
+    override def toString: String = int.toString
+  }
+
+  object MachineDetectionSilenceTimeout {
+
+    sealed trait Err extends RuntimeException
+
+    object Err {
+      case class ValueBelowAllowed(int: Int)
+          extends RuntimeException("Machine detection silence timeout cannot be less than 2000")
+          with Err
+
+      case class ValueAboveAllowed(int: Int)
+          extends RuntimeException("Machine detection silence timeout cannot be more than 10000")
+          with Err
+    }
+
+    // override apply method as private, to ensure clients cannot create invalid instance.
+    @nowarn(value = "cat=unused")
+    private def apply(int: Int): MachineDetectionSilenceTimeout =
+      new MachineDetectionSilenceTimeout(int)
+
+    def safe(int: Int): Either[Err, MachineDetectionSilenceTimeout] = {
+      if (int < 2000) Left(Err.ValueBelowAllowed(int))
+      else if (int > 10000) Left(Err.ValueAboveAllowed(int))
+      else Right(new MachineDetectionSilenceTimeout(int))
+    }
+
+    def unsafe(int: Int): MachineDetectionSilenceTimeout = safe(int).toTry.get
+  }
+
 }

@@ -2,11 +2,13 @@ package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.{HttpMethod, PositiveInteger}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.dtmf.DtmfString
+import com.dixa.twilio.model.iam.{Application, TwilioAccount}
 import com.dixa.twilio.model.twiml.Response
-import com.dixa.twilio.model.voice.Call
+import com.dixa.twilio.model.voice.Call.RecordingChannels
+import com.dixa.twilio.model.voice.{Call, Trunk}
 
 trait CallCreateRequestExecutor
     extends SingleRequestExecutor[
@@ -26,10 +28,14 @@ trait CallCreateRequestExecutor
 object CallCreateRequestExecutor {
 
   sealed trait CallCreateRequest {
+
+    // Required
     def accountSid: TwilioAccount.Sid
 
+    // Required
     def to: Call.CallerId
 
+    // Required
     def from: Call.CallerId
 
     def method: Option[HttpMethod]
@@ -40,55 +46,55 @@ object CallCreateRequestExecutor {
 
     def statusCallback: Option[CallbackUrl]
 
-    def statusCallbackEvent: Option[HttpMethod]
+    def statusCallbackEvent: Option[Call.ProgressEvent]
 
     def statusCallbackMethod: Option[HttpMethod]
 
-    def sendDigits: Option[String]
+    def sendDigits: Option[DtmfString]
 
-    def timeout: Option[Int]
+    def timeout: Option[Call.Timeout]
 
     def record: Option[Boolean]
 
-    def recordingChannels: Option[String]
+    def recordingChannels: Option[RecordingChannels]
 
-    def recordingStatusCallback: Option[String]
+    def recordingStatusCallback: Option[CallbackUrl]
 
-    def recordingStatusCallbackMethod: Option[String]
+    def recordingStatusCallbackEvent: Option[Call.RecordingEvent]
 
-    def sipAuthUsername: Option[String]
+    def recordingStatusCallbackMethod: Option[HttpMethod]
 
-    def sipAuthPassword: Option[String]
+    def recordingTrack: Option[Call.RecordingTrack]
 
-//    def machineDetection: Option[]
+    def sipAuthUsername: Option[Trunk.Username]
 
-//    def machineDetectionTimeout: Option[]
+    def sipAuthPassword: Option[Trunk.Password]
 
-    def recordingStatusCallbackEvent: Option[String]
+    def machineDetection: Option[Call.MachineDetection]
 
-    def trim: Option[String]
+    def machineDetectionTimeout: Option[PositiveInteger]
 
-    def callerId: Option[String]
+    def machineDetectionSpeechThreshold: Option[Call.MachineDetectionSpeechThreshold]
 
-//    def machineDetectionSpeechThreshold: Option[]
+    def machineDetectionSpeechEndThreshold: Option[Call.MachineDetectionSpeechEndThreshold]
 
-//    def machineDetectionSpeechEndThreshold: Option[]
+    def machineDetectionSilenceTimeout: Option[Call.MachineDetectionSilenceTimeout]
 
-//    def machineDetectionSilenceTimeout: Option[]
+    def trim: Option[Call.Trim]
 
-//    def asyncAmd: Option[]
+    def callerId: Option[Call.CallerId]
 
-//    def asyncAmdStatusCallback: Option[]
+    def asyncAmd: Option[Boolean]
 
-//    def asyncAmdStatusCallbackMethod: Option[]
+    def asyncAmdStatusCallback: Option[CallbackUrl]
 
-    def byoc: Option[String]
+    def asyncAmdStatusCallbackMethod: Option[HttpMethod]
 
-    def callReason: Option[String]
+    def byoc: Option[Trunk.Sid]
 
-    def callToken: Option[String]
+    def callReason: Option[Call.Reason]
 
-    def recordingTrack: Option[String]
+    def callToken: Option[Call.Token]
 
     def timeLimit: Option[Call.TimeLimit]
 
@@ -99,7 +105,7 @@ object CallCreateRequestExecutor {
     def twiml: Option[Response.Verified]
 
     // Required if Url Twiml is not passed
-    def applicationSid: Option[String]
+    def applicationSid: Option[Application.Sid]
   }
 
   private final case class CallCreateRequestImpl(
@@ -110,27 +116,35 @@ object CallCreateRequestExecutor {
       fallbackUrl: Option[CallbackUrl],
       fallbackMethod: Option[HttpMethod],
       statusCallback: Option[CallbackUrl],
-      statusCallbackEvent: Option[HttpMethod],
+      statusCallbackEvent: Option[Call.ProgressEvent],
       statusCallbackMethod: Option[HttpMethod],
-      sendDigits: Option[String],
-      timeout: Option[Int],
+      sendDigits: Option[DtmfString],
+      timeout: Option[Call.Timeout],
       record: Option[Boolean],
-      recordingChannels: Option[String],
-      recordingStatusCallback: Option[String],
-      recordingStatusCallbackMethod: Option[String],
-      sipAuthUsername: Option[String],
-      sipAuthPassword: Option[String],
-      recordingStatusCallbackEvent: Option[String],
-      trim: Option[String],
-      callerId: Option[String],
-      byoc: Option[String],
-      callReason: Option[String],
-      callToken: Option[String],
-      recordingTrack: Option[String],
+      recordingChannels: Option[Call.RecordingChannels],
+      recordingStatusCallback: Option[CallbackUrl],
+      recordingStatusCallbackEvent: Option[Call.RecordingEvent],
+      recordingStatusCallbackMethod: Option[HttpMethod],
+      recordingTrack: Option[Call.RecordingTrack],
+      sipAuthUsername: Option[Trunk.Username],
+      sipAuthPassword: Option[Trunk.Password],
+      machineDetection: Option[Call.MachineDetection],
+      machineDetectionTimeout: Option[PositiveInteger],
+      machineDetectionSpeechThreshold: Option[Call.MachineDetectionSpeechThreshold],
+      machineDetectionSpeechEndThreshold: Option[Call.MachineDetectionSpeechEndThreshold],
+      machineDetectionSilenceTimeout: Option[Call.MachineDetectionSilenceTimeout],
+      trim: Option[Call.Trim],
+      callerId: Option[Call.CallerId],
+      asyncAmd: Option[Boolean],
+      asyncAmdStatusCallback: Option[CallbackUrl],
+      asyncAmdStatusCallbackMethod: Option[HttpMethod],
+      byoc: Option[Trunk.Sid],
+      callReason: Option[Call.Reason],
+      callToken: Option[Call.Token],
       timeLimit: Option[Call.TimeLimit],
       url: Option[CallbackUrl],
       twiml: Option[Response.Verified],
-      applicationSid: Option[String]
+      applicationSid: Option[Application.Sid]
   ) extends CallCreateRequest {}
 
   sealed trait CallCreateException extends RuntimeException
