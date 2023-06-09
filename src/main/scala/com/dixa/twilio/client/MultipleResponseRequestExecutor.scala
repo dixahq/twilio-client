@@ -355,7 +355,6 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
             }
           } catch {
             case e: Exception =>
-              println(s"me: $e")
               List(
                 Left(
                   createUnspecifiedException(
