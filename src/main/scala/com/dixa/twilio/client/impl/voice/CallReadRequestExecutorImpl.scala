@@ -71,7 +71,6 @@ class CallReadRequestExecutorImpl()(
   ]] = {
     responseEntity.parse[CallListJsonRep]() match {
       case Left(ex) =>
-        println(s"responseEntity: $responseEntity")
         List(
           Left(
             CallReadException.Unspecified(
