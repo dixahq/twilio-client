@@ -78,11 +78,9 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
           instance.run(connSettings, request)
         resultFut.map { result =>
           result.left.map { ex =>
+            fail(ex)
             ex.getStackTrace.map(println)
-            println(ex)
-
           }
-
           assert(result === expected)
         }
       }
