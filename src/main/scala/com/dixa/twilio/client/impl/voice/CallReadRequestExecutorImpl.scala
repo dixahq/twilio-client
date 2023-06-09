@@ -36,8 +36,10 @@ class CallReadRequestExecutorImpl()(
       .withOptionalParam(fromParamKey, req.from)
       .withOptionalParam(parentCallSidParamKey, req.parentCallSid)
       .withOptionalParam(statusParamKey, req.status)
-      .withOptionalDateParam(startTimeParamKey, req.startTime)
-      .withOptionalDateParam(endTimeParamKey, req.endTime)
+      .withOptionalDateParam(startTimeParamKey, req.startTimeAfter)
+      .withOptionalDateParam(startTimeParamKey, req.startTimeBefore)
+      .withOptionalDateParam(endTimeParamKey, req.endTimeAfter)
+      .withOptionalDateParam(endTimeParamKey, req.endTimeBefore)
       .build
 
     createHttpRequestFor(
