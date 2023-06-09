@@ -89,7 +89,7 @@ class CallReadRequestExecutorImpl()(
 private object CallReadRequestExecutorImpl {
   private val toParamKey              = "To"
   private val fromParamKey            = "From"
-  private val parentCallSidParamKey   = ""
+  private val parentCallSidParamKey   = "ParentCallSid"
   private val statusParamKey          = "Status"
   private val startTimeBeforeParamKey = "StartTime<="
   private val startTimeAfterParamKey  = "StartTime>="
