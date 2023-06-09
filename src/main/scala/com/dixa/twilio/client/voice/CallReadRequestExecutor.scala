@@ -29,8 +29,10 @@ object CallReadRequestExecutor {
     def from: Option[PhoneNumberE164]
     def parentCallSid: Option[Call.Sid]
     def status: Option[Call.Status]
-    def startTime: Option[Iso8601DateTime]
-    def endTime: Option[Iso8601DateTime]
+    def startTimeAfter: Option[Iso8601DateTime.After]
+    def startTimeBefore: Option[Iso8601DateTime.Before]
+    def endTimeAfter: Option[Iso8601DateTime.After]
+    def endTimeBefore: Option[Iso8601DateTime.Before]
   }
 
   private final case class CallReadRequestImpl(
@@ -39,8 +41,10 @@ object CallReadRequestExecutor {
       from: Option[PhoneNumberE164],
       parentCallSid: Option[Call.Sid],
       status: Option[Call.Status],
-      startTime: Option[Iso8601DateTime],
-      endTime: Option[Iso8601DateTime],
+      startTimeAfter: Option[Iso8601DateTime.After],
+      startTimeBefore: Option[Iso8601DateTime.Before],
+      endTimeAfter: Option[Iso8601DateTime.After],
+      endTimeBefore: Option[Iso8601DateTime.Before]
   ) extends CallReadRequest
 
   object CallReadRequest {
@@ -57,8 +61,10 @@ object CallReadRequestExecutor {
         from: Option[PhoneNumberE164],
         parentCallSid: Option[Call.Sid],
         status: Option[Call.Status],
-        startTime: Option[Iso8601DateTime],
-        endTime: Option[Iso8601DateTime],
+        startTimeAfter: Option[Iso8601DateTime.After],
+        startTimeBefore: Option[Iso8601DateTime.Before],
+        endTimeAfter: Option[Iso8601DateTime.After],
+        endTimeBefore: Option[Iso8601DateTime.Before]
     ) {
       def withAccountSid(
           accountSid: TwilioAccount.Sid
@@ -69,8 +75,10 @@ object CallReadRequestExecutor {
           from,
           parentCallSid,
           status,
-          startTime,
-          endTime
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
 
       def withTo(to: PhoneNumberE164): Builder[Attributes] =
@@ -80,8 +88,10 @@ object CallReadRequestExecutor {
           from,
           parentCallSid,
           status,
-          startTime,
-          endTime
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
 
       def withFrom(from: PhoneNumberE164): Builder[Attributes] =
@@ -91,8 +101,10 @@ object CallReadRequestExecutor {
           Some(from),
           parentCallSid,
           status,
-          startTime,
-          endTime
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
 
       def withParentCallSid(parentCallSid: Call.Sid): Builder[Attributes] =
@@ -102,8 +114,10 @@ object CallReadRequestExecutor {
           from,
           Some(parentCallSid),
           status,
-          startTime,
-          endTime
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
 
       def withStatus(status: Call.Status): Builder[Attributes] =
@@ -113,30 +127,62 @@ object CallReadRequestExecutor {
           from,
           parentCallSid,
           Some(status),
-          startTime,
-          endTime
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
 
-      def withStartTime(startTime: Iso8601DateTime): Builder[Attributes] =
+      def withStartTimeAfter(startTimeAfter: Iso8601DateTime.After): Builder[Attributes] =
         new Builder(
           accountSid,
           to,
           from,
           parentCallSid,
           status,
-          Some(startTime),
-          endTime
+          Some(startTimeAfter),
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
 
-      def withEndTime(endTime: Iso8601DateTime): Builder[Attributes] =
+      def withStartTimeBefore(startTimeBefore: Iso8601DateTime.Before): Builder[Attributes] =
         new Builder(
           accountSid,
           to,
           from,
           parentCallSid,
           status,
-          startTime,
-          Some(endTime)
+          startTimeAfter,
+          Some(startTimeBefore),
+          endTimeAfter,
+          endTimeBefore
+        )
+
+      def withEndTimeAfter(endTimeAfter: Iso8601DateTime.After): Builder[Attributes] =
+        new Builder(
+          accountSid,
+          to,
+          from,
+          parentCallSid,
+          status,
+          startTimeAfter,
+          startTimeBefore,
+          Some(endTimeAfter),
+          endTimeBefore
+        )
+
+      def withEndTimeBefore(endTimeBefore: Iso8601DateTime.Before): Builder[Attributes] =
+        new Builder(
+          accountSid,
+          to,
+          from,
+          parentCallSid,
+          status,
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          Some(endTimeBefore)
         )
 
       def build()(
@@ -148,13 +194,15 @@ object CallReadRequestExecutor {
           from,
           parentCallSid,
           status,
-          startTime,
-          endTime
+          startTimeAfter,
+          startTimeBefore,
+          endTimeAfter,
+          endTimeBefore
         )
     }
 
     def builder(fun: BuilderStartState => CallReadRequest): CallReadRequest =
-      fun(new BuilderStartState(None, None, None, None, None, None, None))
+      fun(new BuilderStartState(None, None, None, None, None, None, None, None, None))
   }
 
   sealed trait CallReadException extends RuntimeException
