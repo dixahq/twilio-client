@@ -139,7 +139,7 @@ object Call {
 
   }
 
-  // FIXME twilioString or toString ?
+  // FIXME twilioString or toString or doesnt matter ?
   sealed abstract class MachineDetection(override val toString: String)
       extends EnumWithTwilioString.EnumEntry
 

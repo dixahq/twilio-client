@@ -7,7 +7,6 @@ import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfString
 import com.dixa.twilio.model.iam.{Application, TwilioAccount}
 import com.dixa.twilio.model.twiml.Response
-import com.dixa.twilio.model.voice.Call.RecordingChannels
 import com.dixa.twilio.model.voice.{Call, Trunk}
 
 trait CallCreateRequestExecutor
@@ -56,7 +55,7 @@ object CallCreateRequestExecutor {
 
     def record: Option[Boolean]
 
-    def recordingChannels: Option[RecordingChannels]
+    def recordingChannels: Option[Call.RecordingChannels]
 
     def recordingStatusCallback: Option[CallbackUrl]
 
@@ -161,8 +160,1695 @@ object CallCreateRequestExecutor {
 
     /** Phantom type Used to require from caller id to be supplied before build can be called */
     sealed trait FromCallerIdAttributeSet
-    sealed trait FromCallerIdAttributeSetTrue extends FromCallerIdAttributeSet
+    sealed trait FromCallerIdAttributeSetTrue  extends FromCallerIdAttributeSet
     sealed trait FromCallerIdAttributeSetFalse extends FromCallerIdAttributeSet
+
+    type BuilderStartState =
+      Builder[
+        AccountSidAttributeSetFalse,
+        ToCallerIdAttributeSetFalse,
+        FromCallerIdAttributeSetFalse
+      ]
+
+    final class Builder[
+        AccountSidSet <: AccountSidAttributeSet,
+        ToCallerIdSet <: ToCallerIdAttributeSet,
+        FromCallerIdSet <: FromCallerIdAttributeSet
+    ] private[CallCreateRequest] (
+        accountSid: Option[TwilioAccount.Sid],
+        to: Option[Call.CallerId],
+        from: Option[Call.CallerId],
+        method: Option[HttpMethod],
+        fallbackUrl: Option[CallbackUrl],
+        fallbackMethod: Option[HttpMethod],
+        statusCallback: Option[CallbackUrl],
+        statusCallbackEvent: Option[Call.ProgressEvent],
+        statusCallbackMethod: Option[HttpMethod],
+        sendDigits: Option[DtmfString],
+        timeout: Option[Call.Timeout],
+        record: Option[Boolean],
+        recordingChannels: Option[Call.RecordingChannels],
+        recordingStatusCallback: Option[CallbackUrl],
+        recordingStatusCallbackEvent: Option[Call.RecordingEvent],
+        recordingStatusCallbackMethod: Option[HttpMethod],
+        recordingTrack: Option[Call.RecordingTrack],
+        sipAuthUsername: Option[Trunk.Username],
+        sipAuthPassword: Option[Trunk.Password],
+        machineDetection: Option[Call.MachineDetection],
+        machineDetectionTimeout: Option[PositiveInteger],
+        machineDetectionSpeechThreshold: Option[Call.MachineDetectionSpeechThreshold],
+        machineDetectionSpeechEndThreshold: Option[Call.MachineDetectionSpeechEndThreshold],
+        machineDetectionSilenceTimeout: Option[Call.MachineDetectionSilenceTimeout],
+        trim: Option[Call.Trim],
+        callerId: Option[Call.CallerId],
+        asyncAmd: Option[Boolean],
+        asyncAmdStatusCallback: Option[CallbackUrl],
+        asyncAmdStatusCallbackMethod: Option[HttpMethod],
+        byoc: Option[Trunk.Sid],
+        callReason: Option[Call.Reason],
+        callToken: Option[Call.Token],
+        timeLimit: Option[Call.TimeLimit],
+        url: Option[CallbackUrl],
+        twiml: Option[Response.Verified],
+        applicationSid: Option[Application.Sid]
+    ) {
+
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[AccountSidAttributeSetTrue, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          Some(accountSid),
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withToCallerId(
+          to: Call.CallerId
+      ): Builder[AccountSidSet, ToCallerIdAttributeSetTrue, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          Some(to),
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withFromCallerId(
+          from: Call.CallerId
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdAttributeSetTrue] = {
+        new Builder(
+          accountSid,
+          to,
+          Some(from),
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      // TODO HasUrlForMethodSetTrue
+      def withMethod(
+          method: HttpMethod
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          Some(method),
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withFallbackUrl(
+          fallbackUrl: CallbackUrl
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          Some(fallbackUrl),
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withFallbackMethod(
+          fallbackMethod: HttpMethod
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          Some(fallbackMethod),
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      // TODO tie up with http method - or maybe not cuz twilio provides a default? - what is done in Call Update?
+      def withStatusCallback(
+          statusCallback: CallbackUrl
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          Some(statusCallback),
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withStatusCallbackEvent(
+          statusCallbackEvent: Call.ProgressEvent
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          Some(statusCallbackEvent),
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withStatusCallbackMethod(
+          statusCallbackMethod: HttpMethod
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          Some(statusCallbackMethod),
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withSendDigits(
+          sendDigits: DtmfString
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          Some(sendDigits),
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withTimeout(
+          timeout: Call.Timeout
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          Some(timeout),
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withRecord(
+          record: Boolean
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          Some(record),
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withRecordingChannels(
+          recordingChannels: Call.RecordingChannels
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          Some(recordingChannels),
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withRecordingStatusCallback(
+          recordingStatusCallback: CallbackUrl
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          Some(recordingStatusCallback),
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withRecordingStatusCallbackEvent(
+          recordingStatusCallbackEvent: Call.RecordingEvent
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          Some(recordingStatusCallbackEvent),
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withRecordingStatusCallbackMethod(
+          recordingStatusCallbackMethod: HttpMethod
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          Some(recordingStatusCallbackMethod),
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withRecordingTrack(
+          recordingTrack: Call.RecordingTrack
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          Some(recordingTrack),
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withSipAuthUsername(
+          sipAuthUsername: Trunk.Username
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          Some(sipAuthUsername),
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withSipAuthPassword(
+          sipAuthPassword: Trunk.Password
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          Some(sipAuthPassword),
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withMachineDetection(
+          machineDetection: Call.MachineDetection
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          Some(machineDetection),
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withMachineDetectionTimeout(
+          machineDetectionTimeout: PositiveInteger
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          Some(machineDetectionTimeout),
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withMachineDetectionSpeechThreshold(
+          machineDetectionSpeechThreshold: Call.MachineDetectionSpeechThreshold
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          Some(machineDetectionSpeechThreshold),
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withMachineDetectionSpeechEndThreshold(
+          machineDetectionSpeechEndThreshold: Call.MachineDetectionSpeechEndThreshold
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          Some(machineDetectionSpeechEndThreshold),
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withMachineDetectionSilenceTimeout(
+          machineDetectionSilenceTimeout: Call.MachineDetectionSilenceTimeout
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          Some(machineDetectionSilenceTimeout),
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withTrim(
+          trim: Call.Trim
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          Some(trim),
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withCallerId(
+          callerId: Call.CallerId
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          Some(callerId),
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withAsyncAmd(
+          asyncAmd: Boolean
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          Some(asyncAmd),
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withAsyncAmdStatusCallback(
+          asyncAmdStatusCallback: CallbackUrl
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          Some(asyncAmdStatusCallback),
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withAsyncAmdStatusCallbackMethod(
+          asyncAmdStatusCallbackMethod: HttpMethod
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          Some(asyncAmdStatusCallbackMethod),
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withByoc(
+          byoc: Trunk.Sid
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          Some(byoc),
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withCallReason(
+          callReason: Call.Reason
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          Some(callReason),
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withCallToken(
+          callToken: Call.Token
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          Some(callToken),
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withTimeLimit(
+          timeLimit: Call.TimeLimit
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          Some(timeLimit),
+          url,
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withUrl(
+          url: CallbackUrl
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          Some(url),
+          twiml,
+          applicationSid
+        )
+      }
+
+      def withTwiml(
+          twiml: Response.Verified
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          Some(twiml),
+          applicationSid
+        )
+      }
+
+      def withApplicationSid(
+          applicationSid: Application.Sid
+      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+        new Builder(
+          accountSid,
+          to,
+          from,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          Some(applicationSid)
+        )
+      }
+
+      def build()(
+          implicit ev: AccountSidSet =:= AccountSidAttributeSetTrue,
+          ev2: ToCallerIdSet =:= ToCallerIdAttributeSetTrue,
+          ev3: FromCallerIdSet =:= FromCallerIdAttributeSetTrue
+      ): CallCreateRequest =
+        CallCreateRequestImpl(
+          accountSid.get,
+          to.get,
+          from.get,
+          method,
+          fallbackUrl,
+          fallbackMethod,
+          statusCallback,
+          statusCallbackEvent,
+          statusCallbackMethod,
+          sendDigits,
+          timeout,
+          record,
+          recordingChannels,
+          recordingStatusCallback,
+          recordingStatusCallbackEvent,
+          recordingStatusCallbackMethod,
+          recordingTrack,
+          sipAuthUsername,
+          sipAuthPassword,
+          machineDetection,
+          machineDetectionTimeout,
+          machineDetectionSpeechThreshold,
+          machineDetectionSpeechEndThreshold,
+          machineDetectionSilenceTimeout,
+          trim,
+          callerId,
+          asyncAmd,
+          asyncAmdStatusCallback,
+          asyncAmdStatusCallbackMethod,
+          byoc,
+          callReason,
+          callToken,
+          timeLimit,
+          url,
+          twiml,
+          applicationSid
+        )
+    }
+
+    def build(fun: BuilderStartState => CallCreateRequest): CallCreateRequest =
+      fun(
+        new BuilderStartState(
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None
+        )
+      )
   }
 
   sealed trait CallCreateException extends RuntimeException
@@ -172,10 +1858,6 @@ object CallCreateRequestExecutor {
         extends RuntimeException(cause)
         with CallCreateException
         with ApiExceptionWrapper
-
-    final case class CallNotFound(accountSid: TwilioAccount.Sid, callSid: Call.Sid)
-        extends RuntimeException(s"Call with sid $callSid was not found in account: $accountSid")
-        with CallCreateException
 
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
