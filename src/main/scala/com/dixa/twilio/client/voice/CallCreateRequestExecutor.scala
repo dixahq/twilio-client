@@ -28,13 +28,10 @@ object CallCreateRequestExecutor {
 
   sealed trait CallCreateRequest {
 
-    // Required
     def accountSid: TwilioAccount.Sid
 
-    // Required
     def to: Call.CallerId
 
-    // Required
     def from: Call.CallerId
 
     def method: Option[HttpMethod]
@@ -97,13 +94,10 @@ object CallCreateRequestExecutor {
 
     def timeLimit: Option[Call.TimeLimit]
 
-    // Required if Twiml ApplicationSid is not passed
     def url: Option[CallbackUrl]
 
-    // Required if Url ApplicationSid is not passed
     def twiml: Option[Response.Verified]
 
-    // Required if Url Twiml is not passed
     def applicationSid: Option[Application.Sid]
   }
 
@@ -148,32 +142,83 @@ object CallCreateRequestExecutor {
 
   object CallCreateRequest {
 
-    /** Phantom type Used to require account sid to be supplied before build can be called */
+    /** Phantom type used to require account sid to be supplied before build can be called */
     sealed trait AccountSidAttributeSet
     sealed trait AccountSidAttributeSetTrue  extends AccountSidAttributeSet
     sealed trait AccountSidAttributeSetFalse extends AccountSidAttributeSet
 
-    /** Phantom type Used to require to caller id to be supplied before build can be called */
+    /** Phantom type used to require to caller id to be supplied before build can be called */
     sealed trait ToCallerIdAttributeSet
     sealed trait ToCallerIdAttributeSetTrue  extends ToCallerIdAttributeSet
     sealed trait ToCallerIdAttributeSetFalse extends ToCallerIdAttributeSet
 
-    /** Phantom type Used to require from caller id to be supplied before build can be called */
+    /** Phantom type used to require from caller id to be supplied before build can be called */
     sealed trait FromCallerIdAttributeSet
     sealed trait FromCallerIdAttributeSetTrue  extends FromCallerIdAttributeSet
     sealed trait FromCallerIdAttributeSetFalse extends FromCallerIdAttributeSet
+
+    /** Phantom type used to require one of url, twiml or applicationSid to be supplied before build
+      * can be called
+      */
+    sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSet
+    sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue
+        extends OneOfUrlOrTwimlOrApplicationSidAttributeSet
+    sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSetFalse
+        extends OneOfUrlOrTwimlOrApplicationSidAttributeSet
+
+    sealed trait HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetTrue  extends HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
+
+    sealed trait HasFallbackUrlForMethodSet
+    sealed trait HasFallbackUrlForMethodSetTrue  extends HasFallbackUrlForMethodSet
+    sealed trait HasFallbackUrlForMethodSetFalse extends HasFallbackUrlForMethodSet
+
+    sealed trait HasStatusCallbackUrlForMethodSet
+    sealed trait HasStatusCallbackUrlForMethodTrue  extends HasStatusCallbackUrlForMethodSet
+    sealed trait HasStatusCallbackUrlForMethodFalse extends HasStatusCallbackUrlForMethodSet
+
+    sealed trait HasRecordingStatusCallbackUrlForMethodSet
+    sealed trait HasRecordingStatusCallbackUrlForMethodTrue
+        extends HasRecordingStatusCallbackUrlForMethodSet
+    sealed trait HasRecordingStatusCallbackUrlForMethodFalse
+        extends HasRecordingStatusCallbackUrlForMethodSet
+
+    sealed trait HasAsyncAmdStatusCallbackUrlForMethodSet
+    sealed trait HasAsyncAmdStatusCallbackUrlForMethodTrue
+        extends HasAsyncAmdStatusCallbackUrlForMethodSet
+    sealed trait HasAsyncAmdStatusCallbackUrlForMethodFalse
+        extends HasAsyncAmdStatusCallbackUrlForMethodSet
+
+    sealed trait HasUrlOrTwimlOrApplicationSidSet
+    sealed trait HasUrlOrTwimlOrApplicationSidTrue  extends HasUrlOrTwimlOrApplicationSidSet
+    sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
 
     type BuilderStartState =
       Builder[
         AccountSidAttributeSetFalse,
         ToCallerIdAttributeSetFalse,
-        FromCallerIdAttributeSetFalse
+        FromCallerIdAttributeSetFalse,
+        OneOfUrlOrTwimlOrApplicationSidAttributeSetFalse,
+        HasUrlForMethodSetFalse,
+        HasFallbackUrlForMethodSetFalse,
+        HasStatusCallbackUrlForMethodFalse,
+        HasRecordingStatusCallbackUrlForMethodFalse,
+        HasAsyncAmdStatusCallbackUrlForMethodFalse,
+        HasUrlOrTwimlOrApplicationSidFalse
       ]
 
     final class Builder[
         AccountSidSet <: AccountSidAttributeSet,
         ToCallerIdSet <: ToCallerIdAttributeSet,
-        FromCallerIdSet <: FromCallerIdAttributeSet
+        FromCallerIdSet <: FromCallerIdAttributeSet,
+        OneOfUrlOrTwimlOrApplicationSidSet <: OneOfUrlOrTwimlOrApplicationSidAttributeSet,
+        UrlAndMethod <: HasUrlForMethodSet,
+        FallbackUrlAndMethod <: HasFallbackUrlForMethodSet,
+        StatusCallbackUrlAndMethod <: HasStatusCallbackUrlForMethodSet,
+        RecordingStatusCallbackUrlAndMethod <: HasRecordingStatusCallbackUrlForMethodSet,
+        AsyncAmdStatusCallbackUrlAndMethod <: HasAsyncAmdStatusCallbackUrlForMethodSet,
+        UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet
     ] private[CallCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         to: Option[Call.CallerId],
@@ -215,7 +260,18 @@ object CallCreateRequestExecutor {
 
       def withAccountSid(
           accountSid: TwilioAccount.Sid
-      ): Builder[AccountSidAttributeSetTrue, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidAttributeSetTrue,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           Some(accountSid),
           to,
@@ -258,7 +314,18 @@ object CallCreateRequestExecutor {
 
       def withToCallerId(
           to: Call.CallerId
-      ): Builder[AccountSidSet, ToCallerIdAttributeSetTrue, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdAttributeSetTrue,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           Some(to),
@@ -301,7 +368,18 @@ object CallCreateRequestExecutor {
 
       def withFromCallerId(
           from: Call.CallerId
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdAttributeSetTrue] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdAttributeSetTrue,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -342,10 +420,20 @@ object CallCreateRequestExecutor {
         )
       }
 
-      // TODO HasUrlForMethodSetTrue
-      def withMethod(
-          method: HttpMethod
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      def withMethod(method: HttpMethod)(
+          implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -388,7 +476,18 @@ object CallCreateRequestExecutor {
 
       def withFallbackUrl(
           fallbackUrl: CallbackUrl
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        HasFallbackUrlForMethodSetTrue,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -431,7 +530,20 @@ object CallCreateRequestExecutor {
 
       def withFallbackMethod(
           fallbackMethod: HttpMethod
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -472,10 +584,20 @@ object CallCreateRequestExecutor {
         )
       }
 
-      // TODO tie up with http method - or maybe not cuz twilio provides a default? - what is done in Call Update?
       def withStatusCallback(
           statusCallback: CallbackUrl
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        HasStatusCallbackUrlForMethodTrue,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -518,7 +640,18 @@ object CallCreateRequestExecutor {
 
       def withStatusCallbackEvent(
           statusCallbackEvent: Call.ProgressEvent
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -561,7 +694,20 @@ object CallCreateRequestExecutor {
 
       def withStatusCallbackMethod(
           statusCallbackMethod: HttpMethod
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit ev: StatusCallbackUrlAndMethod =:= HasStatusCallbackUrlForMethodTrue
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -604,7 +750,18 @@ object CallCreateRequestExecutor {
 
       def withSendDigits(
           sendDigits: DtmfString
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -647,7 +804,18 @@ object CallCreateRequestExecutor {
 
       def withTimeout(
           timeout: Call.Timeout
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -690,7 +858,18 @@ object CallCreateRequestExecutor {
 
       def withRecord(
           record: Boolean
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -733,7 +912,18 @@ object CallCreateRequestExecutor {
 
       def withRecordingChannels(
           recordingChannels: Call.RecordingChannels
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -776,7 +966,18 @@ object CallCreateRequestExecutor {
 
       def withRecordingStatusCallback(
           recordingStatusCallback: CallbackUrl
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        HasRecordingStatusCallbackUrlForMethodTrue,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -819,7 +1020,18 @@ object CallCreateRequestExecutor {
 
       def withRecordingStatusCallbackEvent(
           recordingStatusCallbackEvent: Call.RecordingEvent
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -862,7 +1074,21 @@ object CallCreateRequestExecutor {
 
       def withRecordingStatusCallbackMethod(
           recordingStatusCallbackMethod: HttpMethod
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit
+          ev: RecordingStatusCallbackUrlAndMethod =:= HasRecordingStatusCallbackUrlForMethodTrue
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -905,7 +1131,18 @@ object CallCreateRequestExecutor {
 
       def withRecordingTrack(
           recordingTrack: Call.RecordingTrack
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -948,7 +1185,18 @@ object CallCreateRequestExecutor {
 
       def withSipAuthUsername(
           sipAuthUsername: Trunk.Username
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -991,7 +1239,18 @@ object CallCreateRequestExecutor {
 
       def withSipAuthPassword(
           sipAuthPassword: Trunk.Password
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1034,7 +1293,18 @@ object CallCreateRequestExecutor {
 
       def withMachineDetection(
           machineDetection: Call.MachineDetection
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1077,7 +1347,18 @@ object CallCreateRequestExecutor {
 
       def withMachineDetectionTimeout(
           machineDetectionTimeout: PositiveInteger
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1120,7 +1401,18 @@ object CallCreateRequestExecutor {
 
       def withMachineDetectionSpeechThreshold(
           machineDetectionSpeechThreshold: Call.MachineDetectionSpeechThreshold
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1163,7 +1455,18 @@ object CallCreateRequestExecutor {
 
       def withMachineDetectionSpeechEndThreshold(
           machineDetectionSpeechEndThreshold: Call.MachineDetectionSpeechEndThreshold
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1206,7 +1509,18 @@ object CallCreateRequestExecutor {
 
       def withMachineDetectionSilenceTimeout(
           machineDetectionSilenceTimeout: Call.MachineDetectionSilenceTimeout
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1249,7 +1563,18 @@ object CallCreateRequestExecutor {
 
       def withTrim(
           trim: Call.Trim
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1292,7 +1617,18 @@ object CallCreateRequestExecutor {
 
       def withCallerId(
           callerId: Call.CallerId
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1335,7 +1671,18 @@ object CallCreateRequestExecutor {
 
       def withAsyncAmd(
           asyncAmd: Boolean
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1378,7 +1725,18 @@ object CallCreateRequestExecutor {
 
       def withAsyncAmdStatusCallback(
           asyncAmdStatusCallback: CallbackUrl
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        HasAsyncAmdStatusCallbackUrlForMethodTrue,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1421,7 +1779,21 @@ object CallCreateRequestExecutor {
 
       def withAsyncAmdStatusCallbackMethod(
           asyncAmdStatusCallbackMethod: HttpMethod
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit
+          ev: AsyncAmdStatusCallbackUrlAndMethod =:= HasAsyncAmdStatusCallbackUrlForMethodTrue
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1464,7 +1836,18 @@ object CallCreateRequestExecutor {
 
       def withByoc(
           byoc: Trunk.Sid
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1507,7 +1890,18 @@ object CallCreateRequestExecutor {
 
       def withCallReason(
           callReason: Call.Reason
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1550,7 +1944,18 @@ object CallCreateRequestExecutor {
 
       def withCallToken(
           callToken: Call.Token
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1593,7 +1998,18 @@ object CallCreateRequestExecutor {
 
       def withTimeLimit(
           timeLimit: Call.TimeLimit
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidSet,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        UrlOrTwimlOrApplicationSid
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1636,7 +2052,20 @@ object CallCreateRequestExecutor {
 
       def withUrl(
           url: CallbackUrl
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue,
+        HasUrlForMethodSetTrue,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        HasUrlOrTwimlOrApplicationSidTrue
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1679,7 +2108,20 @@ object CallCreateRequestExecutor {
 
       def withTwiml(
           twiml: Response.Verified
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        HasUrlOrTwimlOrApplicationSidTrue
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1722,7 +2164,20 @@ object CallCreateRequestExecutor {
 
       def withApplicationSid(
           applicationSid: Application.Sid
-      ): Builder[AccountSidSet, ToCallerIdSet, FromCallerIdSet] = {
+      )(
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+      ): Builder[
+        AccountSidSet,
+        ToCallerIdSet,
+        FromCallerIdSet,
+        OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue,
+        UrlAndMethod,
+        FallbackUrlAndMethod,
+        StatusCallbackUrlAndMethod,
+        RecordingStatusCallbackUrlAndMethod,
+        AsyncAmdStatusCallbackUrlAndMethod,
+        HasUrlOrTwimlOrApplicationSidTrue
+      ] = {
         new Builder(
           accountSid,
           to,
@@ -1766,7 +2221,8 @@ object CallCreateRequestExecutor {
       def build()(
           implicit ev: AccountSidSet =:= AccountSidAttributeSetTrue,
           ev2: ToCallerIdSet =:= ToCallerIdAttributeSetTrue,
-          ev3: FromCallerIdSet =:= FromCallerIdAttributeSetTrue
+          ev3: FromCallerIdSet =:= FromCallerIdAttributeSetTrue,
+          ev4: OneOfUrlOrTwimlOrApplicationSidSet =:= OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue
       ): CallCreateRequest =
         CallCreateRequestImpl(
           accountSid.get,
