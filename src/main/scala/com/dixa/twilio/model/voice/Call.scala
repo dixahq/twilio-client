@@ -117,8 +117,8 @@ object Call {
   object AnsweredBy extends EnumWithTwilioString[AnsweredBy] {
     override val values: immutable.IndexedSeq[AnsweredBy] = findValues
 
-    case object Human   extends Direction("human")
-    case object Machine extends Direction("machine")
+    case object Human   extends AnsweredBy("human")
+    case object Machine extends AnsweredBy("machine")
   }
 
   final case class ForwardedFrom(override val toString: String) extends TwilioStringValue
