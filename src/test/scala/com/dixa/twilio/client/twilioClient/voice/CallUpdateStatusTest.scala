@@ -118,7 +118,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
     }
   }
 
-  // `"phone_number_sid": null` is important, as it's an optional parameter, så test should ensure parsing handles that.
+  // `"phone_number_sid": null` is important, as it's an optional parameter, so the test should ensure parsing handles that.
   // `"group_sid": ""` is important because apparently twilio sometimes uses that instead of null
   private def twilioResponse1 =
     """{
