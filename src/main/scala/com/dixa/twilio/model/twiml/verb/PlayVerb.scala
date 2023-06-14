@@ -40,7 +40,7 @@ object PlayVerb {
       S <: SoundFileAdded,
       D <: DigitsAdded,
       L <: LoopAdded
-  ] private[PlayVerb] (
+  ] private (
       url: String,
       digits: Option[DtmfString],
       loopValue: Option[Int]
@@ -88,13 +88,16 @@ object PlayVerb {
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): PlayVerb = PlayVerbImpl(url, digits, loopValue)
   }
+
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState("", None, None)
+  }
+
   type BuilderStartState =
     Builder[BuildableFalse, SoundFileAddedFalse, DigitsAddedFalse, LoopAddedFalse]
   type BuildFunction = BuilderStartState => PlayVerb
 
-  def build(fun: BuildFunction): PlayVerb = fun(
-    new BuilderStartState("", None, None)
-  )
+  def build(fun: BuildFunction): PlayVerb = fun(Builder.empty)
 
   private final case class PlayVerbImpl(
       url: String,

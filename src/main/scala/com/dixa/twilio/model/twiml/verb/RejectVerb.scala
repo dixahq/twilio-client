@@ -43,7 +43,7 @@ object RejectVerb {
     case object Busy     extends RejectReason("busy")
   }
 
-  final class Builder private[RejectVerb] (rejectReason: Option[RejectReason] = None) {
+  final class Builder private (rejectReason: Option[RejectReason] = None) {
 
     /** Add reason for rejecting call.
       *
@@ -59,12 +59,14 @@ object RejectVerb {
     def build(): RejectVerb = RejectVerbImpl(rejectReason)
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState
+  }
+
   type BuilderStartState = Builder
   type BuildFunction     = BuilderStartState => RejectVerb
 
-  private val singleTonBuilderStartState = new BuilderStartState()
-
-  def build(fun: BuildFunction): RejectVerb = fun(singleTonBuilderStartState)
+  def build(fun: BuildFunction): RejectVerb = fun(Builder.empty)
 
   private final case class RejectVerbImpl(rejectReason: Option[RejectReason]) extends RejectVerb {
 
