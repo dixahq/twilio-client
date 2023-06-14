@@ -6,11 +6,11 @@ import com.dixa.twilio.model.dtmf.DtmfDigit
 import com.dixa.twilio.model.twiml.verb.{GatherVerb, HangupVerb, PauseVerb, PlayVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
 
-final class ResponseGatherTest extends AnyWordSpec {
+final class ResponseGatherSafeBuilderTest extends AnyWordSpec {
 
   s"${classOf[Response].getSimpleName}" when {
 
-    "constructing a response with Gather" should {
+    "constructing a response with Gather using the default immutable builder with compile time constraints" should {
 
       "be able to construct a default gather without attributes or nested elements" in {
         // According to documentation, all attributes on gather have default values, so it should be allowed to create an completly empty gather verb.
@@ -24,7 +24,6 @@ final class ResponseGatherTest extends AnyWordSpec {
              |  <Gather />
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
 
         // format: off

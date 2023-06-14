@@ -13,6 +13,8 @@ import scala.collection.immutable
   *
   * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
   * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
+  * Alternatively it also provides a [[GatherVerb.BuilderMutable]] that does not provide all the
+  * compile time constraints.
   *
   * @see
   *   https://www.twilio.com/docs/voice/twiml/gather
@@ -1126,6 +1128,369 @@ object GatherVerb {
   def build(fun: BuildFunction): GatherVerb.Verified = fun(Builder.empty)
 
   def build(fun: BuildFunctionUnverified): GatherVerb.Unverified = fun(Builder.empty)
+
+  /** Mutable builder for construction a Unverified version of this Gather Verb.
+    *
+    * The build methods and the immutable [[Builder]] they use is create, as it enforces a lot of
+    * constraints compile time. However sometimes it can be to cumbersome to use, and in such cases
+    * you can use this mutable builder instead. This class has no compile time constraints, and will
+    * therefore always return a [[GatherVerb.Unverified]] instance.
+    *
+    * If you want to add a verb to a [[com.dixa.twilio.model.twiml.Response]] using this builder,
+    * you should simply just add it, as a custom verb.
+    *
+    * You create an instance with the [[BuilderMutable.empty]] method in the companion object.
+    *
+    * Please note that this builder is not thread safe.
+    */
+  final class BuilderMutable private () {
+
+    private var nestedVerbs                 = Vector.empty[TwimlElement.Verb]
+    private var action: Option[CallbackUrl] = None
+    // Double option, as the value itself is actually an option
+    private var finishOnKey: Option[Option[DtmfDigit]]     = None
+    private var hints                                      = Vector.empty[String]
+    private var input: Option[String]                      = None
+    private var language: Option[LanguageCode]             = None
+    private var method: Option[HttpMethod]                 = None
+    private var numDigits: Option[Int]                     = None
+    private var partialResultCallback: Option[CallbackUrl] = None
+    private var profanityFilter: Option[Boolean]           = None
+    private var speechTimeout: Option[PositiveInteger]     = None
+    private var timeout: Option[PositiveInteger]           = None
+    private var speechModelType: Option[SpeechModelType]   = None
+    private var enhanced: Option[Boolean]                  = None
+    private var actionOnEmptyResult: Option[Boolean]       = None
+
+    /** Add a nested Pause verb.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/pause
+      */
+    def addPause(
+        fun: PauseVerb.BuildFunction
+    ): BuilderMutable = {
+      nestedVerbs = nestedVerbs :+ PauseVerb.build(fun)
+      this
+    }
+
+    /** Add a nested Play verb.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/play
+      */
+    def addPlay(
+        fun: PlayVerb.BuildFunction
+    ): BuilderMutable = {
+      nestedVerbs = nestedVerbs :+ PlayVerb.build(fun)
+      this
+    }
+
+    /** Add a nested Say verb.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/say
+      */
+    def addSay(
+        fun: SayVerb.BuildFunction
+    ): BuilderMutable = {
+      nestedVerbs = nestedVerbs :+ SayVerb.build(fun)
+      this
+    }
+
+    /** Sets the action attribute
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#action
+      */
+    def withAction(
+        callbackUrl: CallbackUrl
+    ): BuilderMutable = {
+      action = Some(callbackUrl)
+      this
+    }
+
+    /** Sets the finishOnKey attribute.
+      *
+      * The default is '#' so not setting it at all would be the same as setting it to
+      * `Some(DtmfDiget.#)`. Setting it to None correspond to setting it to empty String, and that
+      * corresponds to no key ending the gather, and that will result in the gather only being ended
+      * by timeout.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#finishonkey
+      */
+    def withFinishOnKey(finishOnKey: Option[DtmfDigit]): BuilderMutable = {
+      this.finishOnKey = Some(finishOnKey)
+      this
+    }
+
+    /** Add a hint to the hint attribute.
+      *
+      * Can be called multiple time, however twilio does have some constraints on how many hints you
+      * can add, and how many chars a hint max can consist off.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#hints
+      */
+    def addHint(hint: String): BuilderMutable = {
+      this.hints = this.hints :+ hint
+      this
+    }
+
+    /** Sets the input attribute value to: dtmf
+      *
+      * In the immutable builder it's important to each different type of input being set by
+      * individual methods, instead of one method taking the input as an argument. The same is not
+      * the case here, but we will anyway do the same in the sake of consistency.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#input
+      */
+    def withInputDtmf(): BuilderMutable = {
+      this.input = Some("dtmf")
+      this
+    }
+
+    /** Sets the input attribute value to: speech
+      *
+      * In the immutable builder it's important to each different type of input being set by
+      * individual methods, instead of one method taking the input as an argument. The same is not
+      * the case here, but we will anyway do the same in the sake of consistency.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#input
+      */
+    def withInputSpeech(): BuilderMutable = {
+      this.input = Some("speech")
+      this
+    }
+
+    /** Sets the input attribute value to: dtmf speech
+      *
+      * In the immutable builder it's important to each different type of input being set by
+      * individual methods, instead of one method taking the input as an argument. The same is not
+      * the case here, but we will anyway do the same in the sake of consistency.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#input
+      */
+    def withInputDtmfSpeech(): BuilderMutable = {
+      this.input = Some("dtmf speech")
+      this
+    }
+
+    /** Set the language attribute.
+      *
+      * Supported languages are mapped in an enum.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#language
+      */
+    def withLanguage(language: LanguageCode): BuilderMutable = {
+      this.language = Some(language)
+      this
+    }
+
+    /** Sets the method attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#method
+      */
+    def withMethod(method: HttpMethod): BuilderMutable = {
+      this.method = Some(method)
+      this
+    }
+
+    /** Set the numDigits attribute
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#numdigits
+      */
+    def withNumDigits(numDigits: Int): BuilderMutable = {
+      this.numDigits = Some(numDigits)
+      this
+    }
+
+    /** Sets the partialResultCallback attribute
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#partialresultcallback
+      */
+    def withPartialResultCallback(callbackUrl: CallbackUrl): BuilderMutable = {
+      this.partialResultCallback = Some(callbackUrl)
+      this
+    }
+
+    /** Set the profanityFilter attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#profanityfilter
+      */
+    def withProfanityFilter(bool: Boolean): BuilderMutable = {
+      this.profanityFilter = Some(bool)
+      this
+    }
+
+    /** Set the speechTimeout attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechtimeout
+      */
+    def withSpeechTimeout(positiveInteger: PositiveInteger): BuilderMutable = {
+      this.speechTimeout = Some(positiveInteger)
+      this
+    }
+
+    /** Set the timeout attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#timeout
+      */
+    def withTimeout(positiveInteger: PositiveInteger): BuilderMutable = {
+      this.timeout = Some(positiveInteger)
+      this
+    }
+
+    /** Set the speechModel attribute to default.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    def withSpeechModelDefault(): BuilderMutable = {
+      this.speechModelType = Some(SpeechModelType.Default)
+      this
+    }
+
+    /** Set the speechModel attribute to numbers_and_commands.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    def withSpeechModelNumbersAndCommands(): BuilderMutable = {
+      this.speechModelType = Some(SpeechModelType.NumbersAndCommands)
+      this
+    }
+
+    /** Set the speechModel attribute to phone_call.
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language. Just be carefully not to override to an invalid language with the
+      * [[withLanguage]] method.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    def withSpeechModelPhoneCall(
+        language: LanguageCode with LanguageCode.SupportsPhoneCallModel
+    ): BuilderMutable = {
+      this.speechModelType = Some(SpeechModelType.PhoneCall)
+      this.language = Some(language)
+      this
+    }
+
+    /** Set the speechModel attribute to phone_call + the enhanced attribute to true
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language. Just be carefully not to override to an invalid language with the
+      * [[withLanguage]] method.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#enhanced
+      */
+    def withSpeechModelPhoneCallPlusEnhanced(
+        language: LanguageCode
+          with LanguageCode.SupportsPhoneCallModel
+          with LanguageCode.SupportsEnhancedModel
+    ): BuilderMutable = {
+      this.speechModelType = Some(SpeechModelType.PhoneCall)
+      this.language = Some(language)
+      this.enhanced = Some(true)
+      this
+    }
+
+    /** Set the speechModel attribute to experimental_conversations.
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language. Just be carefully not to override to an invalid language with the
+      * [[withLanguage]] method.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    def withSpeechModelExperimentalConversation(
+        language: LanguageCode with LanguageCode.SupportsExperimentalModel
+    ): BuilderMutable = {
+      this.speechModelType = Some(SpeechModelType.ExperimentalConversations)
+      this.language = Some(language)
+      this
+    }
+
+    /** Set the speechModel attribute to experimental_utterances.
+      *
+      * This model only support a very limited numbers of languages, and for this reason you need to
+      * provide the language. Just be carefully not to override to an invalid language with the
+      * [[withLanguage]] method.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      */
+    def withSpeechModelExperimentalUtterances(
+        language: LanguageCode with LanguageCode.SupportsExperimentalModel
+    ): BuilderMutable = {
+      this.speechModelType = Some(SpeechModelType.ExperimentalUtterances)
+      this.language = Some(language)
+      this
+    }
+
+    /** Set the actionOnEmptyResult attribute.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#actiononemptyresult
+      */
+    def withActionOnEmptyResult(bool: Boolean): BuilderMutable = {
+      this.actionOnEmptyResult = Some(bool)
+      this
+    }
+
+    def addCustomVerb(verb: TwimlElement.Verb): BuilderMutable = {
+      this.nestedVerbs = nestedVerbs :+ verb
+      this
+    }
+
+    def addCustomVerbs(verbs: Seq[TwimlElement.Verb]): BuilderMutable = {
+      this.nestedVerbs = nestedVerbs ++ verbs
+      this
+    }
+
+    /** Build a [[GatherVerb.Unverified]] instance from this builder. */
+    def buildUnverified(): GatherVerb.Unverified =
+      new GatherVerbImpl(
+        nestedVerbs,
+        action,
+        finishOnKey,
+        hints,
+        input,
+        language,
+        method,
+        numDigits,
+        partialResultCallback,
+        profanityFilter,
+        speechTimeout,
+        timeout,
+        speechModelType,
+        enhanced,
+        actionOnEmptyResult
+      ).toUnverified
+  }
+
+  object BuilderMutable {
+
+    // Very important this is a def and not a val, as the builder is mutable so we need a new instance for every build.
+    def empty(): BuilderMutable = new BuilderMutable
+  }
 
   private class GatherVerbImpl(
       nestedVerbs: immutable.Seq[TwimlElement.Verb],
