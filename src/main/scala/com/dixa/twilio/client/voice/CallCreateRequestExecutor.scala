@@ -190,9 +190,14 @@ object CallCreateRequestExecutor {
     sealed trait HasAsyncAmdStatusCallbackUrlForMethodFalse
         extends HasAsyncAmdStatusCallbackUrlForMethodSet
 
+    /** Allows to set only one of the url, twiml or applicationSid attributes */
     sealed trait HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidTrue  extends HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
+
+    sealed trait HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetTrue  extends HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
 
     type BuilderStartState =
       Builder[
@@ -856,6 +861,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** record by default is false */
       def withRecord(
           record: Boolean
       ): Builder[
@@ -910,6 +916,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** recordingChannels by default is mono */
       def withRecordingChannels(
           recordingChannels: Call.RecordingChannels
       ): Builder[
@@ -1018,6 +1025,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** recordingStatusCallbackEvents by default is completed */
       def withRecordingStatusCallbackEvents(
           recordingStatusCallbackEvents: Seq[Call.RecordingEvent]
       ): Builder[
@@ -1345,6 +1353,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionTimeout by default is 30 seconds */
       def withMachineDetectionTimeout(
           machineDetectionTimeout: PositiveInteger
       ): Builder[
@@ -1399,6 +1408,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionSpeechThreshold by default is 2400 */
       def withMachineDetectionSpeechThreshold(
           machineDetectionSpeechThreshold: Call.MachineDetectionSpeechThreshold
       ): Builder[
@@ -1453,6 +1463,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionSpeechEndThreshold by default is 1200 */
       def withMachineDetectionSpeechEndThreshold(
           machineDetectionSpeechEndThreshold: Call.MachineDetectionSpeechEndThreshold
       ): Builder[
@@ -1507,6 +1518,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionSilenceTimeout by default is 5000 */
       def withMachineDetectionSilenceTimeout(
           machineDetectionSilenceTimeout: Call.MachineDetectionSilenceTimeout
       ): Builder[
@@ -1561,6 +1573,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** trim by default is trim-silence */
       def withTrim(
           trim: Call.Trim
       ): Builder[
@@ -1996,6 +2009,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** Constraints depend on account and configuration */
       def withTimeLimit(
           timeLimit: Call.TimeLimit
       ): Builder[

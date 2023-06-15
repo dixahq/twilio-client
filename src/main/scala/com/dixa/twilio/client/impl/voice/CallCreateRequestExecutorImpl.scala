@@ -49,6 +49,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       req.asyncAmd
         .map(asyncAmd => paramsWithRecordOpt.withParam(asyncAmdParamKey, asyncAmd.toString))
         .getOrElse(paramsWithRecordOpt)
+    // Twilio requires to send status events as separate params
     val paramsWithStatusCallbackEventSeqOpt =
       req.statusCallbackEvents
         .map(events =>
@@ -57,6 +58,7 @@ private[client] class CallCreateRequestExecutorImpl()(
           )
         )
         .getOrElse(paramsWithAsyncAmdOpt)
+    // Twilio requires recording events to be sent in a single param and in a string separated by spaces
     val paramsWithRecordingStatusCallbackEventSeqOpt =
       req.recordingStatusCallbackEvents
         .map(events =>
@@ -124,7 +126,6 @@ private[client] class CallCreateRequestExecutorImpl()(
     httpResponse.status match {
       case StatusCodes.OK =>
         parseEntityAs[CallJsonRep](entity).map(_.toModel)
-      // TODO for any other possible response create a buildResultForXXXResponse private method here
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
