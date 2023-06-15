@@ -42,7 +42,7 @@ object CallCreateRequestExecutor {
 
     def statusCallback: Option[CallbackUrl]
 
-    def statusCallbackEvent: Option[Call.ProgressEvent]
+    def statusCallbackEvents: Option[Seq[Call.ProgressEvent]]
 
     def statusCallbackMethod: Option[HttpMethod]
 
@@ -109,7 +109,7 @@ object CallCreateRequestExecutor {
       fallbackUrl: Option[CallbackUrl],
       fallbackMethod: Option[HttpMethod],
       statusCallback: Option[CallbackUrl],
-      statusCallbackEvent: Option[Call.ProgressEvent],
+      statusCallbackEvents: Option[Seq[Call.ProgressEvent]],
       statusCallbackMethod: Option[HttpMethod],
       sendDigits: Option[DtmfString],
       timeout: Option[Call.Timeout],
@@ -227,7 +227,7 @@ object CallCreateRequestExecutor {
         fallbackUrl: Option[CallbackUrl],
         fallbackMethod: Option[HttpMethod],
         statusCallback: Option[CallbackUrl],
-        statusCallbackEvent: Option[Call.ProgressEvent],
+        statusCallbackEvent: Option[Seq[Call.ProgressEvent]],
         statusCallbackMethod: Option[HttpMethod],
         sendDigits: Option[DtmfString],
         timeout: Option[Call.Timeout],
@@ -638,8 +638,8 @@ object CallCreateRequestExecutor {
         )
       }
 
-      def withStatusCallbackEvent(
-          statusCallbackEvent: Call.ProgressEvent
+      def withStatusCallbackEvents(
+          statusCallbackEvents: Seq[Call.ProgressEvent]
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -660,7 +660,7 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          Some(statusCallbackEvent),
+          Some(statusCallbackEvents),
           statusCallbackMethod,
           sendDigits,
           timeout,

@@ -130,8 +130,7 @@ final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
           .withMethod(HttpMethod.Get)
           .withStatusCallback(statusCallbackUrl)
           .withStatusCallbackMethod(HttpMethod.Post)
-          .withStatusCallbackEvent(Call.ProgressEvent.Initiated)
-          .withStatusCallbackEvent(Call.ProgressEvent.Answered)
+          .withStatusCallbackEvents(Seq(Call.ProgressEvent.Initiated, Call.ProgressEvent.Answered))
           .build()
       )
 

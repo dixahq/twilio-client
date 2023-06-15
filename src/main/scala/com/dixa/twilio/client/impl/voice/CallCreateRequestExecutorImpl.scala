@@ -49,12 +49,19 @@ private[client] class CallCreateRequestExecutorImpl()(
       req.asyncAmd
         .map(asyncAmd => paramsWithRecordOpt.withParam(asyncAmdParamKey, asyncAmd.toString))
         .getOrElse(paramsWithRecordOpt)
-    val paramsFull = paramsWithAsyncAmdOpt
+    val paramsWithStatusCallbackEventSeqOpt =
+      req.statusCallbackEvents
+        .map(events =>
+          events.foldLeft(paramsWithAsyncAmdOpt)((params, event) =>
+            params.withParam(statusCallbackEventParamKey, event)
+          )
+        )
+        .getOrElse(paramsWithAsyncAmdOpt)
+    val paramsFull = paramsWithStatusCallbackEventSeqOpt
       .withOptionalParam(methodParamKey, req.method)
       .withOptionalParam(fallbackUrlParamKey, req.fallbackUrl)
       .withOptionalParam(fallbackMethodParamKey, req.fallbackMethod)
       .withOptionalParam(statusCallbackParamKey, req.statusCallback)
-      .withOptionalParam(statusCallbackEventParamKey, req.statusCallbackEvent)
       .withOptionalParam(statusCallbackMethodParamKey, req.statusCallbackMethod)
       .withOptionalParam(sendDigitsParamKey, req.sendDigits)
       .withOptionalParam(timeoutParamKey, req.timeout)
@@ -107,7 +114,7 @@ private[client] class CallCreateRequestExecutorImpl()(
   ): Either[CallCreateRequestExecutor.CallCreateException, Call] = {
     httpResponse.status match {
       case StatusCodes.OK =>
-        parseEntityAs[CallJsonRep](entity).map(_.toModel) // TODO check the model
+        parseEntityAs[CallJsonRep](entity).map(_.toModel)
       // TODO for any other possible response create a buildResultForXXXResponse private method here
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
