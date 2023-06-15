@@ -57,7 +57,17 @@ private[client] class CallCreateRequestExecutorImpl()(
           )
         )
         .getOrElse(paramsWithAsyncAmdOpt)
-    val paramsFull = paramsWithStatusCallbackEventSeqOpt
+    val paramsWithRecordingStatusCallbackEventSeqOpt =
+      req.recordingStatusCallbackEvents
+        .map(events =>
+          paramsWithStatusCallbackEventSeqOpt
+            .withParam(
+              recordingStatusCallbackEventParamKey,
+              events.map(_.twilioString).mkString(" ")
+            )
+        )
+        .getOrElse(paramsWithStatusCallbackEventSeqOpt)
+    val paramsFull = paramsWithRecordingStatusCallbackEventSeqOpt
       .withOptionalParam(methodParamKey, req.method)
       .withOptionalParam(fallbackUrlParamKey, req.fallbackUrl)
       .withOptionalParam(fallbackMethodParamKey, req.fallbackMethod)
@@ -67,7 +77,6 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(timeoutParamKey, req.timeout)
       .withOptionalParam(recordingChannelsParamKey, req.recordingChannels)
       .withOptionalParam(recordingStatusCallbackParamKey, req.recordingStatusCallback)
-      .withOptionalParam(recordingStatusCallbackEventParamKey, req.recordingStatusCallbackEvent)
       .withOptionalParam(recordingStatusCallbackMethodParamKey, req.recordingStatusCallbackMethod)
       .withOptionalParam(recordingTrackParamKey, req.recordingTrack)
       .withOptionalParam(sipAuthUsernameParamKey, req.sipAuthUsername)
