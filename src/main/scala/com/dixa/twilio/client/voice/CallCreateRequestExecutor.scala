@@ -237,6 +237,20 @@ object CallCreateRequestExecutor {
     sealed trait AttributeIgnoredBecauseApplicationSidSetFalse
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
 
+    // from machine detection point of view
+    // i am ignored because sendDigits is here
+    sealed trait IsIgnoredBecauseSendDigitsAttributeSet
+    sealed trait IsIgnoredBecauseSendDigitsSetTrue  extends IsIgnoredBecauseSendDigitsAttributeSet
+    sealed trait IsIgnoredBecauseSendDigitsSetFalse extends IsIgnoredBecauseSendDigitsAttributeSet
+
+    // From sendDigits point of view
+    // They (machine detection) are ignored
+    sealed trait MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+    sealed trait MachineDetectionIgnoredBecauseSendDigitsSetTrue
+        extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+    sealed trait MachineDetectionIgnoredBecauseSendDigitsSetFalse
+        extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+
     type BuilderStartState =
       Builder[
         AccountSidAttributeSetFalse,
@@ -252,7 +266,9 @@ object CallCreateRequestExecutor {
         HasAsyncAmdForAsyncAmdAttributesSetFalse,
         HasUrlOrTwimlOrApplicationSidFalse,
         IsIgnoredBecauseApplicationSidSetFalse,
-        AttributeIgnoredBecauseApplicationSidSetFalse
+        AttributeIgnoredBecauseApplicationSidSetFalse,
+        IsIgnoredBecauseSendDigitsSetFalse,
+        MachineDetectionIgnoredBecauseSendDigitsSetFalse
       ]
 
     final class Builder[
@@ -269,7 +285,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet <: HasAsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet,
         IsIgnoredBecauseApplicationSidSet <: IsIgnoredBecauseApplicationSidAttributeSet,
-        AttributeIgnoredBecauseApplicationSidSet <: AttributeIgnoredBecauseApplicationSidAttributeSet
+        AttributeIgnoredBecauseApplicationSidSet <: AttributeIgnoredBecauseApplicationSidAttributeSet,
+        IsIgnoredBecauseSendDigitsSet <: IsIgnoredBecauseSendDigitsAttributeSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet <: MachineDetectionIgnoredBecauseSendDigitsAttributeSet
     ] private[CallCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         to: Option[Call.CallerId],
@@ -325,7 +343,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           Some(accountSid),
@@ -383,7 +403,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -441,7 +463,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -500,7 +524,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        MethodIgnoredBecauseApplicationSidSetTrue
+        MethodIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -561,7 +587,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        FallbackUrlIgnoredBecauseApplicationSidSetTrue // notify application sid that I will be ignored if it is set
+        FallbackUrlIgnoredBecauseApplicationSidSetTrue, // notify application sid that I will be ignored if it is set
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -622,7 +650,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        FallbackMethodIgnoredBecauseApplicationSidSetTrue
+        FallbackMethodIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -682,7 +712,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        StatusCallbackIgnoredBecauseApplicationSidSetTrue
+        StatusCallbackIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -742,7 +774,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue
+        StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -803,7 +837,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue
+        StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -847,6 +883,10 @@ object CallCreateRequestExecutor {
 
       def withSendDigits(
           sendDigits: DtmfString
+      )(
+          implicit
+          ev: MachineDetectionIgnoredBecauseSendDigitsSet =:= MachineDetectionIgnoredBecauseSendDigitsSetFalse
+          // if I find this flag on then I have to notify the user that machine detection says that it is ignored because of me
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -861,7 +901,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSetTrue,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -919,7 +961,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -978,7 +1022,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1039,7 +1085,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1099,7 +1147,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1160,7 +1210,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1221,7 +1273,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1281,7 +1335,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1339,7 +1395,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1397,7 +1455,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1441,6 +1501,8 @@ object CallCreateRequestExecutor {
 
       def withMachineDetection(
           machineDetection: Call.MachineDetection
+      )(
+          implicit ev: IsIgnoredBecauseSendDigitsSet =:= IsIgnoredBecauseSendDigitsSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -1455,7 +1517,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -1514,7 +1578,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1573,7 +1639,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1632,7 +1700,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1691,7 +1761,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1750,7 +1822,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1808,7 +1882,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1866,7 +1942,9 @@ object CallCreateRequestExecutor {
         HasAsyncAmdForAsyncAmdAttributesSetTrue,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1926,7 +2004,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1987,7 +2067,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2045,7 +2127,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2103,7 +2187,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2161,7 +2247,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2220,7 +2308,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2281,7 +2371,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
         IsIgnoredBecauseApplicationSidSet,
-        UrlIgnoredBecauseApplicationSidSetTrue
+        UrlIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2341,7 +2433,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
         IsIgnoredBecauseApplicationSidSet,
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2402,7 +2496,9 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
         IsIgnoredBecauseApplicationSidSetTrue, // notifies specific attributes that they will be ignored
-        AttributeIgnoredBecauseApplicationSidSet
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,

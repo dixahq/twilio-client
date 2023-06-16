@@ -307,6 +307,6 @@ final class CallCreateRequestTest extends AnyWordSpec {
     // TODO tests for constraints of ignores when application sid is set
     // TODO any of record stuff are set should require Record to be set
     // TODO when asyncamdcallback is set should require asyncamd to be set
-
+    // TODO when sendDigits and machineDetection are set should warn that machine detection is ignored (both ways)
   }
 }
