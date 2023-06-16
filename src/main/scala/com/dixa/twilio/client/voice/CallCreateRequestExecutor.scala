@@ -195,6 +195,12 @@ object CallCreateRequestExecutor {
     sealed trait HasRecordForRecordAttributesSetTrue  extends HasRecordForRecordAttributesSet
     sealed trait HasRecordForRecordAttributesSetFalse extends HasRecordForRecordAttributesSet
 
+    /** Require asyncAmd to be set because other asyncAmd attributes will be useless without it */
+    sealed trait HasAsyncAmdForAsyncAmdAttributesSet
+    sealed trait HasAsyncAmdForAsyncAmdAttributesSetTrue extends HasAsyncAmdForAsyncAmdAttributesSet
+    sealed trait HasAsyncAmdForAsyncAmdAttributesSetFalse
+        extends HasAsyncAmdForAsyncAmdAttributesSet
+
     // url and appSid: url is ignored if app sid is set
     // url and twiml: twiml is ignored if url is set
     // twiml and appSid: ?probably? twiml is ignored if app sid is set
@@ -243,6 +249,7 @@ object CallCreateRequestExecutor {
         HasRecordingStatusCallbackUrlForMethodFalse,
         HasAsyncAmdStatusCallbackUrlForMethodFalse,
         HasRecordForRecordAttributesSetFalse,
+        HasAsyncAmdForAsyncAmdAttributesSetFalse,
         HasUrlOrTwimlOrApplicationSidFalse,
         IsIgnoredBecauseApplicationSidSetFalse,
         AttributeIgnoredBecauseApplicationSidSetFalse
@@ -259,6 +266,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod <: HasRecordingStatusCallbackUrlForMethodSet,
         AsyncAmdStatusCallbackUrlAndMethod <: HasAsyncAmdStatusCallbackUrlForMethodSet,
         RecordForRecordAttributesSet <: HasRecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet <: HasAsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet,
         IsIgnoredBecauseApplicationSidSet <: IsIgnoredBecauseApplicationSidAttributeSet,
         AttributeIgnoredBecauseApplicationSidSet <: AttributeIgnoredBecauseApplicationSidAttributeSet
@@ -314,6 +322,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -371,6 +380,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -428,6 +438,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -486,6 +497,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         MethodIgnoredBecauseApplicationSidSetTrue
@@ -546,6 +558,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         FallbackUrlIgnoredBecauseApplicationSidSetTrue // notify application sid that I will be ignored if it is set
@@ -606,6 +619,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         FallbackMethodIgnoredBecauseApplicationSidSetTrue
@@ -665,6 +679,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         StatusCallbackIgnoredBecauseApplicationSidSetTrue
@@ -724,6 +739,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue
@@ -784,6 +800,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue
@@ -841,6 +858,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -898,6 +916,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -956,6 +975,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         HasRecordForRecordAttributesSetTrue,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1016,6 +1036,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1075,6 +1096,7 @@ object CallCreateRequestExecutor {
         HasRecordingStatusCallbackUrlForMethodTrue,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1135,6 +1157,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1195,6 +1218,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1254,6 +1278,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1311,6 +1336,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1368,6 +1394,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1425,6 +1452,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1483,6 +1511,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1541,6 +1570,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1599,6 +1629,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1657,6 +1688,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1715,6 +1747,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1772,6 +1805,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1829,6 +1863,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        HasAsyncAmdForAsyncAmdAttributesSetTrue,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1875,6 +1910,8 @@ object CallCreateRequestExecutor {
 
       def withAsyncAmdStatusCallback(
           asyncAmdStatusCallback: CallbackUrl
+      )(
+          implicit ev: AsyncAmdForAsyncAmdAttributesSet =:= HasAsyncAmdForAsyncAmdAttributesSetTrue
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -1886,6 +1923,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         HasAsyncAmdStatusCallbackUrlForMethodTrue,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -1946,6 +1984,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -2003,6 +2042,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -2060,6 +2100,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -2117,6 +2158,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -2175,6 +2217,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -2235,6 +2278,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
         IsIgnoredBecauseApplicationSidSet,
         UrlIgnoredBecauseApplicationSidSetTrue
@@ -2294,6 +2338,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
         IsIgnoredBecauseApplicationSidSet,
         AttributeIgnoredBecauseApplicationSidSet
@@ -2354,6 +2399,7 @@ object CallCreateRequestExecutor {
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
         RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
         IsIgnoredBecauseApplicationSidSetTrue, // notifies specific attributes that they will be ignored
         AttributeIgnoredBecauseApplicationSidSet

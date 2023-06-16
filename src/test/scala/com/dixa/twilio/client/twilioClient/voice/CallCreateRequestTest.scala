@@ -305,7 +305,8 @@ final class CallCreateRequestTest extends AnyWordSpec {
     }
 
     // TODO tests for constraints of ignores when application sid is set
-    // TODO one of record stuff is set should require Record to be set
+    // TODO any of record stuff are set should require Record to be set
+    // TODO when asyncamdcallback is set should require asyncamd to be set
 
   }
 }
