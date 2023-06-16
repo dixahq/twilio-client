@@ -2,6 +2,7 @@ package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfDigit
+import com.dixa.twilio.model.twiml.verb.GatherVerb.LanguageCode
 import com.dixa.twilio.model.twiml.verb._
 import com.dixa.twilio.model.{HttpMethod, PositiveInteger}
 import org.scalatest.wordspec.AnyWordSpec
@@ -275,6 +276,37 @@ final class ResponseGatherMutableBuilderTest extends AnyWordSpec {
               GatherVerb.BuilderMutable
                 .empty()
                 .withInputSpeech()
+                .withSpeechModelPhoneCallPlusEnhanced(GatherVerb.LanguageCode.`en-GB`)
+                .buildUnverified()
+            }
+            .buildUnverified()
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Gather input="speech" language="en-GB" speechModel="phone_call" enhanced="true" />
+             |</Response>""".stripMargin
+
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Gather input="speech" language="en-GB" speechModel="phone_call" enhanced="true"/></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Generate the correct XML when speechModel is set with the withSpeechModel method instead of the the withSpeecModelX methods" in {
+        val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
+          responseBuilder
+            .addCustomVerb {
+              GatherVerb.BuilderMutable
+                .empty()
+                .withInputSpeech()
+                .withSpeechModel(
+                  GatherVerb.SpeechModelType.PhoneCall.withLanguage(LanguageCode.`en-GB`)
+                )
                 .withSpeechModelPhoneCallPlusEnhanced(GatherVerb.LanguageCode.`en-GB`)
                 .buildUnverified()
             }
