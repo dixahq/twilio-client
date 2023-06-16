@@ -190,14 +190,39 @@ object CallCreateRequestExecutor {
     sealed trait HasAsyncAmdStatusCallbackUrlForMethodFalse
         extends HasAsyncAmdStatusCallbackUrlForMethodSet
 
+    // FIXME remove this
     /** Allows to set only one of the url, twiml or applicationSid attributes */
     sealed trait HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidTrue  extends HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
 
-    sealed trait HasUrlForMethodSet
-    sealed trait HasUrlForMethodSetTrue  extends HasUrlForMethodSet
-    sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
+    // From ignored attribute's point of view
+    // I am ignored
+    sealed trait IsIgnoredBecauseApplicationSidAttributeSet
+    sealed trait IsIgnoredBecauseApplicationSidSetTrue
+        extends IsIgnoredBecauseApplicationSidAttributeSet
+    sealed trait IsIgnoredBecauseApplicationSidSetFalse
+        extends IsIgnoredBecauseApplicationSidAttributeSet
+
+    // From application sid point of view
+    // They are ignored
+    sealed trait AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait MethodIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait UrlIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait FallbackUrlIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait FallbackMethodIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait StatusCallbackIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait AttributeIgnoredBecauseApplicationSidSetFalse
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
 
     type BuilderStartState =
       Builder[
@@ -210,7 +235,9 @@ object CallCreateRequestExecutor {
         HasStatusCallbackUrlForMethodFalse,
         HasRecordingStatusCallbackUrlForMethodFalse,
         HasAsyncAmdStatusCallbackUrlForMethodFalse,
-        HasUrlOrTwimlOrApplicationSidFalse
+        HasUrlOrTwimlOrApplicationSidFalse,
+        IsIgnoredBecauseApplicationSidSetFalse,
+        AttributeIgnoredBecauseApplicationSidSetFalse
       ]
 
     final class Builder[
@@ -223,7 +250,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod <: HasStatusCallbackUrlForMethodSet,
         RecordingStatusCallbackUrlAndMethod <: HasRecordingStatusCallbackUrlForMethodSet,
         AsyncAmdStatusCallbackUrlAndMethod <: HasAsyncAmdStatusCallbackUrlForMethodSet,
-        UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet
+        UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet,
+        IsIgnoredBecauseApplicationSidSet <: IsIgnoredBecauseApplicationSidAttributeSet,
+        AttributeIgnoredBecauseApplicationSidSet <: AttributeIgnoredBecauseApplicationSidAttributeSet
     ] private[CallCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         to: Option[Call.CallerId],
@@ -275,7 +304,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           Some(accountSid),
@@ -329,7 +360,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -383,7 +416,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -426,7 +461,8 @@ object CallCreateRequestExecutor {
       }
 
       def withMethod(method: HttpMethod)(
-          implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue
+          implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -437,7 +473,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        MethodIgnoredBecauseApplicationSidSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -481,6 +519,9 @@ object CallCreateRequestExecutor {
 
       def withFallbackUrl(
           fallbackUrl: CallbackUrl
+      )(
+          implicit
+          ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse // if I find this flag to be on then I am going to shout that I am ignored
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -491,7 +532,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        FallbackUrlIgnoredBecauseApplicationSidSetTrue // notify application sid that I will be ignored if it is set
       ] = {
         new Builder(
           accountSid,
@@ -536,7 +579,8 @@ object CallCreateRequestExecutor {
       def withFallbackMethod(
           fallbackMethod: HttpMethod
       )(
-          implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue
+          implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -547,7 +591,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        FallbackMethodIgnoredBecauseApplicationSidSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -591,6 +637,8 @@ object CallCreateRequestExecutor {
 
       def withStatusCallback(
           statusCallback: CallbackUrl
+      )(
+          implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -601,7 +649,9 @@ object CallCreateRequestExecutor {
         HasStatusCallbackUrlForMethodTrue,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        StatusCallbackIgnoredBecauseApplicationSidSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -645,6 +695,8 @@ object CallCreateRequestExecutor {
 
       def withStatusCallbackEvents(
           statusCallbackEvents: Seq[Call.ProgressEvent]
+      )(
+          implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -655,7 +707,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -700,7 +754,8 @@ object CallCreateRequestExecutor {
       def withStatusCallbackMethod(
           statusCallbackMethod: HttpMethod
       )(
-          implicit ev: StatusCallbackUrlAndMethod =:= HasStatusCallbackUrlForMethodTrue
+          implicit ev: StatusCallbackUrlAndMethod =:= HasStatusCallbackUrlForMethodTrue,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -711,7 +766,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -765,7 +822,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -819,7 +878,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -874,7 +935,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -929,7 +992,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -983,7 +1048,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         HasRecordingStatusCallbackUrlForMethodTrue,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1038,7 +1105,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1095,7 +1164,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1149,7 +1220,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1203,7 +1276,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1257,7 +1332,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1311,7 +1388,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1366,7 +1445,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1421,7 +1502,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1476,7 +1559,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1531,7 +1616,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1586,7 +1673,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1640,7 +1729,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1694,7 +1785,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1748,7 +1841,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         HasAsyncAmdStatusCallbackUrlForMethodTrue,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1805,7 +1900,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1859,7 +1956,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1913,7 +2012,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -1967,7 +2068,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -2022,7 +2125,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -2067,7 +2172,8 @@ object CallCreateRequestExecutor {
       def withUrl(
           url: CallbackUrl
       )(
-          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -2078,7 +2184,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        HasUrlOrTwimlOrApplicationSidTrue
+        HasUrlOrTwimlOrApplicationSidTrue,
+        IsIgnoredBecauseApplicationSidSet,
+        UrlIgnoredBecauseApplicationSidSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -2134,7 +2242,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        HasUrlOrTwimlOrApplicationSidTrue
+        HasUrlOrTwimlOrApplicationSidTrue,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
@@ -2179,7 +2289,8 @@ object CallCreateRequestExecutor {
       def withApplicationSid(
           applicationSid: Application.Sid
       )(
-          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
+          ev2: AttributeIgnoredBecauseApplicationSidSet =:= AttributeIgnoredBecauseApplicationSidSetFalse // if I find this flag on then I have to notify the user that some attributes say they are ignored because of me
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -2190,7 +2301,9 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        HasUrlOrTwimlOrApplicationSidTrue
+        HasUrlOrTwimlOrApplicationSidTrue,
+        IsIgnoredBecauseApplicationSidSetTrue, // notifies specific attributes that they will be ignored
+        AttributeIgnoredBecauseApplicationSidSet
       ] = {
         new Builder(
           accountSid,
