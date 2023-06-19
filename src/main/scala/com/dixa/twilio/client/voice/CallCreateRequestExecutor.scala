@@ -203,22 +203,20 @@ object CallCreateRequestExecutor {
 
     // url and appSid: url is ignored if app sid is set
     // url and twiml: twiml is ignored if url is set
-    // twiml and appSid: ?probably? twiml is ignored if app sid is set
+    // twiml and appSid: probably (?) twiml is ignored if app sid is set
     /** Allows to set only one of the url, twiml or applicationSid attributes */
     sealed trait HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidTrue  extends HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
 
-    // From ignored attribute's point of view
-    // I am ignored
+    // From ignored attribute's point of view - I am ignored
     sealed trait IsIgnoredBecauseApplicationSidAttributeSet
     sealed trait IsIgnoredBecauseApplicationSidSetTrue
         extends IsIgnoredBecauseApplicationSidAttributeSet
     sealed trait IsIgnoredBecauseApplicationSidSetFalse
         extends IsIgnoredBecauseApplicationSidAttributeSet
 
-    // From application sid point of view
-    // They are ignored
+    // From application sid point of view - they are ignored
     sealed trait AttributeIgnoredBecauseApplicationSidAttributeSet
     sealed trait MethodIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
@@ -237,14 +235,12 @@ object CallCreateRequestExecutor {
     sealed trait AttributeIgnoredBecauseApplicationSidSetFalse
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
 
-    // from machine detection point of view
-    // i am ignored because sendDigits is here
+    // From machine detection point of view - I am ignored because sendDigits is here
     sealed trait IsIgnoredBecauseSendDigitsAttributeSet
     sealed trait IsIgnoredBecauseSendDigitsSetTrue  extends IsIgnoredBecauseSendDigitsAttributeSet
     sealed trait IsIgnoredBecauseSendDigitsSetFalse extends IsIgnoredBecauseSendDigitsAttributeSet
 
-    // From sendDigits point of view
-    // They (machine detection) are ignored
+    // From sendDigits point of view - they (machine detection) are ignored
     sealed trait MachineDetectionIgnoredBecauseSendDigitsAttributeSet
     sealed trait MachineDetectionIgnoredBecauseSendDigitsSetTrue
         extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
@@ -571,8 +567,7 @@ object CallCreateRequestExecutor {
       def withFallbackUrl(
           fallbackUrl: CallbackUrl
       )(
-          implicit
-          ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse // if I find this flag to be on then I am going to shout that I am ignored
+          implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -587,7 +582,7 @@ object CallCreateRequestExecutor {
         AsyncAmdForAsyncAmdAttributesSet,
         UrlOrTwimlOrApplicationSid,
         IsIgnoredBecauseApplicationSidSet,
-        FallbackUrlIgnoredBecauseApplicationSidSetTrue, // notify application sid that I will be ignored if it is set
+        FallbackUrlIgnoredBecauseApplicationSidSetTrue,
         IsIgnoredBecauseSendDigitsSet,
         MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
@@ -886,7 +881,6 @@ object CallCreateRequestExecutor {
       )(
           implicit
           ev: MachineDetectionIgnoredBecauseSendDigitsSet =:= MachineDetectionIgnoredBecauseSendDigitsSetFalse
-          // if I find this flag on then I have to notify the user that machine detection says that it is ignored because of me
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -2481,7 +2475,7 @@ object CallCreateRequestExecutor {
           applicationSid: TwimlApplication.Sid
       )(
           implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
-          ev2: AttributeIgnoredBecauseApplicationSidSet =:= AttributeIgnoredBecauseApplicationSidSetFalse // if I find this flag on then I have to notify the user that some attributes say they are ignored because of me
+          ev2: AttributeIgnoredBecauseApplicationSidSet =:= AttributeIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -2495,7 +2489,7 @@ object CallCreateRequestExecutor {
         RecordForRecordAttributesSet,
         AsyncAmdForAsyncAmdAttributesSet,
         HasUrlOrTwimlOrApplicationSidTrue,
-        IsIgnoredBecauseApplicationSidSetTrue, // notifies specific attributes that they will be ignored
+        IsIgnoredBecauseApplicationSidSetTrue,
         AttributeIgnoredBecauseApplicationSidSet,
         IsIgnoredBecauseSendDigitsSet,
         MachineDetectionIgnoredBecauseSendDigitsSet
