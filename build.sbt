@@ -12,7 +12,7 @@ import sbtrelease.ReleasePlugin.autoImport.{
 }
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_12          = "2.12.17"
+val scala2_12          = "2.12.18"
 val scala2_13          = "2.13.10"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
