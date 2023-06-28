@@ -20,17 +20,16 @@ sealed trait SayVerb extends TwimlElement.Verb {
 
 object SayVerb {
 
-  /** Enum entry, representing a Language code that the Say verb support */
+  /** Enum entry, representing a Language code that the Say verb supports */
   sealed abstract class LanguageCode(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
-  /** Enum representing all the Language codes that the Say verb support */
+  /** Enum representing all the Language codes that the Say verb supports */
   // noinspection ScalaUnusedSymbol
   object LanguageCode extends EnumWithTwilioString[LanguageCode] {
 
     sealed trait SupportsManVoice
     sealed trait SupportsWomanVoice
-    sealed trait SupportsAliceVoice
     sealed trait SupportsPollyZeina
     sealed trait SupportsPollyHalaNeural
     sealed trait SupportsPollyArletNeural
@@ -73,6 +72,8 @@ object SayVerb {
     sealed trait SupportsPollyJoeyNeural
     sealed trait SupportsPollyJustinNeural
     sealed trait SupportsPollyMatthewNeural
+    sealed trait SupportsPollyRuthNeural
+    sealed trait SupportsPollyStephenNeural
     sealed trait SupportsPollyAyandaNeural
     sealed trait SupportsPollyGeraint
     sealed trait SupportsPollySuviNeural
@@ -80,6 +81,7 @@ object SayVerb {
     sealed trait SupportsPollyLea
     sealed trait SupportsPollyMathieu
     sealed trait SupportsPollyLeaNeural
+    sealed trait SupportsPollyRemiNeural
     sealed trait SupportsPollyChantal
     sealed trait SupportsPollyGabrielleNeural
     sealed trait SupportsPollyLiamNeural
@@ -95,9 +97,12 @@ object SayVerb {
     sealed trait SupportsPollyCarla
     sealed trait SupportsPollyGiorgio
     sealed trait SupportsPollyBiancaNeural
+    sealed trait SupportsPollyAdrianoNeural
     sealed trait SupportsPollyMizuki
     sealed trait SupportsPollyTakumi
     sealed trait SupportsPollyTakumiNeural
+    sealed trait SupportsPollyKazuhaNeural
+    sealed trait SupportsPollyTomokoNeural
     sealed trait SupportsPollySeoyeon
     sealed trait SupportsPollySeoyeonNeural
     sealed trait SupportsPollyLiv
@@ -112,6 +117,7 @@ object SayVerb {
     sealed trait SupportsPollyVitoria
     sealed trait SupportsPollyCamilaNeural
     sealed trait SupportsPollyVitoriaNeural
+    sealed trait SupportsPollyThiagoNeural
     sealed trait SupportsPollyCristiano
     sealed trait SupportsPollyInes
     sealed trait SupportsPollyInesNeural
@@ -122,8 +128,10 @@ object SayVerb {
     sealed trait SupportsPollyEnrique
     sealed trait SupportsPollyLucia
     sealed trait SupportsPollyLuciaNeural
+    sealed trait SupportsPollySergioNeural
     sealed trait SupportsPollyMia
     sealed trait SupportsPollyMiaNeural
+    sealed trait SupportsPollyAndresNeural
     sealed trait SupportsPollyLupe
     sealed trait SupportsPollyMiguel
     sealed trait SupportsPollyPenelope
@@ -152,16 +160,11 @@ object SayVerb {
         with SupportsPollyZhiyuNeural
 
     /** "Danish, Denmark" */
-    case object `da-DK`
-        extends LanguageCode("da-DK")
-        with SupportsAliceVoice
-        with SupportsPollyMads
-        with SupportsPollyNaja
+    case object `da-DK` extends LanguageCode("da-DK") with SupportsPollyMads with SupportsPollyNaja
 
     /** Dutch */
     case object `nl-NL`
         extends LanguageCode("nl-NL")
-        with SupportsAliceVoice
         with SupportsPollyLotte
         with SupportsPollyRuben
         with SupportsPollyLauraNeural
@@ -169,18 +172,17 @@ object SayVerb {
     /** "English, Australia" */
     case object `en-AU`
         extends LanguageCode("en-AU")
-        with SupportsAliceVoice
         with SupportsPollyNicole
         with SupportsPollyRussell
         with SupportsPollyOliviaNeural
 
+    // not sure if this is an option in Twilio anymore
     /** "English, Canada" */
-    case object `en-CA` extends LanguageCode("en-CA") with SupportsAliceVoice
+    case object `en-CA` extends LanguageCode("en-CA") with SupportsWomanVoice
 
     /** "English, UK" */
     case object `en-GB`
         extends LanguageCode("en-GB")
-        with SupportsAliceVoice
         with SupportsWomanVoice
         with SupportsManVoice
         with SupportsPollyAmy
@@ -194,7 +196,6 @@ object SayVerb {
     /** "English, India" */
     case object `en-IN`
         extends LanguageCode("en-IN")
-        with SupportsAliceVoice
         with SupportsPollyAditi
         with SupportsPollyRaveena
         with SupportsPollyKajalNeural
@@ -205,7 +206,8 @@ object SayVerb {
     /** "English, United States" */
     case object `en-US`
         extends LanguageCode("en-US")
-        with SupportsAliceVoice
+        with SupportsWomanVoice
+        with SupportsManVoice
         with SupportsPollyIvy
         with SupportsPollyJoanna
         with SupportsPollyJoey
@@ -222,32 +224,35 @@ object SayVerb {
         with SupportsPollyJoeyNeural
         with SupportsPollyJustinNeural
         with SupportsPollyMatthewNeural
+        with SupportsPollyRuthNeural
+        with SupportsPollyStephenNeural
 
     /** "English, South African" */
     case object `en-ZA` extends LanguageCode("en-ZA") with SupportsPollyAyandaNeural
 
     /** "English, Welsh" */
-    case object `en-BG-WLS` extends LanguageCode("en-BG-WLS") with SupportsPollyGeraint
+    case object `en-GB-WLS` extends LanguageCode("en-GB-WLS") with SupportsPollyGeraint
+
+    /** "Welsh" */
+    case object `cy-GB` extends LanguageCode("cy-GB") with SupportsPollyGwyneth
 
     /** "Finnish, Finland" */
-    case object `fi-FI`
-        extends LanguageCode("fi-FI")
-        with SupportsAliceVoice
-        with SupportsPollySuviNeural
+    case object `fi-FI` extends LanguageCode("fi-FI") with SupportsPollySuviNeural
 
     /** "French, France" */
     case object `fr-FR`
         extends LanguageCode("fr-FR")
-        with SupportsAliceVoice
+        with SupportsWomanVoice
+        with SupportsManVoice
         with SupportsPollyCeline
         with SupportsPollyLea
         with SupportsPollyMathieu
         with SupportsPollyLeaNeural
+        with SupportsPollyRemiNeural
 
     /** "French, Canada" */
     case object `fr-CA`
         extends LanguageCode("fr-CA")
-        with SupportsAliceVoice
         with SupportsPollyChantal
         with SupportsPollyGabrielleNeural
         with SupportsPollyLiamNeural
@@ -255,7 +260,8 @@ object SayVerb {
     /** "German, Germany" */
     case object `de-DE`
         extends LanguageCode("de-DE")
-        with SupportsAliceVoice
+        with SupportsWomanVoice
+        with SupportsManVoice
         with SupportsPollyHans
         with SupportsPollyMarlene
         with SupportsPollyVicki
@@ -277,33 +283,35 @@ object SayVerb {
     /** "Italian, Italy" */
     case object `it-IT`
         extends LanguageCode("it-IT")
-        with SupportsAliceVoice
+        with SupportsWomanVoice
+        with SupportsManVoice
         with SupportsPollyBianca
         with SupportsPollyCarla
         with SupportsPollyGiorgio
         with SupportsPollyBiancaNeural
+        with SupportsPollyAdrianoNeural
 
     /** "Catalan, Spain" */
-    case object `ca-ES`
-        extends LanguageCode("ca-ES")
-        with SupportsAliceVoice
-        with SupportsPollyArletNeural
+    case object `ca-ES` extends LanguageCode("ca-ES") with SupportsPollyArletNeural
 
     /** "Spanish, Spain" */
     case object `es-ES`
         extends LanguageCode("es-ES")
-        with SupportsAliceVoice
+        with SupportsWomanVoice
+        with SupportsManVoice
         with SupportsPollyConchita
         with SupportsPollyEnrique
         with SupportsPollyLucia
         with SupportsPollyLuciaNeural
+        with SupportsPollySergioNeural
 
     /** "Spanish, Mexico" */
     case object `es-MX`
         extends LanguageCode("es-MX")
-        with SupportsAliceVoice
+        with SupportsWomanVoice
         with SupportsPollyMia
         with SupportsPollyMiaNeural
+        with SupportsPollyAndresNeural
 
     /** "Spanish, USA" */
     case object `es-US`
@@ -317,25 +325,27 @@ object SayVerb {
     /** "Japanese, Japan" */
     case object `ja-JP`
         extends LanguageCode("ja-JP")
-        with SupportsAliceVoice
         with SupportsPollyMizuki
         with SupportsPollyTakumi
         with SupportsPollyTakumiNeural
+        with SupportsPollyKazuhaNeural
+        with SupportsPollyTomokoNeural
 
     /** "Korean, Korea" */
     case object `ko-KR`
         extends LanguageCode("ko-KR")
-        with SupportsAliceVoice
         with SupportsPollySeoyeon
         with SupportsPollySeoyeonNeural
 
     /** "Norwegian, Norway" */
-    case object `nb-NO` extends LanguageCode("nb-NO") with SupportsAliceVoice
+    case object `nb-NO`
+        extends LanguageCode("nb-NO")
+        with SupportsPollyLiv
+        with SupportsPollyIdaNeural
 
     /** "Polish -Poland" */
     case object `pl-PL`
         extends LanguageCode("pl-PL")
-        with SupportsAliceVoice
         with SupportsPollyJacek
         with SupportsPollyJan
         with SupportsPollyEwa
@@ -345,17 +355,16 @@ object SayVerb {
     /** "Portuguese, Brazil" */
     case object `pt-BR`
         extends LanguageCode("pt-BR")
-        with SupportsAliceVoice
         with SupportsPollyCamila
         with SupportsPollyRicardo
         with SupportsPollyVitoria
         with SupportsPollyCamilaNeural
         with SupportsPollyVitoriaNeural
+        with SupportsPollyThiagoNeural
 
     /** "Portuguese, Portugal" */
     case object `pt-PT`
         extends LanguageCode("pt-PT")
-        with SupportsAliceVoice
         with SupportsPollyCristiano
         with SupportsPollyInes
         with SupportsPollyInesNeural
@@ -366,31 +375,28 @@ object SayVerb {
     /** "Russian, Russia" */
     case object `ru-RU`
         extends LanguageCode("ru-RU")
-        with SupportsAliceVoice
         with SupportsPollyMaxim
         with SupportsPollyTatyana
 
     /** "Swedish, Sweden" */
     case object `sv-SE`
         extends LanguageCode("sv-SE")
-        with SupportsAliceVoice
         with SupportsPollyAstrid
         with SupportsPollyElinNeural
 
     /** "Turkish, Turkey" */
     case object `tr-TR` extends LanguageCode("tr-TR") with SupportsPollyFiliz
 
-    /** "Turkish, Turkey" */
-    case object `cy-GB` extends LanguageCode("cy-GB") with SupportsPollyGwyneth
-
     /** "Chinese (Mandarin)" */
-    case object `zh-CN` extends LanguageCode("zh-CN") with SupportsAliceVoice
+    case object `zh-CN` extends LanguageCode("zh-CN") with SupportsPollyZhiyu
 
     /** "Chinese (Cantonese)" */
-    case object `zh-HK` extends LanguageCode("zh-HK") with SupportsAliceVoice
+    case object `zh-HK` extends LanguageCode("zh-HK") with SupportsPollyHiujinNeural
 
-    /** "Chinese (Taiwanese Mandarin)" */
-    case object `zh-TW` extends LanguageCode("zh-TW") with SupportsAliceVoice
+    /** "Chinese (Taiwanese Mandarin) - COMING SOON" */
+//    case object `zh-TW`
+//        extends LanguageCode("zh-TW")
+//        with
 
     /** "English with an American accent" */
     case object `en` extends LanguageCode("en") with SupportsManVoice with SupportsWomanVoice
@@ -418,11 +424,11 @@ object SayVerb {
     case object MaleChild extends Gender
   }
 
-  /** Enum entry, representing a Language code that the Say verb support */
+  /** Enum entry that represents a Voice that the Say verb supports */
   sealed abstract class Voice(override val twilioString: String, gender: Gender)
       extends EnumWithTwilioString.EnumEntry
 
-  /** Enum representing all the Language codes that the Say verb support */
+  /** Enum representing all the Voices that the Say verb supports and their capabilities */
   // noinspection ScalaUnusedSymbol
   object Voice extends EnumWithTwilioString[Voice] {
 
@@ -437,6 +443,7 @@ object SayVerb {
     sealed trait SupportsDaDK
     sealed trait SupportsNlNL
     sealed trait SupportsEnAU
+    sealed trait SupportsEnCA
     sealed trait SupportsEnGB
     sealed trait SupportsEnIN
     sealed trait SupportsEnNZ
@@ -466,9 +473,26 @@ object SayVerb {
     sealed trait SupportsTrTR
     sealed trait SupportsCyGB
 
-    case object `man`   extends Voice("man", Gender.Male)
-    case object `woman` extends Voice("woman", Gender.Female)
-    case object `alice` extends Voice("alice", Gender.Female)
+    case object `man`
+        extends Voice("man", Gender.Male)
+        with SupportsEnGB
+        with SupportsEnUS
+        with SupportsFrFR
+        with SupportsDeDE
+        with SupportsItIT
+        with SupportsEsES
+
+    case object `woman`
+        extends Voice("woman", Gender.Female)
+        with SupportsEnGB
+        with SupportsEnUS
+        with SupportsFrFR
+        with SupportsDeDE
+        with SupportsItIT
+        with SupportsEsES
+        with SupportsEsMX
+        with SupportsEnCA
+
     case object `Polly.Zeina`
         extends Voice("Polly.Zeina", Gender.Female)
         with SupportsPolly
@@ -629,6 +653,14 @@ object SayVerb {
         extends Voice("Polly.Matthew-Neural", Gender.Male)
         with SupportsPolly
         with SupportsEnUS
+    case object `Polly.Ruth-Neural`
+        extends Voice("Polly.Ruth-Neural", Gender.Female)
+        with SupportsPolly
+        with SupportsEnUS
+    case object `Polly.Stephen-Neural`
+        extends Voice("Polly.Stephen-Neural", Gender.Male)
+        with SupportsPolly
+        with SupportsEnUS
     case object `Polly.Ayanda-Neural`
         extends Voice("Polly.Ayanda-Neural", Gender.Female)
         with SupportsPolly
@@ -655,6 +687,10 @@ object SayVerb {
         with SupportsFrFR
     case object `Polly.Lea-Neural`
         extends Voice("Polly.Lea-Neural", Gender.Female)
+        with SupportsPolly
+        with SupportsFrFR
+    case object `Polly.Remi-Neural`
+        extends Voice("Polly.Remi-Neural", Gender.Male)
         with SupportsPolly
         with SupportsFrFR
     case object `Polly.Chantal`
@@ -727,6 +763,10 @@ object SayVerb {
         extends Voice("Polly.Bianca-Neural", Gender.Female)
         with SupportsPolly
         with SupportsItIT
+    case object `Polly.Adriano-Neural`
+        extends Voice("Polly.Adriano-Neural", Gender.Male)
+        with SupportsPolly
+        with SupportsItIT
     case object `Polly.Mizuki`
         extends Voice("Polly.Mizuki", Gender.Female)
         with SupportsPolly
@@ -737,6 +777,14 @@ object SayVerb {
         with SupportsJaJP
     case object `Polly.Takumi-Neural`
         extends Voice("Polly.Takumi-Neural", Gender.Male)
+        with SupportsPolly
+        with SupportsJaJP
+    case object `Polly.Kazuha-Neural`
+        extends Voice("Polly.Kazuha-Neural", Gender.Female)
+        with SupportsPolly
+        with SupportsJaJP
+    case object `Polly.Tomoko-Neural`
+        extends Voice("Polly.Tomoko-Neural", Gender.Female)
         with SupportsPolly
         with SupportsJaJP
     case object `Polly.Seoyeon`
@@ -795,6 +843,10 @@ object SayVerb {
         extends Voice("Polly.Vitoria-Neural", Gender.Female)
         with SupportsPolly
         with SupportsPtBR
+    case object `Polly.Thiago-Neural`
+        extends Voice("Polly.Thiago-Neural", Gender.Male)
+        with SupportsPolly
+        with SupportsPtBR
     case object `Polly.Cristiano`
         extends Voice("Polly.Cristiano", Gender.Male)
         with SupportsPolly
@@ -835,12 +887,20 @@ object SayVerb {
         extends Voice("Polly.Lucia-Neural", Gender.Female)
         with SupportsPolly
         with SupportsEsES
+    case object `Polly.Sergio-Neural`
+        extends Voice("Polly.Sergio-Neural", Gender.Male)
+        with SupportsPolly
+        with SupportsEsES
     case object `Polly.Mia`
         extends Voice("Polly.Mia", Gender.Female)
         with SupportsPolly
         with SupportsEsMX
     case object `Polly.Mia-Neural`
         extends Voice("Polly.Mia-Neural", Gender.Female)
+        with SupportsPolly
+        with SupportsEsMX
+    case object `Polly.Andres-Neural`
+        extends Voice("Polly.Andres-Neural", Gender.Male)
         with SupportsPolly
         with SupportsEsMX
     case object `Polly.Lupe`

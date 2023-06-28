@@ -16,7 +16,7 @@ final class ResponseSayTest extends AnyWordSpec {
             "Twilio can you pronounce these reserved XML chars: &quot;&apos;&lt;&gt;&amp;"
 
           val language = LanguageCode.`en-GB`
-          val voice    = Voice.`alice`
+          val voice    = Voice.`woman`
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addSay { sayBuilder =>
@@ -32,14 +32,14 @@ final class ResponseSayTest extends AnyWordSpec {
 
           val xmlCompact = result.xmlCompact
           val expectedXmlCompact =
-            s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-GB" voice="alice" loop="5">$textToSayEscaped</Say></Response>"""
+            s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-GB" voice="woman" loop="5">$textToSayEscaped</Say></Response>"""
           assert(xmlCompact == expectedXmlCompact)
 
           val xmlPretty = result.xmlPretty
           val expectedXmlPretty =
             s"""<?xml version="1.0" encoding="UTF-8"?>
                |<Response>
-               |  <Say language="en-GB" voice="alice" loop="5">$textToSayEscaped</Say>
+               |  <Say language="en-GB" voice="woman" loop="5">$textToSayEscaped</Say>
                |</Response>""".stripMargin
           assert(xmlPretty === expectedXmlPretty)
         }
