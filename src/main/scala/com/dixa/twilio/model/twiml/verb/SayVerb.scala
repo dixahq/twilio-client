@@ -3,6 +3,7 @@ package com.dixa.twilio.model.twiml.verb
 import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.twiml.TwimlConstraints.{Buildable, BuildableFalse, BuildableTrue}
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
+import com.dixa.twilio.model.twiml.verb.SayVerb.Voice.{SupportsEnGB, SupportsEnGBFalse}
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
 import scala.collection.immutable
@@ -434,7 +435,8 @@ object SayVerb {
 
     val values: immutable.IndexedSeq[Voice] = findValues
 
-    sealed trait SupportsPolly
+    sealed trait SupportsPolly // FIXME this is not a language
+
     sealed trait SupportsArb
     sealed trait SupportsArAE
     sealed trait SupportsCaES
@@ -445,6 +447,9 @@ object SayVerb {
     sealed trait SupportsEnAU
     sealed trait SupportsEnCA
     sealed trait SupportsEnGB
+    sealed trait SupportsEnGBTrue  extends SupportsEnGB
+    sealed trait SupportsEnGBFalse extends SupportsEnGB
+
     sealed trait SupportsEnIN
     sealed trait SupportsEnNZ
     sealed trait SupportsEnUS
@@ -473,25 +478,53 @@ object SayVerb {
     sealed trait SupportsTrTR
     sealed trait SupportsCyGB
 
-    case object `man`
-        extends Voice("man", Gender.Male)
-        with SupportsEnGB
-        with SupportsEnUS
-        with SupportsFrFR
-        with SupportsDeDE
-        with SupportsItIT
-        with SupportsEsES
+    case object `man-EnGB` extends Voice("man-EnGB", Gender.Male) with SupportsEnGB
 
-    case object `woman`
-        extends Voice("woman", Gender.Female)
-        with SupportsEnGB
-        with SupportsEnUS
-        with SupportsFrFR
-        with SupportsDeDE
-        with SupportsItIT
-        with SupportsEsES
-        with SupportsEsMX
-        with SupportsEnCA
+    case object `man-EnUS` extends Voice("man-EnUS", Gender.Male) with SupportsEnUS
+
+    case object `man-FrFR` extends Voice("man-FrFR", Gender.Male) with SupportsFrFR
+
+    case object `man-DeDE` extends Voice("man-DeDE", Gender.Male) with SupportsDeDE
+
+    case object `man-ItIT` extends Voice("man-ItIT", Gender.Male) with SupportsItIT
+
+    case object `man-EsES` extends Voice("man-EsES", Gender.Male) with SupportsEsES
+
+    case object `woman-EnGB` extends Voice("woman-EnGB", Gender.Female) with SupportsEnGB
+
+    case object `woman-EnUS` extends Voice("woman-EnUS", Gender.Female) with SupportsEnUS
+
+    case object `woman-FrFR` extends Voice("woman-FrFR", Gender.Female) with SupportsFrFR
+
+    case object `woman-DeDE` extends Voice("woman-DeDE", Gender.Female) with SupportsDeDE
+
+    case object `woman-ItIT` extends Voice("woman-ItIT", Gender.Female) with SupportsItIT
+
+    case object `woman-EsES` extends Voice("woman-EsES", Gender.Female) with SupportsEsES
+
+    case object `woman-EsMX` extends Voice("woman-EsMX", Gender.Female) with SupportsEsMX
+
+    case object `woman-EnCA` extends Voice("woman-EnCA", Gender.Female) with SupportsEnCA
+
+//    case object `man`
+//        extends Voice("man", Gender.Male)
+//        with SupportsEnGB
+//        with SupportsEnUS
+//        with SupportsFrFR
+//        with SupportsDeDE
+//        with SupportsItIT
+//        with SupportsEsES
+
+//    case object `woman`
+//        extends Voice("woman", Gender.Female)
+//        with SupportsEnGB
+//        with SupportsEnUS
+//        with SupportsFrFR
+//        with SupportsDeDE
+//        with SupportsItIT
+//        with SupportsEsES
+//        with SupportsEsMX
+//        with SupportsEnCA
 
     case object `Polly.Zeina`
         extends Voice("Polly.Zeina", Gender.Female)
@@ -960,7 +993,8 @@ object SayVerb {
   final class Builder[
       B <: Buildable,
       L <: RequiredMatchingLanguageAdded,
-      V <: RequiredMatchingVoiceAdded
+      V <: RequiredMatchingVoiceAdded,
+      EnGB <: SupportsEnGB
   ] private (
       text: String,
       language: Option[LanguageCode],
@@ -990,7 +1024,13 @@ object SayVerb {
   }
 
   type BuilderStartState =
-    Builder[BuildableFalse, RequiredMatchingLanguageAddedFalse, RequiredMatchingVoiceAddedFalse]
+    Builder[
+      BuildableFalse,
+      RequiredMatchingLanguageAddedFalse,
+      RequiredMatchingVoiceAddedFalse,
+      SupportsEnGBFalse
+    ]
+
   type BuildFunction = BuilderStartState => SayVerb
 
   def build(fun: BuildFunction): SayVerb = fun(Builder.empty)
