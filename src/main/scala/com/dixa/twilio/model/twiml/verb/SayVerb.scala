@@ -405,9 +405,10 @@ object SayVerb {
   object Gender extends enumeratum.Enum[Gender] {
     val values: immutable.IndexedSeq[Gender] = findValues
 
-    case object Male      extends Gender
-    case object Female    extends Gender
-    case object MaleChild extends Gender
+    case object Male        extends Gender
+    case object Female      extends Gender
+    case object MaleChild   extends Gender
+    case object FemaleChild extends Gender
   }
 
   sealed abstract class Quality extends enumeratum.EnumEntry
@@ -459,9 +460,6 @@ object SayVerb {
         extends Voice("woman", Gender.Female, LanguageCode.`es-ES`, Quality.Basic)
     case object `woman-EsMX`
         extends Voice("woman", Gender.Female, LanguageCode.`es-MX`, Quality.Basic)
-// TODO not sure if twilio is using en-CA
-    case object `woman-EnCA`
-        extends Voice("woman", Gender.Female, LanguageCode.`en-CA`, Quality.Basic)
 
     case object `Polly.Zeina`
         extends Voice("Polly.Zeina", Gender.Female, LanguageCode.`arb`, Quality.Standard)
@@ -533,7 +531,7 @@ object SayVerb {
         extends Voice("Polly.Aria-Neural", Gender.Female, LanguageCode.`en-NZ`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Ivy`
-        extends Voice("Polly.Ivy", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
+        extends Voice("Polly.Ivy", Gender.FemaleChild, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Joanna`
         extends Voice("Polly.Joanna", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
@@ -542,7 +540,7 @@ object SayVerb {
         extends Voice("Polly.Joey", Gender.Male, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Justin`
-        extends Voice("Polly.Justin", Gender.Male, LanguageCode.`en-US`, Quality.Standard)
+        extends Voice("Polly.Justin", Gender.MaleChild, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Kendra`
         extends Voice("Polly.Kendra", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
@@ -557,7 +555,7 @@ object SayVerb {
         extends Voice("Polly.Salli", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Ivy-Neural`
-        extends Voice("Polly.Ivy-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
+        extends Voice("Polly.Ivy-Neural", Gender.FemaleChild, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Joanna-Neural`
         extends Voice("Polly.Joanna-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
@@ -578,7 +576,12 @@ object SayVerb {
         extends Voice("Polly.Joey-Neural", Gender.Male, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Justin-Neural`
-        extends Voice("Polly.Justin-Neural", Gender.Male, LanguageCode.`en-US`, Quality.Premium)
+        extends Voice(
+          "Polly.Justin-Neural",
+          Gender.MaleChild,
+          LanguageCode.`en-US`,
+          Quality.Premium
+        )
         with SupportsPolly
     case object `Polly.Matthew-Neural`
         extends Voice("Polly.Matthew-Neural", Gender.Male, LanguageCode.`en-US`, Quality.Premium)
@@ -822,7 +825,6 @@ object SayVerb {
       loop: Option[Int]
   ) {
 
-    // TODO is this enough to make it buildable?
     def withText(text: String): Builder[BuildableTrue] =
       new Builder[BuildableTrue](text = text, language, voice, loop)
 
@@ -835,7 +837,7 @@ object SayVerb {
         Voice.values.filter(v => v.languageCode == language && v.gender == Gender.Female)
       val voiceOpt = voicesWithLanguageAndGender
         .find(_.quality == Quality.Premium)
-        // Standard Polly voices are available for every language in the current mapping
+        // Currently standard Polly voices are available for every language
         .orElse(voicesWithLanguageAndGender.find(_.quality == Quality.Standard))
       new Builder[B](text, language = Some(language), voice = voiceOpt, loop)
     }
