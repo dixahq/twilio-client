@@ -36,17 +36,6 @@ object SayVerb {
     /** Arabic (Gulf) */
     case object `ar-AE` extends LanguageCode("ar-AE") with SupportsPollyHalaNeural
 
-    // TODO not sure if this is an option in Twilio anymore
-    /** Chinese (Cantonese) */
-    case object `yue-CN` extends LanguageCode("yue-CN") with SupportsPollyHiujinNeural
-
-    // TODO not sure if this is an option in Twilio anymore
-    /** Chinese (Mandarin) */
-    case object `cmn-CN`
-        extends LanguageCode("cmn-CN")
-        with SupportsPollyZhiyu
-        with SupportsPollyZhiyuNeural
-
     /** "Danish, Denmark" */
     case object `da-DK` extends LanguageCode("da-DK") with SupportsPollyMads with SupportsPollyNaja
 
@@ -63,10 +52,6 @@ object SayVerb {
         with SupportsPollyNicole
         with SupportsPollyRussell
         with SupportsPollyOliviaNeural
-
-    // TODO not sure if this is an option in Twilio anymore
-    /** "English, Canada" */
-    case object `en-CA` extends LanguageCode("en-CA") with SupportsWomanVoice
 
     /** "English, UK" */
     case object `en-GB`
