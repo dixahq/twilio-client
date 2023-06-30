@@ -518,13 +518,13 @@ object GatherVerb {
 
   object SpeechModelType extends EnumWithTwilioString[SpeechModelType] {
 
-    final class IncludingLanguageCodeChose private[GatherVerb] (
+    final class IncludingLanguageCode private[GatherVerb] (
         val speechModelType: SpeechModelType,
         val languageCode: LanguageCode
     ) {
 
       override def equals(other: Any): Boolean = other match {
-        case that: IncludingLanguageCodeChose =>
+        case that: IncludingLanguageCode =>
           speechModelType == that.speechModelType &&
           languageCode == that.languageCode
         case _ => false
@@ -541,27 +541,27 @@ object GatherVerb {
     override def values: immutable.IndexedSeq[SpeechModelType] = findValues
 
     case object Default extends SpeechModelType("default") {
-      def withLanguage(languageCode: LanguageCode): IncludingLanguageCodeChose =
-        new IncludingLanguageCodeChose(this, languageCode)
+      def withLanguage(languageCode: LanguageCode): IncludingLanguageCode =
+        new IncludingLanguageCode(this, languageCode)
     }
     case object NumbersAndCommands extends SpeechModelType("numbers_and_commands") {
-      def withLanguage(languageCode: LanguageCode): IncludingLanguageCodeChose =
-        new IncludingLanguageCodeChose(this, languageCode)
+      def withLanguage(languageCode: LanguageCode): IncludingLanguageCode =
+        new IncludingLanguageCode(this, languageCode)
     }
     case object PhoneCall extends SpeechModelType("phone_call") {
       def withLanguage(
           languageCode: LanguageCode with LanguageCode.SupportsPhoneCallModel
-      ): IncludingLanguageCodeChose = new IncludingLanguageCodeChose(this, languageCode)
+      ): IncludingLanguageCode = new IncludingLanguageCode(this, languageCode)
     }
     case object ExperimentalConversations extends SpeechModelType("experimental_conversations") {
       def withLanguage(
           languageCode: LanguageCode with LanguageCode.SupportsExperimentalModel
-      ): IncludingLanguageCodeChose = new IncludingLanguageCodeChose(this, languageCode)
+      ): IncludingLanguageCode = new IncludingLanguageCode(this, languageCode)
     }
     case object ExperimentalUtterances extends SpeechModelType("experimental_utterances") {
       def withLanguage(
           languageCode: LanguageCode with LanguageCode.SupportsExperimentalModel
-      ): IncludingLanguageCodeChose = new IncludingLanguageCodeChose(this, languageCode)
+      ): IncludingLanguageCode = new IncludingLanguageCode(this, languageCode)
     }
   }
 
@@ -1403,7 +1403,7 @@ object GatherVerb {
       *   on it.
       */
     def withSpeechModel(
-        speechModelAndLanguage: SpeechModelType.IncludingLanguageCodeChose
+        speechModelAndLanguage: SpeechModelType.IncludingLanguageCode
     ): BuilderMutable = {
       this.speechModelType = Some(speechModelAndLanguage.speechModelType)
       this.language = Some(speechModelAndLanguage.languageCode)
