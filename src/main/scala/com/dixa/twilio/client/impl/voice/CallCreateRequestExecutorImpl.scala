@@ -49,18 +49,36 @@ private[client] class CallCreateRequestExecutorImpl()(
       req.asyncAmd
         .map(asyncAmd => paramsWithRecordOpt.withParam(asyncAmdParamKey, asyncAmd.toString))
         .getOrElse(paramsWithRecordOpt)
-    val paramsFull = paramsWithAsyncAmdOpt
+    // Twilio requires to send status events as separate params
+    val paramsWithStatusCallbackEventSeqOpt =
+      req.statusCallbackEvents
+        .map(events =>
+          events.foldLeft(paramsWithAsyncAmdOpt)((params, event) =>
+            params.withParam(statusCallbackEventParamKey, event)
+          )
+        )
+        .getOrElse(paramsWithAsyncAmdOpt)
+    // Twilio requires recording events to be sent in a single param and in a string separated by spaces
+    val paramsWithRecordingStatusCallbackEventSeqOpt =
+      req.recordingStatusCallbackEvents
+        .map(events =>
+          paramsWithStatusCallbackEventSeqOpt
+            .withParam(
+              recordingStatusCallbackEventParamKey,
+              events.map(_.twilioString).mkString(" ")
+            )
+        )
+        .getOrElse(paramsWithStatusCallbackEventSeqOpt)
+    val paramsFull = paramsWithRecordingStatusCallbackEventSeqOpt
       .withOptionalParam(methodParamKey, req.method)
       .withOptionalParam(fallbackUrlParamKey, req.fallbackUrl)
       .withOptionalParam(fallbackMethodParamKey, req.fallbackMethod)
       .withOptionalParam(statusCallbackParamKey, req.statusCallback)
-      .withOptionalParam(statusCallbackEventParamKey, req.statusCallbackEvent)
       .withOptionalParam(statusCallbackMethodParamKey, req.statusCallbackMethod)
       .withOptionalParam(sendDigitsParamKey, req.sendDigits)
       .withOptionalParam(timeoutParamKey, req.timeout)
       .withOptionalParam(recordingChannelsParamKey, req.recordingChannels)
       .withOptionalParam(recordingStatusCallbackParamKey, req.recordingStatusCallback)
-      .withOptionalParam(recordingStatusCallbackEventParamKey, req.recordingStatusCallbackEvent)
       .withOptionalParam(recordingStatusCallbackMethodParamKey, req.recordingStatusCallbackMethod)
       .withOptionalParam(recordingTrackParamKey, req.recordingTrack)
       .withOptionalParam(sipAuthUsernameParamKey, req.sipAuthUsername)
@@ -107,8 +125,7 @@ private[client] class CallCreateRequestExecutorImpl()(
   ): Either[CallCreateRequestExecutor.CallCreateException, Call] = {
     httpResponse.status match {
       case StatusCodes.OK =>
-        parseEntityAs[CallJsonRep](entity).map(_.toModel) // TODO check the model
-      // TODO for any other possible response create a buildResultForXXXResponse private method here
+        parseEntityAs[CallJsonRep](entity).map(_.toModel)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
