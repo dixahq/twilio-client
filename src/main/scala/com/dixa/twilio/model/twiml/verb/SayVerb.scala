@@ -41,7 +41,7 @@ object SayVerb {
 
     /** Chinese (Mandarin) */
     case object `cmn-CN`
-      extends LanguageCode("cmn-CN")
+        extends LanguageCode("cmn-CN")
         with SupportsPollyZhiyu
         with SupportsPollyZhiyuNeural
 
