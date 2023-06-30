@@ -61,7 +61,7 @@ final class ResponseSayTest extends AnyWordSpec {
 
         val xmlCompact = result.xmlCompact
         val expectedXmlCompact =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-US" voice="Polly.IvyYYYY-Neural" loop="5">$textToSay</Say></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-US" voice="Polly.Ivy-Neural" loop="5">$textToSay</Say></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
         val xmlPretty = result.xmlPretty
