@@ -36,9 +36,11 @@ object SayVerb {
     /** Arabic (Gulf) */
     case object `ar-AE` extends LanguageCode("ar-AE") with SupportsPollyHalaNeural
 
+    // TODO not sure if this is an option in Twilio anymore
     /** Chinese (Cantonese) */
     case object `yue-CN` extends LanguageCode("yue-CN") with SupportsPollyHiujinNeural
 
+    // TODO not sure if this is an option in Twilio anymore
     /** Chinese (Mandarin) */
     case object `cmn-CN`
         extends LanguageCode("cmn-CN")
@@ -471,13 +473,13 @@ object SayVerb {
         extends Voice("Polly.Arlet-Neural", Gender.Female, LanguageCode.`ca-ES`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Hiujin-Neural`
-        extends Voice("Polly.Hiujin-Neural", Gender.Female, LanguageCode.`yue-CN`, Quality.Premium)
+        extends Voice("Polly.Hiujin-Neural", Gender.Female, LanguageCode.`zh-HK`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Zhiyu`
-        extends Voice("Polly.Zhiyu", Gender.Female, LanguageCode.`cmn-CN`, Quality.Standard)
+        extends Voice("Polly.Zhiyu", Gender.Female, LanguageCode.`zh-CN`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Zhiyu-Neural`
-        extends Voice("Polly.Zhiyu-Neural", Gender.Female, LanguageCode.`cmn-CN`, Quality.Premium)
+        extends Voice("Polly.Zhiyu-Neural", Gender.Female, LanguageCode.`zh-CN`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Mads`
         extends Voice("Polly.Mads", Gender.Male, LanguageCode.`da-DK`, Quality.Standard)
