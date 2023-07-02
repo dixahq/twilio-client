@@ -5,7 +5,7 @@ import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.{HttpMethod, PositiveInteger}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfString
-import com.dixa.twilio.model.iam.{Application, TwilioAccount}
+import com.dixa.twilio.model.iam.{TwilioAccount, TwimlApplication}
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.{Call, Trunk}
 
@@ -42,7 +42,7 @@ object CallCreateRequestExecutor {
 
     def statusCallback: Option[CallbackUrl]
 
-    def statusCallbackEvent: Option[Call.ProgressEvent]
+    def statusCallbackEvents: Option[Seq[Call.ProgressEvent]]
 
     def statusCallbackMethod: Option[HttpMethod]
 
@@ -56,7 +56,7 @@ object CallCreateRequestExecutor {
 
     def recordingStatusCallback: Option[CallbackUrl]
 
-    def recordingStatusCallbackEvent: Option[Call.RecordingEvent]
+    def recordingStatusCallbackEvents: Option[Seq[Call.RecordingEvent]]
 
     def recordingStatusCallbackMethod: Option[HttpMethod]
 
@@ -98,7 +98,7 @@ object CallCreateRequestExecutor {
 
     def twiml: Option[Response.Verified]
 
-    def applicationSid: Option[Application.Sid]
+    def applicationSid: Option[TwimlApplication.Sid]
   }
 
   private final case class CallCreateRequestImpl(
@@ -109,14 +109,14 @@ object CallCreateRequestExecutor {
       fallbackUrl: Option[CallbackUrl],
       fallbackMethod: Option[HttpMethod],
       statusCallback: Option[CallbackUrl],
-      statusCallbackEvent: Option[Call.ProgressEvent],
+      statusCallbackEvents: Option[Seq[Call.ProgressEvent]],
       statusCallbackMethod: Option[HttpMethod],
       sendDigits: Option[DtmfString],
       timeout: Option[Call.Timeout],
       record: Option[Boolean],
       recordingChannels: Option[Call.RecordingChannels],
       recordingStatusCallback: Option[CallbackUrl],
-      recordingStatusCallbackEvent: Option[Call.RecordingEvent],
+      recordingStatusCallbackEvents: Option[Seq[Call.RecordingEvent]],
       recordingStatusCallbackMethod: Option[HttpMethod],
       recordingTrack: Option[Call.RecordingTrack],
       sipAuthUsername: Option[Trunk.Username],
@@ -137,7 +137,7 @@ object CallCreateRequestExecutor {
       timeLimit: Option[Call.TimeLimit],
       url: Option[CallbackUrl],
       twiml: Option[Response.Verified],
-      applicationSid: Option[Application.Sid]
+      applicationSid: Option[TwimlApplication.Sid]
   ) extends CallCreateRequest
 
   object CallCreateRequest {
@@ -190,9 +190,62 @@ object CallCreateRequestExecutor {
     sealed trait HasAsyncAmdStatusCallbackUrlForMethodFalse
         extends HasAsyncAmdStatusCallbackUrlForMethodSet
 
+    /** Require record to be set because other record attributes will be useless without it */
+    sealed trait HasRecordForRecordAttributesSet
+    sealed trait HasRecordForRecordAttributesSetTrue  extends HasRecordForRecordAttributesSet
+    sealed trait HasRecordForRecordAttributesSetFalse extends HasRecordForRecordAttributesSet
+
+    /** Require asyncAmd to be set because other asyncAmd attributes will be useless without it */
+    sealed trait HasAsyncAmdForAsyncAmdAttributesSet
+    sealed trait HasAsyncAmdForAsyncAmdAttributesSetTrue extends HasAsyncAmdForAsyncAmdAttributesSet
+    sealed trait HasAsyncAmdForAsyncAmdAttributesSetFalse
+        extends HasAsyncAmdForAsyncAmdAttributesSet
+
+    // url and appSid: url is ignored if app sid is set
+    // url and twiml: twiml is ignored if url is set
+    // twiml and appSid: probably (?) twiml is ignored if app sid is set
+    /** Allows to set only one of the url, twiml or applicationSid attributes */
     sealed trait HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidTrue  extends HasUrlOrTwimlOrApplicationSidSet
     sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
+
+    // From ignored attribute's point of view - I am ignored
+    sealed trait IsIgnoredBecauseApplicationSidAttributeSet
+    sealed trait IsIgnoredBecauseApplicationSidSetTrue
+        extends IsIgnoredBecauseApplicationSidAttributeSet
+    sealed trait IsIgnoredBecauseApplicationSidSetFalse
+        extends IsIgnoredBecauseApplicationSidAttributeSet
+
+    // From application sid point of view - they are ignored
+    sealed trait AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait MethodIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait UrlIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait FallbackUrlIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait FallbackMethodIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait StatusCallbackIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+    sealed trait AttributeIgnoredBecauseApplicationSidSetFalse
+        extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
+    // From machine detection point of view - I am ignored because sendDigits is here
+    sealed trait IsIgnoredBecauseSendDigitsAttributeSet
+    sealed trait IsIgnoredBecauseSendDigitsSetTrue  extends IsIgnoredBecauseSendDigitsAttributeSet
+    sealed trait IsIgnoredBecauseSendDigitsSetFalse extends IsIgnoredBecauseSendDigitsAttributeSet
+
+    // From sendDigits point of view - they (machine detection) are ignored
+    sealed trait MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+    sealed trait MachineDetectionIgnoredBecauseSendDigitsSetTrue
+        extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+    sealed trait MachineDetectionIgnoredBecauseSendDigitsSetFalse
+        extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
 
     type BuilderStartState =
       Builder[
@@ -205,7 +258,13 @@ object CallCreateRequestExecutor {
         HasStatusCallbackUrlForMethodFalse,
         HasRecordingStatusCallbackUrlForMethodFalse,
         HasAsyncAmdStatusCallbackUrlForMethodFalse,
-        HasUrlOrTwimlOrApplicationSidFalse
+        HasRecordForRecordAttributesSetFalse,
+        HasAsyncAmdForAsyncAmdAttributesSetFalse,
+        HasUrlOrTwimlOrApplicationSidFalse,
+        IsIgnoredBecauseApplicationSidSetFalse,
+        AttributeIgnoredBecauseApplicationSidSetFalse,
+        IsIgnoredBecauseSendDigitsSetFalse,
+        MachineDetectionIgnoredBecauseSendDigitsSetFalse
       ]
 
     final class Builder[
@@ -218,7 +277,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod <: HasStatusCallbackUrlForMethodSet,
         RecordingStatusCallbackUrlAndMethod <: HasRecordingStatusCallbackUrlForMethodSet,
         AsyncAmdStatusCallbackUrlAndMethod <: HasAsyncAmdStatusCallbackUrlForMethodSet,
-        UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet
+        RecordForRecordAttributesSet <: HasRecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet <: HasAsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet,
+        IsIgnoredBecauseApplicationSidSet <: IsIgnoredBecauseApplicationSidAttributeSet,
+        AttributeIgnoredBecauseApplicationSidSet <: AttributeIgnoredBecauseApplicationSidAttributeSet,
+        IsIgnoredBecauseSendDigitsSet <: IsIgnoredBecauseSendDigitsAttributeSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet <: MachineDetectionIgnoredBecauseSendDigitsAttributeSet
     ] private[CallCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         to: Option[Call.CallerId],
@@ -227,14 +292,14 @@ object CallCreateRequestExecutor {
         fallbackUrl: Option[CallbackUrl],
         fallbackMethod: Option[HttpMethod],
         statusCallback: Option[CallbackUrl],
-        statusCallbackEvent: Option[Call.ProgressEvent],
+        statusCallbackEvents: Option[Seq[Call.ProgressEvent]],
         statusCallbackMethod: Option[HttpMethod],
         sendDigits: Option[DtmfString],
         timeout: Option[Call.Timeout],
         record: Option[Boolean],
         recordingChannels: Option[Call.RecordingChannels],
         recordingStatusCallback: Option[CallbackUrl],
-        recordingStatusCallbackEvent: Option[Call.RecordingEvent],
+        recordingStatusCallbackEvents: Option[Seq[Call.RecordingEvent]],
         recordingStatusCallbackMethod: Option[HttpMethod],
         recordingTrack: Option[Call.RecordingTrack],
         sipAuthUsername: Option[Trunk.Username],
@@ -255,7 +320,7 @@ object CallCreateRequestExecutor {
         timeLimit: Option[Call.TimeLimit],
         url: Option[CallbackUrl],
         twiml: Option[Response.Verified],
-        applicationSid: Option[Application.Sid]
+        applicationSid: Option[TwimlApplication.Sid]
     ) {
 
       def withAccountSid(
@@ -270,7 +335,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           Some(accountSid),
@@ -280,14 +351,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -324,7 +395,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -334,14 +411,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -378,7 +455,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -388,14 +471,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -421,7 +504,8 @@ object CallCreateRequestExecutor {
       }
 
       def withMethod(method: HttpMethod)(
-          implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue
+          implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -432,7 +516,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        MethodIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -442,14 +532,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -476,6 +566,8 @@ object CallCreateRequestExecutor {
 
       def withFallbackUrl(
           fallbackUrl: CallbackUrl
+      )(
+          implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -486,7 +578,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        FallbackUrlIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -496,14 +594,14 @@ object CallCreateRequestExecutor {
           Some(fallbackUrl),
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -531,7 +629,8 @@ object CallCreateRequestExecutor {
       def withFallbackMethod(
           fallbackMethod: HttpMethod
       )(
-          implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue
+          implicit ev: FallbackUrlAndMethod =:= HasFallbackUrlForMethodSetTrue,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -542,7 +641,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        FallbackMethodIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -552,14 +657,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           Some(fallbackMethod),
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -586,6 +691,8 @@ object CallCreateRequestExecutor {
 
       def withStatusCallback(
           statusCallback: CallbackUrl
+      )(
+          implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -596,7 +703,13 @@ object CallCreateRequestExecutor {
         HasStatusCallbackUrlForMethodTrue,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        StatusCallbackIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -606,14 +719,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           Some(statusCallback),
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -638,8 +751,10 @@ object CallCreateRequestExecutor {
         )
       }
 
-      def withStatusCallbackEvent(
-          statusCallbackEvent: Call.ProgressEvent
+      def withStatusCallbackEvents(
+          statusCallbackEvents: Seq[Call.ProgressEvent]
+      )(
+          implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -650,7 +765,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -660,14 +781,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          Some(statusCallbackEvent),
+          Some(statusCallbackEvents),
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -695,7 +816,8 @@ object CallCreateRequestExecutor {
       def withStatusCallbackMethod(
           statusCallbackMethod: HttpMethod
       )(
-          implicit ev: StatusCallbackUrlAndMethod =:= HasStatusCallbackUrlForMethodTrue
+          implicit ev: StatusCallbackUrlAndMethod =:= HasStatusCallbackUrlForMethodTrue,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -706,7 +828,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -716,14 +844,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           Some(statusCallbackMethod),
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -750,6 +878,9 @@ object CallCreateRequestExecutor {
 
       def withSendDigits(
           sendDigits: DtmfString
+      )(
+          implicit
+          ev: MachineDetectionIgnoredBecauseSendDigitsSet =:= MachineDetectionIgnoredBecauseSendDigitsSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -760,7 +891,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSetTrue,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -770,14 +907,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           Some(sendDigits),
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -814,7 +951,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -824,14 +967,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           Some(timeout),
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -856,6 +999,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** record by default is false */
       def withRecord(
           record: Boolean
       ): Builder[
@@ -868,7 +1012,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        HasRecordForRecordAttributesSetTrue,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -878,14 +1028,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           Some(record),
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -910,8 +1060,11 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** recordingChannels by default is mono */
       def withRecordingChannels(
           recordingChannels: Call.RecordingChannels
+      )(
+          implicit ev: RecordForRecordAttributesSet =:= HasRecordForRecordAttributesSetTrue
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -922,7 +1075,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -932,14 +1091,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           Some(recordingChannels),
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -966,6 +1125,8 @@ object CallCreateRequestExecutor {
 
       def withRecordingStatusCallback(
           recordingStatusCallback: CallbackUrl
+      )(
+          implicit ev: RecordForRecordAttributesSet =:= HasRecordForRecordAttributesSetTrue
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -976,7 +1137,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         HasRecordingStatusCallbackUrlForMethodTrue,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -986,14 +1153,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           Some(recordingStatusCallback),
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1018,8 +1185,11 @@ object CallCreateRequestExecutor {
         )
       }
 
-      def withRecordingStatusCallbackEvent(
-          recordingStatusCallbackEvent: Call.RecordingEvent
+      /** recordingStatusCallbackEvents by default is completed */
+      def withRecordingStatusCallbackEvents(
+          recordingStatusCallbackEvents: Seq[Call.RecordingEvent]
+      )(
+          implicit ev: RecordForRecordAttributesSet =:= HasRecordForRecordAttributesSetTrue
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -1030,7 +1200,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1040,14 +1216,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          Some(recordingStatusCallbackEvent),
+          Some(recordingStatusCallbackEvents),
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1087,7 +1263,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1097,14 +1279,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           Some(recordingStatusCallbackMethod),
           recordingTrack,
           sipAuthUsername,
@@ -1131,6 +1313,8 @@ object CallCreateRequestExecutor {
 
       def withRecordingTrack(
           recordingTrack: Call.RecordingTrack
+      )(
+          implicit ev: RecordForRecordAttributesSet =:= HasRecordForRecordAttributesSetTrue
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -1141,7 +1325,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1151,14 +1341,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           Some(recordingTrack),
           sipAuthUsername,
@@ -1195,7 +1385,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1205,14 +1401,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           Some(sipAuthUsername),
@@ -1249,7 +1445,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1259,14 +1461,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1293,6 +1495,8 @@ object CallCreateRequestExecutor {
 
       def withMachineDetection(
           machineDetection: Call.MachineDetection
+      )(
+          implicit ev: IsIgnoredBecauseSendDigitsSet =:= IsIgnoredBecauseSendDigitsSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -1303,7 +1507,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSetTrue
       ] = {
         new Builder(
           accountSid,
@@ -1313,14 +1523,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1345,6 +1555,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionTimeout by default is 30 seconds */
       def withMachineDetectionTimeout(
           machineDetectionTimeout: PositiveInteger
       ): Builder[
@@ -1357,7 +1568,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1367,14 +1584,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1399,6 +1616,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionSpeechThreshold by default is 2400 */
       def withMachineDetectionSpeechThreshold(
           machineDetectionSpeechThreshold: Call.MachineDetectionSpeechThreshold
       ): Builder[
@@ -1411,7 +1629,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1421,14 +1645,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1453,6 +1677,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionSpeechEndThreshold by default is 1200 */
       def withMachineDetectionSpeechEndThreshold(
           machineDetectionSpeechEndThreshold: Call.MachineDetectionSpeechEndThreshold
       ): Builder[
@@ -1465,7 +1690,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1475,14 +1706,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1507,6 +1738,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** machineDetectionSilenceTimeout by default is 5000 */
       def withMachineDetectionSilenceTimeout(
           machineDetectionSilenceTimeout: Call.MachineDetectionSilenceTimeout
       ): Builder[
@@ -1519,7 +1751,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1529,14 +1767,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1561,6 +1799,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** trim by default is trim-silence */
       def withTrim(
           trim: Call.Trim
       ): Builder[
@@ -1573,7 +1812,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1583,14 +1828,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1627,7 +1872,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1637,14 +1888,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1681,7 +1932,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        HasAsyncAmdForAsyncAmdAttributesSetTrue,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1691,14 +1948,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1725,6 +1982,8 @@ object CallCreateRequestExecutor {
 
       def withAsyncAmdStatusCallback(
           asyncAmdStatusCallback: CallbackUrl
+      )(
+          implicit ev: AsyncAmdForAsyncAmdAttributesSet =:= HasAsyncAmdForAsyncAmdAttributesSetTrue
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -1735,7 +1994,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         HasAsyncAmdStatusCallbackUrlForMethodTrue,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1745,14 +2010,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1792,7 +2057,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1802,14 +2073,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1846,7 +2117,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1856,14 +2133,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1900,7 +2177,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1910,14 +2193,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1954,7 +2237,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -1964,14 +2253,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -1996,6 +2285,7 @@ object CallCreateRequestExecutor {
         )
       }
 
+      /** Constraints depend on account and configuration */
       def withTimeLimit(
           timeLimit: Call.TimeLimit
       ): Builder[
@@ -2008,7 +2298,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        UrlOrTwimlOrApplicationSid
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        UrlOrTwimlOrApplicationSid,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2018,14 +2314,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -2053,7 +2349,8 @@ object CallCreateRequestExecutor {
       def withUrl(
           url: CallbackUrl
       )(
-          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
+          ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -2064,7 +2361,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        HasUrlOrTwimlOrApplicationSidTrue
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        HasUrlOrTwimlOrApplicationSidTrue,
+        IsIgnoredBecauseApplicationSidSet,
+        UrlIgnoredBecauseApplicationSidSetTrue,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2074,14 +2377,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -2120,7 +2423,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        HasUrlOrTwimlOrApplicationSidTrue
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        HasUrlOrTwimlOrApplicationSidTrue,
+        IsIgnoredBecauseApplicationSidSet,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2130,14 +2439,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -2163,9 +2472,10 @@ object CallCreateRequestExecutor {
       }
 
       def withApplicationSid(
-          applicationSid: Application.Sid
+          applicationSid: TwimlApplication.Sid
       )(
-          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+          implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
+          ev2: AttributeIgnoredBecauseApplicationSidSet =:= AttributeIgnoredBecauseApplicationSidSetFalse
       ): Builder[
         AccountSidSet,
         ToCallerIdSet,
@@ -2176,7 +2486,13 @@ object CallCreateRequestExecutor {
         StatusCallbackUrlAndMethod,
         RecordingStatusCallbackUrlAndMethod,
         AsyncAmdStatusCallbackUrlAndMethod,
-        HasUrlOrTwimlOrApplicationSidTrue
+        RecordForRecordAttributesSet,
+        AsyncAmdForAsyncAmdAttributesSet,
+        HasUrlOrTwimlOrApplicationSidTrue,
+        IsIgnoredBecauseApplicationSidSetTrue,
+        AttributeIgnoredBecauseApplicationSidSet,
+        IsIgnoredBecauseSendDigitsSet,
+        MachineDetectionIgnoredBecauseSendDigitsSet
       ] = {
         new Builder(
           accountSid,
@@ -2186,14 +2502,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
@@ -2232,14 +2548,14 @@ object CallCreateRequestExecutor {
           fallbackUrl,
           fallbackMethod,
           statusCallback,
-          statusCallbackEvent,
+          statusCallbackEvents,
           statusCallbackMethod,
           sendDigits,
           timeout,
           record,
           recordingChannels,
           recordingStatusCallback,
-          recordingStatusCallbackEvent,
+          recordingStatusCallbackEvents,
           recordingStatusCallbackMethod,
           recordingTrack,
           sipAuthUsername,
