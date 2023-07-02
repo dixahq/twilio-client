@@ -12,8 +12,8 @@ import sbtrelease.ReleasePlugin.autoImport.{
 }
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_12          = "2.12.17"
-val scala2_13          = "2.13.10"
+val scala2_12          = "2.12.18"
+val scala2_13          = "2.13.11"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -86,9 +86,9 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.2",
 
         // Test
-        "org.scalatest"         %% "scalatest" % "3.2.16"       % Test,
-        "org.scalamock"         %% "scalamock" % "5.2.0"        % Test,
-        "com.github.tomakehurst" % "wiremock"  % "3.0.0-beta-8" % Test,
+        "org.scalatest"         %% "scalatest" % "3.2.16"        % Test,
+        "org.scalamock"         %% "scalamock" % "5.2.0"         % Test,
+        "com.github.tomakehurst" % "wiremock"  % "3.0.0-beta-10" % Test,
       ),
       dependencyOverrides ++= Seq(
         // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies

@@ -33,11 +33,9 @@ private[impl] case class CallJsonRep(
     sid: String,
     start_time: Option[String] = None,
     status: String,
-    // TODO subresource_uris
     to: String,
     to_formatted: String,
     trunk_sid: Option[String] = None,
-    // TODO uri
     queue_time: String,
 ) {
 

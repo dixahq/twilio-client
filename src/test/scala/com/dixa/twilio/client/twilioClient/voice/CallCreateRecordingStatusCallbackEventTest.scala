@@ -3,7 +3,7 @@ package com.dixa.twilio.client.twilioClient.voice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{CallCreateRequestExecutor, TwilioClientVoice}
-import com.dixa.twilio.model.{HttpMethod, Iso4127CountryCode}
+import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.Call
@@ -14,11 +14,11 @@ import java.net.URLEncoder
 import java.time._
 import scala.concurrent.Future
 
-final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
+final class CallCreateRecordingStatusCallbackEventTest extends TwilioClientTest {
 
   classOf[TwilioClientVoice].getSimpleName when {
     "is asked to create a call" should {
-      "create a call with provided status callback events" in {
+      "create a call with provided recording status callback events" in {
 
         val f = new Fixture
         import f._
@@ -127,10 +127,14 @@ final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
           .withToCallerId(toCallerId)
           .withFromCallerId(fromCallerId)
           .withUrl(url)
-          .withMethod(HttpMethod.Get)
-          .withStatusCallback(statusCallbackUrl)
-          .withStatusCallbackMethod(HttpMethod.Post)
-          .withStatusCallbackEvents(Seq(Call.ProgressEvent.Initiated, Call.ProgressEvent.Answered))
+          .withRecord(true)
+          .withRecordingStatusCallbackEvents(
+            Seq(
+              Call.RecordingEvent.InProgress,
+              Call.RecordingEvent.Absent,
+              Call.RecordingEvent.Completed
+            )
+          )
           .build()
       )
 
@@ -156,31 +160,14 @@ final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
       )
       .withRequestBody(
         WireMock.containing(
-          s"""${URLEncoder.encode("Method", "utf-8")}=${URLEncoder.encode("GET", "utf-8")}"""
+          s"""${URLEncoder.encode("Record", "utf-8")}=${URLEncoder
+              .encode("true", "utf-8")}"""
         )
       )
       .withRequestBody(
         WireMock.containing(
-          s"""${URLEncoder.encode("StatusCallback", "utf-8")}=${URLEncoder
-              .encode("https://www.myapp.com/events", "utf-8")}"""
-        )
-      )
-      .withRequestBody(
-        WireMock.containing(
-          s"""${URLEncoder.encode("StatusCallbackMethod", "utf-8")}=${URLEncoder
-              .encode("POST", "utf-8")}"""
-        )
-      )
-      .withRequestBody(
-        WireMock.containing(
-          s"""${URLEncoder.encode("StatusCallbackEvent", "utf-8")}=${URLEncoder
-              .encode("initiated", "utf-8")}"""
-        )
-      )
-      .withRequestBody(
-        WireMock.containing(
-          s"""${URLEncoder.encode("StatusCallbackEvent", "utf-8")}=${URLEncoder
-              .encode("answered", "utf-8")}"""
+          s"""${URLEncoder.encode("RecordingStatusCallbackEvent", "utf-8")}=${URLEncoder
+              .encode("in-progress absent completed", "utf-8")}"""
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
