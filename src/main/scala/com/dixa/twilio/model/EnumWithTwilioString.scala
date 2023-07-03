@@ -4,12 +4,12 @@ import enumeratum.Enum
 
 /** Base trait for a Enum having an twilioString value.
   *
-  * Multiple enums in this library, is represented as String values in Twilio. This trait works as a
-  * base trait for all of these enums, unifies the name of the value and how a enum value can be
-  * found from it.
+  * Multiple enums in this library are represented as String values in Twilio. This trait works as a
+  * base trait for all of these enums, and unifies the name of the values and how an enum value can
+  * be found from it.
   *
   * @tparam A
-  *   Type of the EnumEntry. Must extends the special EnumEntry found in the companion object.
+  *   Type of the EnumEntry. Must extend the special EnumEntry found in the companion object.
   */
 trait EnumWithTwilioString[A <: EnumWithTwilioString.EnumEntry] extends Enum[A] {
 
