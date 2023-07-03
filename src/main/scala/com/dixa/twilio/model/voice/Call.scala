@@ -53,7 +53,7 @@ object Call {
 
   object Sid extends SidCompanionObject(Prefix("CA"), new Sid(_))
 
-  final case class CallerId(override val twilioString: String) extends TwilioStringValue {
+  final case class CallerId(override val toString: String) extends TwilioStringValue {
     def toPhoneNumber: Option[PhoneNumberE164] = {
       PhoneNumberE164(toString)
     }
@@ -72,7 +72,7 @@ object Call {
   }
 
   final case class TimeLimit(duration: Int) extends TwilioStringValue {
-    override val twilioString: String = duration.toString
+    override val toString: String = duration.toString
   }
 
   sealed abstract class Status(
@@ -93,7 +93,7 @@ object Call {
   }
 
   final case class Price(amount: BigDecimal, unit: Iso4127CountryCode) extends TwilioStringValue {
-    override def twilioString: String = s"$amount $unit"
+    override def toString: String = s"$amount $unit"
   }
 
   sealed abstract class Direction(
@@ -121,11 +121,11 @@ object Call {
     case object Machine extends AnsweredBy("machine")
   }
 
-  final case class ForwardedFrom(override val twilioString: String) extends TwilioStringValue
+  final case class ForwardedFrom(override val toString: String) extends TwilioStringValue
 
-  final case class Name(override val twilioString: String) extends TwilioStringValue
+  final case class Name(override val toString: String) extends TwilioStringValue
 
-  final case class FormattedPhoneNumber(override val twilioString: String) extends TwilioStringValue
+  final case class FormattedPhoneNumber(override val toString: String) extends TwilioStringValue
 
   sealed abstract class RecordingChannels(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
@@ -139,7 +139,8 @@ object Call {
 
   }
 
-  sealed abstract class MachineDetection(override val twilioString: String)
+  // FIXME twilioString or toString or doesnt matter ?
+  sealed abstract class MachineDetection(override val toString: String)
       extends EnumWithTwilioString.EnumEntry
 
   object MachineDetection extends EnumWithTwilioString[RecordingChannels] {
@@ -193,9 +194,9 @@ object Call {
     case object DoNotTrim extends Trim("do-not-trim")
   }
 
-  final case class Reason(override val twilioString: String) extends TwilioStringValue
+  final case class Reason(override val toString: String) extends TwilioStringValue
 
-  final case class Token(override val twilioString: String) extends TwilioStringValue
+  final case class Token(override val toString: String) extends TwilioStringValue
 
   sealed abstract class RecordingTrack(
       override val twilioString: String,
@@ -215,7 +216,7 @@ object Call {
     * call flows Twilio will add extra 5 seconds.
     */
   final case class Timeout private (int: Int) extends TwilioStringValue {
-    override def twilioString: String = int.toString
+    override def toString: String = int.toString
   }
 
   object Timeout {
@@ -248,7 +249,7 @@ object Call {
   /** Default threshold: 2400
     */
   final case class MachineDetectionSpeechThreshold private (int: Int) extends TwilioStringValue {
-    override def twilioString: String = int.toString
+    override def toString: String = int.toString
   }
 
   object MachineDetectionSpeechThreshold {
@@ -282,7 +283,7 @@ object Call {
   /** Default threshold: 1200
     */
   final case class MachineDetectionSpeechEndThreshold private (int: Int) extends TwilioStringValue {
-    override def twilioString: String = int.toString
+    override def toString: String = int.toString
   }
 
   object MachineDetectionSpeechEndThreshold {
@@ -318,7 +319,7 @@ object Call {
   /** Default threshold: 5000
     */
   final case class MachineDetectionSilenceTimeout private (int: Int) extends TwilioStringValue {
-    override def twilioString: String = int.toString
+    override def toString: String = int.toString
   }
 
   object MachineDetectionSilenceTimeout {
