@@ -1,6 +1,5 @@
 package com.dixa.twilio.model.twiml
 
-import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.twiml.TwimlConstraints._
 import com.dixa.twilio.model.twiml.verb._
 
@@ -58,7 +57,7 @@ import scala.collection.immutable
   * to look up anything elsewhere.
   */
 // format: on
-sealed trait Response extends TwimlElement.Root with TwilioStringValue {
+sealed trait Response extends TwimlElement.Root {
 
   override protected def tagName: String = "Response"
 
