@@ -37,23 +37,15 @@ private[client] class CallCreateRequestExecutorImpl()(
   ): Either[CallCreateRequestExecutor.CallCreateException, HttpRequest] = {
     val paramsRequired =
       QueryParamBuilder.empty.withParam(toParamKey, req.to).withParam(fromParamKey, req.from)
-    val paramsWithRecordOpt =
-      req.record
-        .map(rec => paramsRequired.withParam(recordParamKey, rec.toString))
-        .getOrElse(paramsRequired)
-    val paramsWithAsyncAmdOpt =
-      req.asyncAmd
-        .map(asyncAmd => paramsWithRecordOpt.withParam(asyncAmdParamKey, asyncAmd.toString))
-        .getOrElse(paramsWithRecordOpt)
     // Twilio requires to send status events as separate params
     val paramsWithStatusCallbackEventSeqOpt =
       req.statusCallbackEvents
         .map(events =>
-          events.foldLeft(paramsWithAsyncAmdOpt)((params, event) =>
+          events.foldLeft(paramsRequired)((params, event) =>
             params.withParam(statusCallbackEventParamKey, event)
           )
         )
-        .getOrElse(paramsWithAsyncAmdOpt)
+        .getOrElse(paramsRequired)
     // Twilio requires recording events to be sent in a single param and in a string separated by spaces
     val paramsWithRecordingStatusCallbackEventSeqOpt =
       req.recordingStatusCallbackEvents
@@ -73,6 +65,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(statusCallbackMethodParamKey, req.statusCallbackMethod)
       .withOptionalParam(sendDigitsParamKey, req.sendDigits)
       .withOptionalParam(timeoutParamKey, req.timeout)
+      .withOptionalBooleanParam(recordParamKey, req.record)
       .withOptionalParam(recordingChannelsParamKey, req.recordingChannels)
       .withOptionalParam(recordingStatusCallbackParamKey, req.recordingStatusCallback)
       .withOptionalParam(recordingStatusCallbackMethodParamKey, req.recordingStatusCallbackMethod)
@@ -92,6 +85,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(machineDetectionSilenceTimeoutParamKey, req.machineDetectionSilenceTimeout)
       .withOptionalParam(trimParamKey, req.trim)
       .withOptionalParam(callerIdParamKey, req.callerId)
+      .withOptionalBooleanParam(asyncAmdParamKey, req.asyncAmd)
       .withOptionalParam(asyncAmdStatusCallbackParamKey, req.asyncAmdStatusCallback)
       .withOptionalParam(asyncAmdStatusCallbackMethodParamKey, req.asyncAmdStatusCallbackMethod)
       .withOptionalParam(byocParamKey, req.byoc)
