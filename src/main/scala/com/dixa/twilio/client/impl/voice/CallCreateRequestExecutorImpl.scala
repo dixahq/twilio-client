@@ -37,14 +37,10 @@ private[client] class CallCreateRequestExecutorImpl()(
   ): Either[CallCreateRequestExecutor.CallCreateException, HttpRequest] = {
     val paramsRequired =
       QueryParamBuilder.empty.withParam(toParamKey, req.to).withParam(fromParamKey, req.from)
-    val paramsWithTwimlOpt =
-      req.twiml
-        .map(t => paramsRequired.withParam(twimlParamKey, t.xmlCompact))
-        .getOrElse(paramsRequired)
     val paramsWithRecordOpt =
       req.record
-        .map(rec => paramsWithTwimlOpt.withParam(recordParamKey, rec.toString))
-        .getOrElse(paramsWithTwimlOpt)
+        .map(rec => paramsRequired.withParam(recordParamKey, rec.toString))
+        .getOrElse(paramsRequired)
     val paramsWithAsyncAmdOpt =
       req.asyncAmd
         .map(asyncAmd => paramsWithRecordOpt.withParam(asyncAmdParamKey, asyncAmd.toString))
@@ -103,6 +99,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(callTokenParamKey, req.callToken)
       .withOptionalParam(timeLimitParamKey, req.timeLimit)
       .withOptionalParam(urlParamKey, req.url)
+      .withOptionalParam(twimlParamKey, req.twiml)
       .withOptionalParam(applicationSidParamKey, req.applicationSid)
 
     val params = paramsFull.buildForPostParams
