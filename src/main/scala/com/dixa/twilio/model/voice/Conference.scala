@@ -188,7 +188,7 @@ object Conference {
         extends EnumWithTwilioString.EnumEntry
 
     object JitterBufferSize extends EnumWithTwilioString[JitterBufferSize] {
-      override def values: IndexedSeq[JitterBufferSize] = findValues
+      override def values: scala.collection.immutable.IndexedSeq[JitterBufferSize] = findValues
 
       case object Small  extends JitterBufferSize("small")
       case object Medium extends JitterBufferSize("medium")
@@ -245,7 +245,7 @@ object Conference {
 
   sealed abstract class Record(override val toString: String) extends EnumWithTwilioString.EnumEntry
   object Record extends EnumWithTwilioString[Record] {
-    override def values: IndexedSeq[Record] = findValues
+    override def values: scala.collection.immutable.IndexedSeq[Record] = findValues
 
     case object DoNotRecord     extends Record("do-not-record")
     case object RecordFromStart extends Record("record-from-start")
@@ -253,7 +253,7 @@ object Conference {
 
   sealed abstract class Trim(override val toString: String) extends EnumWithTwilioString.EnumEntry
   object Trim extends EnumWithTwilioString[Trim] {
-    override def values: IndexedSeq[Trim] = findValues
+    override def values: scala.collection.immutable.IndexedSeq[Trim] = findValues
 
     case object TrimSilence extends Trim("trim-silence")
     case object DoNotTrim   extends Trim("do-not-trim")
@@ -277,7 +277,7 @@ object Conference {
       val documentationOrder: Int
   ) extends EnumWithTwilioString.EnumEntry
   object StatusCallbackEvent extends EnumWithTwilioString[StatusCallbackEvent] {
-    override def values: IndexedSeq[StatusCallbackEvent] = findValues
+    override def values: scala.collection.immutable.IndexedSeq[StatusCallbackEvent] = findValues
 
     /** The conference has begun and audio is being mixed between all participants. This occurs when
       * there are at least two participants in the conference, and at least one of the participants
@@ -333,7 +333,8 @@ object Conference {
       val documentationOrder: Int
   ) extends EnumWithTwilioString.EnumEntry
   object RecordingStatusCallbackEvent extends EnumWithTwilioString[RecordingStatusCallbackEvent] {
-    override def values: IndexedSeq[RecordingStatusCallbackEvent] = findValues
+    override def values: scala.collection.immutable.IndexedSeq[RecordingStatusCallbackEvent] =
+      findValues
 
     /** The recording has started */
     case object InProgress extends RecordingStatusCallbackEvent("in-progress", 1)

@@ -15,7 +15,7 @@ package com.dixa.twilio.model
 sealed abstract class Region(override val toString: String) extends EnumWithTwilioString.EnumEntry
 
 object Region extends EnumWithTwilioString[Region] {
-  override def values: IndexedSeq[Region] = findValues
+  override def values: scala.collection.immutable.IndexedSeq[Region] = findValues
 
   case object Us1 extends Region("us1")
   case object Ie1 extends Region("ie1")
