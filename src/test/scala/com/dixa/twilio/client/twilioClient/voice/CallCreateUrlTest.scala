@@ -27,7 +27,7 @@ final class CallCreateUrlTest extends TwilioClientTest {
           wireMockBuilderExpectedTwilioRequest
             .willReturn(
               aResponse()
-                .withStatus(200)
+                .withStatus(201)
                 .withHeader("Content-Type", "application/json")
                 .withBody(twilioResponse)
             )
