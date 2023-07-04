@@ -137,11 +137,11 @@ final class CallCreateTwimlTest extends TwilioClientTest {
       )
       .withRequestBody(
         WireMock.containing(s"""${URLEncoder.encode("To", "utf-8")}=${URLEncoder
-            .encode(toCallerId.toString, "utf-8")}""")
+            .encode(toCallerId.twilioString, "utf-8")}""")
       )
       .withRequestBody(
         WireMock.containing(s"""${URLEncoder.encode("From", "utf-8")}=${URLEncoder
-            .encode(fromCallerId.toString, "utf-8")}""")
+            .encode(fromCallerId.twilioString, "utf-8")}""")
       )
       .withRequestBody(
         WireMock.containing(

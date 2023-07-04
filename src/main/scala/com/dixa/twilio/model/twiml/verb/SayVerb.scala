@@ -20,17 +20,257 @@ sealed trait SayVerb extends TwimlElement.Verb {
 
 object SayVerb {
 
-  /** Enum entry, representing a Language code that the Say verb support */
+  /** Enum entry, representing a Language code that the Say verb supports */
   sealed abstract class LanguageCode(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
-  /** Enum representing all the Language codes that the Say verb support */
+  /** Enum representing all the Language codes that the Say verb supports */
   // noinspection ScalaUnusedSymbol
   object LanguageCode extends EnumWithTwilioString[LanguageCode] {
 
+    val values: immutable.IndexedSeq[LanguageCode] = findValues
+
+    /** Arabic */
+    case object `arb` extends LanguageCode("arb") with SupportsPollyZeina
+
+    /** Arabic (Gulf) */
+    case object `ar-AE` extends LanguageCode("ar-AE") with SupportsPollyHalaNeural
+
+    /** Chinese (Cantonese) */
+    case object `yue-CN` extends LanguageCode("yue-CN") with SupportsPollyHiujinNeural
+
+    /** Chinese (Mandarin) */
+    case object `cmn-CN`
+        extends LanguageCode("cmn-CN")
+        with SupportsPollyZhiyu
+        with SupportsPollyZhiyuNeural
+
+    /** "Danish, Denmark" */
+    case object `da-DK` extends LanguageCode("da-DK") with SupportsPollyMads with SupportsPollyNaja
+
+    /** Dutch */
+    case object `nl-NL`
+        extends LanguageCode("nl-NL")
+        with SupportsPollyLotte
+        with SupportsPollyRuben
+        with SupportsPollyLauraNeural
+
+    /** "English, Australia" */
+    case object `en-AU`
+        extends LanguageCode("en-AU")
+        with SupportsPollyNicole
+        with SupportsPollyRussell
+        with SupportsPollyOliviaNeural
+
+    /** "English, UK" */
+    case object `en-GB`
+        extends LanguageCode("en-GB")
+        with SupportsWomanVoice
+        with SupportsManVoice
+        with SupportsPollyAmy
+        with SupportsPollyBrian
+        with SupportsPollyEmma
+        with SupportsPollyAmyNeural
+        with SupportsPollyEmmaNeural
+        with SupportsPollyBrianNeural
+        with SupportsPollyArthurNeural
+
+    /** "English, India" */
+    case object `en-IN`
+        extends LanguageCode("en-IN")
+        with SupportsPollyAditi
+        with SupportsPollyRaveena
+        with SupportsPollyKajalNeural
+
+    /** "English, New Zealand" */
+    case object `en-NZ` extends LanguageCode("en-NZ") with SupportsPollyAriaNeural
+
+    /** "English, United States" */
+    case object `en-US`
+        extends LanguageCode("en-US")
+        with SupportsWomanVoice
+        with SupportsManVoice
+        with SupportsPollyIvy
+        with SupportsPollyJoanna
+        with SupportsPollyJoey
+        with SupportsPollyJustin
+        with SupportsPollyKendra
+        with SupportsPollyKimberly
+        with SupportsPollyMatthew
+        with SupportsPollySalli
+        with SupportsPollyIvyNeural
+        with SupportsPollyJoannaNeural
+        with SupportsPollyKendraNeural
+        with SupportsPollyKimberlyNeural
+        with SupportsPollySalliNeural
+        with SupportsPollyJoeyNeural
+        with SupportsPollyJustinNeural
+        with SupportsPollyMatthewNeural
+        with SupportsPollyRuthNeural
+        with SupportsPollyStephenNeural
+
+    /** "English, South African" */
+    case object `en-ZA` extends LanguageCode("en-ZA") with SupportsPollyAyandaNeural
+
+    /** "English, Welsh" */
+    case object `en-GB-WLS` extends LanguageCode("en-GB-WLS") with SupportsPollyGeraint
+
+    /** "Welsh" */
+    case object `cy-GB` extends LanguageCode("cy-GB") with SupportsPollyGwyneth
+
+    /** "Finnish, Finland" */
+    case object `fi-FI` extends LanguageCode("fi-FI") with SupportsPollySuviNeural
+
+    /** "French, France" */
+    case object `fr-FR`
+        extends LanguageCode("fr-FR")
+        with SupportsWomanVoice
+        with SupportsManVoice
+        with SupportsPollyCeline
+        with SupportsPollyLea
+        with SupportsPollyMathieu
+        with SupportsPollyLeaNeural
+        with SupportsPollyRemiNeural
+
+    /** "French, Canada" */
+    case object `fr-CA`
+        extends LanguageCode("fr-CA")
+        with SupportsPollyChantal
+        with SupportsPollyGabrielleNeural
+        with SupportsPollyLiamNeural
+
+    /** "German, Germany" */
+    case object `de-DE`
+        extends LanguageCode("de-DE")
+        with SupportsWomanVoice
+        with SupportsManVoice
+        with SupportsPollyHans
+        with SupportsPollyMarlene
+        with SupportsPollyVicki
+        with SupportsPollyVickiNeural
+        with SupportsPollyDanielNeural
+
+    /** "German, Austrian" */
+    case object `de-AT` extends LanguageCode("de-AT") with SupportsPollyHannahNeural
+
+    /** "Hindi, India" */
+    case object `hi-IN`
+        extends LanguageCode("hi-IN")
+        with SupportsPollyAditi
+        with SupportsPollyKajalNeural
+
+    /** "Icelandic, Iceland" */
+    case object `is-IS` extends LanguageCode("is-IS") with SupportsPollyDora with SupportsPollyKarl
+
+    /** "Italian, Italy" */
+    case object `it-IT`
+        extends LanguageCode("it-IT")
+        with SupportsWomanVoice
+        with SupportsManVoice
+        with SupportsPollyBianca
+        with SupportsPollyCarla
+        with SupportsPollyGiorgio
+        with SupportsPollyBiancaNeural
+        with SupportsPollyAdrianoNeural
+
+    /** "Catalan, Spain" */
+    case object `ca-ES` extends LanguageCode("ca-ES") with SupportsPollyArletNeural
+
+    /** "Spanish, Spain" */
+    case object `es-ES`
+        extends LanguageCode("es-ES")
+        with SupportsWomanVoice
+        with SupportsManVoice
+        with SupportsPollyConchita
+        with SupportsPollyEnrique
+        with SupportsPollyLucia
+        with SupportsPollyLuciaNeural
+        with SupportsPollySergioNeural
+
+    /** "Spanish, Mexico" */
+    case object `es-MX`
+        extends LanguageCode("es-MX")
+        with SupportsWomanVoice
+        with SupportsPollyMia
+        with SupportsPollyMiaNeural
+        with SupportsPollyAndresNeural
+
+    /** "Spanish, USA" */
+    case object `es-US`
+        extends LanguageCode("es-US")
+        with SupportsPollyLupe
+        with SupportsPollyMiguel
+        with SupportsPollyPenelope
+        with SupportsPollyLupeNeural
+        with SupportsPollyPedroNeural
+
+    /** "Japanese, Japan" */
+    case object `ja-JP`
+        extends LanguageCode("ja-JP")
+        with SupportsPollyMizuki
+        with SupportsPollyTakumi
+        with SupportsPollyTakumiNeural
+        with SupportsPollyKazuhaNeural
+        with SupportsPollyTomokoNeural
+
+    /** "Korean, Korea" */
+    case object `ko-KR`
+        extends LanguageCode("ko-KR")
+        with SupportsPollySeoyeon
+        with SupportsPollySeoyeonNeural
+
+    /** "Norwegian, Norway" */
+    case object `nb-NO`
+        extends LanguageCode("nb-NO")
+        with SupportsPollyLiv
+        with SupportsPollyIdaNeural
+
+    /** "Polish -Poland" */
+    case object `pl-PL`
+        extends LanguageCode("pl-PL")
+        with SupportsPollyJacek
+        with SupportsPollyJan
+        with SupportsPollyEwa
+        with SupportsPollyMaja
+        with SupportsPollyOlaNeural
+
+    /** "Portuguese, Brazil" */
+    case object `pt-BR`
+        extends LanguageCode("pt-BR")
+        with SupportsPollyCamila
+        with SupportsPollyRicardo
+        with SupportsPollyVitoria
+        with SupportsPollyCamilaNeural
+        with SupportsPollyVitoriaNeural
+        with SupportsPollyThiagoNeural
+
+    /** "Portuguese, Portugal" */
+    case object `pt-PT`
+        extends LanguageCode("pt-PT")
+        with SupportsPollyCristiano
+        with SupportsPollyInes
+        with SupportsPollyInesNeural
+
+    /** "Romanian, Romania" */
+    case object `ro-RO` extends LanguageCode("ro-RO") with SupportsPollyCarmen
+
+    /** "Russian, Russia" */
+    case object `ru-RU`
+        extends LanguageCode("ru-RU")
+        with SupportsPollyMaxim
+        with SupportsPollyTatyana
+
+    /** "Swedish, Sweden" */
+    case object `sv-SE`
+        extends LanguageCode("sv-SE")
+        with SupportsPollyAstrid
+        with SupportsPollyElinNeural
+
+    /** "Turkish, Turkey" */
+    case object `tr-TR` extends LanguageCode("tr-TR") with SupportsPollyFiliz
+
     sealed trait SupportsManVoice
     sealed trait SupportsWomanVoice
-    sealed trait SupportsAliceVoice
     sealed trait SupportsPollyZeina
     sealed trait SupportsPollyHalaNeural
     sealed trait SupportsPollyArletNeural
@@ -73,6 +313,8 @@ object SayVerb {
     sealed trait SupportsPollyJoeyNeural
     sealed trait SupportsPollyJustinNeural
     sealed trait SupportsPollyMatthewNeural
+    sealed trait SupportsPollyRuthNeural
+    sealed trait SupportsPollyStephenNeural
     sealed trait SupportsPollyAyandaNeural
     sealed trait SupportsPollyGeraint
     sealed trait SupportsPollySuviNeural
@@ -80,6 +322,7 @@ object SayVerb {
     sealed trait SupportsPollyLea
     sealed trait SupportsPollyMathieu
     sealed trait SupportsPollyLeaNeural
+    sealed trait SupportsPollyRemiNeural
     sealed trait SupportsPollyChantal
     sealed trait SupportsPollyGabrielleNeural
     sealed trait SupportsPollyLiamNeural
@@ -95,9 +338,12 @@ object SayVerb {
     sealed trait SupportsPollyCarla
     sealed trait SupportsPollyGiorgio
     sealed trait SupportsPollyBiancaNeural
+    sealed trait SupportsPollyAdrianoNeural
     sealed trait SupportsPollyMizuki
     sealed trait SupportsPollyTakumi
     sealed trait SupportsPollyTakumiNeural
+    sealed trait SupportsPollyKazuhaNeural
+    sealed trait SupportsPollyTomokoNeural
     sealed trait SupportsPollySeoyeon
     sealed trait SupportsPollySeoyeonNeural
     sealed trait SupportsPollyLiv
@@ -112,6 +358,7 @@ object SayVerb {
     sealed trait SupportsPollyVitoria
     sealed trait SupportsPollyCamilaNeural
     sealed trait SupportsPollyVitoriaNeural
+    sealed trait SupportsPollyThiagoNeural
     sealed trait SupportsPollyCristiano
     sealed trait SupportsPollyInes
     sealed trait SupportsPollyInesNeural
@@ -122,8 +369,10 @@ object SayVerb {
     sealed trait SupportsPollyEnrique
     sealed trait SupportsPollyLucia
     sealed trait SupportsPollyLuciaNeural
+    sealed trait SupportsPollySergioNeural
     sealed trait SupportsPollyMia
     sealed trait SupportsPollyMiaNeural
+    sealed trait SupportsPollyAndresNeural
     sealed trait SupportsPollyLupe
     sealed trait SupportsPollyMiguel
     sealed trait SupportsPollyPenelope
@@ -134,278 +383,6 @@ object SayVerb {
     sealed trait SupportsPollyFiliz
     sealed trait SupportsPollyGwyneth
 
-    val values: immutable.IndexedSeq[LanguageCode] = findValues
-
-    /** Arabic */
-    case object `arb` extends LanguageCode("arb") with SupportsPollyZeina
-
-    /** Arabic (Gulf) */
-    case object `ar-AE` extends LanguageCode("ar-AE") with SupportsPollyHalaNeural
-
-    /** Chinese (Cantonese) */
-    case object `yue-CN` extends LanguageCode("yue-CN") with SupportsPollyHiujinNeural
-
-    /** Chinese (Mandarin) */
-    case object `cmn-CN`
-        extends LanguageCode("cmn-CN")
-        with SupportsPollyZhiyu
-        with SupportsPollyZhiyuNeural
-
-    /** "Danish, Denmark" */
-    case object `da-DK`
-        extends LanguageCode("da-DK")
-        with SupportsAliceVoice
-        with SupportsPollyMads
-        with SupportsPollyNaja
-
-    /** Dutch */
-    case object `nl-NL`
-        extends LanguageCode("nl-NL")
-        with SupportsAliceVoice
-        with SupportsPollyLotte
-        with SupportsPollyRuben
-        with SupportsPollyLauraNeural
-
-    /** "English, Australia" */
-    case object `en-AU`
-        extends LanguageCode("en-AU")
-        with SupportsAliceVoice
-        with SupportsPollyNicole
-        with SupportsPollyRussell
-        with SupportsPollyOliviaNeural
-
-    /** "English, Canada" */
-    case object `en-CA` extends LanguageCode("en-CA") with SupportsAliceVoice
-
-    /** "English, UK" */
-    case object `en-GB`
-        extends LanguageCode("en-GB")
-        with SupportsAliceVoice
-        with SupportsWomanVoice
-        with SupportsManVoice
-        with SupportsPollyAmy
-        with SupportsPollyBrian
-        with SupportsPollyEmma
-        with SupportsPollyAmyNeural
-        with SupportsPollyEmmaNeural
-        with SupportsPollyBrianNeural
-        with SupportsPollyArthurNeural
-
-    /** "English, India" */
-    case object `en-IN`
-        extends LanguageCode("en-IN")
-        with SupportsAliceVoice
-        with SupportsPollyAditi
-        with SupportsPollyRaveena
-        with SupportsPollyKajalNeural
-
-    /** "English, New Zealand" */
-    case object `en-NZ` extends LanguageCode("en-NZ") with SupportsPollyAriaNeural
-
-    /** "English, United States" */
-    case object `en-US`
-        extends LanguageCode("en-US")
-        with SupportsAliceVoice
-        with SupportsPollyIvy
-        with SupportsPollyJoanna
-        with SupportsPollyJoey
-        with SupportsPollyJustin
-        with SupportsPollyKendra
-        with SupportsPollyKimberly
-        with SupportsPollyMatthew
-        with SupportsPollySalli
-        with SupportsPollyIvyNeural
-        with SupportsPollyJoannaNeural
-        with SupportsPollyKendraNeural
-        with SupportsPollyKimberlyNeural
-        with SupportsPollySalliNeural
-        with SupportsPollyJoeyNeural
-        with SupportsPollyJustinNeural
-        with SupportsPollyMatthewNeural
-
-    /** "English, South African" */
-    case object `en-ZA` extends LanguageCode("en-ZA") with SupportsPollyAyandaNeural
-
-    /** "English, Welsh" */
-    case object `en-BG-WLS` extends LanguageCode("en-BG-WLS") with SupportsPollyGeraint
-
-    /** "Finnish, Finland" */
-    case object `fi-FI`
-        extends LanguageCode("fi-FI")
-        with SupportsAliceVoice
-        with SupportsPollySuviNeural
-
-    /** "French, France" */
-    case object `fr-FR`
-        extends LanguageCode("fr-FR")
-        with SupportsAliceVoice
-        with SupportsPollyCeline
-        with SupportsPollyLea
-        with SupportsPollyMathieu
-        with SupportsPollyLeaNeural
-
-    /** "French, Canada" */
-    case object `fr-CA`
-        extends LanguageCode("fr-CA")
-        with SupportsAliceVoice
-        with SupportsPollyChantal
-        with SupportsPollyGabrielleNeural
-        with SupportsPollyLiamNeural
-
-    /** "German, Germany" */
-    case object `de-DE`
-        extends LanguageCode("de-DE")
-        with SupportsAliceVoice
-        with SupportsPollyHans
-        with SupportsPollyMarlene
-        with SupportsPollyVicki
-        with SupportsPollyVickiNeural
-        with SupportsPollyDanielNeural
-
-    /** "German, Austrian" */
-    case object `de-AT` extends LanguageCode("de-AT") with SupportsPollyHannahNeural
-
-    /** "Hindi, India" */
-    case object `hi-IN`
-        extends LanguageCode("hi-IN")
-        with SupportsPollyAditi
-        with SupportsPollyKajalNeural
-
-    /** "Icelandic, Iceland" */
-    case object `is-IS` extends LanguageCode("is-IS") with SupportsPollyDora with SupportsPollyKarl
-
-    /** "Italian, Italy" */
-    case object `it-IT`
-        extends LanguageCode("it-IT")
-        with SupportsAliceVoice
-        with SupportsPollyBianca
-        with SupportsPollyCarla
-        with SupportsPollyGiorgio
-        with SupportsPollyBiancaNeural
-
-    /** "Catalan, Spain" */
-    case object `ca-ES`
-        extends LanguageCode("ca-ES")
-        with SupportsAliceVoice
-        with SupportsPollyArletNeural
-
-    /** "Spanish, Spain" */
-    case object `es-ES`
-        extends LanguageCode("es-ES")
-        with SupportsAliceVoice
-        with SupportsPollyConchita
-        with SupportsPollyEnrique
-        with SupportsPollyLucia
-        with SupportsPollyLuciaNeural
-
-    /** "Spanish, Mexico" */
-    case object `es-MX`
-        extends LanguageCode("es-MX")
-        with SupportsAliceVoice
-        with SupportsPollyMia
-        with SupportsPollyMiaNeural
-
-    /** "Spanish, USA" */
-    case object `es-US`
-        extends LanguageCode("es-US")
-        with SupportsPollyLupe
-        with SupportsPollyMiguel
-        with SupportsPollyPenelope
-        with SupportsPollyLupeNeural
-        with SupportsPollyPedroNeural
-
-    /** "Japanese, Japan" */
-    case object `ja-JP`
-        extends LanguageCode("ja-JP")
-        with SupportsAliceVoice
-        with SupportsPollyMizuki
-        with SupportsPollyTakumi
-        with SupportsPollyTakumiNeural
-
-    /** "Korean, Korea" */
-    case object `ko-KR`
-        extends LanguageCode("ko-KR")
-        with SupportsAliceVoice
-        with SupportsPollySeoyeon
-        with SupportsPollySeoyeonNeural
-
-    /** "Norwegian, Norway" */
-    case object `nb-NO` extends LanguageCode("nb-NO") with SupportsAliceVoice
-
-    /** "Polish -Poland" */
-    case object `pl-PL`
-        extends LanguageCode("pl-PL")
-        with SupportsAliceVoice
-        with SupportsPollyJacek
-        with SupportsPollyJan
-        with SupportsPollyEwa
-        with SupportsPollyMaja
-        with SupportsPollyOlaNeural
-
-    /** "Portuguese, Brazil" */
-    case object `pt-BR`
-        extends LanguageCode("pt-BR")
-        with SupportsAliceVoice
-        with SupportsPollyCamila
-        with SupportsPollyRicardo
-        with SupportsPollyVitoria
-        with SupportsPollyCamilaNeural
-        with SupportsPollyVitoriaNeural
-
-    /** "Portuguese, Portugal" */
-    case object `pt-PT`
-        extends LanguageCode("pt-PT")
-        with SupportsAliceVoice
-        with SupportsPollyCristiano
-        with SupportsPollyInes
-        with SupportsPollyInesNeural
-
-    /** "Romanian, Romania" */
-    case object `ro-RO` extends LanguageCode("ro-RO") with SupportsPollyCarmen
-
-    /** "Russian, Russia" */
-    case object `ru-RU`
-        extends LanguageCode("ru-RU")
-        with SupportsAliceVoice
-        with SupportsPollyMaxim
-        with SupportsPollyTatyana
-
-    /** "Swedish, Sweden" */
-    case object `sv-SE`
-        extends LanguageCode("sv-SE")
-        with SupportsAliceVoice
-        with SupportsPollyAstrid
-        with SupportsPollyElinNeural
-
-    /** "Turkish, Turkey" */
-    case object `tr-TR` extends LanguageCode("tr-TR") with SupportsPollyFiliz
-
-    /** "Turkish, Turkey" */
-    case object `cy-GB` extends LanguageCode("cy-GB") with SupportsPollyGwyneth
-
-    /** "Chinese (Mandarin)" */
-    case object `zh-CN` extends LanguageCode("zh-CN") with SupportsAliceVoice
-
-    /** "Chinese (Cantonese)" */
-    case object `zh-HK` extends LanguageCode("zh-HK") with SupportsAliceVoice
-
-    /** "Chinese (Taiwanese Mandarin)" */
-    case object `zh-TW` extends LanguageCode("zh-TW") with SupportsAliceVoice
-
-    /** "English with an American accent" */
-    case object `en` extends LanguageCode("en") with SupportsManVoice with SupportsWomanVoice
-
-    /** "Spanish" */
-    case object `es` extends LanguageCode("es") with SupportsManVoice with SupportsWomanVoice
-
-    /** "French" */
-    case object `fr` extends LanguageCode("fr") with SupportsManVoice with SupportsWomanVoice
-
-    /** "Italian" */
-    case object `it` extends LanguageCode("it") with SupportsManVoice with SupportsWomanVoice
-
-    /** "German" */
-    case object `de` extends LanguageCode("de") with SupportsManVoice with SupportsWomanVoice
   }
 
   sealed abstract class Gender extends enumeratum.EnumEntry
@@ -413,472 +390,407 @@ object SayVerb {
   object Gender extends enumeratum.Enum[Gender] {
     val values: immutable.IndexedSeq[Gender] = findValues
 
-    case object Male      extends Gender
-    case object Female    extends Gender
-    case object MaleChild extends Gender
+    case object Male        extends Gender
+    case object Female      extends Gender
+    case object MaleChild   extends Gender
+    case object FemaleChild extends Gender
   }
 
-  /** Enum entry, representing a Language code that the Say verb support */
-  sealed abstract class Voice(override val twilioString: String, gender: Gender)
-      extends EnumWithTwilioString.EnumEntry
+  sealed abstract class Quality extends enumeratum.EnumEntry
 
-  /** Enum representing all the Language codes that the Say verb support */
+  object Quality extends enumeratum.Enum[Quality] {
+    val values: immutable.IndexedSeq[Quality] = findValues
+
+    case object Basic extends Quality
+
+    case object Standard extends Quality
+
+    case object Premium extends Quality
+  }
+
+  /** Enum entry that represents a Voice that the Say verb supports */
+  sealed abstract class Voice(
+      override val twilioString: String,
+      val gender: Gender,
+      val languageCode: LanguageCode,
+      val quality: Quality
+  ) extends EnumWithTwilioString.EnumEntry
+
+  /** Enum representing all the Voices that the Say verb supports and their capabilities */
   // noinspection ScalaUnusedSymbol
   object Voice extends EnumWithTwilioString[Voice] {
 
     val values: immutable.IndexedSeq[Voice] = findValues
 
     sealed trait SupportsPolly
-    sealed trait SupportsArb
-    sealed trait SupportsArAE
-    sealed trait SupportsCaES
-    sealed trait SupportsYueCN
-    sealed trait SupportsCmnCN
-    sealed trait SupportsDaDK
-    sealed trait SupportsNlNL
-    sealed trait SupportsEnAU
-    sealed trait SupportsEnGB
-    sealed trait SupportsEnIN
-    sealed trait SupportsEnNZ
-    sealed trait SupportsEnUS
-    sealed trait SupportsEnZA
-    sealed trait SupportsEnGBWLS
-    sealed trait SupportsFiFI
-    sealed trait SupportsFrFR
-    sealed trait SupportsFrCA
-    sealed trait SupportsDeDE
-    sealed trait SupportsDeAT
-    sealed trait SupportsHiIN
-    sealed trait SupportsIsIS
-    sealed trait SupportsItIT
-    sealed trait SupportsJaJP
-    sealed trait SupportsKoKR
-    sealed trait SupportsNbNO
-    sealed trait SupportsPlPL
-    sealed trait SupportsPtBR
-    sealed trait SupportsPtPT
-    sealed trait SupportsRoRO
-    sealed trait SupportsRuRU
-    sealed trait SupportsEsES
-    sealed trait SupportsEsMX
-    sealed trait SupportsEsUS
-    sealed trait SupportsSvSE
-    sealed trait SupportsTrTR
-    sealed trait SupportsCyGB
 
-    case object `man`   extends Voice("man", Gender.Male)
-    case object `woman` extends Voice("woman", Gender.Female)
-    case object `alice` extends Voice("alice", Gender.Female)
+    case object `man-EnGB` extends Voice("man", Gender.Male, LanguageCode.`en-GB`, Quality.Basic)
+    case object `man-EnUS` extends Voice("man", Gender.Male, LanguageCode.`en-US`, Quality.Basic)
+    case object `man-FrFR` extends Voice("man", Gender.Male, LanguageCode.`fr-FR`, Quality.Basic)
+    case object `man-DeDE` extends Voice("man", Gender.Male, LanguageCode.`de-DE`, Quality.Basic)
+    case object `man-ItIT` extends Voice("man", Gender.Male, LanguageCode.`it-IT`, Quality.Basic)
+    case object `man-EsES` extends Voice("man", Gender.Male, LanguageCode.`es-ES`, Quality.Basic)
+
+    case object `woman-EnGB`
+        extends Voice("woman", Gender.Female, LanguageCode.`en-GB`, Quality.Basic)
+    case object `woman-EnUS`
+        extends Voice("woman", Gender.Female, LanguageCode.`en-US`, Quality.Basic)
+    case object `woman-FrFR`
+        extends Voice("woman", Gender.Female, LanguageCode.`fr-FR`, Quality.Basic)
+    case object `woman-DeDE`
+        extends Voice("woman", Gender.Female, LanguageCode.`de-DE`, Quality.Basic)
+    case object `woman-ItIT`
+        extends Voice("woman", Gender.Female, LanguageCode.`it-IT`, Quality.Basic)
+    case object `woman-EsES`
+        extends Voice("woman", Gender.Female, LanguageCode.`es-ES`, Quality.Basic)
+    case object `woman-EsMX`
+        extends Voice("woman", Gender.Female, LanguageCode.`es-MX`, Quality.Basic)
+
     case object `Polly.Zeina`
-        extends Voice("Polly.Zeina", Gender.Female)
+        extends Voice("Polly.Zeina", Gender.Female, LanguageCode.`arb`, Quality.Standard)
         with SupportsPolly
-        with SupportsArb
     case object `Polly.Hala-Neural`
-        extends Voice("Polly.Hala-Neural", Gender.Female)
+        extends Voice("Polly.Hala-Neural", Gender.Female, LanguageCode.`ar-AE`, Quality.Premium)
         with SupportsPolly
-        with SupportsArAE
     case object `Polly.Arlet-Neural`
-        extends Voice("Polly.Arlet-Neural", Gender.Female)
+        extends Voice("Polly.Arlet-Neural", Gender.Female, LanguageCode.`ca-ES`, Quality.Premium)
         with SupportsPolly
-        with SupportsCaES
     case object `Polly.Hiujin-Neural`
-        extends Voice("Polly.Hiujin-Neural", Gender.Female)
+        extends Voice("Polly.Hiujin-Neural", Gender.Female, LanguageCode.`yue-CN`, Quality.Premium)
         with SupportsPolly
-        with SupportsYueCN
     case object `Polly.Zhiyu`
-        extends Voice("Polly.Zhiyu", Gender.Female)
+        extends Voice("Polly.Zhiyu", Gender.Female, LanguageCode.`cmn-CN`, Quality.Standard)
         with SupportsPolly
-        with SupportsCmnCN
     case object `Polly.Zhiyu-Neural`
-        extends Voice("Polly.Zhiyu-Neural", Gender.Female)
+        extends Voice("Polly.Zhiyu-Neural", Gender.Female, LanguageCode.`cmn-CN`, Quality.Premium)
         with SupportsPolly
-        with SupportsCmnCN
     case object `Polly.Mads`
-        extends Voice("Polly.Mads", Gender.Male)
+        extends Voice("Polly.Mads", Gender.Male, LanguageCode.`da-DK`, Quality.Standard)
         with SupportsPolly
-        with SupportsDaDK
     case object `Polly.Naja`
-        extends Voice("Polly.Naja", Gender.Female)
+        extends Voice("Polly.Naja", Gender.Female, LanguageCode.`da-DK`, Quality.Standard)
         with SupportsPolly
-        with SupportsDaDK
     case object `Polly.Lotte`
-        extends Voice("Polly.Lotte", Gender.Female)
+        extends Voice("Polly.Lotte", Gender.Female, LanguageCode.`nl-NL`, Quality.Standard)
         with SupportsPolly
-        with SupportsNlNL
     case object `Polly.Ruben`
-        extends Voice("Polly.Ruben", Gender.Male)
+        extends Voice("Polly.Ruben", Gender.Male, LanguageCode.`nl-NL`, Quality.Standard)
         with SupportsPolly
-        with SupportsNlNL
     case object `Polly.Laura-Neural`
-        extends Voice("Polly.Laura-Neural", Gender.Female)
+        extends Voice("Polly.Laura-Neural", Gender.Female, LanguageCode.`nl-NL`, Quality.Premium)
         with SupportsPolly
-        with SupportsNlNL
     case object `Polly.Nicole`
-        extends Voice("Polly.Nicole", Gender.Female)
+        extends Voice("Polly.Nicole", Gender.Female, LanguageCode.`en-AU`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnAU
     case object `Polly.Russell`
-        extends Voice("Polly.Russell", Gender.Male)
+        extends Voice("Polly.Russell", Gender.Male, LanguageCode.`en-AU`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnAU
     case object `Polly.Olivia-Neural`
-        extends Voice("Polly.Olivia-Neural", Gender.Female)
+        extends Voice("Polly.Olivia-Neural", Gender.Female, LanguageCode.`en-AU`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnAU
     case object `Polly.Amy`
-        extends Voice("Polly.Amy", Gender.Female)
+        extends Voice("Polly.Amy", Gender.Female, LanguageCode.`en-GB`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Brian`
-        extends Voice("Polly.Brian", Gender.Male)
+        extends Voice("Polly.Brian", Gender.Male, LanguageCode.`en-GB`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Emma`
-        extends Voice("Polly.Emma", Gender.Female)
+        extends Voice("Polly.Emma", Gender.Female, LanguageCode.`en-GB`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Amy-Neural`
-        extends Voice("Polly.Amy-Neural", Gender.Female)
+        extends Voice("Polly.Amy-Neural", Gender.Female, LanguageCode.`en-GB`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Emma-Neural`
-        extends Voice("Polly.Emma-Neural", Gender.Female)
+        extends Voice("Polly.Emma-Neural", Gender.Female, LanguageCode.`en-GB`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Brian-Neural`
-        extends Voice("Polly.Brian-Neural", Gender.Male)
+        extends Voice("Polly.Brian-Neural", Gender.Male, LanguageCode.`en-GB`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Arthur-Neural`
-        extends Voice("Polly.Arthur-Neural", Gender.Male)
+        extends Voice("Polly.Arthur-Neural", Gender.Male, LanguageCode.`en-GB`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnGB
     case object `Polly.Raveena`
-        extends Voice("Polly.Raveena", Gender.Female)
+        extends Voice("Polly.Raveena", Gender.Female, LanguageCode.`en-IN`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnIN
     case object `Polly.Aria-Neural`
-        extends Voice("Polly.Aria-Neural", Gender.Female)
+        extends Voice("Polly.Aria-Neural", Gender.Female, LanguageCode.`en-NZ`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnNZ
     case object `Polly.Ivy`
-        extends Voice("Polly.Ivy", Gender.Female)
+        extends Voice("Polly.Ivy", Gender.FemaleChild, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Joanna`
-        extends Voice("Polly.Joanna", Gender.Female)
+        extends Voice("Polly.Joanna", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Joey`
-        extends Voice("Polly.Joey", Gender.Male)
+        extends Voice("Polly.Joey", Gender.Male, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Justin`
-        extends Voice("Polly.Justin", Gender.Male)
+        extends Voice("Polly.Justin", Gender.MaleChild, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Kendra`
-        extends Voice("Polly.Kendra", Gender.Female)
+        extends Voice("Polly.Kendra", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Kimberly`
-        extends Voice("Polly.Kimberly", Gender.Female)
+        extends Voice("Polly.Kimberly", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Matthew`
-        extends Voice("Polly.Matthew", Gender.Male)
+        extends Voice("Polly.Matthew", Gender.Male, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Salli`
-        extends Voice("Polly.Salli", Gender.Female)
+        extends Voice("Polly.Salli", Gender.Female, LanguageCode.`en-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Ivy-Neural`
-        extends Voice("Polly.Ivy-Neural", Gender.Female)
+        extends Voice("Polly.Ivy-Neural", Gender.FemaleChild, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Joanna-Neural`
-        extends Voice("Polly.Joanna-Neural", Gender.Female)
+        extends Voice("Polly.Joanna-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Kendra-Neural`
-        extends Voice("Polly.Kendra-Neural", Gender.Female)
+        extends Voice("Polly.Kendra-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Kevin-Neural`
-        extends Voice("Polly.Kevin-Neural", Gender.MaleChild)
+        extends Voice("Polly.Kevin-Neural", Gender.MaleChild, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Kimberly-Neural`
-        extends Voice("Polly.Kimberly-Neural", Gender.Female)
+        extends Voice("Polly.Kimberly-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Salli-Neural`
-        extends Voice("Polly.Salli-Neural", Gender.Female)
+        extends Voice("Polly.Salli-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Joey-Neural`
-        extends Voice("Polly.Joey-Neural", Gender.Male)
+        extends Voice("Polly.Joey-Neural", Gender.Male, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Justin-Neural`
-        extends Voice("Polly.Justin-Neural", Gender.Male)
+        extends Voice(
+          "Polly.Justin-Neural",
+          Gender.MaleChild,
+          LanguageCode.`en-US`,
+          Quality.Premium
+        )
         with SupportsPolly
-        with SupportsEnUS
     case object `Polly.Matthew-Neural`
-        extends Voice("Polly.Matthew-Neural", Gender.Male)
+        extends Voice("Polly.Matthew-Neural", Gender.Male, LanguageCode.`en-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnUS
+    case object `Polly.Ruth-Neural`
+        extends Voice("Polly.Ruth-Neural", Gender.Female, LanguageCode.`en-US`, Quality.Premium)
+        with SupportsPolly
+    case object `Polly.Stephen-Neural`
+        extends Voice("Polly.Stephen-Neural", Gender.Male, LanguageCode.`en-US`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Ayanda-Neural`
-        extends Voice("Polly.Ayanda-Neural", Gender.Female)
+        extends Voice("Polly.Ayanda-Neural", Gender.Female, LanguageCode.`en-ZA`, Quality.Premium)
         with SupportsPolly
-        with SupportsEnZA
     case object `Polly.Geraint`
-        extends Voice("Polly.Geraint", Gender.Male)
+        extends Voice("Polly.Geraint", Gender.Male, LanguageCode.`en-GB-WLS`, Quality.Standard)
         with SupportsPolly
-        with SupportsEnGBWLS
     case object `Polly.Suvi-Neural`
-        extends Voice("Polly.Suvi - Neural", Gender.Female)
+        extends Voice("Polly.Suvi-Neural", Gender.Female, LanguageCode.`fi-FI`, Quality.Premium)
         with SupportsPolly
-        with SupportsFiFI
     case object `Polly.Celine`
-        extends Voice("Polly.Céline", Gender.Female)
+        extends Voice("Polly.Céline", Gender.Female, LanguageCode.`fr-FR`, Quality.Standard)
         with SupportsPolly
-        with SupportsFrFR
     case object `Polly.Lea`
-        extends Voice("Polly.Léa", Gender.Female)
+        extends Voice("Polly.Léa", Gender.Female, LanguageCode.`fr-FR`, Quality.Standard)
         with SupportsPolly
-        with SupportsFrFR
     case object `Polly.Mathieu`
-        extends Voice("Polly.Mathieu", Gender.Male)
+        extends Voice("Polly.Mathieu", Gender.Male, LanguageCode.`fr-FR`, Quality.Standard)
         with SupportsPolly
-        with SupportsFrFR
     case object `Polly.Lea-Neural`
-        extends Voice("Polly.Lea-Neural", Gender.Female)
+        extends Voice("Polly.Lea-Neural", Gender.Female, LanguageCode.`fr-FR`, Quality.Premium)
         with SupportsPolly
-        with SupportsFrFR
+    case object `Polly.Remi-Neural`
+        extends Voice("Polly.Remi-Neural", Gender.Male, LanguageCode.`fr-FR`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Chantal`
-        extends Voice("Polly.Chantal", Gender.Female)
+        extends Voice("Polly.Chantal", Gender.Female, LanguageCode.`fr-CA`, Quality.Standard)
         with SupportsPolly
-        with SupportsFrCA
     case object `Polly.Gabrielle-Neural`
-        extends Voice("Polly.Gabrielle-Neural", Gender.Female)
+        extends Voice(
+          "Polly.Gabrielle-Neural",
+          Gender.Female,
+          LanguageCode.`fr-CA`,
+          Quality.Premium
+        )
         with SupportsPolly
-        with SupportsFrCA
     case object `Polly.Liam-Neural`
-        extends Voice("Polly.Liam-Neural", Gender.Male)
+        extends Voice("Polly.Liam-Neural", Gender.Male, LanguageCode.`fr-CA`, Quality.Premium)
         with SupportsPolly
-        with SupportsFrCA
     case object `Polly.Hans`
-        extends Voice("Polly.Hans", Gender.Male)
+        extends Voice("Polly.Hans", Gender.Male, LanguageCode.`de-DE`, Quality.Standard)
         with SupportsPolly
-        with SupportsDeDE
     case object `Polly.Marlene`
-        extends Voice("Polly.Marlene", Gender.Female)
+        extends Voice("Polly.Marlene", Gender.Female, LanguageCode.`de-DE`, Quality.Standard)
         with SupportsPolly
-        with SupportsDeDE
     case object `Polly.Vicki`
-        extends Voice("Polly.Vicki", Gender.Female)
+        extends Voice("Polly.Vicki", Gender.Female, LanguageCode.`de-DE`, Quality.Standard)
         with SupportsPolly
-        with SupportsDeDE
     case object `Polly.Vicki-Neural`
-        extends Voice("Polly.Vicki-Neural", Gender.Female)
+        extends Voice("Polly.Vicki-Neural", Gender.Female, LanguageCode.`de-DE`, Quality.Premium)
         with SupportsPolly
-        with SupportsDeDE
     case object `Polly.Daniel-Neural`
-        extends Voice("Polly.Daniel-Neural", Gender.Male)
+        extends Voice("Polly.Daniel-Neural", Gender.Male, LanguageCode.`de-DE`, Quality.Premium)
         with SupportsPolly
-        with SupportsDeDE
     case object `Polly.Hannah-Neural`
-        extends Voice("Polly.Hannah-Neural", Gender.Female)
+        extends Voice("Polly.Hannah-Neural", Gender.Female, LanguageCode.`de-AT`, Quality.Premium)
         with SupportsPolly
-        with SupportsDeAT
+    // TODO bilingual - supports also EnIN
     case object `Polly.Aditi`
-        extends Voice("Polly.Aditi", Gender.Female)
+        extends Voice("Polly.Aditi", Gender.Female, LanguageCode.`hi-IN`, Quality.Standard)
         with SupportsPolly
-        with SupportsHiIN
-        with SupportsEnIN
+    // TODO bilingual - supports also EnIN
     case object `Polly.Kajal-Neural`
-        extends Voice("Polly.Kajal-Neural", Gender.Female)
+        extends Voice("Polly.Kajal-Neural", Gender.Female, LanguageCode.`hi-IN`, Quality.Premium)
         with SupportsPolly
-        with SupportsHiIN
-        with SupportsEnIN
     case object `Polly.Dora`
-        extends Voice("Polly.Dóra", Gender.Female)
+        extends Voice("Polly.Dóra", Gender.Female, LanguageCode.`is-IS`, Quality.Standard)
         with SupportsPolly
-        with SupportsIsIS
     case object `Polly.Karl`
-        extends Voice("Polly.Karl", Gender.Male)
+        extends Voice("Polly.Karl", Gender.Male, LanguageCode.`is-IS`, Quality.Standard)
         with SupportsPolly
-        with SupportsIsIS
     case object `Polly.Bianca`
-        extends Voice("Polly.Bianca", Gender.Female)
+        extends Voice("Polly.Bianca", Gender.Female, LanguageCode.`it-IT`, Quality.Standard)
         with SupportsPolly
-        with SupportsItIT
     case object `Polly.Carla`
-        extends Voice("Polly.Carla", Gender.Female)
+        extends Voice("Polly.Carla", Gender.Female, LanguageCode.`it-IT`, Quality.Standard)
         with SupportsPolly
-        with SupportsItIT
     case object `Polly.Giorgio`
-        extends Voice("Polly.Giorgio", Gender.Male)
+        extends Voice("Polly.Giorgio", Gender.Male, LanguageCode.`it-IT`, Quality.Standard)
         with SupportsPolly
-        with SupportsItIT
     case object `Polly.Bianca-Neural`
-        extends Voice("Polly.Bianca-Neural", Gender.Female)
+        extends Voice("Polly.Bianca-Neural", Gender.Female, LanguageCode.`it-IT`, Quality.Premium)
         with SupportsPolly
-        with SupportsItIT
+    case object `Polly.Adriano-Neural`
+        extends Voice("Polly.Adriano-Neural", Gender.Male, LanguageCode.`it-IT`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Mizuki`
-        extends Voice("Polly.Mizuki", Gender.Female)
+        extends Voice("Polly.Mizuki", Gender.Female, LanguageCode.`ja-JP`, Quality.Standard)
         with SupportsPolly
-        with SupportsJaJP
     case object `Polly.Takumi`
-        extends Voice("Polly.Takumi", Gender.Male)
+        extends Voice("Polly.Takumi", Gender.Male, LanguageCode.`ja-JP`, Quality.Standard)
         with SupportsPolly
-        with SupportsJaJP
     case object `Polly.Takumi-Neural`
-        extends Voice("Polly.Takumi-Neural", Gender.Male)
+        extends Voice("Polly.Takumi-Neural", Gender.Male, LanguageCode.`ja-JP`, Quality.Premium)
         with SupportsPolly
-        with SupportsJaJP
+    case object `Polly.Kazuha-Neural`
+        extends Voice("Polly.Kazuha-Neural", Gender.Female, LanguageCode.`ja-JP`, Quality.Premium)
+        with SupportsPolly
+    case object `Polly.Tomoko-Neural`
+        extends Voice("Polly.Tomoko-Neural", Gender.Female, LanguageCode.`ja-JP`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Seoyeon`
-        extends Voice("Polly.Seoyeon", Gender.Female)
+        extends Voice("Polly.Seoyeon", Gender.Female, LanguageCode.`ko-KR`, Quality.Standard)
         with SupportsPolly
-        with SupportsKoKR
     case object `Polly.Seoyeon-Neural`
-        extends Voice("Polly.Seoyeon-Neural", Gender.Female)
+        extends Voice("Polly.Seoyeon-Neural", Gender.Female, LanguageCode.`ko-KR`, Quality.Premium)
         with SupportsPolly
-        with SupportsKoKR
     case object `Polly.Liv`
-        extends Voice("Polly.Liv", Gender.Female)
+        extends Voice("Polly.Liv", Gender.Female, LanguageCode.`nb-NO`, Quality.Standard)
         with SupportsPolly
-        with SupportsNbNO
     case object `Polly.Ida-Neural`
-        extends Voice("Polly.Ida-Neural", Gender.Female)
+        extends Voice("Polly.Ida-Neural", Gender.Female, LanguageCode.`nb-NO`, Quality.Premium)
         with SupportsPolly
-        with SupportsNbNO
     case object `Polly.Jacek`
-        extends Voice("Polly.Jacek", Gender.Male)
+        extends Voice("Polly.Jacek", Gender.Male, LanguageCode.`pl-PL`, Quality.Standard)
         with SupportsPolly
-        with SupportsPlPL
     case object `Polly.Jan`
-        extends Voice("Polly.Jan", Gender.Male)
+        extends Voice("Polly.Jan", Gender.Male, LanguageCode.`pl-PL`, Quality.Standard)
         with SupportsPolly
-        with SupportsPlPL
     case object `Polly.Ewa`
-        extends Voice("Polly.Ewa", Gender.Female)
+        extends Voice("Polly.Ewa", Gender.Female, LanguageCode.`pl-PL`, Quality.Standard)
         with SupportsPolly
-        with SupportsPlPL
     case object `Polly.Maja`
-        extends Voice("Polly.Maja", Gender.Female)
+        extends Voice("Polly.Maja", Gender.Female, LanguageCode.`pl-PL`, Quality.Standard)
         with SupportsPolly
-        with SupportsPlPL
     case object `Polly.Ola-Neural`
-        extends Voice("Polly.Ola-Neural", Gender.Female)
+        extends Voice("Polly.Ola-Neural", Gender.Female, LanguageCode.`pl-PL`, Quality.Premium)
         with SupportsPolly
-        with SupportsPlPL
     case object `Polly.Camila`
-        extends Voice("Polly.Camila", Gender.Female)
+        extends Voice("Polly.Camila", Gender.Female, LanguageCode.`pt-BR`, Quality.Standard)
         with SupportsPolly
-        with SupportsPtBR
     case object `Polly.Ricardo`
-        extends Voice("Polly.Ricardo", Gender.Male)
+        extends Voice("Polly.Ricardo", Gender.Male, LanguageCode.`pt-BR`, Quality.Standard)
         with SupportsPolly
-        with SupportsPtBR
     case object `Polly.Vitoria`
-        extends Voice("Polly.Vitória", Gender.Female)
+        extends Voice("Polly.Vitória", Gender.Female, LanguageCode.`pt-BR`, Quality.Standard)
         with SupportsPolly
-        with SupportsPtBR
     case object `Polly.Camila-Neural`
-        extends Voice("Polly.Camila-Neural", Gender.Female)
+        extends Voice("Polly.Camila-Neural", Gender.Female, LanguageCode.`pt-BR`, Quality.Premium)
         with SupportsPolly
-        with SupportsPtBR
     case object `Polly.Vitoria-Neural`
-        extends Voice("Polly.Vitoria-Neural", Gender.Female)
+        extends Voice("Polly.Vitoria-Neural", Gender.Female, LanguageCode.`pt-BR`, Quality.Premium)
         with SupportsPolly
-        with SupportsPtBR
+    case object `Polly.Thiago-Neural`
+        extends Voice("Polly.Thiago-Neural", Gender.Male, LanguageCode.`pt-BR`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Cristiano`
-        extends Voice("Polly.Cristiano", Gender.Male)
+        extends Voice("Polly.Cristiano", Gender.Male, LanguageCode.`pt-PT`, Quality.Standard)
         with SupportsPolly
-        with SupportsPtPT
     case object `Polly.Ines`
-        extends Voice("Polly.Inês", Gender.Female)
+        extends Voice("Polly.Inês", Gender.Female, LanguageCode.`pt-PT`, Quality.Standard)
         with SupportsPolly
-        with SupportsPtPT
     case object `Polly.Ines-Neural`
-        extends Voice("Polly.Ines-Neural", Gender.Female)
+        extends Voice("Polly.Ines-Neural", Gender.Female, LanguageCode.`pt-PT`, Quality.Premium)
         with SupportsPolly
-        with SupportsPtPT
     case object `Polly.Carmen`
-        extends Voice("Polly.Carmen", Gender.Female)
+        extends Voice("Polly.Carmen", Gender.Female, LanguageCode.`ro-RO`, Quality.Standard)
         with SupportsPolly
-        with SupportsRoRO
     case object `Polly.Maxim`
-        extends Voice("Polly.Maxim", Gender.Male)
+        extends Voice("Polly.Maxim", Gender.Male, LanguageCode.`ru-RU`, Quality.Standard)
         with SupportsPolly
-        with SupportsRuRU
     case object `Polly.Tatyana`
-        extends Voice("Polly.Tatyana", Gender.Female)
+        extends Voice("Polly.Tatyana", Gender.Female, LanguageCode.`ru-RU`, Quality.Standard)
         with SupportsPolly
-        with SupportsRuRU
     case object `Polly.Conchita`
-        extends Voice("Polly.Conchita", Gender.Female)
+        extends Voice("Polly.Conchita", Gender.Female, LanguageCode.`es-ES`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsES
     case object `Polly.Enrique`
-        extends Voice("Polly.Enrique", Gender.Male)
+        extends Voice("Polly.Enrique", Gender.Male, LanguageCode.`es-ES`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsES
     case object `Polly.Lucia`
-        extends Voice("Polly.Lucia", Gender.Female)
+        extends Voice("Polly.Lucia", Gender.Female, LanguageCode.`es-ES`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsES
     case object `Polly.Lucia-Neural`
-        extends Voice("Polly.Lucia-Neural", Gender.Female)
+        extends Voice("Polly.Lucia-Neural", Gender.Female, LanguageCode.`es-ES`, Quality.Premium)
         with SupportsPolly
-        with SupportsEsES
+    case object `Polly.Sergio-Neural`
+        extends Voice("Polly.Sergio-Neural", Gender.Male, LanguageCode.`es-ES`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Mia`
-        extends Voice("Polly.Mia", Gender.Female)
+        extends Voice("Polly.Mia", Gender.Female, LanguageCode.`es-MX`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsMX
     case object `Polly.Mia-Neural`
-        extends Voice("Polly.Mia-Neural", Gender.Female)
+        extends Voice("Polly.Mia-Neural", Gender.Female, LanguageCode.`es-MX`, Quality.Premium)
         with SupportsPolly
-        with SupportsEsMX
+    case object `Polly.Andres-Neural`
+        extends Voice("Polly.Andres-Neural", Gender.Male, LanguageCode.`es-MX`, Quality.Premium)
+        with SupportsPolly
     case object `Polly.Lupe`
-        extends Voice("Polly.Lupe", Gender.Female)
+        extends Voice("Polly.Lupe", Gender.Female, LanguageCode.`es-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsUS
     case object `Polly.Miguel`
-        extends Voice("Polly.Miguel", Gender.Male)
+        extends Voice("Polly.Miguel", Gender.Male, LanguageCode.`es-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsUS
     case object `Polly.Penelope`
-        extends Voice("Polly.Penélope", Gender.Female)
+        extends Voice("Polly.Penélope", Gender.Female, LanguageCode.`es-US`, Quality.Standard)
         with SupportsPolly
-        with SupportsEsUS
     case object `Polly.Lupe-Neural`
-        extends Voice("Polly.Lupe-Neural", Gender.Female)
+        extends Voice("Polly.Lupe-Neural", Gender.Female, LanguageCode.`es-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEsUS
     case object `Polly.Pedro-Neural`
-        extends Voice("Polly.Pedro-Neural", Gender.Male)
+        extends Voice("Polly.Pedro-Neural", Gender.Male, LanguageCode.`es-US`, Quality.Premium)
         with SupportsPolly
-        with SupportsEsUS
     case object `Polly.Astrid`
-        extends Voice("Polly.Astrid", Gender.Female)
+        extends Voice("Polly.Astrid", Gender.Female, LanguageCode.`sv-SE`, Quality.Standard)
         with SupportsPolly
-        with SupportsSvSE
     case object `Polly.Elin-Neural`
-        extends Voice("Polly.Elin-Neural", Gender.Female)
+        extends Voice("Polly.Elin-Neural", Gender.Female, LanguageCode.`sv-SE`, Quality.Premium)
         with SupportsPolly
-        with SupportsSvSE
     case object `Polly.Filiz`
-        extends Voice("Polly.Filiz", Gender.Female)
+        extends Voice("Polly.Filiz", Gender.Female, LanguageCode.`tr-TR`, Quality.Standard)
         with SupportsPolly
-        with SupportsTrTR
     case object `Polly.Gwyneth`
-        extends Voice("Polly.Gwyneth", Gender.Female)
+        extends Voice("Polly.Gwyneth", Gender.Female, LanguageCode.`cy-GB`, Quality.Standard)
         with SupportsPolly
-        with SupportsCyGB
   }
 
   /** The loop attribute specifies how many times you'd like the text repeated. The default is once.
@@ -889,18 +801,8 @@ object SayVerb {
     require(value >= 0, "integer >= 0")
   }
 
-  sealed trait RequiredMatchingLanguageAdded
-  sealed trait RequiredMatchingLanguageAddedTrue  extends RequiredMatchingLanguageAdded
-  sealed trait RequiredMatchingLanguageAddedFalse extends RequiredMatchingLanguageAdded
-
-  sealed trait RequiredMatchingVoiceAdded
-  sealed trait RequiredMatchingVoiceAddedTrue  extends RequiredMatchingVoiceAdded
-  sealed trait RequiredMatchingVoiceAddedFalse extends RequiredMatchingVoiceAdded
-
   final class Builder[
-      B <: Buildable,
-      L <: RequiredMatchingLanguageAdded,
-      V <: RequiredMatchingVoiceAdded
+      B <: Buildable
   ] private (
       text: String,
       language: Option[LanguageCode],
@@ -908,17 +810,25 @@ object SayVerb {
       loop: Option[Int]
   ) {
 
-    def withText(text: String): Builder[BuildableTrue, L, V] =
-      new Builder[BuildableTrue, L, V](text = text, language, voice, loop)
+    def withText(text: String): Builder[BuildableTrue] =
+      new Builder[BuildableTrue](text = text, language, voice, loop)
 
-    def withLanguage(language: LanguageCode): Builder[B, L, V] =
-      new Builder[B, L, V](text, language = Some(language), voice, loop)
+    def withVoice(voice: Voice): Builder[B] = {
+      new Builder[B](text, language = Some(voice.languageCode), voice = Some(voice), loop)
+    }
 
-    def withVoice(voice: Voice): Builder[B, L, V] =
-      new Builder[B, L, V](text, language, voice = Some(voice), loop)
+    def withBestQualityVoiceFemale(language: LanguageCode): Builder[B] = {
+      val voicesWithLanguageAndGender =
+        Voice.values.filter(v => v.languageCode == language && v.gender == Gender.Female)
+      val voiceOpt = voicesWithLanguageAndGender
+        .find(_.quality == Quality.Premium)
+        // Currently standard Polly voices are available for every language
+        .orElse(voicesWithLanguageAndGender.find(_.quality == Quality.Standard))
+      new Builder[B](text, language = Some(language), voice = voiceOpt, loop)
+    }
 
-    def withLoop(loop: Int): Builder[B, L, V] =
-      new Builder[B, L, V](text, language, voice, loop = Some(loop))
+    def withLoop(loop: Int): Builder[B] =
+      new Builder[B](text, language, voice, loop = Some(loop))
 
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
@@ -929,8 +839,8 @@ object SayVerb {
     val empty: BuilderStartState = new BuilderStartState("", None, None, None)
   }
 
-  type BuilderStartState =
-    Builder[BuildableFalse, RequiredMatchingLanguageAddedFalse, RequiredMatchingVoiceAddedFalse]
+  type BuilderStartState = Builder[BuildableFalse]
+
   type BuildFunction = BuilderStartState => SayVerb
 
   def build(fun: BuildFunction): SayVerb = fun(Builder.empty)
