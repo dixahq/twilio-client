@@ -12,11 +12,11 @@ import scala.collection.immutable
   *
   *   - TwiML that guarantied to be correct (verified) vs TwiML that we cannot prove correct at
   *      compile time.
-  *   - TwiML that is build using the moddeling system provided for it vs TwiML that was just
+  *   - TwiML that is build using the modeling system provided for it vs TwiML that was just
   *      constructed from a String
   *
   * This is modelled by having the classes that can be seen in this diagram:
-  * [[https://plantuml.cirque-udv.dk/svg/oymhIIrAIqnELGXABIx8pojEvKfCAYufIamkKN0hoi_rpKz9pU5ApaaiBbO8IotAJCjCJU7AX6iApIk32KBK80JGTQFA19SKPUQbSt71R5MmgT7LHR8Hpe98mAr6qu1aFnU2ZIw7qrXiIWYO0t4u0000]]
+  * [[https://kroki.ci.mgmt.dixa.io/plantuml/svg/eNqFUDsOwjAM3X2KXKA3YOjExgJqdzdxUaTUqWzDxOERKm1DBGJ7el_LrRqK3aYEkY1kRE_uTDpnVgIc1AS9uaPk6ZQDJfAJVV1PEsdIoQh1fF_JxbMTdfpTuZhEvgKsq-7waJpicUOLsE1XgWIfdlxrP2u_Wf70vA9vicPrf0-uVXZ1]]
   *
   * It is strongly recommended that you build your Response instance by using the
   * [[Response.build]] method, and avoid adding custom Verbs to it, so you are allowed to call
@@ -35,11 +35,12 @@ import scala.collection.immutable
   * [[Response.Builder.buildVerified]] can only be called, as long as you have not called
   * [[Response.Builder.addCustomVerbs]].
   *
-  * If you instead need to build a Response from a string, you simply just use call
+  * If you instead need to build a Response from a string, you simply just call
   * [[Response.fromString]]. This will give you an instance of [[Response.UnverifiedFromString]].
   * In Contrast you will get a [[Response.Verified]] if you are building it via the [[Response.build]]
   * method without adding a custom [[TwimlElement.Verb]]. If you do add a custom verb, you end up
-  * with a [[Response.UnverifiedFromModel]].
+  * with a [[Response.UnverifiedFromModel]]. Likewise you can also get a [[Response.UnverifiedFromModel]]
+  * by calling [[Response.fromVerbs]].
   *
   * Note that getting a [[Response.Verified]] is only guaranteeing that the TwiML is formatted
   * correctly, and is following the schema rules of Twiml. However we cannot guarantee that
@@ -311,5 +312,8 @@ object Response {
   def fromString(suppliedTwiml: String): UnverifiedFromString = UnverifiedFromStringImpl(
     suppliedTwiml
   )
+
+  def fromVerbs(verbs: immutable.Seq[TwimlElement.Verb]): UnverifiedFromModel =
+    UnverifiedFromModelImpl(verbs)
 
 }

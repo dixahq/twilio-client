@@ -42,6 +42,15 @@ final class ResponseMiscTest extends AnyWordSpec {
       }
     }
 
+    "Allow creating of a UnverifiedFromModel instance from a Seq of Verbs" in {
+      val input = immutable.Seq(
+        SayVerb.build(_.withText("Hello").build()),
+        HangupVerb.build(_.build())
+      )
+      val result: Response.UnverifiedFromModel = Response.fromVerbs(input)
+      assert(result.verbs == input)
+    }
+
     "not allow clients to create a Verified instance directly" in {
       assertDoesNotCompile(
         """val createdFromConstructor = new Response.Verified(Seq.empty)"""
@@ -94,7 +103,7 @@ final class ResponseMiscTest extends AnyWordSpec {
         )
       }
 
-      "support creating Response from a single completly custom verb" in {
+      "support creating Response from a single completely custom verb" in {
         final class TestCustomVerb extends TwimlElement.Verb {
           override protected def tagName: String                                = "CustomVerb"
           override protected def tagAttributes: immutable.Seq[(String, String)] = Nil
