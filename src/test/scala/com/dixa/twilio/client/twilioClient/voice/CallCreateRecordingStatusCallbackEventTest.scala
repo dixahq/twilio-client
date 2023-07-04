@@ -1,11 +1,9 @@
 package com.dixa.twilio.client.twilioClient.voice
 
-import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{CallCreateRequestExecutor, TwilioClientVoice}
-import com.dixa.twilio.model.Iso4127CountryCode
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -33,36 +31,9 @@ final class CallCreateRecordingStatusCallbackEventTest extends TwilioClientTest 
             )
         )
 
-        val expected = Right(
-          Call(
-            sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            accountSid = connSettings.accountSid,
-            answeredBy = None,
-            callerName = None,
-            dateCreated = createdAtInstant,
-            dateUpdate = updatedAtInstant,
-            direction = Call.Direction.Inbound,
-            duration = Some(Duration.ofSeconds(15)),
-            endTime = Some(endTimeAtInstant),
-            forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
-            from = Call.CallerId("+18668675310"),
-            fromFormatted = Call.FormattedPhoneNumber("(866) 867-5310"),
-            groupSid = None,
-            parentCallSid = None,
-            phoneNumberSid =
-              Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")),
-            price = Some(Call.Price(-0.0300, Iso4127CountryCode("USD"))),
-            startTime = Some(startTimeAtInstant),
-            status = Call.Status.Completed,
-            to = Call.CallerId("+14155551212"),
-            toFormatted = Call.FormattedPhoneNumber("(415) 555-1212"),
-            trunkSid = None,
-            queueTime = Duration.ofSeconds(1),
-          )
-        )
-
+        val expected = Right(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
         val resultFut: Future[
-          Either[CallCreateRequestExecutor.CallCreateException, Call]
+          Either[CallCreateRequestExecutor.CallCreateException, Call.Sid]
         ] =
           executor.run(connSettings, request)
         resultFut.map(result => assert(result === expected))

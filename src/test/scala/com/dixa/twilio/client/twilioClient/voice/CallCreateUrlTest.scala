@@ -1,11 +1,9 @@
 package com.dixa.twilio.client.twilioClient.voice
 
-import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.{CallCreateRequestExecutor, TwilioClientVoice}
-import com.dixa.twilio.model.Iso4127CountryCode
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -33,38 +31,10 @@ final class CallCreateUrlTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(
-          Call(
-            sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            accountSid = connSettings.accountSid,
-            answeredBy = None,
-            callerName = None,
-            dateCreated = createdAtInstant,
-            dateUpdate = updatedAtInstant,
-            direction = Call.Direction.Inbound,
-            duration = Some(Duration.ofSeconds(15)),
-            endTime = Some(endTimeAtInstant),
-            forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
-            from = Call.CallerId("+15017122661"),
-            fromFormatted = Call.FormattedPhoneNumber("(501) 712-2661"),
-            groupSid = None,
-            parentCallSid = None,
-            phoneNumberSid =
-              Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")),
-            price = Some(Call.Price(-0.0300, Iso4127CountryCode("USD"))),
-            startTime = Some(startTimeAtInstant),
-            status = Call.Status.Completed,
-            to = Call.CallerId("+15558675310"),
-            toFormatted = Call.FormattedPhoneNumber("(555) 867-5310"),
-            trunkSid = None,
-            queueTime = Duration.ofSeconds(1),
-          )
-        )
-
+        val expected = Right(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
         val resultFut: Future[
-          Either[CallCreateRequestExecutor.CallCreateException, Call]
-        ] =
-          executor.run(connSettings, request)
+          Either[CallCreateRequestExecutor.CallCreateException, Call.Sid]
+        ] = executor.run(connSettings, request)
         resultFut.map(result => assert(result === expected))
       }
     }
@@ -76,22 +46,22 @@ final class CallCreateUrlTest extends TwilioClientTest {
       |  "answered_by": null,
       |  "api_version": "2010-04-01",
       |  "caller_name": null,
-      |  "date_created": "Tue, 31 Aug 2010 20:36:28 +0000",
-      |  "date_updated": "Tue, 31 Aug 2010 20:36:44 +0000",
-      |  "direction": "inbound",
-      |  "duration": "15",
-      |  "end_time": "Tue, 31 Aug 2010 20:36:44 +0000",
-      |  "forwarded_from": "+141586753093",
+      |  "date_created": null,
+      |  "date_updated": null,
+      |  "direction": "outbound-api",
+      |  "duration": null,
+      |  "end_time": null,
+      |  "forwarded_from": null,
       |  "from": "+15017122661",
       |  "from_formatted": "(501) 712-2661",
       |  "group_sid": null,
       |  "parent_call_sid": null,
       |  "phone_number_sid": "PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-      |  "price": "-0.03000",
-      |  "price_unit": "USD",
+      |  "price": null,
+      |  "price_unit": null,
       |  "sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-      |  "start_time": "Tue, 31 Aug 2010 20:36:29 +0000",
-      |  "status": "completed",
+      |  "start_time": null,
+      |  "status": "queued",
       |  "subresource_uris": {
       |    "notifications": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Notifications.json",
       |    "recordings": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Recordings.json",
