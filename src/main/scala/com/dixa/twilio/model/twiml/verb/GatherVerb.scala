@@ -513,16 +513,56 @@ object GatherVerb {
     case object `cmn-Hans-CN` extends LanguageCode("cmn-Hans-CN")
   }
 
-  private sealed abstract class SpeechModelType(override val twilioString: String)
+  sealed abstract class SpeechModelType(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
-  private[GatherVerb] object SpeechModelType extends EnumWithTwilioString[SpeechModelType] {
+
+  object SpeechModelType extends EnumWithTwilioString[SpeechModelType] {
+
+    final class IncludingLanguageCode private[GatherVerb] (
+        val speechModelType: SpeechModelType,
+        val languageCode: LanguageCode
+    ) {
+
+      override def equals(other: Any): Boolean = other match {
+        case that: IncludingLanguageCode =>
+          speechModelType == that.speechModelType &&
+          languageCode == that.languageCode
+        case _ => false
+      }
+
+      override def hashCode(): Int = {
+        val state = Seq(speechModelType, languageCode)
+        state.map(_.hashCode()).foldLeft(0)((a, b) => 31 * a + b)
+      }
+
+      override def toString = s"IncludingLanguageCodeChose($speechModelType, $languageCode)"
+    }
+
     override def values: immutable.IndexedSeq[SpeechModelType] = findValues
 
-    case object Default                   extends SpeechModelType("default")
-    case object NumbersAndCommands        extends SpeechModelType("numbers_and_commands")
-    case object PhoneCall                 extends SpeechModelType("phone_call")
-    case object ExperimentalConversations extends SpeechModelType("experimental_conversations")
-    case object ExperimentalUtterances    extends SpeechModelType("experimental_utterances")
+    case object Default extends SpeechModelType("default") {
+      def withLanguage(languageCode: LanguageCode): IncludingLanguageCode =
+        new IncludingLanguageCode(this, languageCode)
+    }
+    case object NumbersAndCommands extends SpeechModelType("numbers_and_commands") {
+      def withLanguage(languageCode: LanguageCode): IncludingLanguageCode =
+        new IncludingLanguageCode(this, languageCode)
+    }
+    case object PhoneCall extends SpeechModelType("phone_call") {
+      def withLanguage(
+          languageCode: LanguageCode with LanguageCode.SupportsPhoneCallModel
+      ): IncludingLanguageCode = new IncludingLanguageCode(this, languageCode)
+    }
+    case object ExperimentalConversations extends SpeechModelType("experimental_conversations") {
+      def withLanguage(
+          languageCode: LanguageCode with LanguageCode.SupportsExperimentalModel
+      ): IncludingLanguageCode = new IncludingLanguageCode(this, languageCode)
+    }
+    case object ExperimentalUtterances extends SpeechModelType("experimental_utterances") {
+      def withLanguage(
+          languageCode: LanguageCode with LanguageCode.SupportsExperimentalModel
+      ): IncludingLanguageCode = new IncludingLanguageCode(this, languageCode)
+    }
   }
 
   final class Builder[
@@ -1349,6 +1389,24 @@ object GatherVerb {
       */
     def withTimeout(positiveInteger: PositiveInteger): BuilderMutable = {
       this.timeout = Some(positiveInteger)
+      this
+    }
+
+    /** Set the speechModel attribute to provided value.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/gather#speechmodel
+      *
+      * @param speechModelAndLanguage
+      *   The speech model and language you want to set. You can create such a value from finding
+      *   one of the elements of the [[SpeechModelType]] adt, and call the withLanguageCode method
+      *   on it.
+      */
+    def withSpeechModel(
+        speechModelAndLanguage: SpeechModelType.IncludingLanguageCode
+    ): BuilderMutable = {
+      this.speechModelType = Some(speechModelAndLanguage.speechModelType)
+      this.language = Some(speechModelAndLanguage.languageCode)
       this
     }
 
