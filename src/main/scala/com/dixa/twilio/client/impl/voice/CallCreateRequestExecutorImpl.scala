@@ -12,7 +12,13 @@ import akka.http.scaladsl.model.{
 }
 import akka.stream.Materializer
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  HasSidJsonRep,
+  HttpEntityString,
+  QueryParamBuilder
+}
 import com.dixa.twilio.client.voice.CallCreateRequestExecutor
 import com.dixa.twilio.client.voice.CallCreateRequestExecutor.CallCreateException
 import com.dixa.twilio.model.voice.Call
@@ -113,10 +119,10 @@ private[client] class CallCreateRequestExecutorImpl()(
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[CallCreateRequestExecutor.CallCreateException, Call] = {
+  ): Either[CallCreateRequestExecutor.CallCreateException, Call.Sid] = {
     httpResponse.status match {
       case StatusCodes.Created | StatusCodes.OK =>
-        parseEntityAs[CallJsonRep](entity).map(_.toModel)
+        parseEntityAs[HasSidJsonRep](entity).map(j => Call.Sid.unsafe(j.sid))
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }

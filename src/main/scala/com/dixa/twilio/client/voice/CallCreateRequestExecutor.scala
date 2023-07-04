@@ -9,11 +9,16 @@ import com.dixa.twilio.model.iam.{TwilioAccount, TwimlApplication}
 import com.dixa.twilio.model.twiml.Response
 import com.dixa.twilio.model.voice.{Call, Trunk}
 
+// In the documentation it looks like Twilio is returning a full call here, but reality most of the fields are null, so
+// we cannot really map it to our call representation. For that reason, this should only return a Call.Sid.
+// If we find that we need some of the few extra information from what they return, then we would need to create
+// a custom return type for it.
+// Example of what they return: {"date_updated": null, "price_unit": "USD", "parent_call_sid": null, "caller_name": null, "duration": null, "from": "+4569918190", "to": "+4522334455", "annotation": null, "answered_by": null, "sid": "CAf782cd44b45895ca16b1afb750c3f33f", "queue_time": "0", "price": null, "api_version": "2010-04-01", "status": "queued", "direction": "outbound-api", "start_time": null, "date_created": null, "from_formatted": "+4569918190", "group_sid": null, "trunk_sid": null, "forwarded_from": null, "uri": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f.json", "account_sid": "ACa7b77b3aab0e606a40be53388a9a95ca", "end_time": null, "to_formatted": "+4522334455", "phone_number_sid": "PN6973c038ea67ea37c1c98940b282d65b", "subresource_uris": {"feedback": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Feedback.json", "user_defined_messages": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/UserDefinedMessages.json", "notifications": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Notifications.json", "recordings": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Recordings.json", "streams": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Streams.json", "payments": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Payments.json", "user_defined_message_subscriptions": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/UserDefinedMessageSubscriptions.json", "siprec": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Siprec.json", "events": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/CAf782cd44b45895ca16b1afb750c3f33f/Events.json", "feedback_summaries": "/2010-04-01/Accounts/ACa7b77b3aab0e606a40be53388a9a95ca/Calls/FeedbackSummary.json"}}
 trait CallCreateRequestExecutor
     extends SingleRequestExecutor[
       CallCreateRequestExecutor.CallCreateRequest,
       CallCreateRequestExecutor.CallCreateException,
-      Call
+      Call.Sid
     ] {
 
   import CallCreateRequestExecutor._
