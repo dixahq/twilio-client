@@ -115,7 +115,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       entity: HttpEntityString
   ): Either[CallCreateRequestExecutor.CallCreateException, Call] = {
     httpResponse.status match {
-      case StatusCodes.OK =>
+      case StatusCodes.Created | StatusCodes.OK =>
         parseEntityAs[CallJsonRep](entity).map(_.toModel)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
