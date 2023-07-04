@@ -147,7 +147,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
       entity: HttpEntityString
   ): Either[Err, Success] = {
     val msg =
-      s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
+      s"No support for handling response to $request, due to status code ${httpResponse.status} " +
         s"after firing $httpRequest. Full entity of response is: $entity"
     Left(createUnspecifiedException(Some(msg), None))
   }

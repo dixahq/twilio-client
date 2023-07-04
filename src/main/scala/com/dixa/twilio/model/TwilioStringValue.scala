@@ -8,7 +8,7 @@ package com.dixa.twilio.model
   * Note that the single field of this trait; `twilioString`, default to using the value of
   * `toString`, as this is in most cases mix into classes just wrapping a `String`, and just
   * overriding `toString` for doing so. In these cases using `toString` as the value for
-  * `twilioString` is what you want. However in more advanced classes, you properly would need to
+  * `twilioString` is what you want. However, in more advanced classes, you probably would need to
   * override `twilioString` manually.
   */
 trait TwilioStringValue {

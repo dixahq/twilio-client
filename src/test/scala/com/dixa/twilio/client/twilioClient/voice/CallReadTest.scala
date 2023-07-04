@@ -51,7 +51,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -98,7 +98,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(401)
@@ -183,9 +183,9 @@ final class CallReadTest extends TwilioClientTest with Matchers {
         parentCallSid = Some(callSid),
         accountSid = accountSid,
         to = to,
-        toFormatted = Call.FormattedPhoneNumber(to.toString),
+        toFormatted = Call.FormattedPhoneNumber(to.twilioString),
         from = from,
-        fromFormatted = Call.FormattedPhoneNumber(from.toString),
+        fromFormatted = Call.FormattedPhoneNumber(from.twilioString),
         phoneNumberSid = Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")),
         status = status,
         startTime = Some(startAtInstant),
@@ -220,8 +220,8 @@ final class CallReadTest extends TwilioClientTest with Matchers {
          |      "duration": "4",
          |      "end_time": "Fri, 18 Oct 2019 17:03:00 +0000",
          |      "forwarded_from": "calledvia1",
-         |      "from": "$fromNumber",
-         |      "from_formatted": "$fromNumber",
+         |      "from": "${fromNumber.twilioString}",
+         |      "from_formatted": "${fromNumber.twilioString}",
          |      "group_sid": "GPXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
          |      "parent_call_sid": "$parentCallSid",
          |      "phone_number_sid": "PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -242,8 +242,8 @@ final class CallReadTest extends TwilioClientTest with Matchers {
          |        "user_defined_message_subscriptions": "/2010-04-01/Accounts/$accountSid/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/UserDefinedMessageSubscriptions.json",
          |        "user_defined_messages": "/2010-04-01/Accounts/$accountSid/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/UserDefinedMessages.json"
          |      },
-         |      "to": "$toNumber",
-         |      "to_formatted": "$toNumber",
+         |      "to": "${toNumber.twilioString}",
+         |      "to_formatted": "${toNumber.twilioString}",
          |      "trunk_sid": "TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
          |      "uri": "/2010-04-01/Accounts/$accountSid/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json",
          |      "queue_time": "4000"
