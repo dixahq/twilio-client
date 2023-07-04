@@ -6,7 +6,7 @@ import scala.collection.immutable
 import scala.collection.mutable.ListBuffer
 
 /** Represent a element in TwiML (everything within <>) */
-sealed trait TwimlElement {
+sealed trait TwimlElement extends TwilioStringValue {
 
   override final def hashCode(): Int = xmlCompact.hashCode
 
@@ -58,6 +58,7 @@ object TwimlElement {
 
     override final lazy val xmlPretty: String = xmlBuilder.prettyPrint
 
+    override final lazy val twilioString: String = xmlCompact
   }
 
   trait Verb extends NoneRoot
@@ -72,16 +73,18 @@ object TwimlElement {
 
     private lazy val xmlBuilder = new XmlBuilder(tagName, tagAttributes, tagSubElements, tagValue)
 
-    // It's deliberately that xmlCompact and xmlPretty are none final here, but final in the NoneRoot trait.
-    // This is because NoneRoot can be extended by clients, and we want to enforce that they they let our system
-    // generate the xml, so that xml is both consistent, and guarantied to be escaped properly. However Root has
+    // It's deliberate that xmlCompact and xmlPretty are not final here, but final in the NoneRoot trait.
+    // This is because NoneRoot can be extended by clients, and we want to enforce that they let our system
+    // generate the xml, so that xml is both consistent, and guaranteed to be escaped properly. However Root has
     // a package private constructor, and hence cannot be extended by client, and it's necessary for the
-    // Reponse.UnverifiedFromStringImpl to be able to override these.
+    // Response.UnverifiedFromStringImpl to be able to override these.
     override def xmlCompact: String =
       """<?xml version="1.0" encoding="UTF-8"?>""" + xmlBuilder.compactPrint
 
     override def xmlPretty: String =
       """<?xml version="1.0" encoding="UTF-8"?>""" + System.lineSeparator() + xmlBuilder.prettyPrint
+
+    override def twilioString: String = xmlCompact
   }
 
   /** Builder class for making it easy to build the list for [[TwimlElement.tagAttributes]]

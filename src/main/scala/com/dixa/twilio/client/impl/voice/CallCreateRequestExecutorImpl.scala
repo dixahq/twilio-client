@@ -37,27 +37,15 @@ private[client] class CallCreateRequestExecutorImpl()(
   ): Either[CallCreateRequestExecutor.CallCreateException, HttpRequest] = {
     val paramsRequired =
       QueryParamBuilder.empty.withParam(toParamKey, req.to).withParam(fromParamKey, req.from)
-    val paramsWithTwimlOpt =
-      req.twiml
-        .map(t => paramsRequired.withParam(twimlParamKey, t.xmlCompact))
-        .getOrElse(paramsRequired)
-    val paramsWithRecordOpt =
-      req.record
-        .map(rec => paramsWithTwimlOpt.withParam(recordParamKey, rec.toString))
-        .getOrElse(paramsWithTwimlOpt)
-    val paramsWithAsyncAmdOpt =
-      req.asyncAmd
-        .map(asyncAmd => paramsWithRecordOpt.withParam(asyncAmdParamKey, asyncAmd.toString))
-        .getOrElse(paramsWithRecordOpt)
     // Twilio requires to send status events as separate params
     val paramsWithStatusCallbackEventSeqOpt =
       req.statusCallbackEvents
         .map(events =>
-          events.foldLeft(paramsWithAsyncAmdOpt)((params, event) =>
+          events.foldLeft(paramsRequired)((params, event) =>
             params.withParam(statusCallbackEventParamKey, event)
           )
         )
-        .getOrElse(paramsWithAsyncAmdOpt)
+        .getOrElse(paramsRequired)
     // Twilio requires recording events to be sent in a single param and in a string separated by spaces
     val paramsWithRecordingStatusCallbackEventSeqOpt =
       req.recordingStatusCallbackEvents
@@ -77,6 +65,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(statusCallbackMethodParamKey, req.statusCallbackMethod)
       .withOptionalParam(sendDigitsParamKey, req.sendDigits)
       .withOptionalParam(timeoutParamKey, req.timeout)
+      .withOptionalBooleanParam(recordParamKey, req.record)
       .withOptionalParam(recordingChannelsParamKey, req.recordingChannels)
       .withOptionalParam(recordingStatusCallbackParamKey, req.recordingStatusCallback)
       .withOptionalParam(recordingStatusCallbackMethodParamKey, req.recordingStatusCallbackMethod)
@@ -96,6 +85,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(machineDetectionSilenceTimeoutParamKey, req.machineDetectionSilenceTimeout)
       .withOptionalParam(trimParamKey, req.trim)
       .withOptionalParam(callerIdParamKey, req.callerId)
+      .withOptionalBooleanParam(asyncAmdParamKey, req.asyncAmd)
       .withOptionalParam(asyncAmdStatusCallbackParamKey, req.asyncAmdStatusCallback)
       .withOptionalParam(asyncAmdStatusCallbackMethodParamKey, req.asyncAmdStatusCallbackMethod)
       .withOptionalParam(byocParamKey, req.byoc)
@@ -103,6 +93,7 @@ private[client] class CallCreateRequestExecutorImpl()(
       .withOptionalParam(callTokenParamKey, req.callToken)
       .withOptionalParam(timeLimitParamKey, req.timeLimit)
       .withOptionalParam(urlParamKey, req.url)
+      .withOptionalParam(twimlParamKey, req.twiml)
       .withOptionalParam(applicationSidParamKey, req.applicationSid)
 
     val params = paramsFull.buildForPostParams

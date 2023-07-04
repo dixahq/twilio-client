@@ -15,14 +15,12 @@ final class ResponseSayTest extends AnyWordSpec {
           val textToSayEscaped =
             "Twilio can you pronounce these reserved XML chars: &quot;&apos;&lt;&gt;&amp;"
 
-          val language = LanguageCode.`en-GB`
-          val voice    = Voice.`alice`
+          val voice = Voice.`woman-EnGB`
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addSay { sayBuilder =>
                 sayBuilder
                   .withText(textToSay)
-                  .withLanguage(language)
                   .withVoice(voice)
                   .withLoop(5)
                   .build()
@@ -32,17 +30,48 @@ final class ResponseSayTest extends AnyWordSpec {
 
           val xmlCompact = result.xmlCompact
           val expectedXmlCompact =
-            s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-GB" voice="alice" loop="5">$textToSayEscaped</Say></Response>"""
+            s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-GB" voice="woman" loop="5">$textToSayEscaped</Say></Response>"""
           assert(xmlCompact == expectedXmlCompact)
 
           val xmlPretty = result.xmlPretty
           val expectedXmlPretty =
             s"""<?xml version="1.0" encoding="UTF-8"?>
                |<Response>
-               |  <Say language="en-GB" voice="alice" loop="5">$textToSayEscaped</Say>
+               |  <Say language="en-GB" voice="woman" loop="5">$textToSayEscaped</Say>
                |</Response>""".stripMargin
           assert(xmlPretty === expectedXmlPretty)
         }
+
+      "construct a valid response by providing only a language code when selecting a voice" in {
+
+        val textToSay = "Some text to say"
+        val language  = LanguageCode.`en-US`
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addSay { sayBuilder =>
+              sayBuilder
+                .withText(textToSay)
+                .withBestQualityVoiceFemale(language)
+                .withLoop(5)
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val xmlCompact = result.xmlCompact
+        val expectedXmlCompact =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-US" voice="Polly.Joanna-Neural" loop="5">$textToSay</Say></Response>"""
+        assert(xmlCompact == expectedXmlCompact)
+
+        val xmlPretty = result.xmlPretty
+        val expectedXmlPretty =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Say language="en-US" voice="Polly.Joanna-Neural" loop="5">$textToSay</Say>
+             |</Response>""".stripMargin
+        assert(xmlPretty === expectedXmlPretty)
+      }
     }
   }
 }
