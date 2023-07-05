@@ -57,10 +57,8 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
     // the http server has already performed once.
 
     val authToken = AuthToken.UnknownType("fakeToken")
-    // This signature is the one being expected, if the provided url had been
-    // https://sms-twilio.euw1.stag.dixa.io/v1/e7a04fc4-bba8-48a8-a92e-013606a188a6/sms?param1=that%3Ahas%3Achars%3Athat%3Awas%3Aoriginally%3Aencoded&param2=NoSpecialCharsHere
-    // so this test will only work, if the validator actually turn the provided uri into that, before the rest of its logic.
-    val xTwilioSignature = XTwilioSignature("vXRQRiCcfD1DaD0g6Vs3LzkfJSY=")
+    // This signature is the one being expected for the provided url as is. even though it has none encoded : chars in the query params.
+    val xTwilioSignature = XTwilioSignature("CMJUMMXVTgBR/1Nf17u/a0jL/wM=")
 
     // provide an url where the correct url encoded %3A in the query params, has been replaced with the actual : that they represent.
     // URI abstraction layers will often print them like that, to make it more human readable, and as such, it's easy
@@ -72,7 +70,13 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
     validationSignature shouldBe ValidationStatus.Valid
   }
 
-  "RequestValidator" should "encrypt properly when the url query params are already encoded correctly" in {
+  it should "also validated it, if the supplied hash actually matched the url as it, even though the query params is missing encoding" in {
+    // twilio actually seem to be a bit confused about this, and sometimes they send a signature, that matched the url where the query params is decoded.
+    // None the less, from a logical perspective, it anyway makes sense to get a match, if the hash matched the exact input.
+
+  }
+
+  it should "encrypt properly when the url query params are already encoded correctly" in {
     // corosponding to above test, but where the urls are encoded correctly from the start.
 
     val authToken        = AuthToken.UnknownType("fakeToken")

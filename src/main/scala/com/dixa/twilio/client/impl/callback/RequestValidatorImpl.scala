@@ -26,10 +26,21 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
       params: Map[String, String],
       xTwilioSignature: XTwilioSignature
   ): ValidationRequestStatus = {
-    val urlWhereQueryParamsIsEncodedIfNeeded = encodeQueryParamsPartOfUriIfNecessary(requestUrl)
-    getValidationSignature(authToken, urlWhereQueryParamsIsEncodedIfNeeded, params) match {
-      case Success(signature) => secureCompare(signature, xTwilioSignature)
-      case Failure(_)         => ValidationStatus.Invalid
+    getValidationSignature(authToken, requestUrl, params) match {
+      case Success(signature) =>
+        secureCompare(signature, xTwilioSignature) match {
+          case ValidationStatus.Valid   => ValidationStatus.Valid
+          case ValidationStatus.Invalid =>
+            // try once more, but with url encoded query parameters
+            val urlWhereQueryParamsIsEncodedIfNeeded = encodeQueryParamsPartOfUriIfNecessary(
+              requestUrl
+            )
+            getValidationSignature(authToken, urlWhereQueryParamsIsEncodedIfNeeded, params) match {
+              case Success(signature2) => secureCompare(signature2, xTwilioSignature)
+              case Failure(_)          => ValidationStatus.Invalid
+            }
+        }
+      case Failure(_) => ValidationStatus.Invalid
     }
   }
 
@@ -60,8 +71,7 @@ private[client] class RequestValidatorImpl() extends RequestValidator {
       .mkString("&")
     val encodedQueryParamsWithPrefix =
       if (encodedQueryParams.nonEmpty) s"?$encodedQueryParams" else ""
-    val result = s"$partBeforeQueryParams$encodedQueryParamsWithPrefix$fragmentPartWithPrefix"
-    result
+    s"$partBeforeQueryParams$encodedQueryParamsWithPrefix$fragmentPartWithPrefix"
   }
 
   /** @see
