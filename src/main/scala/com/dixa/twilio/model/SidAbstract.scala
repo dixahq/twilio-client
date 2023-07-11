@@ -51,10 +51,10 @@ object SidAbstract {
     */
   abstract class ArgumentMissingPrefixException(
       argument: String,
-      prefix: Prefix,
+      prefixes: List[Prefix],
       conformToString: ConformToString
   ) extends IllegalArgumentException(
-        s"$argument does not start with $prefix and therefore not conform to: $conformToString"
+        s"$argument does not start with ${prefixes.mkString(",")} and therefore not conform to: $conformToString"
       )
       with CreationException
 
@@ -78,14 +78,14 @@ object SidAbstract {
     */
   // format: on
   abstract class SidCompanionObject[S <: SidAbstract: ClassTag](
-      val prefix: Prefix,
+      val prefixes: List[Prefix],
       instanceFactory: String => S
   ) {
 
     private val entityName = classTag[S].runtimeClass.getName
 
     private val conformToString = ConformToString(
-      s"$entityName is a 34 character string that starts with $prefix"
+      s"$entityName is a 34 character string that starts with ${prefixes.mkString(",")}"
     )
 
     sealed trait CreationException extends SidAbstract.CreationException
@@ -101,7 +101,7 @@ object SidAbstract {
         with CreationException
 
     sealed case class ArgumentMissingPrefixException(argument: String)
-        extends SidAbstract.ArgumentMissingPrefixException(argument, prefix, conformToString)
+        extends SidAbstract.ArgumentMissingPrefixException(argument, prefixes, conformToString)
         with CreationException
 
     sealed case class ArgumentLengthException(argument: String)
@@ -121,8 +121,9 @@ object SidAbstract {
 
     /** Construct an instance of this Sid returning either an error or the successfully result. */
     def safe(input: String): Either[CreationException, S] = {
+      val isValidPrefix = prefixes.exists(prefix => input.startsWith(prefix.toString))
       if (input.isEmpty) Left(ArgumentEmptyException())
-      else if (!input.startsWith(prefix.toString)) Left(ArgumentMissingPrefixException(input))
+      else if (!isValidPrefix) Left(ArgumentMissingPrefixException(input))
       else if (input.length != 34) Left(ArgumentLengthException(input))
       else Right(instanceFactory(input))
     }

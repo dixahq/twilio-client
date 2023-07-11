@@ -76,7 +76,7 @@ object Conference {
 
   final case class Sid private[Conference] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("CF"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("CF")), new Sid(_))
 
   sealed abstract class Status(
       override val twilioString: String,

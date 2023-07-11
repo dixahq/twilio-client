@@ -29,7 +29,7 @@ object TwilioMessagingService {
   final case class Sid private[TwilioMessagingService] (override val toString: String)
       extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("MG"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("MG")), new Sid(_))
 
   final case class FriendlyName(override val toString: String)
   final case class InboundRequestWebhook(method: HttpMethod, url: URL)

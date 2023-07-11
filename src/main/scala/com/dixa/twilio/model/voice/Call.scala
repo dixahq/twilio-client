@@ -51,7 +51,7 @@ object Call {
     */
   final case class Sid private[Call] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidCompanionObject(Prefix("CA"), new Sid(_))
+  object Sid extends SidCompanionObject(List(Prefix("CA")), new Sid(_))
 
   final case class CallerId(override val twilioString: String) extends TwilioStringValue {
     def toPhoneNumber: Option[PhoneNumberE164] = {

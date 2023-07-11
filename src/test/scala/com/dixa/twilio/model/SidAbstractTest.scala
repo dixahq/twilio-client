@@ -52,24 +52,28 @@ abstract class SidAbstractTest[
         }
       }
 
-      s"not accept input that does not start with ${companionObject.prefix}" in {
+      s"not accept input that does not start with ${companionObject.prefixes}" in {
         intercept[companionObject.ArgumentMissingPrefixException] {
-          val prefixTotry = if (companionObject.prefix.toString == "AC") "CA" else "AC"
-          companionObject.unsafe(s"${prefixTotry}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          companionObject.prefixes.map { prefix =>
+            val prefixToTry = if (prefix.toString == "AC") "CA" else "AC"
+            companionObject.unsafe(s"${prefixToTry}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          }
         }
       }
 
-      s"not accept input that is not 31 chars long (Should always be ${companionObject.prefix} plus 32 chars" in {
+      s"not accept input that is not 31 chars long (Should always be ${companionObject.prefixes} plus 32 chars" in {
         intercept[companionObject.ArgumentLengthException] {
-          println("-------------------------")
-          println(companionObject.prefix)
-          companionObject.unsafe(s"${companionObject.prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          companionObject.prefixes.map(prefix =>
+            companionObject.unsafe(s"${prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          )
         }
       }
 
-      s"not accept input that is not 33 chars long (Should always be ${companionObject.prefix} plus 32 chars" in {
+      s"not accept input that is not 33 chars long (Should always be ${companionObject.prefixes} plus 32 chars" in {
         intercept[companionObject.ArgumentLengthException] {
-          companionObject.unsafe(s"${companionObject.prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          companionObject.prefixes.map { prefix =>
+            companionObject.unsafe(s"${prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+          }
         }
       }
     }
@@ -77,10 +81,12 @@ abstract class SidAbstractTest[
     "constructed with safe method" should {
 
       "return right on valid input" in {
-        val asString = s"${companionObject.prefix}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-        val resultE: Either[companionObject.CreationException, S] = companionObject.safe(asString)
-        val result = resultE.getOrElse(fail(s"Expected right side here but was: $resultE"))
-        assert(result.toString === asString)
+        companionObject.prefixes.map { prefix =>
+          val asString = s"${prefix}xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          val resultE: Either[companionObject.CreationException, S] = companionObject.safe(asString)
+          val result = resultE.getOrElse(fail(s"Expected right side here but was: $resultE"))
+          assert(result.toString === asString)
+        }
       }
 
       "return Left on empty strings as input" in {
@@ -89,26 +95,32 @@ abstract class SidAbstractTest[
         assert(resultE === expected)
       }
 
-      s"not accept input that does not start with ${companionObject.prefix}" in {
-        val prefixTotry = if (companionObject.prefix.toString == "AC") "CA" else "AC"
-        val asString    = s"${prefixTotry}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-        val resultE     = companionObject.safe(asString)
-        val expected    = Left(companionObject.ArgumentMissingPrefixException(asString))
-        assert(resultE === expected)
+      s"not accept input that does not start with ${companionObject.prefixes}" in {
+        companionObject.prefixes.map { prefix =>
+          val prefixTotry = if (prefix.toString == "AC") "CA" else "AC"
+          val asString    = s"${prefixTotry}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          val resultE     = companionObject.safe(asString)
+          val expected    = Left(companionObject.ArgumentMissingPrefixException(asString))
+          assert(resultE === expected)
+        }
       }
 
-      s"not accept input that is not 31 chars long (Should always be ${companionObject.prefix} plus 32 chars" in {
-        val asString = s"${companionObject.prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-        val resultE  = companionObject.safe(asString)
-        val expected = Left(companionObject.ArgumentLengthException(asString))
-        assert(resultE === expected)
+      s"not accept input that is not 31 chars long (Should always be ${companionObject.prefixes} plus 32 chars" in {
+        companionObject.prefixes.map { prefix =>
+          val asString = s"${prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          val resultE  = companionObject.safe(asString)
+          val expected = Left(companionObject.ArgumentLengthException(asString))
+          assert(resultE === expected)
+        }
       }
 
-      s"not accept input that is not 33 chars long (Should always be ${companionObject.prefix} plus 32 chars" in {
-        val asString = s"${companionObject.prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-        val resultE  = companionObject.safe(asString)
-        val expected = Left(companionObject.ArgumentLengthException(asString))
-        assert(resultE === expected)
+      s"not accept input that is not 33 chars long (Should always be ${companionObject.prefixes} plus 32 chars" in {
+        companionObject.prefixes.map { prefix =>
+          val asString = s"${prefix}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          val resultE  = companionObject.safe(asString)
+          val expected = Left(companionObject.ArgumentLengthException(asString))
+          assert(resultE === expected)
+        }
       }
     }
 

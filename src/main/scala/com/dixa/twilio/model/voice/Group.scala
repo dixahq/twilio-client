@@ -10,5 +10,5 @@ sealed trait Group {
 object Group {
   final case class Sid private[Group] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("GP"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("GP")), new Sid(_))
 }

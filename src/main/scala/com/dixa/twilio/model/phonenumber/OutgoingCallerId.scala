@@ -13,7 +13,7 @@ object OutgoingCallerId {
 
   final case class Sid private[OutgoingCallerId] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("PN"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("PN")), new Sid(_))
 
   final case class FriendlyName(override val toString: String)
 

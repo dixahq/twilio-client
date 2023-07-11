@@ -7,5 +7,5 @@ object Media {
 
   final case class Sid private[Media] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("ME"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("ME")), new Sid(_))
 }
