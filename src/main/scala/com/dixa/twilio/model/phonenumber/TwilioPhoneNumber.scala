@@ -15,5 +15,5 @@ object TwilioPhoneNumber {
   final case class Sid private[TwilioPhoneNumber] (override val toString: String)
       extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("PN"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("PN")), new Sid(_))
 }

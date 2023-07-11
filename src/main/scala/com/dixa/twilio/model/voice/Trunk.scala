@@ -10,7 +10,7 @@ sealed trait Trunk {
 object Trunk {
   final case class Sid private[Trunk] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("TK"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("TK")), new Sid(_))
 
   final case class Username(override val toString: String) extends TwilioStringValue
 

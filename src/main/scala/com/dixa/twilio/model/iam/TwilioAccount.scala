@@ -27,7 +27,7 @@ object TwilioAccount {
   final case class Name(override val toString: String)         extends TwilioStringValue
   final case class Sid private (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject[Sid](Prefix("AC"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject[Sid](List(Prefix("AC")), new Sid(_))
 
   sealed abstract class Status(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry

@@ -21,7 +21,7 @@ object Queue {
 
   final case class Sid private[Queue] (override val toString: String) extends SidAbstract
 
-  object Sid extends SidAbstract.SidCompanionObject(Prefix("QU"), new Sid(_))
+  object Sid extends SidAbstract.SidCompanionObject(List(Prefix("QU")), new Sid(_))
 
   final case class FriendlyName(override val toString: String) extends TwilioStringValue
 
