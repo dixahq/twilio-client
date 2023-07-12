@@ -408,7 +408,9 @@ object SayVerb {
     case object Premium extends Quality
   }
 
-  /** Enum entry that represents a Voice that the Say verb supports */
+  /** Enum entry that represents a Voice that the Say verb supports.
+    * https://www.twilio.com/docs/voice/twiml/say/text-speech#available-voices-and-languages
+    */
   sealed abstract class Voice(
       override val twilioString: String,
       val gender: Gender,
@@ -587,10 +589,10 @@ object SayVerb {
         extends Voice("Polly.Suvi-Neural", Gender.Female, LanguageCode.`fi-FI`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Celine`
-        extends Voice("Polly.Céline", Gender.Female, LanguageCode.`fr-FR`, Quality.Standard)
+        extends Voice("Polly.Celine", Gender.Female, LanguageCode.`fr-FR`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Lea`
-        extends Voice("Polly.Léa", Gender.Female, LanguageCode.`fr-FR`, Quality.Standard)
+        extends Voice("Polly.Lea", Gender.Female, LanguageCode.`fr-FR`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Mathieu`
         extends Voice("Polly.Mathieu", Gender.Male, LanguageCode.`fr-FR`, Quality.Standard)
@@ -642,7 +644,7 @@ object SayVerb {
         extends Voice("Polly.Kajal-Neural", Gender.Female, LanguageCode.`hi-IN`, Quality.Premium)
         with SupportsPolly
     case object `Polly.Dora`
-        extends Voice("Polly.Dóra", Gender.Female, LanguageCode.`is-IS`, Quality.Standard)
+        extends Voice("Polly.Dora", Gender.Female, LanguageCode.`is-IS`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Karl`
         extends Voice("Polly.Karl", Gender.Male, LanguageCode.`is-IS`, Quality.Standard)
@@ -711,7 +713,7 @@ object SayVerb {
         extends Voice("Polly.Ricardo", Gender.Male, LanguageCode.`pt-BR`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Vitoria`
-        extends Voice("Polly.Vitória", Gender.Female, LanguageCode.`pt-BR`, Quality.Standard)
+        extends Voice("Polly.Vitoria", Gender.Female, LanguageCode.`pt-BR`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Camila-Neural`
         extends Voice("Polly.Camila-Neural", Gender.Female, LanguageCode.`pt-BR`, Quality.Premium)
@@ -726,7 +728,7 @@ object SayVerb {
         extends Voice("Polly.Cristiano", Gender.Male, LanguageCode.`pt-PT`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Ines`
-        extends Voice("Polly.Inês", Gender.Female, LanguageCode.`pt-PT`, Quality.Standard)
+        extends Voice("Polly.Ines", Gender.Female, LanguageCode.`pt-PT`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Ines-Neural`
         extends Voice("Polly.Ines-Neural", Gender.Female, LanguageCode.`pt-PT`, Quality.Premium)
@@ -771,7 +773,7 @@ object SayVerb {
         extends Voice("Polly.Miguel", Gender.Male, LanguageCode.`es-US`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Penelope`
-        extends Voice("Polly.Penélope", Gender.Female, LanguageCode.`es-US`, Quality.Standard)
+        extends Voice("Polly.Penelope", Gender.Female, LanguageCode.`es-US`, Quality.Standard)
         with SupportsPolly
     case object `Polly.Lupe-Neural`
         extends Voice("Polly.Lupe-Neural", Gender.Female, LanguageCode.`es-US`, Quality.Premium)
