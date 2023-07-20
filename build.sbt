@@ -77,7 +77,7 @@ lazy val `twilio-client` = project
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "3.1.0",
+        "com.lihaoyi" %% "upickle" % "3.1.2",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
