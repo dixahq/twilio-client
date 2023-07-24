@@ -30,7 +30,7 @@ final case class Recording(
     errorCode: Option[Recording.ErrorCode],
     encryptionDetails: Option[Recording.EncryptionDetails],
     mediaUrl: Recording.MediaUrl,
-    track: Recording.Track
+    track: Option[Recording.Track]
 )
 
 object Recording {
@@ -76,12 +76,27 @@ object Recording {
     case object StartConferenceRecordingAPI extends Source("StartConferenceRecordingAPI")
   }
 
-  final case class ErrorCode(amount: Int) extends TwilioStringValue {
-    override def twilioString: String = amount.toString
+  final case class ErrorCode(code: Int) extends TwilioStringValue {
+    override def twilioString: String = code.toString
   }
 
+  // None encrypted recordings can be fetched by calling this media url post pended with the media file type
   final case class MediaUrl(url: String) extends TwilioStringValue {
     override def twilioString: String = url
+
+    def asFileTypeMp3: String = s"${url}.mp3"
+
+    def asFileTypeWav: String = s"${url}.wav"
+
+    def asSingularMp3Channel: String = s"${url}.mp3?RequestedChannels=1"
+
+    def asSingularWavChannel: String = s"${url}.wav?RequestedChannels=1"
+
+    def asDualMp3Channel: String = s"${url}.mp3?RequestedChannels=2"
+
+    def asDualWavChannel: String = s"${url}.wav?RequestedChannels=2"
+
+    def asTranscriptions: String = s"${url}/Transcriptions"
   }
 
   sealed abstract class Track(
@@ -116,10 +131,10 @@ object Recording {
 
       /** Represent a encrypted Twilio Recording public key SID
         *
-        * Input must apply to the format that Twilio specify as a Call SID: "It is a 34 character
-        * string that starts with RE"
+        * Input must apply to the format that Twilio specify as a Public Key SID: "It is a 34
+        * character string that starts with CR"
         */
-      final case class Sid private[Call] (override val toString: String) extends SidAbstract
+      final case class Sid private[PublicKey] (override val toString: String) extends SidAbstract
 
       object Sid extends SidCompanionObject(List(Prefix("CR")), new Sid(_))
     }
