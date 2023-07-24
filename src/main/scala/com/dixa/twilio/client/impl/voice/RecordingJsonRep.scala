@@ -9,7 +9,6 @@ import com.dixa.twilio.model.voice.Recording.EncryptionDetails
 import com.dixa.twilio.model.voice.{Call, Conference, Recording}
 
 import java.time.{Duration, Instant}
-import scala.util.Try
 
 /** Json representation of a Recording */
 private[impl] case class RecordingJsonRep(
