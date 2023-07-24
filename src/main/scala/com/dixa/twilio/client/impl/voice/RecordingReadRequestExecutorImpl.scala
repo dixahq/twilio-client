@@ -4,8 +4,8 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
-import com.dixa.twilio.client.voice.CallReadRequestExecutor
-import com.dixa.twilio.client.voice.CallReadRequestExecutor.CallReadException
+import com.dixa.twilio.client.voice.RecordingReadRequestExecutor
+import com.dixa.twilio.client.voice.RecordingReadRequestExecutor.RecordingReadException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Call
 
@@ -18,7 +18,7 @@ class RecordingReadRequestExecutorImpl()(
     apiVersion: ApiVersion
 ) extends RecordingReadRequestExecutor {
 
-  import CallReadRequestExecutorImpl._
+  import RecordingReadRequestExecutorImpl._
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
@@ -26,71 +26,66 @@ class RecordingReadRequestExecutorImpl()(
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: CallReadRequestExecutor.CallReadRequest
+      req: RecordingReadRequestExecutor.RecordingReadRequest
   ): Either[
-    CallReadRequestExecutor.CallReadException,
+    RecordingReadRequestExecutor.RecordingReadException,
     HttpRequest
   ] = {
     val params = QueryParamBuilder.empty
-      .withOptionalParam(toParamKey, req.to)
-      .withOptionalParam(fromParamKey, req.from)
-      .withOptionalParam(parentCallSidParamKey, req.parentCallSid)
-      .withOptionalParam(statusParamKey, req.status)
-      .withOptionalDateParam(startTimeParamKey, req.startTimeAfter)
-      .withOptionalDateParam(startTimeParamKey, req.startTimeBefore)
-      .withOptionalDateParam(endTimeParamKey, req.endTimeAfter)
-      .withOptionalDateParam(endTimeParamKey, req.endTimeBefore)
+      .withOptionalParam(callSidParamKey, req.callSid)
+      .withOptionalParam(conferenceParamKey, req.conferenceSid)
+      .withOptionalDateParam(dateCreatedParamKey, req.dateCreatedAfter)
+      .withOptionalDateParam(dateCreatedParamKey, req.dateCreatedBefore)
+      .withOptionalDateParam(includeSoftDeletedParamKey, req.includeSoftDeleted)
       .build
 
     createHttpRequestFor(
-      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Calls.json$params",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Recordings.json$params",
       connSettings
     )
   }
 
   override protected def mapApiException(
       apiException: ApiException
-  ): CallReadException.Api =
-    CallReadException.Api(apiException)
+  ): RecordingReadException.Api =
+    RecordingReadException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): CallReadException.Unspecified =
-    CallReadException.Unspecified(msg, cause)
+  ): RecordingReadException.Unspecified =
+    RecordingReadException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,
-      request: CallReadRequestExecutor.CallReadRequest,
+      request: RecordingReadRequestExecutor.RecordingReadRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
   ): List[Either[
-    CallReadRequestExecutor.CallReadException,
+    RecordingReadRequestExecutor.RecordingReadException,
     Call
   ]] = {
-    responseEntity.parse[CallListJsonRep]() match {
+    responseEntity.parse[RecordingListJsonRep]() match {
       case Left(ex) =>
         List(
           Left(
-            CallReadException.Unspecified(
+            RecordingReadException.Unspecified(
               Some(ex.cause.getMessage),
               Some(ex.cause)
             )
           )
         )
-      case Right(listJsonRep) => listJsonRep.calls.map { _.toModel }.map { Right(_) }
+      case Right(listJsonRep) => listJsonRep.recordings.map { _.toModel }.map { Right(_) }
     }
 
   }
 
 }
 
-private object CallReadRequestExecutorImpl {
-  private val toParamKey            = "To"
-  private val fromParamKey          = "From"
-  private val parentCallSidParamKey = "ParentCallSid"
-  private val statusParamKey        = "Status"
-  private val startTimeParamKey     = "StartTime"
-  private val endTimeParamKey       = "EndTime"
+private object RecordingReadRequestExecutorImpl {
+  private val callSidParamKey            = "CallSid"
+  private val conferenceParamKey         = "ConferenceSid"
+  private val dateCreatedParamKey        = "DateCreated"
+  private val includeSoftDeletedParamKey = "IncludeSoftDeleted"
 }
