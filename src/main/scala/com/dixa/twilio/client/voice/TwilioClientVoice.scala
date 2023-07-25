@@ -15,6 +15,8 @@ trait TwilioClientVoice {
 
   def callRead: CallReadRequestExecutor
 
+  def callRecordingUpdate: CallRecordingUpdateRequestExecutor
+
   def queueUpdate: QueueUpdateRequestExecutor
 
   def queueFetch: QueueFetchRequestExecutor
@@ -22,6 +24,8 @@ trait TwilioClientVoice {
   def conferenceRead: ConferenceReadRequestExecutor
 
   def conferenceUpdate: ConferenceUpdateRequestExecutor
+
+  def conferenceRecordingUpdate: ConferenceRecordingUpdateRequestExecutor
 
   def conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor
 

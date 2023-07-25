@@ -56,6 +56,20 @@ object Recording {
     case object Deleted    extends Status("deleted")
   }
 
+  sealed abstract class StatusUpdate(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object StatusUpdate extends EnumWithTwilioString[StatusUpdate] {
+    override val values: immutable.IndexedSeq[StatusUpdate] = findValues
+
+    case object Stopped extends Status("stopped")
+
+    case object Paused extends Status("paused")
+
+    case object InProgress extends Status("in-progress")
+  }
+
   final case class Price(amount: BigDecimal, unit: Iso4127CountryCode) extends TwilioStringValue {
     override def twilioString: String = s"$amount $unit"
   }
@@ -181,5 +195,15 @@ object Recording {
     }
 
     def unsafe(int: Int): Channels = safe(int).toTry.get
+  }
+
+  sealed abstract class PauseBehavior(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object PauseBehavior extends EnumWithTwilioString[PauseBehavior] {
+    override val values: immutable.IndexedSeq[PauseBehavior] = findValues
+    case object Skip    extends Track("skip")
+    case object Silence extends Track("silence")
   }
 }
