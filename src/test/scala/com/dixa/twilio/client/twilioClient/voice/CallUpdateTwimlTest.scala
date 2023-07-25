@@ -79,7 +79,6 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
         resultFut.map { result =>
           result.left.map { ex =>
             fail(ex)
-            ex.getStackTrace.map(println)
           }
           assert(result === expected)
         }

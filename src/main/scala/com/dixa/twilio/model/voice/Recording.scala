@@ -2,7 +2,6 @@ package com.dixa.twilio.model.voice
 
 import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.phonenumber.{PhoneNumberE164, TwilioPhoneNumber}
 import com.dixa.twilio.model.{
   EnumWithTwilioString,
   Iso4127CountryCode,
@@ -40,7 +39,7 @@ object Recording {
     * Input must apply to the format that Twilio specify as a Call SID: "It is a 34 character string
     * that starts with RE"
     */
-  final case class Sid private[Call] (override val toString: String) extends SidAbstract
+  final case class Sid private[Recording] (override val toString: String) extends SidAbstract
 
   object Sid extends SidCompanionObject(List(Prefix("RE")), new Sid(_))
 
@@ -164,7 +163,7 @@ object Recording {
 
       case class ValueAboveAllowed(int: Int)
           extends RuntimeException(
-            "There can at most be two channel for a recording, one pr call leg"
+            s"There can at most be two channel for a recording, one pr call leg, not $int"
           )
           with Err
     }

@@ -33,4 +33,6 @@ trait TwilioClientVoice {
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[Conference.Status]
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed]
+
+  def recordingRead: RecordingReadRequestExecutor
 }

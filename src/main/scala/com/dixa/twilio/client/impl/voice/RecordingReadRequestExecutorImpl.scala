@@ -7,7 +7,7 @@ import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, 
 import com.dixa.twilio.client.voice.RecordingReadRequestExecutor
 import com.dixa.twilio.client.voice.RecordingReadRequestExecutor.RecordingReadException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.voice.Call
+import com.dixa.twilio.model.voice.Recording
 
 import scala.concurrent.ExecutionContext
 
@@ -36,7 +36,7 @@ class RecordingReadRequestExecutorImpl()(
       .withOptionalParam(conferenceParamKey, req.conferenceSid)
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreatedAfter)
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreatedBefore)
-      .withOptionalDateParam(includeSoftDeletedParamKey, req.includeSoftDeleted)
+      .withOptionalBooleanParam(includeSoftDeletedParamKey, req.includeSoftDeleted)
       .build
 
     createHttpRequestFor(
@@ -64,7 +64,7 @@ class RecordingReadRequestExecutorImpl()(
       responseEntity: HttpEntityString
   ): List[Either[
     RecordingReadRequestExecutor.RecordingReadException,
-    Call
+    Recording
   ]] = {
     responseEntity.parse[RecordingListJsonRep]() match {
       case Left(ex) =>

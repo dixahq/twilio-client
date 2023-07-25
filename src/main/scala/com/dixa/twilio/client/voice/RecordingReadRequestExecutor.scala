@@ -2,7 +2,7 @@ package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
-import com.dixa.twilio.model.Iso8601Date
+import com.dixa.twilio.model.Iso8601DateTime
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference, Recording}
 
@@ -26,8 +26,8 @@ object RecordingReadRequestExecutor {
     def accountSid: TwilioAccount.Sid
     def callSid: Option[Call.Sid]
     def conferenceSid: Option[Conference.Sid]
-    def dateCreatedAfter: Option[Iso8601Date.After]
-    def dateCreatedBefore: Option[Iso8601Date.Before]
+    def dateCreatedAfter: Option[Iso8601DateTime.After]
+    def dateCreatedBefore: Option[Iso8601DateTime.Before]
     def includeSoftDeleted: Option[Boolean]
   }
 
@@ -35,8 +35,8 @@ object RecordingReadRequestExecutor {
       accountSid: TwilioAccount.Sid,
       callSid: Option[Call.Sid],
       conferenceSid: Option[Conference.Sid],
-      dateCreatedAfter: Option[Iso8601Date.After],
-      dateCreatedBefore: Option[Iso8601Date.Before],
+      dateCreatedAfter: Option[Iso8601DateTime.After],
+      dateCreatedBefore: Option[Iso8601DateTime.Before],
       includeSoftDeleted: Option[Boolean]
   ) extends RecordingReadRequest
 
@@ -52,8 +52,8 @@ object RecordingReadRequestExecutor {
         accountSid: Option[TwilioAccount.Sid],
         callSid: Option[Call.Sid],
         conferenceSid: Option[Conference.Sid],
-        dateCreatedAfter: Option[Iso8601Date.After],
-        dateCreatedBefore: Option[Iso8601Date.Before],
+        dateCreatedAfter: Option[Iso8601DateTime.After],
+        dateCreatedBefore: Option[Iso8601DateTime.Before],
         includingSoftDeleted: Option[Boolean]
     ) {
       def withAccountSid(
@@ -88,7 +88,7 @@ object RecordingReadRequestExecutor {
           includingSoftDeleted
         )
 
-      def withDateCreatedAfter(dateCreatedAfter: Iso8601Date.After): Builder[Attributes] =
+      def withDateCreatedAfter(dateCreatedAfter: Iso8601DateTime.After): Builder[Attributes] =
         new Builder(
           accountSid,
           callSid,
@@ -98,7 +98,7 @@ object RecordingReadRequestExecutor {
           includingSoftDeleted
         )
 
-      def withDateCreatedBefore(dateCreatedBefore: Iso8601Date.Before): Builder[Attributes] =
+      def withDateCreatedBefore(dateCreatedBefore: Iso8601DateTime.Before): Builder[Attributes] =
         new Builder(
           accountSid,
           callSid,

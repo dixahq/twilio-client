@@ -15,7 +15,6 @@ private[voice] final case class RecordingListJsonRep(
 )
 
 private[voice] object RecordingListJsonRep {
-
-  implicit val recordingListJsonRepReader: Reader[RecordingListJsonRep] =
+  implicit val upickleReader: Reader[RecordingListJsonRep] =
     macroR[RecordingListJsonRep]
 }

@@ -24,19 +24,19 @@ private[impl] case class RecordingJsonRep(
     price: String,
     price_unit: String,
     status: String,
-    channels: String,
+    channels: Int,
     source: String,
     error_code: Option[Int],
     encryption_details: Option[EncryptionDetailsJsonRep] = None,
     media_url: String,
-    track: Option[String]
+    track: Option[String] = None
 ) {
 
   def toModel: Recording = Recording(
     accountSid = TwilioAccount.Sid.unsafe(account_sid),
     callSid = Call.Sid.unsafe(call_sid),
     conferenceSid = Conference.Sid.unsafe(conference_sid),
-    channels = Recording.Channels.unsafe(channels.toInt),
+    channels = Recording.Channels.unsafe(channels),
     dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
     dateUpdate = Instant.from(Formatter.dateTime.parse(date_updated)),
     startTime = Instant.from(Formatter.dateTime.parse(start_time)),
@@ -82,6 +82,6 @@ private[voice] object RecordingJsonRep {
       macroR[EncryptionDetailsJsonRep]
   }
 
-  implicit val upickleReader: Reader[CallJsonRep] =
-    macroR[CallJsonRep]
+  implicit val upickleReader: Reader[RecordingJsonRep] =
+    macroR[RecordingJsonRep]
 }
