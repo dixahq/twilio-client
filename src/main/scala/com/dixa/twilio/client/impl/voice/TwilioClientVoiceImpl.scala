@@ -22,6 +22,7 @@ import com.dixa.twilio.client.voice.{
   ConferenceUpdateRequestExecutor,
   QueueFetchRequestExecutor,
   QueueUpdateRequestExecutor,
+  RecordingDeleteRequestExecutor,
   RecordingReadRequestExecutor,
   TwilioClientVoice
 }
@@ -74,4 +75,7 @@ private[impl] final class TwilioClientVoiceImpl()(
     FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
 
   override val recordingRead: RecordingReadRequestExecutor = new RecordingReadRequestExecutorImpl()
+
+  override val recordingDelete: RecordingDeleteRequestExecutor =
+    new RecordingDeleteRequestExecutorImpl()
 }

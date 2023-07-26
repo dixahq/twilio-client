@@ -76,12 +76,9 @@ private[client] class CallRecordingUpdateRequestExecutorImpl()(
   ) = {
     parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
       .map(e => {
-        println(e.getMessage)
-        println(e.getCause.getMessage)
         CallRecordingUpdateException.Unspecified(e)
       })
       .flatMap { decoded =>
-        println(decoded)
         decoded.code match {
           case 20404L =>
             Left(

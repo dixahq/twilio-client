@@ -156,13 +156,6 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
   protected final def parseEntityAs[A: ClassTag: Reader](
       entity: HttpEntityString
   ): Either[UnspecifiedException, A] = {
-    entity
-      .parse[A]()
-      .left
-      .map(e => {
-        println(e.getMessage)
-        println(e.cause.getMessage)
-        createUnspecifiedException(None, Some(e))
-      })
+    entity.parse[A]().left.map(e => createUnspecifiedException(None, Some(e)))
   }
 }

@@ -57,10 +57,6 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
         ] = instance.run(connSettings, pausedRequest)
         resultFut.map {
           case Left(e) =>
-            println(e)
-            println(e.getMessage)
-            println(e.getCause.getMessage)
-            println(e.getStackTrace)
             fail(e)
           case Right(result) =>
             assert(result === expected)

@@ -39,4 +39,6 @@ trait TwilioClientVoice {
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed]
 
   def recordingRead: RecordingReadRequestExecutor
+
+  def recordingDelete: RecordingDeleteRequestExecutor
 }
