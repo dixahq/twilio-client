@@ -15,33 +15,35 @@ private[impl] case class RecordingJsonRep(
     account_sid: String,
     api_version: String,
     call_sid: String,
-    conference_sid: String,
+    conference_sid: Option[String] = None,
     date_created: String,
     date_updated: String,
     start_time: String,
-    duration: String,
+    duration: Option[String] = None,
     sid: String,
-    price: String,
-    price_unit: String,
+    price: Option[String] = None,
+    price_unit: Option[String] = None,
     status: String,
     channels: Int,
     source: String,
-    error_code: Option[Int],
+    error_code: Option[Int] = None,
     encryption_details: Option[EncryptionDetailsJsonRep] = None,
-    media_url: String,
+    media_url: Option[String] = None,
     track: Option[String] = None
 ) {
 
   def toModel: Recording = Recording(
     accountSid = TwilioAccount.Sid.unsafe(account_sid),
     callSid = Call.Sid.unsafe(call_sid),
-    conferenceSid = Conference.Sid.unsafe(conference_sid),
+    conferenceSid = conference_sid.map(Conference.Sid.unsafe),
     channels = Recording.Channels.unsafe(channels),
     dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
     dateUpdate = Instant.from(Formatter.dateTime.parse(date_updated)),
     startTime = Instant.from(Formatter.dateTime.parse(start_time)),
-    price = Recording.Price(BigDecimal(price), Iso4127CountryCode.apply(price_unit)),
-    duration = Duration.ofSeconds(duration.toLong),
+    price = price.flatMap(pr =>
+      price_unit.map(pu => Recording.Price(BigDecimal(pr), Iso4127CountryCode.apply(pu)))
+    ),
+    duration = duration.map(d => Duration.ofSeconds(d.toLong)),
     sid = Recording.Sid.unsafe(sid),
     source = Recording.Source.fromTwilioStringUnsafe(source),
     status = Recording.Status.fromTwilioStringUnsafe(status),
@@ -54,7 +56,7 @@ private[impl] case class RecordingJsonRep(
         ed.encryption_iv
       ).toModel
     ),
-    mediaUrl = Recording.MediaUrl.apply(media_url),
+    mediaUrl = media_url.map(Recording.MediaUrl.apply),
     track = track.map(Recording.Track.fromTwilioStringUnsafe)
   )
 }

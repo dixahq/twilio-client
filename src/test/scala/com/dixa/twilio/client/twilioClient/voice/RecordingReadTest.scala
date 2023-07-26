@@ -177,20 +177,22 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
       Recording(
         accountSid = accountSid,
         callSid = callSid,
-        conferenceSid = conferenceSid,
+        conferenceSid = Some(conferenceSid),
         dateCreated = createdAtInstant,
         dateUpdate = updatedAtInstant,
         startTime = startAtInstant,
-        duration = Duration.ofSeconds(4),
+        duration = Some(Duration.ofSeconds(4)),
         sid = recordingSid,
-        price = Recording.Price(0.04, Iso4127CountryCode("USD")),
+        price = Some(Recording.Price(0.04, Iso4127CountryCode("USD"))),
         status = status,
         channels = Recording.Channels.unsafe(2),
         source = Recording.Source.StartConferenceRecordingAPI,
         errorCode = None,
         encryptionDetails = Some(encryptionDetails),
-        mediaUrl = Recording.MediaUrl(
-          s"http://api.twilio.com/2010-04-01/Accounts/${accountSid.twilioString}/Recordings/${recordingSid.twilioString}"
+        mediaUrl = Some(
+          Recording.MediaUrl(
+            s"http://api.twilio.com/2010-04-01/Accounts/${accountSid.twilioString}/Recordings/${recordingSid.twilioString}"
+          )
         ),
         track = None
       )
@@ -199,13 +201,13 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         accountSid: TwilioAccount.Sid,
         status: Recording.Status,
         callSid: Call.Sid,
-        conferenceSid: Conference.Sid
+        conferenceSid: Option[Conference.Sid]
     ): String = {
       s"""{
          |      "account_sid": "${accountSid.twilioString}",
          |      "api_version": "2010-04-01",
          |      "call_sid": "${callSid.twilioString}",
-         |      "conference_sid": "${conferenceSid.twilioString}",
+         |      "conference_sid": "${conferenceSid.map(c => c.twilioString).getOrElse("null")}",
          |      "channels": 2,
          |      "date_created": "Fri, 14 Oct 2016 21:56:34 +0000",
          |      "date_updated": "Fri, 14 Oct 2016 21:56:38 +0000",

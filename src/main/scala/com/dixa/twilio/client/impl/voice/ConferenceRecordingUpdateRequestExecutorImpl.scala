@@ -5,7 +5,10 @@ import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.voice.ConferenceRecordingUpdateRequestExecutor
-import com.dixa.twilio.client.voice.ConferenceRecordingUpdateRequestExecutor.{ConferenceRecordingUpdateException, ConferenceRecordingUpdateRequest}
+import com.dixa.twilio.client.voice.ConferenceRecordingUpdateRequestExecutor.{
+  ConferenceRecordingUpdateException,
+  ConferenceRecordingUpdateRequest
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Recording
 
@@ -34,7 +37,8 @@ private[client] class ConferenceRecordingUpdateRequestExecutorImpl()(
       .buildForPostParams
 
     createHttpRequestFor(
-      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Conference/${req.conferenceSid}/Recordings/${req.sid}.json",
+      s"""/${apiVersion.twilioString}/Accounts/${req.accountSid}/Conferences/${req.conferenceSid}/Recordings/${req.sid
+          .getOrElse("Twilio.CURRENT")}.json""",
       connSettings
     ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params)))
   }
@@ -47,7 +51,8 @@ private[client] class ConferenceRecordingUpdateRequestExecutorImpl()(
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ConferenceRecordingUpdateException.Unspecified = ConferenceRecordingUpdateException.Unspecified(msg, cause)
+  ): ConferenceRecordingUpdateException.Unspecified =
+    ConferenceRecordingUpdateException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
       req: ConferenceRecordingUpdateRequest,
@@ -70,7 +75,8 @@ private[client] class ConferenceRecordingUpdateRequestExecutorImpl()(
         decoded.code match {
           case 20404L =>
             Left(
-              ConferenceRecordingUpdateException.RecordingNotFound(req.accountSid, req.sid, req.conferenceSid)
+              ConferenceRecordingUpdateException
+                .RecordingNotFound(req.accountSid, req.sid, req.conferenceSid)
             )
           case other =>
             Left(

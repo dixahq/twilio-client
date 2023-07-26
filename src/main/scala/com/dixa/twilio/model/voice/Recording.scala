@@ -16,20 +16,20 @@ import scala.collection.immutable
 final case class Recording(
     accountSid: TwilioAccount.Sid,
     callSid: Call.Sid,
-    conferenceSid: Conference.Sid,
+    conferenceSid: Option[Conference.Sid] = None,
     dateCreated: Instant,
     dateUpdate: Instant,
     startTime: Instant,
-    duration: Duration,
+    duration: Option[Duration] = None,
     sid: Recording.Sid,
-    price: Recording.Price,
+    price: Option[Recording.Price] = None,
     status: Recording.Status,
     channels: Recording.Channels,
     source: Recording.Source,
-    errorCode: Option[Recording.ErrorCode],
-    encryptionDetails: Option[Recording.EncryptionDetails],
-    mediaUrl: Recording.MediaUrl,
-    track: Option[Recording.Track]
+    errorCode: Option[Recording.ErrorCode] = None,
+    encryptionDetails: Option[Recording.EncryptionDetails] = None,
+    mediaUrl: Option[Recording.MediaUrl] = None,
+    track: Option[Recording.Track] = None
 )
 
 object Recording {
@@ -44,8 +44,16 @@ object Recording {
   object Sid extends SidCompanionObject(List(Prefix("RE")), new Sid(_))
 
   sealed abstract class Status(
-      override val twilioString: String,
+      override val twilioString: String
   ) extends EnumWithTwilioString.EnumEntry
+
+  sealed abstract class StatusUpdate(
+      override val twilioString: String
+  ) extends Status(twilioString)
+
+  sealed abstract class ConferenceStatusUpdate(
+      override val twilioString: String
+  ) extends StatusUpdate(twilioString)
 
   object Status extends EnumWithTwilioString[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
@@ -54,20 +62,9 @@ object Recording {
     case object Completed  extends Status("completed")
     case object Absent     extends Status("absent")
     case object Deleted    extends Status("deleted")
-  }
-
-  sealed abstract class StatusUpdate(
-      override val twilioString: String,
-  ) extends EnumWithTwilioString.EnumEntry
-
-  object StatusUpdate extends EnumWithTwilioString[StatusUpdate] {
-    override val values: immutable.IndexedSeq[StatusUpdate] = findValues
-
-    case object Stopped extends Status("stopped")
-
-    case object Paused extends Status("paused")
-
-    case object InProgress extends Status("in-progress")
+    case object Paused     extends ConferenceStatusUpdate("paused")
+    case object InProgress extends ConferenceStatusUpdate("in-progress")
+    case object Stopped    extends StatusUpdate("stopped")
   }
 
   final case class Price(amount: BigDecimal, unit: Iso4127CountryCode) extends TwilioStringValue {
@@ -203,7 +200,7 @@ object Recording {
 
   object PauseBehavior extends EnumWithTwilioString[PauseBehavior] {
     override val values: immutable.IndexedSeq[PauseBehavior] = findValues
-    case object Skip    extends Track("skip")
-    case object Silence extends Track("silence")
+    case object Skip    extends PauseBehavior("skip")
+    case object Silence extends PauseBehavior("silence")
   }
 }

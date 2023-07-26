@@ -24,7 +24,7 @@ object CallRecordingUpdateRequestExecutor {
   sealed trait CallRecordingUpdateRequest {
     def accountSid: TwilioAccount.Sid
     def callSid: Call.Sid
-    def sid: Recording.Sid
+    def sid: Option[Recording.Sid]
     def status: Recording.StatusUpdate
     def pauseBehavior: Option[Recording.PauseBehavior]
   }
@@ -32,7 +32,7 @@ object CallRecordingUpdateRequestExecutor {
   private final case class CallRecordingUpdateRequestImpl(
       accountSid: TwilioAccount.Sid,
       callSid: Call.Sid,
-      sid: Recording.Sid,
+      sid: Option[Recording.Sid],
       status: Recording.StatusUpdate,
       pauseBehavior: Option[Recording.PauseBehavior]
   ) extends CallRecordingUpdateRequest
@@ -41,13 +41,11 @@ object CallRecordingUpdateRequestExecutor {
 
     sealed trait RequestAttribute
     sealed trait RequestAccountSidAttribute extends RequestAttribute
-    sealed trait RequestSidAttribute        extends RequestAttribute
     sealed trait RequestCallSidAttribute    extends RequestAttribute
     sealed trait RequestStatusAttribute     extends RequestAttribute
 
     type RequestRequiredAttributes = RequestAttribute
       with RequestAccountSidAttribute
-      with RequestSidAttribute
       with RequestCallSidAttribute
       with RequestStatusAttribute
 
@@ -75,7 +73,7 @@ object CallRecordingUpdateRequestExecutor {
 
       def withSid(
           sid: Recording.Sid
-      ): Builder[Attributes with RequestSidAttribute] =
+      ): Builder[Attributes] =
         new Builder(accountSid, callSid, Some(sid), status, pauseBehavior)
 
       def withStatus(
@@ -83,7 +81,7 @@ object CallRecordingUpdateRequestExecutor {
       ): Builder[Attributes with RequestStatusAttribute] =
         new Builder(accountSid, callSid, sid, Some(status), pauseBehavior)
 
-      def withMaxSize(pauseBehavior: Recording.PauseBehavior): Builder[Attributes] =
+      def withPauseBehavior(pauseBehavior: Recording.PauseBehavior): Builder[Attributes] =
         new Builder(accountSid, callSid, sid, status, Some(pauseBehavior))
 
       def build()(
@@ -92,7 +90,7 @@ object CallRecordingUpdateRequestExecutor {
         CallRecordingUpdateRequestImpl(
           accountSid.get,
           callSid.get,
-          sid.get,
+          sid,
           status.get,
           pauseBehavior
         )
@@ -112,10 +110,12 @@ object CallRecordingUpdateRequestExecutor {
 
     final case class RecordingNotFound(
         accountSid: TwilioAccount.Sid,
-        sid: Recording.Sid,
+        sid: Option[Recording.Sid] = None,
         callSid: Call.Sid
     ) extends RuntimeException(
-          s"Recording with sid $sid for call $callSid was not found in account: $accountSid"
+          s"""Recording ${sid
+              .map(s => s"with sid $s ")
+              .getOrElse("")}for call $callSid was not found in account: $accountSid"""
         )
         with CallRecordingUpdateException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])

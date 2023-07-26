@@ -43,7 +43,8 @@ private[client] class CallRecordingUpdateRequestExecutorImpl()(
       .buildForPostParams
 
     createHttpRequestFor(
-      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Calls/${req.callSid}/Recordings/${req.sid}.json",
+      s"""/${apiVersion.twilioString}/Accounts/${req.accountSid}/Calls/${req.callSid}/Recordings/${req.sid
+          .getOrElse("Twilio.CURRENT")}.json""",
       connSettings
     ).map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params)))
   }
@@ -74,8 +75,13 @@ private[client] class CallRecordingUpdateRequestExecutorImpl()(
       entity: HttpEntityString
   ) = {
     parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
-      .map(e => CallRecordingUpdateException.Unspecified(e))
+      .map(e => {
+        println(e.getMessage)
+        println(e.getCause.getMessage)
+        CallRecordingUpdateException.Unspecified(e)
+      })
       .flatMap { decoded =>
+        println(decoded)
         decoded.code match {
           case 20404L =>
             Left(
