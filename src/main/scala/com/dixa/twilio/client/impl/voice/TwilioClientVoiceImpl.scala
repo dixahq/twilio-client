@@ -22,7 +22,9 @@ import com.dixa.twilio.client.voice.{
   ConferenceUpdateRequestExecutor,
   QueueFetchRequestExecutor,
   QueueUpdateRequestExecutor,
+  RecordingCreateRequestExecutor,
   RecordingDeleteRequestExecutor,
+  RecordingFetchRequestExecutor,
   RecordingReadRequestExecutor,
   TwilioClientVoice
 }
@@ -73,6 +75,12 @@ private[impl] final class TwilioClientVoiceImpl()(
       statusFilter: Option[Conference.Status]
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
     FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
+
+  override val recordingCreate: RecordingCreateRequestExecutor =
+    new RecordingCreateRequestExecutorImpl()
+
+  override val recordingFetch: RecordingFetchRequestExecutor =
+    new RecordingFetchRequestExecutorImpl()
 
   override val recordingRead: RecordingReadRequestExecutor = new RecordingReadRequestExecutorImpl()
 

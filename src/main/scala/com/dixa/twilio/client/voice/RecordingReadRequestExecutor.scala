@@ -26,8 +26,7 @@ object RecordingReadRequestExecutor {
     def accountSid: TwilioAccount.Sid
     def callSid: Option[Call.Sid]
     def conferenceSid: Option[Conference.Sid]
-    def dateCreatedAfter: Option[Iso8601DateTime.After]
-    def dateCreatedBefore: Option[Iso8601DateTime.Before]
+    def dateCreated: Option[Iso8601DateTime]
     def includeSoftDeleted: Option[Boolean]
   }
 
@@ -35,8 +34,7 @@ object RecordingReadRequestExecutor {
       accountSid: TwilioAccount.Sid,
       callSid: Option[Call.Sid],
       conferenceSid: Option[Conference.Sid],
-      dateCreatedAfter: Option[Iso8601DateTime.After],
-      dateCreatedBefore: Option[Iso8601DateTime.Before],
+      dateCreated: Option[Iso8601DateTime],
       includeSoftDeleted: Option[Boolean]
   ) extends RecordingReadRequest
 
@@ -52,8 +50,7 @@ object RecordingReadRequestExecutor {
         accountSid: Option[TwilioAccount.Sid],
         callSid: Option[Call.Sid],
         conferenceSid: Option[Conference.Sid],
-        dateCreatedAfter: Option[Iso8601DateTime.After],
-        dateCreatedBefore: Option[Iso8601DateTime.Before],
+        dateCreated: Option[Iso8601DateTime],
         includingSoftDeleted: Option[Boolean]
     ) {
       def withAccountSid(
@@ -63,8 +60,7 @@ object RecordingReadRequestExecutor {
           Some(accountSid),
           callSid,
           conferenceSid,
-          dateCreatedAfter,
-          dateCreatedBefore,
+          dateCreated,
           includingSoftDeleted
         )
 
@@ -73,8 +69,7 @@ object RecordingReadRequestExecutor {
           accountSid,
           Some(callSid),
           conferenceSid,
-          dateCreatedAfter,
-          dateCreatedBefore,
+          dateCreated,
           includingSoftDeleted
         )
 
@@ -83,28 +78,16 @@ object RecordingReadRequestExecutor {
           accountSid,
           callSid,
           Some(conferenceSid),
-          dateCreatedAfter,
-          dateCreatedBefore,
+          dateCreated,
           includingSoftDeleted
         )
 
-      def withDateCreatedAfter(dateCreatedAfter: Iso8601DateTime.After): Builder[Attributes] =
+      def withDateCreated(dateCreated: Iso8601DateTime): Builder[Attributes] =
         new Builder(
           accountSid,
           callSid,
           conferenceSid,
-          Some(dateCreatedAfter),
-          dateCreatedBefore,
-          includingSoftDeleted
-        )
-
-      def withDateCreatedBefore(dateCreatedBefore: Iso8601DateTime.Before): Builder[Attributes] =
-        new Builder(
-          accountSid,
-          callSid,
-          conferenceSid,
-          dateCreatedAfter,
-          Some(dateCreatedBefore),
+          Some(dateCreated),
           includingSoftDeleted
         )
 
@@ -113,8 +96,7 @@ object RecordingReadRequestExecutor {
           accountSid,
           callSid,
           conferenceSid,
-          dateCreatedAfter,
-          dateCreatedBefore,
+          dateCreated,
           Some(includingSoftDeleted)
         )
 
@@ -125,14 +107,13 @@ object RecordingReadRequestExecutor {
           accountSid.get,
           callSid,
           conferenceSid,
-          dateCreatedAfter,
-          dateCreatedBefore,
+          dateCreated,
           includingSoftDeleted
         )
     }
 
     def builder(fun: BuilderStartState => RecordingReadRequest): RecordingReadRequest =
-      fun(new BuilderStartState(None, None, None, None, None, None))
+      fun(new BuilderStartState(None, None, None, None, None))
   }
 
   sealed trait RecordingReadException extends RuntimeException
@@ -145,7 +126,7 @@ object RecordingReadRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to fetch conferences"
+            "Unspecified error happened trying to read recordings"
           ),
           cause.orNull
         )

@@ -67,6 +67,17 @@ object Recording {
     case object Stopped    extends StatusUpdate("stopped")
   }
 
+  sealed abstract class CallbackStatus(
+      override val twilioString: String
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object CallbackStatus extends EnumWithTwilioString[CallbackStatus] {
+    override val values: immutable.IndexedSeq[CallbackStatus] = findValues
+    case object Completed  extends CallbackStatus("completed")
+    case object Absent     extends CallbackStatus("absent")
+    case object InProgress extends CallbackStatus("in-progress")
+  }
+
   final case class Price(amount: BigDecimal, unit: Iso4127CountryCode) extends TwilioStringValue {
     override def twilioString: String = s"$amount $unit"
   }
@@ -202,5 +213,25 @@ object Recording {
     override val values: immutable.IndexedSeq[PauseBehavior] = findValues
     case object Skip    extends PauseBehavior("skip")
     case object Silence extends PauseBehavior("silence")
+  }
+
+  sealed abstract class Trim(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object Trim extends EnumWithTwilioString[Trim] {
+    override val values: immutable.IndexedSeq[Trim] = findValues
+    case object DoNotTrim   extends Trim("do-not-trim")
+    case object TrimSilence extends Trim("trim-silence")
+  }
+
+  sealed abstract class RecordingChannels(
+      override val twilioString: String,
+  ) extends EnumWithTwilioString.EnumEntry
+
+  object RecordingChannels extends EnumWithTwilioString[RecordingChannels] {
+    override val values: immutable.IndexedSeq[RecordingChannels] = findValues
+    case object Mono extends RecordingChannels("mono")
+    case object Dual extends RecordingChannels("dual")
   }
 }

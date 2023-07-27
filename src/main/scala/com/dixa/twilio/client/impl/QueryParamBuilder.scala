@@ -27,6 +27,14 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
     case None        => this
   }
 
+  def withOptionalSetParam(
+      key: String,
+      valueOptSet: Option[Set[TwilioStringValue]]
+  ): QueryParamBuilder = valueOptSet match {
+    case Some(set) => withParam(key, set.map(_.twilioString).mkString(" "))
+    case None      => this
+  }
+
   def withOptionalBooleanParam(
       key: String,
       valueOpt: Option[Boolean]

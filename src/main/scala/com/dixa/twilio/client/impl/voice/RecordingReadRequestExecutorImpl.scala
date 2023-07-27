@@ -34,8 +34,7 @@ class RecordingReadRequestExecutorImpl()(
     val params = QueryParamBuilder.empty
       .withOptionalParam(callSidParamKey, req.callSid)
       .withOptionalParam(conferenceParamKey, req.conferenceSid)
-      .withOptionalDateParam(dateCreatedParamKey, req.dateCreatedAfter)
-      .withOptionalDateParam(dateCreatedParamKey, req.dateCreatedBefore)
+      .withOptionalDateParam(dateCreatedParamKey, req.dateCreated)
       .withOptionalBooleanParam(includeSoftDeletedParamKey, req.includeSoftDeleted)
       .build
 

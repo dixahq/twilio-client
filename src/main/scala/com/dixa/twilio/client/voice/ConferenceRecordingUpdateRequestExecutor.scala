@@ -127,7 +127,7 @@ object ConferenceRecordingUpdateRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to update recording"
+            "Unspecified error happened trying to update conference recording"
           ),
           cause.orNull
         )
