@@ -101,7 +101,7 @@ object Recording {
     override def twilioString: String = code.toString
   }
 
-  // None encrypted recordings can be fetched by calling this media url post pended with the media file type
+  // Non-encrypted recordings can be fetched by making a GET http request to the media url, with the media file type appended
   final case class MediaUrl(url: String) extends TwilioStringValue {
     override def twilioString: String = url
 
