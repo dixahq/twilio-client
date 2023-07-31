@@ -431,6 +431,15 @@ object CallUpdateRequestExecutor {
     final case class CallNotFound(accountSid: TwilioAccount.Sid, callSid: Call.Sid)
         extends RuntimeException(s"Call with sid $callSid was not found in account: $accountSid")
         with CallUpdateException
+
+    final case class RedirectNotAllowedIllegalCallState(
+        accountSid: TwilioAccount.Sid,
+        callSid: Call.Sid
+    ) extends RuntimeException(
+          s"Call with sid $callSid on account $accountSid, is not in-progress. Cannot redirect"
+        )
+        with CallUpdateException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
