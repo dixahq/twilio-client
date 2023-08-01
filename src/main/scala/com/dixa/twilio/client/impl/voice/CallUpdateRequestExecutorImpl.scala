@@ -70,10 +70,32 @@ private[client] class CallUpdateRequestExecutorImpl()(
       entity: HttpEntityString
   ): Either[CallUpdateException, Call] = {
     httpResponse.status match {
-      case StatusCodes.OK       => parseEntityAs[CallJsonRep](entity).map(_.toModel)
-      case StatusCodes.NotFound => buildResultForNotFoundResponse(req, entity)
+      case StatusCodes.OK         => parseEntityAs[CallJsonRep](entity).map(_.toModel)
+      case StatusCodes.NotFound   => buildResultForNotFoundResponse(req, entity)
+      case StatusCodes.BadRequest => buildResultForBadRequest(req, entity)
       case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
     }
+  }
+
+  private def buildResultForBadRequest(
+      req: CallUpdateRequestExecutor.CallUpdateRequest,
+      entity: HttpEntityString
+  ) = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+      .map(e => CallUpdateException.Unspecified(e))
+      .flatMap { decoded =>
+        decoded.code match {
+          case 21220L =>
+            Left(CallUpdateException.RedirectNotAllowedIllegalCallState(req.accountSid, req.sid))
+          case other =>
+            Left(
+              CallUpdateException.Unspecified(
+                s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                  s"$other represent. Full error entity from Twilio: $entity"
+              )
+            )
+        }
+      }
   }
 
   private def buildResultForNotFoundResponse(req: CallUpdateRequest, entity: HttpEntityString) = {
