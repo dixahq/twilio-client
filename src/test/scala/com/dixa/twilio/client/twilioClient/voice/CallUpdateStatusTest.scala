@@ -71,6 +71,31 @@ final class CallUpdateStatusTest extends TwilioClientTest {
         }
       }
 
+      "return a Left if redirect of call is not allowed do to illegal call state" in {
+        val f = new Fixture
+
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseRedirectNotAllowedIllegalCallState)
+            )
+        )
+
+        val resultFut: Future[
+          Either[CallUpdateRequestExecutor.CallUpdateException, Call]
+        ] =
+          instance.run(connSettings, request)
+        val expected = Left(
+          CallUpdateException.RedirectNotAllowedIllegalCallState(connSettings.accountSid, callSid)
+        )
+        resultFut.map(res => assert(res === expected))
+      }
+
       "return a Left if the call does not exists" in {
         val f = new Fixture
 
@@ -157,6 +182,15 @@ final class CallUpdateStatusTest extends TwilioClientTest {
       |  "trunk_sid": null,
       |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json",
       |  "queue_time": "1000"
+      |}
+      |""".stripMargin
+
+  private def twilioResponseRedirectNotAllowedIllegalCallState =
+    """{
+      |  "code": 21220, 
+      |  "message": "Call is not in-progress. Cannot redirect. ", 
+      |  "more_info": "https://www.twilio.com/docs/errors/21220", 
+      |  "status": 400
       |}
       |""".stripMargin
 
