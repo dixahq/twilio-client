@@ -63,7 +63,6 @@ final class ResponseDialTest extends AnyWordSpec {
              |  </Dial>
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
         
         // format: off
@@ -101,7 +100,6 @@ final class ResponseDialTest extends AnyWordSpec {
              |  </Dial>
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
 
         // format: off
@@ -139,7 +137,6 @@ final class ResponseDialTest extends AnyWordSpec {
              |  </Dial>
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
 
         // format: off
@@ -177,7 +174,6 @@ final class ResponseDialTest extends AnyWordSpec {
              |  </Dial>
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
 
         // format: off
@@ -215,7 +211,6 @@ final class ResponseDialTest extends AnyWordSpec {
              |  </Dial>
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
 
         // format: off
@@ -242,7 +237,6 @@ final class ResponseDialTest extends AnyWordSpec {
              |  <Dial>$pn</Dial>
              |</Response>""".stripMargin
 
-        println(result.xmlPretty)
         assert(result.xmlPretty === expectedPrettyXml)
 
         // format: off
@@ -280,7 +274,6 @@ final class ResponseDialTest extends AnyWordSpec {
            |  </Dial>
            |</Response>""".stripMargin
 
-      println(result.xmlPretty)
       assert(result.xmlPretty === expectedPrettyXml)
 
       // format: off
