@@ -1,11 +1,7 @@
 package com.dixa.twilio.client.twilioClient.voice
 
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.voice.{
-  ConferenceRecordingFetchRequestExecutor,
-  RecordingFetchRequestExecutor,
-  TwilioClientVoice
-}
+import com.dixa.twilio.client.voice.{RecordingFetchRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.voice.Recording.Price

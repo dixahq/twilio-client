@@ -35,11 +35,12 @@ final class CallRecordingReadTest extends TwilioClientTest with Matchers {
         val expected2 = recording(
           connSettings.accountSid,
           Recording.Status.Deleted,
-          callSid2,
+          callSid1,
           conferenceSid2
         )
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Recordings.json"
+        val expectedPath =
+          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid1/Recordings.json?CallSid=${callSid1.twilioString}"
 
         wireMockServer.stubFor(
           WireMock
@@ -86,7 +87,7 @@ final class CallRecordingReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val expectedPath =
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid1/Recordings.json"
+          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid1/Recordings.json?CallSid=$callSid1"
 
         wireMockServer.stubFor(
           WireMock

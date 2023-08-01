@@ -67,6 +67,7 @@ class CallRecordingReadRequestExecutorImpl()(
   ]] = {
     responseEntity.parse[RecordingListJsonRep]() match {
       case Left(ex) =>
+        println(ex)
         List(
           Left(
             CallRecordingReadException.Unspecified(

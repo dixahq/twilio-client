@@ -40,7 +40,7 @@ final class ConferenceRecordingReadTest extends TwilioClientTest with Matchers {
         )
 
         val expectedPath =
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Conference/$conferenceSid1/Recordings.json"
+          s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid1/Recordings.json?ConferenceSid=${conferenceSid1.twilioString}"
 
         wireMockServer.stubFor(
           WireMock
@@ -90,7 +90,7 @@ final class ConferenceRecordingReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val expectedPath =
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Conference/$conferenceSid1/Recordings.json"
+          s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid1/Recordings.json?ConferenceSid=${conferenceSid1.twilioString}"
 
         wireMockServer.stubFor(
           WireMock
