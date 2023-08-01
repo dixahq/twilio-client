@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.voice
 
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.voice.{RecordingCreateRequestExecutor, TwilioClientVoice}
+import com.dixa.twilio.client.voice.{CallRecordingCreateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.voice.{Call, Recording}
@@ -12,7 +12,7 @@ import java.net.URLEncoder
 import java.time._
 import scala.concurrent.Future
 
-final class RecordingCreateTest extends TwilioClientTest {
+final class CallRecordingCreateTest extends TwilioClientTest {
 
   classOf[TwilioClientVoice].getSimpleName when {
 
@@ -49,7 +49,7 @@ final class RecordingCreateTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[
-            RecordingCreateRequestExecutor.RecordingCreateException,
+            CallRecordingCreateRequestExecutor.CallRecordingCreateException,
             Recording
           ]
         ] = instance.run(connSettings, req)
@@ -77,13 +77,13 @@ final class RecordingCreateTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[
-            RecordingCreateRequestExecutor.RecordingCreateException,
+            CallRecordingCreateRequestExecutor.CallRecordingCreateException,
             Recording
           ]
         ] =
           instance.run(connSettings, req)
         val expected = Left(
-          RecordingCreateRequestExecutor.RecordingCreateException
+          CallRecordingCreateRequestExecutor.CallRecordingCreateException
             .CallNotFound(connSettings.accountSid, callSid)
         )
         resultFut.map(res => assert(res === expected))
@@ -105,13 +105,13 @@ final class RecordingCreateTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[
-            RecordingCreateRequestExecutor.RecordingCreateException,
+            CallRecordingCreateRequestExecutor.CallRecordingCreateException,
             Recording
           ]
         ] = instance.run(connSettings, req)
         val expected =
           Left(
-            RecordingCreateRequestExecutor.RecordingCreateException.Api(
+            CallRecordingCreateRequestExecutor.CallRecordingCreateException.Api(
               ApiException.AuthenticationException()
             )
           )
@@ -169,7 +169,7 @@ final class RecordingCreateTest extends TwilioClientTest {
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val req =
-      RecordingCreateRequestExecutor.RecordingCreateRequest.build(
+      CallRecordingCreateRequestExecutor.CallRecordingCreateRequest.build(
         _.withAccountSid(connSettings.accountSid)
           .withCallSid(callSid)
           .withRecordingStatusCallback(CallbackUrl("https://myapp.com/recording-events"))
@@ -226,7 +226,7 @@ final class RecordingCreateTest extends TwilioClientTest {
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
       .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
 
-    val instance: RecordingCreateRequestExecutor =
-      TwilioClient.defaultImpl().voice.recordingCreate
+    val instance: CallRecordingCreateRequestExecutor =
+      TwilioClient.defaultImpl().voice.callRecordingCreate
   }
 }

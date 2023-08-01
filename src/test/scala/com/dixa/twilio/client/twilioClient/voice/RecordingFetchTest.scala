@@ -1,7 +1,11 @@
 package com.dixa.twilio.client.twilioClient.voice
 
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.voice.{RecordingFetchRequestExecutor, TwilioClientVoice}
+import com.dixa.twilio.client.voice.{
+  ConferenceRecordingFetchRequestExecutor,
+  RecordingFetchRequestExecutor,
+  TwilioClientVoice
+}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.voice.Recording.Price
@@ -17,7 +21,7 @@ final class RecordingFetchTest extends TwilioClientTest {
 
   classOf[TwilioClientVoice].getSimpleName when {
 
-    "ask to fetch a call recording" should {
+    "ask to fetch call recordings" should {
 
       "Support fetching a specific call recording" in {
 

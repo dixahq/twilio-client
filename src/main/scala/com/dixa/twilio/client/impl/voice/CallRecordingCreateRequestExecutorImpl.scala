@@ -4,29 +4,29 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl._
-import com.dixa.twilio.client.voice.RecordingCreateRequestExecutor
-import com.dixa.twilio.client.voice.RecordingCreateRequestExecutor.RecordingCreateException
+import com.dixa.twilio.client.voice.CallRecordingCreateRequestExecutor
+import com.dixa.twilio.client.voice.CallRecordingCreateRequestExecutor.CallRecordingCreateException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.Recording
 
 import scala.concurrent.ExecutionContext
 
-private[client] class RecordingCreateRequestExecutorImpl()(
+private[client] class CallRecordingCreateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext,
     apiVersion: ApiVersion
-) extends RecordingCreateRequestExecutor {
+) extends CallRecordingCreateRequestExecutor {
 
-  import RecordingCreateRequestExecutorImpl._
+  import CallRecordingCreateRequestExecutorImpl._
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
   override protected def method: HttpMethod = HttpMethods.POST
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: RecordingCreateRequestExecutor.RecordingCreateRequest
-  ): Either[RecordingCreateRequestExecutor.RecordingCreateException, HttpRequest] = {
+      req: CallRecordingCreateRequestExecutor.CallRecordingCreateRequest
+  ): Either[CallRecordingCreateRequestExecutor.CallRecordingCreateException, HttpRequest] = {
     val params = QueryParamBuilder.empty
       .withCollectionParam(
         recordingStatusCallbackEventParamKey,
@@ -50,11 +50,11 @@ private[client] class RecordingCreateRequestExecutorImpl()(
   }
 
   override protected def parseHttpResponse(
-      request: RecordingCreateRequestExecutor.RecordingCreateRequest,
+      request: CallRecordingCreateRequestExecutor.CallRecordingCreateRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[RecordingCreateRequestExecutor.RecordingCreateException, Recording] = {
+  ): Either[CallRecordingCreateRequestExecutor.CallRecordingCreateException, Recording] = {
     httpResponse.status match {
       case StatusCodes.Created | StatusCodes.OK =>
         parseEntityAs[RecordingJsonRep](entity).map(j => j.toModel)
@@ -64,18 +64,18 @@ private[client] class RecordingCreateRequestExecutorImpl()(
   }
 
   private def buildResultForNotFoundResponse(
-      req: RecordingCreateRequestExecutor.RecordingCreateRequest,
+      req: CallRecordingCreateRequestExecutor.CallRecordingCreateRequest,
       entity: HttpEntityString
   ) = {
     parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
-      .map(e => RecordingCreateException.Unspecified(e))
+      .map(e => CallRecordingCreateException.Unspecified(e))
       .flatMap { decoded =>
         decoded.code match {
           case 20404L =>
-            Left(RecordingCreateException.CallNotFound(req.accountSid, req.callSid))
+            Left(CallRecordingCreateException.CallNotFound(req.accountSid, req.callSid))
           case other =>
             Left(
-              RecordingCreateException.Unspecified(
+              CallRecordingCreateException.Unspecified(
                 s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
                   s"$other represent. Full error entity from Twilio: $entity"
               )
@@ -84,16 +84,18 @@ private[client] class RecordingCreateRequestExecutorImpl()(
       }
   }
 
-  override protected def mapApiException(apiException: ApiException): RecordingCreateException.Api =
-    RecordingCreateException.Api(apiException)
+  override protected def mapApiException(
+      apiException: ApiException
+  ): CallRecordingCreateException.Api =
+    CallRecordingCreateException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): RecordingCreateException.Unspecified = RecordingCreateException.Unspecified(msg, cause)
+  ): CallRecordingCreateException.Unspecified = CallRecordingCreateException.Unspecified(msg, cause)
 }
 
-private object RecordingCreateRequestExecutorImpl {
+private object CallRecordingCreateRequestExecutorImpl {
   private val recordingStatusCallbackEventParamKey  = "RecordingStatusCallbackEvent"
   private val recordingChannelsParamKey             = "RecordingChannels"
   private val recordingStatusCallbackParamKey       = "RecordingStatusCallback"

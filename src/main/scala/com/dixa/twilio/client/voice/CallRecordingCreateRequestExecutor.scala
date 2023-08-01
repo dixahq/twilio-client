@@ -7,24 +7,24 @@ import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Recording}
 
-trait RecordingCreateRequestExecutor
+trait CallRecordingCreateRequestExecutor
     extends SingleRequestExecutor[
-      RecordingCreateRequestExecutor.RecordingCreateRequest,
-      RecordingCreateRequestExecutor.RecordingCreateException,
+      CallRecordingCreateRequestExecutor.CallRecordingCreateRequest,
+      CallRecordingCreateRequestExecutor.CallRecordingCreateException,
       Recording
     ] {
 
-  import RecordingCreateRequestExecutor._
+  import CallRecordingCreateRequestExecutor._
 
-  override final protected type ApiExceptionWrapper = RecordingCreateException.Api
+  override final protected type ApiExceptionWrapper = CallRecordingCreateException.Api
 
-  override final protected type UnspecifiedException = RecordingCreateException.Unspecified
+  override final protected type UnspecifiedException = CallRecordingCreateException.Unspecified
 
 }
 
-object RecordingCreateRequestExecutor {
+object CallRecordingCreateRequestExecutor {
 
-  sealed trait RecordingCreateRequest {
+  sealed trait CallRecordingCreateRequest {
     def accountSid: TwilioAccount.Sid
     def callSid: Call.Sid
     def recordingStatusCallbackEvent: Option[Set[Recording.CallbackStatus]]
@@ -35,7 +35,7 @@ object RecordingCreateRequestExecutor {
     def recordingTrack: Option[Recording.Track]
   }
 
-  private final case class RecordingCreateRequestImpl(
+  private final case class CallRecordingCreateRequestImpl(
       accountSid: TwilioAccount.Sid,
       callSid: Call.Sid,
       recordingStatusCallbackEvent: Option[Set[Recording.CallbackStatus]],
@@ -44,9 +44,9 @@ object RecordingCreateRequestExecutor {
       trim: Option[Recording.Trim],
       recordingChannels: Option[Recording.RecordingChannels],
       recordingTrack: Option[Recording.Track],
-  ) extends RecordingCreateRequest
+  ) extends CallRecordingCreateRequest
 
-  object RecordingCreateRequest {
+  object CallRecordingCreateRequest {
 
     /** Phantom type used to require account sid to be supplied before build can be called */
     sealed trait AccountSidAttributeSet
@@ -72,7 +72,7 @@ object RecordingCreateRequestExecutor {
         AccountSidSet <: AccountSidAttributeSet,
         CallSidSet <: CallSidAttributeSet,
         UrlForCallbackSet <: HasUrlForCallbackSet
-    ] private[RecordingCreateRequest] (
+    ] private[CallRecordingCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         callSid: Option[Call.Sid],
         recordingStatusCallbackEvents: Option[Set[Recording.CallbackStatus]],
@@ -242,8 +242,8 @@ object RecordingCreateRequestExecutor {
       def build()(
           implicit ev: AccountSidSet =:= AccountSidAttributeSetTrue,
           ev2: CallSidSet =:= CallSidAttributeSetTrue,
-      ): RecordingCreateRequest =
-        RecordingCreateRequestImpl(
+      ): CallRecordingCreateRequest =
+        CallRecordingCreateRequestImpl(
           accountSid.get,
           callSid.get,
           recordingStatusCallbackEvents,
@@ -255,7 +255,7 @@ object RecordingCreateRequestExecutor {
         )
     }
 
-    def build(fun: BuilderStartState => RecordingCreateRequest): RecordingCreateRequest =
+    def build(fun: BuilderStartState => CallRecordingCreateRequest): CallRecordingCreateRequest =
       fun(
         new BuilderStartState(
           None,
@@ -270,25 +270,25 @@ object RecordingCreateRequestExecutor {
       )
   }
 
-  sealed trait RecordingCreateException extends RuntimeException
+  sealed trait CallRecordingCreateException extends RuntimeException
 
-  object RecordingCreateException {
+  object CallRecordingCreateException {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
-        with RecordingCreateException
+        with CallRecordingCreateException
         with ApiExceptionWrapper
 
     final case class CallNotFound(
         accountSid: TwilioAccount.Sid,
         callSid: Call.Sid
     ) extends RuntimeException(s"""Call $callSid not found in account: $accountSid""")
-        with RecordingCreateException
+        with CallRecordingCreateException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse("Unspecified error happened trying to create recording"),
           cause.orNull
         )
-        with RecordingCreateException
+        with CallRecordingCreateException
 
     object Unspecified {
       def apply(msg: String) = new Unspecified(Some(msg), None)

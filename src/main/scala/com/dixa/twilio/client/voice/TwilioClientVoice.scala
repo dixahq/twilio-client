@@ -15,6 +15,10 @@ trait TwilioClientVoice {
 
   def callRead: CallReadRequestExecutor
 
+  def callRecordingCreate: CallRecordingCreateRequestExecutor
+
+  def callRecordingRead: CallRecordingReadRequestExecutor
+
   def callRecordingUpdate: CallRecordingUpdateRequestExecutor
 
   def queueUpdate: QueueUpdateRequestExecutor
@@ -24,6 +28,8 @@ trait TwilioClientVoice {
   def conferenceRead: ConferenceReadRequestExecutor
 
   def conferenceUpdate: ConferenceUpdateRequestExecutor
+
+  def conferenceRecordingRead: ConferenceRecordingReadRequestExecutor
 
   def conferenceRecordingUpdate: ConferenceRecordingUpdateRequestExecutor
 
@@ -37,8 +43,6 @@ trait TwilioClientVoice {
       connSettings: TwilioConnectionSettings,
       statusFilter: Option[Conference.Status]
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed]
-
-  def recordingCreate: RecordingCreateRequestExecutor
 
   def recordingFetch: RecordingFetchRequestExecutor
 

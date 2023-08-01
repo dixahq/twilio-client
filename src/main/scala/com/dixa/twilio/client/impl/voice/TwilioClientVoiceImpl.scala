@@ -12,17 +12,19 @@ import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.client.voice.{
   CallCreateRequestExecutor,
   CallReadRequestExecutor,
+  CallRecordingCreateRequestExecutor,
+  CallRecordingReadRequestExecutor,
   CallRecordingUpdateRequestExecutor,
   CallUpdateRequestExecutor,
   ConferenceParticipantDeleteRequestExecutor,
   ConferenceParticipantReadRequestExecutor,
   ConferenceParticipantUpdateRequestExecutor,
   ConferenceReadRequestExecutor,
+  ConferenceRecordingReadRequestExecutor,
   ConferenceRecordingUpdateRequestExecutor,
   ConferenceUpdateRequestExecutor,
   QueueFetchRequestExecutor,
   QueueUpdateRequestExecutor,
-  RecordingCreateRequestExecutor,
   RecordingDeleteRequestExecutor,
   RecordingFetchRequestExecutor,
   RecordingReadRequestExecutor,
@@ -45,6 +47,12 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override val callRead: CallReadRequestExecutor = new CallReadRequestExecutorImpl()
 
+  override val callRecordingCreate: CallRecordingCreateRequestExecutor =
+    new CallRecordingCreateRequestExecutorImpl()
+
+  override val callRecordingRead: CallRecordingReadRequestExecutor =
+    new CallRecordingReadRequestExecutorImpl()
+
   override val callRecordingUpdate: CallRecordingUpdateRequestExecutor =
     new CallRecordingUpdateRequestExecutorImpl()
 
@@ -57,6 +65,9 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override val conferenceUpdate: ConferenceUpdateRequestExecutor =
     new ConferenceUpdateRequestExecutorImpl()
+
+  override val conferenceRecordingRead: ConferenceRecordingReadRequestExecutor =
+    new ConferenceRecordingReadRequestExecutorImpl()
 
   override val conferenceRecordingUpdate: ConferenceRecordingUpdateRequestExecutor =
     new ConferenceRecordingUpdateRequestExecutorImpl()
@@ -75,9 +86,6 @@ private[impl] final class TwilioClientVoiceImpl()(
       statusFilter: Option[Conference.Status]
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
     FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
-
-  override val recordingCreate: RecordingCreateRequestExecutor =
-    new RecordingCreateRequestExecutorImpl()
 
   override val recordingFetch: RecordingFetchRequestExecutor =
     new RecordingFetchRequestExecutorImpl()
