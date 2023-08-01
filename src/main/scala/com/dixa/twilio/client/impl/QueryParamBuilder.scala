@@ -27,12 +27,13 @@ private[impl] final class QueryParamBuilder private (private val paramStrings: L
     case None        => this
   }
 
-  def withOptionalSetParam(
+  def withCollectionParam(
       key: String,
-      valueOptSet: Option[Set[TwilioStringValue]]
-  ): QueryParamBuilder = valueOptSet match {
-    case Some(set) => withParam(key, set.map(_.twilioString).mkString(" "))
-    case None      => this
+      valueSet: Iterable[TwilioStringValue]
+  ): QueryParamBuilder = if (valueSet.iterator.hasNext) {
+    withParam(key, valueSet.map(_.twilioString).mkString(" "))
+  } else {
+    this
   }
 
   def withOptionalBooleanParam(

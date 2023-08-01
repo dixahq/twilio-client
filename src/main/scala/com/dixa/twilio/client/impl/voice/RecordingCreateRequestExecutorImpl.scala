@@ -7,7 +7,6 @@ import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.voice.RecordingCreateRequestExecutor
 import com.dixa.twilio.client.voice.RecordingCreateRequestExecutor.RecordingCreateException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.voice.Recording
 
 import scala.concurrent.ExecutionContext
@@ -29,10 +28,9 @@ private[client] class RecordingCreateRequestExecutorImpl()(
       req: RecordingCreateRequestExecutor.RecordingCreateRequest
   ): Either[RecordingCreateRequestExecutor.RecordingCreateException, HttpRequest] = {
     val params = QueryParamBuilder.empty
-      .withOptionalSetParam(
+      .withCollectionParam(
         recordingStatusCallbackEventParamKey,
-        // Not sure why ".asInstanceOf" is needed, but the compiler, doesn't recognize CallbackStatus as a
-        req.recordingStatusCallbackEvent.asInstanceOf[Option[Set[TwilioStringValue]]]
+        req.recordingStatusCallbackEvent.getOrElse(Set.empty)
       )
       .withOptionalParam(recordingStatusCallbackParamKey, req.recordingStatusCallback)
       .withOptionalParam(recordingStatusCallbackMethodParamKey, req.recordingStatusCallbackMethod)
