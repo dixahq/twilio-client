@@ -83,7 +83,7 @@ lazy val `twilio-client` = project
         "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
-        "com.beachape" %% "enumeratum" % "1.7.2",
+        "com.beachape" %% "enumeratum" % "1.7.3",
 
         // Test
         "org.scalatest"         %% "scalatest" % "3.2.16"        % Test,
