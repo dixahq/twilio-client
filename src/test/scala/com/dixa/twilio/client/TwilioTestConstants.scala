@@ -2,6 +2,7 @@ package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
+import com.dixa.twilio.model.voice.Trunk
 
 import java.time.Instant
 
@@ -12,6 +13,11 @@ object TwilioTestConstants {
 
   val accountSid: TwilioAccount.Sid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   val authToken: AuthToken.UnknownType = AuthToken.UnknownType("testPassword")
+
+  val trunkUsername1AsString         = "TwilioTestConstants.trunkUsername1"
+  val trunkUsername1: Trunk.Username = Trunk.Username(trunkUsername1AsString)
+  val trunkPassword1AsString         = "TwilioTestConstants.trunkPassword1"
+  val trunkPassword1: Trunk.Password = Trunk.Password(trunkPassword1AsString)
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
     TwilioEndpoint(baseHostName = "localhost", port = port),
