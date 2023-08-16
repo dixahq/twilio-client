@@ -16,5 +16,7 @@ object Trunk {
 
   final case class Password(asString: String) extends TwilioStringValue {
     override val toString: String = "TrunkPassword(***)"
+
+    override def twilioString: String = asString
   }
 }

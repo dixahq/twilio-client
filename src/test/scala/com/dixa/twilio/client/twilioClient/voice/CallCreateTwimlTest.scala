@@ -94,6 +94,8 @@ final class CallCreateTwimlTest extends TwilioClientTest {
         _.withAccountSid(connSettings.accountSid)
           .withToCallerId(toCallerId)
           .withFromCallerId(fromCallerId)
+          .withSipAuthUsername(TwilioTestConstants.trunkUsername1)
+          .withSipAuthPassword(TwilioTestConstants.trunkPassword1)
           .withTwiml(twiml)
           .build()
       )
@@ -111,6 +113,14 @@ final class CallCreateTwimlTest extends TwilioClientTest {
       .withRequestBody(
         WireMock.containing(s"""${URLEncoder.encode("From", "utf-8")}=${URLEncoder
             .encode(fromCallerId.twilioString, "utf-8")}""")
+      )
+      .withRequestBody(
+        WireMock.containing(s"""${URLEncoder.encode("SipAuthUsername", "utf-8")}=${URLEncoder
+            .encode(TwilioTestConstants.trunkUsername1AsString, "utf-8")}""")
+      )
+      .withRequestBody(
+        WireMock.containing(s"""${URLEncoder.encode("SipAuthPassword", "utf-8")}=${URLEncoder
+            .encode(TwilioTestConstants.trunkPassword1AsString, "utf-8")}""")
       )
       .withRequestBody(
         WireMock.containing(
