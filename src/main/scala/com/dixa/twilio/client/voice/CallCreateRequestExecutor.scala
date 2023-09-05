@@ -101,7 +101,7 @@ object CallCreateRequestExecutor {
 
     def url: Option[CallbackUrl]
 
-    def twiml: Option[Response.FromModel]
+    def twiml: Option[Response]
 
     def applicationSid: Option[TwimlApplication.Sid]
   }
@@ -141,7 +141,7 @@ object CallCreateRequestExecutor {
       callToken: Option[Call.Token],
       timeLimit: Option[Call.TimeLimit],
       url: Option[CallbackUrl],
-      twiml: Option[Response.FromModel],
+      twiml: Option[Response],
       applicationSid: Option[TwimlApplication.Sid]
   ) extends CallCreateRequest
 
@@ -324,7 +324,7 @@ object CallCreateRequestExecutor {
         callToken: Option[Call.Token],
         timeLimit: Option[Call.TimeLimit],
         url: Option[CallbackUrl],
-        twiml: Option[Response.FromModel],
+        twiml: Option[Response],
         applicationSid: Option[TwimlApplication.Sid]
     ) {
 
@@ -2415,7 +2415,7 @@ object CallCreateRequestExecutor {
       }
 
       def withTwiml(
-          twiml: Response.FromModel
+          twiml: Response
       )(
           implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
       ): Builder[

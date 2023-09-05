@@ -88,7 +88,9 @@ final class CallCreateTwimlTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val toCallerId   = Call.CallerId("+15558675310")
     val fromCallerId = Call.CallerId("+15552223214")
-    val twiml        = Response.build(_.addSay(_.withText("Ahoy there!").build()).buildVerified())
+    // explicit typecast to just Response, to ensure that the builder accept that.
+    val twiml: Response =
+      Response.build(_.addSay(_.withText("Ahoy there!").build()).buildVerified())
     val request =
       CallCreateRequestExecutor.CallCreateRequest.build(
         _.withAccountSid(connSettings.accountSid)
