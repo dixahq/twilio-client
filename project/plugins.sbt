@@ -13,5 +13,5 @@ libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 addSbtPlugin("com.dixa"      % "sbt-dixa-release" % "6.2.29")
-addSbtPlugin("org.scalameta" % "sbt-scalafmt"     % "2.5.0")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt"     % "2.5.2")
 addDependencyTreePlugin
