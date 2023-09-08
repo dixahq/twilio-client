@@ -75,19 +75,26 @@ object Response {
 
     override protected def tagSubElements: immutable.Seq[TwimlElement] = verbs
 
-    override final def toString = s"Response.${getClass.getSimpleName}($verbs)"
+    override def toString = s"Response.FromModel($xmlCompact)"
 
   }
 
-  sealed trait Verified extends FromModel
+  sealed trait Verified extends FromModel {
+    override def toString = s"Response.Verified($xmlCompact)"
+  }
 
   private final case class VerifiedImpl(
       override val verbs: immutable.Seq[TwimlElement.Verb]
   ) extends Verified
 
-  sealed trait Unverified extends Response
+  sealed trait Unverified extends Response {
+    override def toString = s"Response.Unverified($xmlCompact)"
+  }
 
-  sealed trait UnverifiedFromModel extends FromModel with Unverified
+  sealed trait UnverifiedFromModel extends FromModel with Unverified {
+
+    override def toString: String = s"Response.UnverifiedFromModel($xmlCompact)"
+  }
 
   private final case class UnverifiedFromModelImpl(
       override val verbs: immutable.Seq[TwimlElement.Verb]
@@ -96,12 +103,12 @@ object Response {
   sealed trait UnverifiedFromString extends Unverified {
     def suppliedTwiml: String
     override protected def tagSubElements: immutable.Seq[TwimlElement] = Nil
+
+    override def toString: String = s"Response.UnverifiedFromString($xmlCompact)"
   }
 
   private final case class UnverifiedFromStringImpl(suppliedTwiml: String)
       extends UnverifiedFromString() {
-
-    override def toString = s"Response.${getClass.getSimpleName}($suppliedTwiml)"
 
     override def xmlCompact: String = suppliedTwiml
 

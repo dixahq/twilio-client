@@ -40,6 +40,12 @@ final class ResponseMiscTest extends AnyWordSpec {
             |""".stripMargin
         )
       }
+
+      "should equal a verified response, if it was created from the verified instances xmlCompact" in {
+        val verified   = Response.build(_.addSay(_.withText("Hello world").build()).buildVerified())
+        val unverified = Response.fromString(verified.xmlCompact)
+        assert(unverified == verified)
+      }
     }
 
     "Allow creating of a UnverifiedFromModel instance from a Seq of Verbs" in {
@@ -49,6 +55,33 @@ final class ResponseMiscTest extends AnyWordSpec {
       )
       val result: Response.UnverifiedFromModel = Response.fromVerbs(input)
       assert(result.verbs == input)
+    }
+
+    "toString should include type and xml, so that all that it indicates the difference, but still is easy comparable" should {
+
+      "when created as a a UnverifiedFromModel instance" in {
+        val input = immutable.Seq(
+          SayVerb.build(_.withText("Hello").build()),
+          HangupVerb.build(_.build())
+        )
+        val response: Response.UnverifiedFromModel = Response.fromVerbs(input)
+        assert(response.toString == s"Response.UnverifiedFromModel(${response.xmlCompact})")
+      }
+
+      "when created from string" in {
+        val xml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Say>Hello World</Say>
+             |</Response>""".stripMargin
+        val response: Response.UnverifiedFromString = Response.fromString(xml)
+        assert(response.toString == s"Response.UnverifiedFromString(${response.xmlCompact})")
+      }
+
+      "when created from model" in {
+        val response: Response.Verified = Response.build(_.addReject(_.build()).buildVerified())
+        assert(response.toString == s"Response.Verified(${response.xmlCompact})")
+      }
     }
 
     "not allow clients to create a Verified instance directly" in {
