@@ -86,7 +86,7 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.3",
 
         // Test
-        "org.scalatest"         %% "scalatest" % "3.2.16" % Test,
+        "org.scalatest"         %% "scalatest" % "3.2.17" % Test,
         "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
         "com.github.tomakehurst" % "wiremock"  % "3.0.1"  % Test,
       ),
