@@ -115,7 +115,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
         dateSent = jsonRep.date_sent.flatMap(parseDate),
         accountSid = accountSid,
         to = PhoneNumberE164.unsafe(jsonRep.to),
-        from = MessageSender.toMessageSender(jsonRep.from),
+        from = MessageSender.fromStringUnsafe(jsonRep.from),
         messagingServiceSid = jsonRep.messaging_service_sid.flatMap(parseMessagingServiceSid),
         body = MessageBody(jsonRep.body),
         status = messageStatus,
