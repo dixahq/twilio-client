@@ -122,7 +122,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                       dateSent = decoded.date_sent.flatMap(parseDate),
                       dateUpdated = decoded.date_updated.flatMap(parseDate),
                       direction = direction,
-                      from = MessageSender.E164(PhoneNumberE164.unsafe(decoded.from)),
+                      from = MessageSender.fromStringUnsafe(decoded.from),
                       messagingServiceSid =
                         decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
                       numMedia = decoded.num_media.toInt,
