@@ -9,7 +9,21 @@ class MessageBodyTest extends AnyWordSpec {
 
     "checking if text is in GSM-7 format" should {
       "return true for text that contains only GSM-7 characters" in {
-        val input        = "Twilio is the telephony and sms provider and it has a console"
+        val input        = "Twilio is the telephony and sms provider and it has a developer console"
+        val isGSM7Format = isGSM7(input)
+
+        assert(isGSM7Format)
+      }
+
+      "return true for Line Feed \n" in {
+        val input        = "Twilio is the telephony and sms provider\n"
+        val isGSM7Format = isGSM7(input)
+
+        assert(isGSM7Format)
+      }
+
+      "return true for Carriage Return \r" in {
+        val input        = "Twilio is the telephony and sms provider\r"
         val isGSM7Format = isGSM7(input)
 
         assert(isGSM7Format)
