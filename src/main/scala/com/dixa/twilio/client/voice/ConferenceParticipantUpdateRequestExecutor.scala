@@ -173,7 +173,6 @@ object ConferenceParticipantUpdateRequestExecutor {
         callSidToCoach
       )
 
-      @nowarn(value = "cat=unused")
       private type BuilderWithSameTypes =
         Builder[
           AccountSidSet,
