@@ -1,6 +1,10 @@
 package com.dixa.twilio.model.phonenumber
 
-sealed trait PhoneNumberE164 {
+import com.dixa.twilio.model.TwilioStringValue
+
+import scala.util.Try
+
+sealed trait PhoneNumberE164 extends TwilioStringValue {
 
   def asString: String
 
@@ -9,10 +13,14 @@ sealed trait PhoneNumberE164 {
 
 object PhoneNumberE164 {
 
-  def apply(asString: String): PhoneNumberE164 = {
+  def unsafe(asString: String): PhoneNumberE164 = {
     require(verifyPattern.matcher(asString).matches(), s"$toString is not in E.164 format")
     DefaultImpl(asString)
   }
+
+  def apply(asString: String): Option[PhoneNumberE164] = Try {
+    unsafe(asString)
+  }.toOption
 
   private val verifyPattern = """^\+[1-9]\d{1,14}$""".r.pattern
 

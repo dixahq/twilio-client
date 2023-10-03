@@ -8,7 +8,7 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{ServiceSid, StatusCallback, TwilioMessagingService}
+import com.dixa.twilio.model.messaging.{StatusCallback, TwilioMessagingService}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -62,8 +62,8 @@ final class MessagingServicesReadTest extends TwilioClientTest {
 
         val expected = List(
           TwilioMessagingService(
-            sid = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
-            accountSid = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"),
+            accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             friendlyName = TwilioMessagingService.FriendlyName("My Service!"),
             inboundRequestWebhook = Some(
               TwilioMessagingService
@@ -74,8 +74,8 @@ final class MessagingServicesReadTest extends TwilioClientTest {
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.False
           ),
           TwilioMessagingService(
-            sid = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"),
-            accountSid = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"),
+            accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             friendlyName = TwilioMessagingService.FriendlyName("My Secondary Service!"),
             inboundRequestWebhook = Some(
               TwilioMessagingService
@@ -86,8 +86,8 @@ final class MessagingServicesReadTest extends TwilioClientTest {
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.True
           ),
           TwilioMessagingService(
-            sid = ServiceSid("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"),
-            accountSid = TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"),
+            accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             friendlyName = TwilioMessagingService.FriendlyName("My third Service!"),
             inboundRequestWebhook = None,
             fallbackWebhook = Some(

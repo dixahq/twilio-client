@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.phonenumber
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.IncomingNumbersReadException
 import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber
@@ -26,6 +27,8 @@ object IncomingNumbersReadRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with IncomingNumbersReadException
+        with ApiExceptionWrapper
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(

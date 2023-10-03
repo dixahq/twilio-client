@@ -1,9 +1,10 @@
 package com.dixa.twilio.client.messaging
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.PhoneNumberCreateException
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.messaging.{ServiceSid, TwilioMessagingPhoneNumber}
-import com.dixa.twilio.model.phonenumber.TwilioPhoneNumberSid
+import com.dixa.twilio.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 
 trait PhoneNumberCreateRequestExecutor
     extends SingleRequestExecutor[
@@ -20,8 +21,8 @@ trait PhoneNumberCreateRequestExecutor
 object PhoneNumberCreateRequestExecutor {
 
   final case class PhoneNumberCreateRequest(
-      serviceSid: ServiceSid,
-      phoneNumberSid: TwilioPhoneNumberSid
+      serviceSid: TwilioMessagingService.Sid,
+      phoneNumberSid: TwilioPhoneNumber.Sid
   )
 
   sealed trait PhoneNumberCreateException extends RuntimeException
@@ -29,6 +30,8 @@ object PhoneNumberCreateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with PhoneNumberCreateException
+        with ApiExceptionWrapper
+
     final case class PhoneNumberAlreadyInMessagingService()
         extends IllegalStateException(
           "Phone Number or Short Code is already in the Messaging Service. More info: https://www.twilio.com/docs/errors/21710"

@@ -8,7 +8,7 @@ import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor.ServicesReadException
 import com.dixa.twilio.client.{messaging, ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.TwilioMessagingService
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.concurrent.ExecutionContext
 
@@ -38,6 +38,9 @@ private[impl] class ServicesReadRequestExecutorImpl(
   ): UnspecifiedException = ServicesReadException.Unspecified(msg, cause)
 
   private case class OuterJsonRep(services: List[MessagingServiceJsonRep])
+
+  private implicit val outerJsonRepReader: Reader[OuterJsonRep] =
+    macroR[OuterJsonRep]
 
   override protected def parseHttpResponse(
       connectionSettings: TwilioConnectionSettings,

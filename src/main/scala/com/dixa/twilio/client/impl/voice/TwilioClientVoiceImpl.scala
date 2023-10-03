@@ -5,12 +5,33 @@ import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.impl.ApiVersion
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
-import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
+import com.dixa.twilio.client.voice.{
+  CallCreateRequestExecutor,
+  CallReadRequestExecutor,
+  CallRecordingCreateRequestExecutor,
+  CallRecordingReadRequestExecutor,
+  CallRecordingUpdateRequestExecutor,
+  CallUpdateRequestExecutor,
+  ConferenceParticipantDeleteRequestExecutor,
+  ConferenceParticipantReadRequestExecutor,
+  ConferenceParticipantUpdateRequestExecutor,
+  ConferenceReadRequestExecutor,
+  ConferenceRecordingReadRequestExecutor,
+  ConferenceRecordingUpdateRequestExecutor,
+  ConferenceUpdateRequestExecutor,
+  QueueFetchRequestExecutor,
+  QueueUpdateRequestExecutor,
+  RecordingDeleteRequestExecutor,
+  RecordingFetchRequestExecutor,
+  RecordingReadRequestExecutor,
+  TwilioClientVoice
+}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 private[impl] final class TwilioClientVoiceImpl()(
     implicit materializer: Materializer,
@@ -18,7 +39,47 @@ private[impl] final class TwilioClientVoiceImpl()(
     httpExt: HttpExt
 ) extends TwilioClientVoice {
 
+  private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
+
+  override val callCreate: CallCreateRequestExecutor = new CallCreateRequestExecutorImpl()
+
   override val callUpdate: CallUpdateRequestExecutor = new CallUpdateRequestExecutorImpl()
+
+  override val callRead: CallReadRequestExecutor = new CallReadRequestExecutorImpl()
+
+  override val callRecordingCreate: CallRecordingCreateRequestExecutor =
+    new CallRecordingCreateRequestExecutorImpl()
+
+  override val callRecordingRead: CallRecordingReadRequestExecutor =
+    new CallRecordingReadRequestExecutorImpl()
+
+  override val callRecordingUpdate: CallRecordingUpdateRequestExecutor =
+    new CallRecordingUpdateRequestExecutorImpl()
+
+  override val queueUpdate: QueueUpdateRequestExecutor = new QueueUpdateRequestExecutorImpl()
+
+  override val queueFetch: QueueFetchRequestExecutor = new QueueFetchRequestExecutorImpl()
+
+  override val conferenceRead: ConferenceReadRequestExecutor =
+    new ConferenceReadRequestExecutorImpl()
+
+  override val conferenceUpdate: ConferenceUpdateRequestExecutor =
+    new ConferenceUpdateRequestExecutorImpl()
+
+  override val conferenceRecordingRead: ConferenceRecordingReadRequestExecutor =
+    new ConferenceRecordingReadRequestExecutorImpl()
+
+  override val conferenceRecordingUpdate: ConferenceRecordingUpdateRequestExecutor =
+    new ConferenceRecordingUpdateRequestExecutorImpl()
+
+  override val conferenceParticipantsRead: ConferenceParticipantReadRequestExecutor =
+    new ConferenceParticipantReadRequestExecutorImpl()
+
+  override val conferenceParticipantUpdate: ConferenceParticipantUpdateRequestExecutor =
+    new ConferenceParticipantUpdateRequestExecutorImpl()
+
+  override val conferenceParticipantDelete: ConferenceParticipantDeleteRequestExecutor =
+    new ConferenceParticipantDeleteRequestExecutorImpl()
 
   override def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
@@ -26,8 +87,11 @@ private[impl] final class TwilioClientVoiceImpl()(
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
     FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
 
-  override def completeConference(
-      connSettings: TwilioConnectionSettings,
-      conference: Conference
-  ): Future[Conference] = CompleteConferenceRequest(connSettings, conference)
+  override val recordingFetch: RecordingFetchRequestExecutor =
+    new RecordingFetchRequestExecutorImpl()
+
+  override val recordingRead: RecordingReadRequestExecutor = new RecordingReadRequestExecutorImpl()
+
+  override val recordingDelete: RecordingDeleteRequestExecutor =
+    new RecordingDeleteRequestExecutorImpl()
 }

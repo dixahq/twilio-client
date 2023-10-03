@@ -1,7 +1,7 @@
 package com.dixa.twilio.model.iam
 
-import com.dixa.twilio.model.{EnumWithTwilioString, TwilioStringValue}
-import org.scalactic.TypeCheckedTripleEquals._
+import com.dixa.twilio.model.SidAbstract.Prefix
+import com.dixa.twilio.model.{EnumWithTwilioString, SidAbstract, TwilioStringValue}
 
 import java.time.Instant
 import scala.collection.immutable
@@ -19,13 +19,15 @@ final case class TwilioAccount(
     timeCreated: Instant,
     timeUpdated: Instant
 ) {
-  def isActive: Boolean = status === TwilioAccount.Status.Active
+  def isActive: Boolean = status == TwilioAccount.Status.Active
 }
 
 object TwilioAccount {
 
-  final case class Name(override val toString: String) extends TwilioStringValue
-  final case class Sid(override val toString: String)
+  final case class Name(override val toString: String)         extends TwilioStringValue
+  final case class Sid private (override val toString: String) extends SidAbstract
+
+  object Sid extends SidAbstract.SidCompanionObject[Sid](List(Prefix("AC")), new Sid(_))
 
   sealed abstract class Status(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry

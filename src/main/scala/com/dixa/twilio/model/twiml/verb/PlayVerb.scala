@@ -1,11 +1,11 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.dtmf.DtmfString
 import com.dixa.twilio.model.twiml.TwimlConstraints.{Buildable, BuildableFalse, BuildableTrue}
+import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.{TwimlConstraints, TwimlElement}
 
-import scala.annotation.nowarn
+import scala.collection.immutable
 
 /** Representation of the Play Verb from TwiML
   *
@@ -14,7 +14,11 @@ import scala.annotation.nowarn
   *
   * Twilio documentation: https://www.twilio.com/docs/voice/twiml/play
   */
-sealed trait PlayVerb extends TwimlElement.Verb {}
+sealed trait PlayVerb extends TwimlElement.Verb {
+  override final protected def tagName: String = "Play"
+
+  override final protected def tagSubElements: immutable.Seq[TwimlElement] = Nil
+}
 
 object PlayVerb {
 
@@ -36,7 +40,7 @@ object PlayVerb {
       S <: SoundFileAdded,
       D <: DigitsAdded,
       L <: LoopAdded
-  ] private[PlayVerb] (
+  ] private (
       url: String,
       digits: Option[DtmfString],
       loopValue: Option[Int]
@@ -50,7 +54,6 @@ object PlayVerb {
       * You can add both this and [[withDigits]], and in such cases the digits are played before the
       * sound file.
       */
-    @nowarn(value = "cat=unused-params")
     def withSoundFileUrl(url: String)(
         implicit ev: S =:= SoundFileAddedFalse
     ): Builder[BuildableTrue, SoundFileAddedTrue, D, L] =
@@ -64,7 +67,6 @@ object PlayVerb {
       * You can add both this and [[withSoundFileUrl]], and in such cases the digits are played
       * before the sound file.
       */
-    @nowarn(value = "cat=unused-params")
     def withDigits(dtmfString: DtmfString)(
         implicit ev: D =:= DigitsAddedFalse
     ): Builder[BuildableTrue, S, DigitsAddedTrue, L] =
@@ -77,36 +79,43 @@ object PlayVerb {
       *
       * 0 will make Twilio loop it 1000 times, or until the call is hang up.
       */
-    @nowarn(value = "cat=unused-params")
     def withLoop(loopValue: Int)(
         implicit ev: L =:= LoopAddedFalse
     ): Builder[B, S, D, LoopAddedTrue] =
       new Builder[B, S, D, LoopAddedTrue](url, digits, Some(loopValue))
 
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit ev: B =:= TwimlConstraints.BuildableTrue
     ): PlayVerb = PlayVerbImpl(url, digits, loopValue)
   }
+
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState("", None, None)
+  }
+
   type BuilderStartState =
     Builder[BuildableFalse, SoundFileAddedFalse, DigitsAddedFalse, LoopAddedFalse]
   type BuildFunction = BuilderStartState => PlayVerb
 
-  def build(fun: BuildFunction): PlayVerb = fun(
-    new BuilderStartState("", None, None)
-  )
+  def build(fun: BuildFunction): PlayVerb = fun(Builder.empty)
 
   private final case class PlayVerbImpl(
       url: String,
       digits: Option[DtmfString],
       loopValue: Option[Int]
   ) extends PlayVerb {
-    override val xmlCompact: String = {
-      val digitsAttribute = digits.map(d => s""" digits="${d.twilioString}"""").getOrElse("")
-      val loopAttribute   = loopValue.map(l => s""" loop="$l"""").getOrElse("")
-      s"""<Play$digitsAttribute$loopAttribute>${StringUtil.xmlEscape(url)}</Play>"""
-    }
 
-    override def xmlPretty: String = xmlCompact
+    override protected def tagAttributes: immutable.Seq[(String, String)] =
+      new TagAttributeBuilder()
+        .add("digits", digits)
+        .addInt("loop", loopValue)
+        .build
+
+    /** Specify the value the tag this TwiML element represent has.
+      *
+      * This is used when building the XML of the TwiMLElement.
+      */
+    override protected def tagValue: Option[String] = Some(url)
+
   }
 }

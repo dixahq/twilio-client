@@ -14,9 +14,11 @@ final class ResponseRedirectTest extends AnyWordSpec {
         val callbackUrl = CallbackUrl("relative/url")
 
         val result: Response.Verified = Response.build { responseBuilder =>
-          responseBuilder.addRedirect { redirectBuilder =>
-            redirectBuilder.withCallbackUrl(callbackUrl).build
-          }.buildVerified
+          responseBuilder
+            .addRedirect { redirectBuilder =>
+              redirectBuilder.withCallbackUrl(callbackUrl).build()
+            }
+            .buildVerified()
         }
 
         val expectedPrettyXml =
@@ -38,9 +40,11 @@ final class ResponseRedirectTest extends AnyWordSpec {
       val callbackUrl = CallbackUrl("relative/url")
 
       val result: Response.Verified = Response.build { responseBuilder =>
-        responseBuilder.addRedirect { redirectBuilder =>
-          redirectBuilder.withCallbackUrl(callbackUrl).withMethod(HttpMethod.Get).build
-        }.buildVerified
+        responseBuilder
+          .addRedirect { redirectBuilder =>
+            redirectBuilder.withCallbackUrl(callbackUrl).withMethod(HttpMethod.Get).build()
+          }
+          .buildVerified()
       }
 
       val expectedPrettyXml =
@@ -62,9 +66,11 @@ final class ResponseRedirectTest extends AnyWordSpec {
       val callbackUrlXmlEscaped = "relative/url$key1=value1&amp;key2=value2"
 
       val result: Response.Verified = Response.build { responseBuilder =>
-        responseBuilder.addRedirect { redirectBuilder =>
-          redirectBuilder.withCallbackUrl(callbackUrl).build
-        }.buildVerified
+        responseBuilder
+          .addRedirect { redirectBuilder =>
+            redirectBuilder.withCallbackUrl(callbackUrl).build()
+          }
+          .buildVerified()
       }
 
       val expectedPrettyXml =
@@ -87,9 +93,9 @@ final class ResponseRedirectTest extends AnyWordSpec {
           |      
           |val result: Response.Verified = Response.build { responseBuilder =>
           |  responseBuilder.addRedirect { redirectBuilder =>
-          |    redirectBuilder.withCallbackUrl(callbackUrl).withMethod(HttpMethod.Get).build
+          |    redirectBuilder.withCallbackUrl(callbackUrl).withMethod(HttpMethod.Get).build()
           |  }.addSay(_.withText("Should not be allowed to add this").build())
-          |    .buildVerified
+          |    .buildVerified()
           |}
           |""".stripMargin
       )

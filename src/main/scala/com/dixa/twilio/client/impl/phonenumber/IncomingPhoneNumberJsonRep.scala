@@ -2,12 +2,15 @@ package com.dixa.twilio.client.impl.phonenumber
 
 import com.dixa.twilio.client.impl.phonenumber.IncomingPhoneNumberJsonRep._
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
 import com.dixa.twilio.model.phonenumber.{
   PhoneNumberE164,
   TwilioIncomingPhoneNumber,
-  TwilioPhoneNumberSid
+  TwilioPhoneNumber
 }
-import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+
+import scala.annotation.nowarn
 
 private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     sid: String,
@@ -18,10 +21,10 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
 ) {
 
   private[phonenumber] def toModel = TwilioIncomingPhoneNumber(
-    TwilioPhoneNumberSid(sid),
-    TwilioAccount.Sid(account_sid),
+    TwilioPhoneNumber.Sid.unsafe(sid),
+    TwilioAccount.Sid.unsafe(account_sid),
     TwilioIncomingPhoneNumber.FriendlyName(friendly_name),
-    PhoneNumberE164(phone_number),
+    PhoneNumberE164.unsafe(phone_number),
     PhoneNumberCapabilitiesSummary(
       capabilities.voice,
       capabilities.sms,
@@ -31,11 +34,19 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
   )
 }
 
-object IncomingPhoneNumberJsonRep {
-  private[phonenumber] final case class IncomingNumberCapabilitiesJsonRep(
+private[phonenumber] object IncomingPhoneNumberJsonRep {
+  final case class IncomingNumberCapabilitiesJsonRep(
       voice: Boolean,
       sms: Boolean,
       mms: Boolean,
-      fax: Option[Boolean],
+      fax: Option[Boolean] = None,
   )
+
+  @nowarn(value = "cat=unused") // used by macro generated code
+  private implicit val incomingNumberCapabilitiesJsonRepReader
+      : Reader[IncomingNumberCapabilitiesJsonRep] =
+    macroR[IncomingNumberCapabilitiesJsonRep]
+
+  implicit val incomingPhoneNumberJsonRepReader: Reader[IncomingPhoneNumberJsonRep] =
+    macroR[IncomingPhoneNumberJsonRep]
 }

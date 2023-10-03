@@ -4,11 +4,14 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.CallUpdateRequestExecutor.CallUpdateException
 import com.dixa.twilio.client.voice.{CallUpdateRequestExecutor, TwilioClientVoice}
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
+import java.net.URLEncoder
+import java.time._
 import scala.concurrent.Future
 
 final class CallUpdateUrlTest extends TwilioClientTest {
@@ -34,8 +37,28 @@ final class CallUpdateUrlTest extends TwilioClientTest {
 
         val expected = Right(
           Call(
-            sid = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            accountSid = connSettings.accountSid
+            sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            accountSid = connSettings.accountSid,
+            answeredBy = None,
+            callerName = None,
+            dateCreated = createdAtInstant,
+            dateUpdate = updatedAtInstant,
+            direction = Call.Direction.Inbound,
+            duration = Some(Duration.ofSeconds(15)),
+            endTime = Some(endTimeAtInstant),
+            forwardedFrom = Some(Call.ForwardedFrom("+141586753093")),
+            from = Call.CallerId("+14158675308"),
+            fromFormatted = Call.FormattedPhoneNumber("(415) 867-5308"),
+            groupSid = None,
+            parentCallSid = None,
+            phoneNumberSid = None,
+            price = Some(Call.Price(-0.0300, Iso4127CountryCode("USD"))),
+            startTime = Some(startTimeAtInstant),
+            status = Call.Status.Completed,
+            to = Call.CallerId("+14158675309"),
+            toFormatted = Call.FormattedPhoneNumber("(415) 867-5309"),
+            trunkSid = None,
+            queueTime = Duration.ofSeconds(1),
           )
         )
 
@@ -92,6 +115,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
     }
   }
 
+  // `"phone_number_sid": ""` is important because Twilio sometimes uses that instead of null for no value.
   private def twilioResponse1 =
     """{
       |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -108,7 +132,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
       |  "from_formatted": "(415) 867-5308",
       |  "group_sid": null,
       |  "parent_call_sid": null,
-      |  "phone_number_sid": "PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+      |  "phone_number_sid": "",
       |  "price": "-0.03000",
       |  "price_unit": "USD",
       |  "sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -126,7 +150,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
       |  },
       |  "to": "+14158675309",
       |  "to_formatted": "(415) 867-5309",
-      |  "trunk_sid": null,
+      |  "trunk_sid": "",
       |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json",
       |  "queue_time": "1000"
       |}
@@ -155,12 +179,40 @@ final class CallUpdateUrlTest extends TwilioClientTest {
   final class Fixture {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val callSid      = Call.Sid("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withUrl(CallbackUrl("http://demo.twilio.com/docs/voice.xml"))
-        .build
+        .build()
+    )
+
+    val createdAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 28)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val updatedAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 44)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val endTimeAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 44)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val startTimeAtInstant = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2010, 8, 31), LocalTime.of(20, 36, 29)),
+        ZoneOffset.UTC
+      )
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
@@ -171,7 +223,8 @@ final class CallUpdateUrlTest extends TwilioClientTest {
       )
       .withRequestBody(
         WireMock.containing(
-          """Url=http://demo.twilio.com/docs/voice.xml"""
+          s"""${URLEncoder.encode("Url", "utf-8")}=${URLEncoder
+              .encode("http://demo.twilio.com/docs/voice.xml", "utf-8")}"""
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")

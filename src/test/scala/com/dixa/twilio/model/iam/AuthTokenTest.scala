@@ -31,6 +31,7 @@ final class AuthTokenTest extends AnyWordSpec {
       val primary: AuthToken.Primary = AuthToken.Primary("primaryToken")
       primary match {
         case AuthToken(s) => assert(s === "primaryToken")
+        case _            => fail()
       }
     }
 
@@ -38,6 +39,7 @@ final class AuthTokenTest extends AnyWordSpec {
       val primary: AuthToken.Primary = AuthToken.Primary("primaryToken")
       primary match {
         case AuthToken.Primary(s) => assert(s === "primaryToken")
+        case _                    => fail()
       }
     }
 
@@ -45,6 +47,7 @@ final class AuthTokenTest extends AnyWordSpec {
       val secondary: AuthToken.Secondary = AuthToken.Secondary("secondaryToken")
       secondary match {
         case AuthToken(s) => assert(s === "secondaryToken")
+        case _            => fail()
       }
     }
 
@@ -52,6 +55,7 @@ final class AuthTokenTest extends AnyWordSpec {
       val secondary: AuthToken.Secondary = AuthToken.Secondary("secondaryToken")
       secondary match {
         case AuthToken.Secondary(s) => assert(s === "secondaryToken")
+        case _                      => fail()
       }
     }
 
@@ -59,6 +63,7 @@ final class AuthTokenTest extends AnyWordSpec {
       val unknownType: AuthToken.UnknownType = AuthToken.UnknownType("anAuthToken")
       unknownType match {
         case AuthToken(s) => assert(s === "anAuthToken")
+        case _            => fail()
       }
     }
 
@@ -66,6 +71,7 @@ final class AuthTokenTest extends AnyWordSpec {
       val unknownType: AuthToken.UnknownType = AuthToken.UnknownType("anAuthToken")
       unknownType match {
         case AuthToken.UnknownType(s) => assert(s === "anAuthToken")
+        case _                        => fail()
       }
     }
 

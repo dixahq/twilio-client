@@ -1,6 +1,10 @@
 package com.dixa.twilio.model.twiml
 
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.twiml.verb.{HangupVerb, PauseVerb, SayVerb}
 import org.scalatest.wordspec.AnyWordSpec
+
+import scala.collection.immutable
 
 final class ResponseMiscTest extends AnyWordSpec {
   s"${classOf[Response].getSimpleName}" when {
@@ -36,6 +40,48 @@ final class ResponseMiscTest extends AnyWordSpec {
             |""".stripMargin
         )
       }
+
+      "should equal a verified response, if it was created from the verified instances xmlCompact" in {
+        val verified   = Response.build(_.addSay(_.withText("Hello world").build()).buildVerified())
+        val unverified = Response.fromString(verified.xmlCompact)
+        assert(unverified == verified)
+      }
+    }
+
+    "Allow creating of a UnverifiedFromModel instance from a Seq of Verbs" in {
+      val input = immutable.Seq(
+        SayVerb.build(_.withText("Hello").build()),
+        HangupVerb.build(_.build())
+      )
+      val result: Response.UnverifiedFromModel = Response.fromVerbs(input)
+      assert(result.verbs == input)
+    }
+
+    "toString should include type and xml, so that all that it indicates the difference, but still is easy comparable" should {
+
+      "when created as a a UnverifiedFromModel instance" in {
+        val input = immutable.Seq(
+          SayVerb.build(_.withText("Hello").build()),
+          HangupVerb.build(_.build())
+        )
+        val response: Response.UnverifiedFromModel = Response.fromVerbs(input)
+        assert(response.toString == s"Response.UnverifiedFromModel(${response.xmlCompact})")
+      }
+
+      "when created from string" in {
+        val xml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Say>Hello World</Say>
+             |</Response>""".stripMargin
+        val response: Response.UnverifiedFromString = Response.fromString(xml)
+        assert(response.toString == s"Response.UnverifiedFromString(${response.xmlCompact})")
+      }
+
+      "when created from model" in {
+        val response: Response.Verified = Response.build(_.addReject(_.build()).buildVerified())
+        assert(response.toString == s"Response.Verified(${response.xmlCompact})")
+      }
     }
 
     "not allow clients to create a Verified instance directly" in {
@@ -52,7 +98,7 @@ final class ResponseMiscTest extends AnyWordSpec {
                           |""".stripMargin)
       }
 
-    "constructed from a builder but including a custome verb" should {
+    "constructed from a builder but including pre build Verb elements" should {
 
       "not allow clients to create a UnverifiedFromModel instance directly" in {
         assertDoesNotCompile(
@@ -90,11 +136,12 @@ final class ResponseMiscTest extends AnyWordSpec {
         )
       }
 
-      "return a instance that is both FromModel and Unverified" in {
+      "support creating Response from a single completely custom verb" in {
         final class TestCustomVerb extends TwimlElement.Verb {
-          override def xmlCompact: String = """<CustomVerb>Hello<CustomVerb>"""
-
-          override def xmlPretty: String = xmlCompact
+          override protected def tagName: String                                = "CustomVerb"
+          override protected def tagAttributes: immutable.Seq[(String, String)] = Nil
+          override protected def tagSubElements: immutable.Seq[TwimlElement]    = Nil
+          override protected def tagValue: Option[String]                       = Some("Hello")
         }
         val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
           responseBuilder.addCustomVerb(new TestCustomVerb).buildUnverified()
@@ -104,8 +151,26 @@ final class ResponseMiscTest extends AnyWordSpec {
           result.xmlPretty ==
             s"""<?xml version="1.0" encoding="UTF-8"?>
                |<Response>
-               |  <CustomVerb>Hello<CustomVerb>
+               |  <CustomVerb>Hello</CustomVerb>
                |</Response>""".stripMargin
+        )
+      }
+
+      "support appending multiple verbs from an Seq to Response" in {
+        val sayVerb: TwimlElement.Verb   = SayVerb.build(_.withText("aa").build())
+        val pauseVerb: TwimlElement.Verb = PauseVerb.build(_.build())
+        val hangupVerb                   = HangupVerb.build(_.build())
+        val verbSeq                      = List(sayVerb, pauseVerb, hangupVerb)
+        val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial(_.withPhoneNumber(PhoneNumberE164("+4522334455").get).build())
+            .addCustomVerbs(verbSeq)
+            .buildUnverified()
+        }
+        assert(result.isInstanceOf[Response.FromModel])
+        assert(
+          result.xmlCompact ==
+            s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial>+4522334455</Dial>${sayVerb.xmlCompact}${pauseVerb.xmlCompact}${hangupVerb.xmlCompact}</Response>""".stripMargin
         )
       }
     }

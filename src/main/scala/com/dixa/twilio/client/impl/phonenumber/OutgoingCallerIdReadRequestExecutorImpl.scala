@@ -12,7 +12,7 @@ import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor.{
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.phonenumber.OutgoingCallerId
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.concurrent.ExecutionContext
 
@@ -31,7 +31,6 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
   ): List[
     Either[OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadException, OutgoingCallerId]
   ] = {
-    println(s"response entity: $responseEntity")
     responseEntity.parse[OuterJsonRep]() match {
       case Left(ex) =>
         List(
@@ -86,5 +85,8 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
     OutgoingCallerIdReadException.Unspecified(msg, cause)
 
   private case class OuterJsonRep(outgoing_caller_ids: List[OutgoingCallerIdJsonRep])
+
+  private implicit val outerJsonRepReader: Reader[OuterJsonRep] =
+    macroR[OuterJsonRep]
 
 }

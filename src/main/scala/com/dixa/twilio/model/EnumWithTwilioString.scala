@@ -1,16 +1,15 @@
 package com.dixa.twilio.model
 
 import enumeratum.Enum
-import org.scalactic.TypeCheckedTripleEquals._
 
 /** Base trait for a Enum having an twilioString value.
   *
-  * Multiple enums in this library, is represented as String values in Twilio. This trait works as a
-  * base trait for all of these enums, unifies the name of the value and how a enum value can be
-  * found from it.
+  * Multiple enums in this library are represented as String values in Twilio. This trait works as a
+  * base trait for all of these enums, and unifies the name of the values and how an enum value can
+  * be found from it.
   *
   * @tparam A
-  *   Type of the EnumEntry. Must extends the special EnumEntry found in the companion object.
+  *   Type of the EnumEntry. Must extend the special EnumEntry found in the companion object.
   */
 trait EnumWithTwilioString[A <: EnumWithTwilioString.EnumEntry] extends Enum[A] {
 
@@ -18,7 +17,7 @@ trait EnumWithTwilioString[A <: EnumWithTwilioString.EnumEntry] extends Enum[A] 
 
   /** Return the value corresponding to provided twilioString. Returns None if not found */
   def fromTwilioString(twilioString: String): Option[A] =
-    values.find(_.twilioString === twilioString)
+    values.find(_.twilioString == twilioString)
 
   /** Return the value corresponding to provided twilioString in a Right. Returns Left if not found
     */

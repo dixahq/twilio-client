@@ -23,8 +23,6 @@ import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import io.circe.generic.auto._
-import org.scalactic.TypeCheckedTripleEquals._
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
@@ -83,7 +81,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       entity: HttpEntityString
   ): Either[MessageSendException, MessageResource] = {
     parseEntityAs[MessageJsonRep](entity).flatMap { decoded =>
-      MessageDirection.values.find(_.twilioString === decoded.direction) match {
+      MessageDirection.values.find(_.twilioString == decoded.direction) match {
         case None =>
           Left(
             new MessageSendException.Unspecified(
@@ -91,7 +89,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
             )
           )
         case Some(direction) =>
-          req.from.asString === decoded.from match {
+          req.from.asString == decoded.from match {
             case false =>
               Left(
                 new MessageSendException.Unspecified(
@@ -99,7 +97,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                 )
               )
             case true =>
-              MessageStatus.values.find(_.twilioString === decoded.status) match {
+              MessageStatus.values.find(_.twilioString == decoded.status) match {
                 case None =>
                   Left(
                     new MessageSendException.Unspecified(
@@ -118,21 +116,21 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                   }
                   Right(
                     MessageResource(
-                      accountSid = TwilioAccount.Sid(decoded.account_sid),
+                      accountSid = TwilioAccount.Sid.unsafe(decoded.account_sid),
                       body = MessageBody(decoded.body),
                       dateCreated = decoded.date_created.flatMap(parseDate),
                       dateSent = decoded.date_sent.flatMap(parseDate),
                       dateUpdated = decoded.date_updated.flatMap(parseDate),
                       direction = direction,
-                      from = MessageSender.E164(PhoneNumberE164(decoded.from)),
+                      from = MessageSender.fromStringUnsafe(decoded.from),
                       messagingServiceSid =
                         decoded.messaging_service_sid.flatMap(parseMessagingServiceSid),
                       numMedia = decoded.num_media.toInt,
                       numSegments = MessageNumSegments(decoded.num_segments.toInt),
                       price = price,
-                      sid = MessageSid(decoded.sid),
+                      sid = Message.Sid.unsafe(decoded.sid),
                       status = status,
-                      to = PhoneNumberE164(decoded.to),
+                      to = PhoneNumberE164.unsafe(decoded.to),
                       error = messageError
                     )
                   )
@@ -171,8 +169,6 @@ private object MessageSendRequestExecutorImpl {
 
   private def parseMessagingServiceSid(
       messagingServiceSid: String
-  ): Option[ServiceSid] = messagingServiceSid match {
-    case null => None
-    case _    => Some(ServiceSid(messagingServiceSid))
-  }
+  ): Option[TwilioMessagingService.Sid] =
+    TwilioMessagingService.Sid.safe(messagingServiceSid).toOption
 }

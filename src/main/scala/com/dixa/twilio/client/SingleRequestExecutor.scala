@@ -2,8 +2,7 @@ package com.dixa.twilio.client
 
 import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
 import com.dixa.twilio.client.impl.{DefaultApiErrorEntityJsonRep, HttpEntityString}
-import io.circe.Decoder
-import io.circe.generic.auto._
+import com.dixa.twilio.client.impl.TwilioClientPickler.Reader
 
 import scala.concurrent.Future
 import scala.reflect.ClassTag
@@ -148,13 +147,13 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
       entity: HttpEntityString
   ): Either[Err, Success] = {
     val msg =
-      s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
+      s"No support for handling response to $request, due to status code ${httpResponse.status} " +
         s"after firing $httpRequest. Full entity of response is: $entity"
     Left(createUnspecifiedException(Some(msg), None))
   }
 
   /** Helper method for parsing entity as Json, wrapping errors in UnspecifiedException. */
-  protected final def parseEntityAs[A: ClassTag: Decoder](
+  protected final def parseEntityAs[A: ClassTag: Reader](
       entity: HttpEntityString
   ): Either[UnspecifiedException, A] = {
     entity.parse[A]().left.map(e => createUnspecifiedException(None, Some(e)))

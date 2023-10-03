@@ -4,26 +4,14 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.Uri.Query
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString, ListJsonRep}
+import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString}
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.{
-  MessageBody,
-  MessageDirection,
-  MessageError,
-  MessageNumSegments,
-  MessagePrice,
-  MessageResource,
-  MessageSender,
-  MessageSid,
-  MessageStatus,
-  ServiceSid
-}
+import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import io.circe.generic.auto._
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
@@ -95,7 +83,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
     Either[MessageResourceReadRequestExecutor.MessageResourceReadException, MessageResource]
   ] = {
     responseEntity
-      .parse[ListJsonRep[MessageJsonRep]]() match {
+      .parse[MessageListJsonRep]() match {
       case Left(ex) =>
         List(
           Left(
@@ -110,8 +98,8 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
   private def toModel(
       jsonRep: MessageJsonRep
   ): Either[MessageResourceReadException, MessageResource] = {
-    val accountSid = TwilioAccount.Sid(jsonRep.account_sid)
-    val messageSid = MessageSid(jsonRep.sid)
+    val accountSid = TwilioAccount.Sid.unsafe(jsonRep.account_sid)
+    val messageSid = Message.Sid.unsafe(jsonRep.sid)
     for {
       messageDirection <- MessageDirection.fromTwilioStringEither(jsonRep.direction).left.map {
         err =>
@@ -126,8 +114,8 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
         dateUpdated = jsonRep.date_updated.flatMap(parseDate),
         dateSent = jsonRep.date_sent.flatMap(parseDate),
         accountSid = accountSid,
-        to = PhoneNumberE164(jsonRep.to),
-        from = MessageSender.E164(PhoneNumberE164(jsonRep.from)),
+        to = PhoneNumberE164.unsafe(jsonRep.to),
+        from = MessageSender.fromStringUnsafe(jsonRep.from),
         messagingServiceSid = jsonRep.messaging_service_sid.flatMap(parseMessagingServiceSid),
         body = MessageBody(jsonRep.body),
         status = messageStatus,
@@ -166,10 +154,6 @@ private object MessageResourceReadRequestExecutorImpl {
 
   private def parseMessagingServiceSid(
       messagingServiceSid: String
-  ): Option[ServiceSid] = messagingServiceSid match {
-    case null                       => None
-    case str: String if str.isEmpty => None
-    case ""                         => None
-    case _                          => Some(ServiceSid(messagingServiceSid))
-  }
+  ): Option[TwilioMessagingService.Sid] =
+    TwilioMessagingService.Sid.safe(messagingServiceSid).toOption
 }

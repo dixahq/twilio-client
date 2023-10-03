@@ -29,7 +29,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val filter = OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequestFilter(
-          Some(PhoneNumberE164("+141586753096"))
+          Some(PhoneNumberE164.unsafe("+141586753096"))
         )
 
         wireMockServer.stubFor(
@@ -53,7 +53,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
         val req =
           OutgoingCallerIdReadRequest(
-            TwilioAccount.Sid("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             filter
           )
 
@@ -61,18 +61,18 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
           instance.outgoingCallerIdList.source(twilioConnectionSetting, req).runWith(Sink.seq)
 
         resultFut.flatMap { seq =>
-          println(s"result : $seq")
           assert(seq === Seq(Right(outgoingCallerId)))
         }
       }
     }
   }
 
+  // noinspection TypeAnnotation
   class Fixture {
     val outgoingCallerId = OutgoingCallerId(
-      sid = OutgoingCallerId.Sid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+      sid = OutgoingCallerId.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
       friendlyName = OutgoingCallerId.FriendlyName("(415) 867-5309"),
-      phoneNumber = PhoneNumberE164("+141586753096")
+      phoneNumber = PhoneNumberE164.unsafe("+141586753096")
     )
 
     val twilioResponse1 =

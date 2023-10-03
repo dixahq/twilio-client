@@ -5,7 +5,7 @@ private[model] object StringUtil {
   private val twoSpaces = "  "
 
   private[model] def indentEveryLineWith2Spaces(input: String): String =
-    input.lines.map(twoSpaces + _).mkString(System.lineSeparator())
+    input.linesIterator.map(twoSpaces + _).mkString(System.lineSeparator())
 
   /** Escape all the XML special chars from this string.
     *
@@ -18,5 +18,4 @@ private[model] object StringUtil {
     .replace("'", "&apos;")
     .replace("<", "&lt;")
     .replace(">", "&gt;")
-
 }

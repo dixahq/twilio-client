@@ -3,6 +3,7 @@ package com.dixa.twilio.client.twilioClient
 import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import akka.http.scaladsl.{Http, HttpExt}
 import akka.stream.Materializer
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
@@ -17,7 +18,7 @@ import com.dixa.twilio.client.{
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import org.scalamock.scalatest.AsyncMockFactory
+import org.scalamock.scalatest.proxy.AsyncMockFactory
 
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
@@ -269,17 +270,17 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         impl.run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
           result =>
             assert(result.isLeft)
-            result.left.get match {
-              case ue: AbstractTestException.Undefined => assert(ue.getCause === toThrow)
-              case _                                   => fail("Wrong cause in Exception")
+            result match {
+              case Left(ue: AbstractTestException.Undefined) => assert(ue.getCause === toThrow)
+              case _                                         => fail("Wrong cause in Exception")
             }
         }
       }
 
     "SingleRequestExecutor's run methods should be able to be overridden for testing and not throw " +
       "NoSuchMethodException" in {
-        val ownerAccountSid = TwilioAccount.Sid("TestOwnerAccountSid")
-        val accountSid      = TwilioAccount.Sid("TestAccountSid")
+        val ownerAccountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXA")
+        val accountSid      = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXB")
         val accountToken    = AuthToken.Primary("TestAuthToken")
         val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
         val account = TwilioAccount(
@@ -307,13 +308,14 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           TwilioConnectionSettings.Timeouts.default
         )
 
-        val twilioClientIam = stub[TwilioClientIam]
+        val twilioClientIam: TwilioClientIam = stub[TwilioClientIam]("testTwilioClientIam")
 
-        val client = stub[TwilioClient]
-        (client.iam _).when().returns(twilioClientIam)
+        val client: TwilioClient = stub[TwilioClient]("testTwilioClient")
+        (() => client.iam).when().returns(twilioClientIam)
 
-        val accountFetchReqExecutor = stub[AccountFetchRequestExecutor]
-        (twilioClientIam.accountFetch _).when().returns(accountFetchReqExecutor)
+        val accountFetchReqExecutor: AccountFetchRequestExecutor =
+          stub[AccountFetchRequestExecutor]("testAccountFetchRequestExecutor")
+        (() => twilioClientIam.accountFetch).when().returns(accountFetchReqExecutor)
 
         val fetchReq = AccountFetchRequest(accountSid = accountSid)
 
@@ -341,7 +343,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
     override protected implicit def executionContext: ExecutionContext =
       actorSystemProvider.classicSystem.dispatcher
 
-    override protected type ApiExceptionWrapper = AbstractTestException
+    override protected type ApiExceptionWrapper = AbstractTestException.Api
 
     override protected type UnspecifiedException = AbstractTestException.Undefined
 
@@ -362,7 +364,7 @@ private object SingleRequestExecutorTest {
   sealed trait AbstractTestException extends RuntimeException
   object AbstractTestException {
     final case class ConcreateTestException() extends AbstractTestException
-    final case class Api(cause: ApiException) extends AbstractTestException
+    final case class Api(cause: ApiException) extends AbstractTestException with ApiExceptionWrapper
     final case class Undefined(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(msg.orNull, cause.orNull)
         with AbstractTestException

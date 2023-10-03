@@ -1,6 +1,19 @@
 import sbt.Test
+import com.dixa.sbt.ReleaseStateTransformations.{
+  dixaAddGitHistoryToReleaseTag,
+  dixaCheckSnapshotDependencies,
+  dixaDetermineVersion,
+  dixaPushReleaseTag
+}
+import sbtrelease.ReleasePlugin.autoImport.{
+  releaseProcess,
+  releaseStepCommandAndRemaining,
+  ReleaseStep
+}
+import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_12          = "2.12.17"
+val scala2_12          = "2.12.18"
+val scala2_13          = "2.13.12"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -11,17 +24,27 @@ val Version = new AnyRef {
   val Akka     = "2.6.20"
   val AkkaHttp = "10.2.10"
   val Circe    = "0.14.5"
-
-  // test
-  val ScalatestScalactic = "3.2.15"
 }
+
+val scalacOpt = Seq(
+  "-feature",
+  "-unchecked",
+  "-deprecation",
+  "-encoding",
+  "utf8",
+  "-Xlint",
+  "-Xfatal-warnings",
+  "-release",
+  "8",
+  "-Wconf:msg=discarding unmoored doc comment:s"
+)
 
 lazy val `twilio-client` = project
   .in(file("."))
   .settings(
     Seq(
       organization := "com.dixa",
-      scalaVersion := scala2_12,
+      scalaVersion := scala2_13,
       resolvers ++= Seq(
         releasesRepository,
         twitterHttpsRepo,
@@ -39,56 +62,53 @@ lazy val `twilio-client` = project
       } getOrElse {
         Credentials(Path.userHome / ".sbt" / ".credentials")
       },
-      scalacOptions := Seq(
-        "-feature",
-        "-unchecked",
-        "-deprecation",
-        "-encoding",
-        "utf8",
-        "-Xlint",
-        "-Xfatal-warnings",
-        "-target:jvm-1.8",
-        "-Wconf:msg=discarding unmoored doc comment:s"
-      ),
-      crossScalaVersions := Seq(scala2_12),
-      releaseCrossBuild  := true,
-      publishTo := {
-        if (version.value.trim.endsWith("SNAPSHOT")) {
-          Some(snapshotsRepository)
-        } else {
-          Some(releasesRepository)
-        }
+      scalacOptions := {
+        if (scalaVersion.value == scala2_12)
+          scalacOpt :+ "-Wconf:cat=unused-params:s"
+        else
+          scalacOpt
       },
+      crossScalaVersions := Seq(scala2_12, scala2_13),
+      releaseCrossBuild  := true,
       libraryDependencies ++= Seq(
         // Akka
         "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka     % Provided,
         "com.typesafe.akka" %% "akka-stream"      % Version.Akka     % Provided,
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
-        // Circe
-        "io.circe" %% "circe-core"    % Version.Circe,
-        "io.circe" %% "circe-generic" % Version.Circe,
-        "io.circe" %% "circe-parser"  % Version.Circe,
+        // Json serialization / deserialization
+        "com.lihaoyi" %% "upickle" % "3.1.3",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
-        "org.scalactic" %% "scalactic"  % Version.ScalatestScalactic,
-        "com.beachape"  %% "enumeratum" % "1.7.2",
+        "com.beachape" %% "enumeratum" % "1.7.3",
 
         // Test
-        "org.scalatest" %% "scalatest"                   % Version.ScalatestScalactic % Test,
-        "org.scalamock" %% "scalamock-scalatest-support" % "3.6.0"                    % Test,
-        "com.github.tomakehurst" % "wiremock" % "2.27.2" % Test
+        "org.scalatest"         %% "scalatest" % "3.2.17" % Test,
+        "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
+        "com.github.tomakehurst" % "wiremock"  % "3.0.1"  % Test,
       ),
-      coverageMinimumStmtTotal := 75,
-      coverageFailOnMinimum    := false,
-      coverageHighlighting     := false,
-      Test / compile           := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
+      dependencyOverrides ++= Seq(
+        // Dependencies added to handle vulnerabilities in transitive Test and Provided dependencies
+        "org.eclipse.jetty.http2"          % "http2-server"            % "11.0.14", // From Wiremock
+        "com.fasterxml.jackson.dataformat" % "jackson-dataformat-yaml" % "2.15.1",  // From Wiremock
+      ),
+      publish / skip := false,
+      releaseProcess :=
+        Seq[ReleaseStep](
+          dixaCheckSnapshotDependencies,
+          runClean,
+          dixaDetermineVersion,
+          releaseStepCommandAndRemaining("+test"),
+          releaseStepCommandAndRemaining("+publish"),
+          tagRelease,
+          dixaAddGitHistoryToReleaseTag,
+          dixaPushReleaseTag
+        ),
+
+      // Test
+      Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
     )
-  )
-  .enablePlugins(
-    JavaAppPackaging,
-    UniversalDeployPlugin
   )

@@ -73,14 +73,14 @@ final class MessageSendTest extends TwilioClientTest {
             dateSent = None,
             dateUpdated = None,
             direction = MessageDirection.withName("OutboundApi"),
-            from = MessageSender.E164(PhoneNumberE164(from)),
+            from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
             messagingServiceSid = None,
             numMedia = 0,
             numSegments = MessageNumSegments(1),
             price = None,
-            sid = MessageSid("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             status = MessageStatus.withName("Sent"),
-            to = PhoneNumberE164(to),
+            to = PhoneNumberE164.unsafe(to),
             error = None
           )
         )
@@ -272,8 +272,8 @@ final class MessageSendTest extends TwilioClientTest {
 
     val messageSendRequest = MessageSendRequest(
       accountSid = accountSid,
-      from = MessageSender.E164(PhoneNumberE164(from)),
-      to = PhoneNumberE164(to),
+      from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+      to = PhoneNumberE164.unsafe(to),
       body = MessageBody(messageBody),
       statusCallback = StatusCallback(new URL(testStatusCallback))
     )

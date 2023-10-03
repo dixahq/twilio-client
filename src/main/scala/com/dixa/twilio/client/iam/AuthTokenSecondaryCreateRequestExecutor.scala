@@ -1,5 +1,6 @@
 package com.dixa.twilio.client.iam
 
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.AuthToken
 
@@ -27,6 +28,7 @@ object AuthTokenSecondaryCreateRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with AuthTokenSecondaryCreateException
+        with ApiExceptionWrapper
 
     /** Exceptions for cases where creating secondary auth tokens via API is not enabled on account.
       *

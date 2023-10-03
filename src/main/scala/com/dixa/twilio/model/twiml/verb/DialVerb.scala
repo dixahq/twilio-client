@@ -1,26 +1,22 @@
 package com.dixa.twilio.model.twiml.verb
 
-import com.dixa.twilio.model.StringUtil
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import com.dixa.twilio.model.twiml.TwimlConstraints.{
-  Buildable,
-  BuildableFalse,
-  BuildableTrue,
-  HasSingleAllowedValueAlready,
-  HasSingleAllowedValueAlreadyFalse,
-  HasSingleAllowedValueAlreadyTrue
-}
-import com.dixa.twilio.model.twiml.noun.ConferenceNoun
+import com.dixa.twilio.model.twiml.TwimlConstraints._
 import com.dixa.twilio.model.twiml.TwimlElement
+import com.dixa.twilio.model.twiml.noun.ConferenceNoun
 
-import scala.annotation.nowarn
+import scala.collection.immutable
 
 /** Represent the Dial verb in TwiML
   *
   * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
   * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
-trait DialVerb extends TwimlElement.Verb
+trait DialVerb extends TwimlElement.Verb {
+  override final protected def tagName: String = "Dial"
+
+  override final protected def tagAttributes: immutable.Seq[(String, String)] = Nil
+}
 
 object DialVerb {
 
@@ -30,15 +26,13 @@ object DialVerb {
   final class Builder[
       B <: Buildable,
       S <: HasSingleAllowedValueAlready
-  ](value: ValueToUse) {
+  ] private (value: ValueToUse) {
 
-    @nowarn(value = "cat=unused-params")
     def withPhoneNumber(pn: PhoneNumberE164)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] =
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValuePhoneNumber(pn))
 
-    @nowarn(value = "cat=unused-params")
     def withConference(fun: ConferenceNoun.BuildFunction)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue] = {
@@ -46,16 +40,19 @@ object DialVerb {
       new Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue](ValueNoun(conference))
     }
 
-    @nowarn(value = "cat=unused-params")
     def build()(
         implicit evB: B =:= BuildableTrue
     ): DialVerb = DialVerbImpl(value)
   }
 
+  object Builder {
+    val empty: BuilderStartState = new BuilderStartState(NotSetValue)
+  }
+
   type BuilderStartState = Builder[BuildableFalse, HasSingleAllowedValueAlreadyFalse]
   type BuildFunction     = BuilderStartState => DialVerb
 
-  def build(fun: BuildFunction): DialVerb = fun(new BuilderStartState(NotSetValue))
+  def build(fun: BuildFunction): DialVerb = fun(Builder.empty)
 
   private sealed abstract class ValueToUse
   private object NotSetValue                                     extends ValueToUse
@@ -63,24 +60,15 @@ object DialVerb {
   private final case class ValueNoun(noun: DialNoun)             extends ValueToUse
 
   private final case class DialVerbImpl(value: ValueToUse) extends DialVerb {
-    override lazy val xmlCompact: String = {
-      val valueAsString = value match {
-        case ValuePhoneNumber(pn) => pn.asString
-        case ValueNoun(noun)      => noun.xmlCompact
-        case NotSetValue => throw new AssertionError("This should never happen. Report a bug.")
-      }
-      s"""<Dial>$valueAsString</Dial>"""
+
+    override protected def tagSubElements: immutable.Seq[TwimlElement] = value match {
+      case ValueNoun(noun) => List(noun)
+      case _               => Nil
     }
 
-    override lazy val xmlPretty: String = {
-      val valueAsString = value match {
-        case ValuePhoneNumber(pn) => pn.asString
-        case ValueNoun(noun)      => noun.xmlPretty
-        case NotSetValue => throw new AssertionError("This should never happen. Report a bug.")
-      }
-      s"""<Dial>
-         |${StringUtil.indentEveryLineWith2Spaces(valueAsString)}
-         |</Dial>""".stripMargin
+    override protected def tagValue: Option[String] = value match {
+      case ValuePhoneNumber(pn) => Some(pn.asString)
+      case _                    => None
     }
   }
 

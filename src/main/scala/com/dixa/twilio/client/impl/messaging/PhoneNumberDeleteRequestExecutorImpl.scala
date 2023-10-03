@@ -2,12 +2,11 @@ package com.dixa.twilio.client.impl.messaging
 
 import akka.Done
 import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 

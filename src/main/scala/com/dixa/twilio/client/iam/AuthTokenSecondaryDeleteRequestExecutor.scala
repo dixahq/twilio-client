@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.iam
 
 import akka.Done
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 
 trait AuthTokenSecondaryDeleteRequestExecutor
@@ -27,6 +28,7 @@ object AuthTokenSecondaryDeleteRequestExecutor {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with AuthTokenSecondaryDeleteException
+        with ApiExceptionWrapper
 
     /** Exceptions for when the account has no secondary token.
       *
