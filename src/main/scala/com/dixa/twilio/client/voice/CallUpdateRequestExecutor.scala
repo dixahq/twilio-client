@@ -35,7 +35,7 @@ object CallUpdateRequestExecutor {
     def fallbackMethod: Option[HttpMethod]
     def statusCallback: Option[CallbackUrl]
     def statusCallbackMethod: Option[HttpMethod]
-    def twiml: Option[Response.Verified]
+    def twiml: Option[Response]
     def timeLimit: Option[Call.TimeLimit]
   }
 
@@ -49,7 +49,7 @@ object CallUpdateRequestExecutor {
       fallbackMethod: Option[HttpMethod],
       statusCallback: Option[CallbackUrl],
       statusCallbackMethod: Option[HttpMethod],
-      twiml: Option[Response.Verified],
+      twiml: Option[Response],
       timeLimit: Option[Call.TimeLimit]
   ) extends CallUpdateRequest
 
@@ -121,7 +121,7 @@ object CallUpdateRequestExecutor {
         fallbackMethod: Option[HttpMethod],
         statusCallback: Option[CallbackUrl],
         statusCallbackMethod: Option[HttpMethod],
-        twiml: Option[Response.Verified],
+        twiml: Option[Response],
         timeLimit: Option[Call.TimeLimit]
     ) {
 
@@ -348,7 +348,14 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      def withTwiml(twiml: Response.Verified)(
+      /** TwiML instructions for the call Twilio will use without fetching Twiml from url.
+        *
+        * Twiml and url parameters are mutually exclusive.
+        *
+        * You can provide any instance of Response, so clients can chose depending on their need for
+        * compile time guarantees vs flexibility.
+        */
+      def withTwiml(twiml: Response)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse
       ): Builder[
         AccountSidSet,
