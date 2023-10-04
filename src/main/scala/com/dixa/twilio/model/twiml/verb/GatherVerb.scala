@@ -6,7 +6,6 @@ import com.dixa.twilio.model.twiml.TwimlElement
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, PositiveInteger}
 
-import scala.annotation.nowarn
 import scala.collection.immutable
 
 /** Representation of the Gather Verb from TwiML
@@ -592,7 +591,6 @@ object GatherVerb {
       actionOnEmptyResult: Option[Boolean] = None
   ) {
 
-    @nowarn(value = "cat=unused")
     private type BuilderWithSameTypes =
       Builder[
         DtmfInput,

@@ -7,8 +7,6 @@ import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 
-import scala.annotation.nowarn
-
 trait ConferenceParticipantUpdateRequestExecutor
     extends SingleRequestExecutor[
       ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateRequest,
@@ -173,7 +171,6 @@ object ConferenceParticipantUpdateRequestExecutor {
         callSidToCoach
       )
 
-      @nowarn(value = "cat=unused")
       private type BuilderWithSameTypes =
         Builder[
           AccountSidSet,
