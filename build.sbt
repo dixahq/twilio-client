@@ -12,8 +12,7 @@ import sbtrelease.ReleasePlugin.autoImport.{
 }
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_12          = "2.12.18"
-val scala2_13          = "2.13.11"
+val scala2_13          = "2.13.12"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -62,13 +61,8 @@ lazy val `twilio-client` = project
       } getOrElse {
         Credentials(Path.userHome / ".sbt" / ".credentials")
       },
-      scalacOptions := {
-        if (scalaVersion.value == scala2_12)
-          scalacOpt :+ "-Wconf:cat=unused-params:s"
-        else
-          scalacOpt
-      },
-      crossScalaVersions := Seq(scala2_12, scala2_13),
+      scalacOptions := scalacOpt,
+      crossScalaVersions := Seq(scala2_13),
       releaseCrossBuild  := true,
       libraryDependencies ++= Seq(
         // Akka
