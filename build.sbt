@@ -71,7 +71,7 @@ lazy val `twilio-client` = project
         "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "3.1.2",
+        "com.lihaoyi" %% "upickle" % "3.1.3",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
@@ -80,7 +80,7 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.3",
 
         // Test
-        "org.scalatest"         %% "scalatest" % "3.2.16" % Test,
+        "org.scalatest"         %% "scalatest" % "3.2.17" % Test,
         "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
         "com.github.tomakehurst" % "wiremock"  % "3.0.1"  % Test,
       ),
