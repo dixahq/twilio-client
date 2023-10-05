@@ -51,15 +51,16 @@ final class CallFetchTest extends TwilioClientTest {
             phoneNumberSid = TwilioPhoneNumber.Sid("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX").toOption,
             status = Call.Status.Completed,
             startTime =
-              ZonedDateTime.of(2019, 10, 18, 17, 2, 0, 0, ZoneOffset.ofHours(0)).toInstant,
-            endTime = ZonedDateTime.of(2019, 10, 18, 17, 3, 0, 0, ZoneOffset.ofHours(0)).toInstant,
-            duration = Duration.ofSeconds(4),
-            price = Call.Price(-0.2, Iso4127CountryCode("USD")),
+              Some(ZonedDateTime.of(2019, 10, 18, 17, 2, 0, 0, ZoneOffset.ofHours(0)).toInstant),
+            endTime =
+              Some(ZonedDateTime.of(2019, 10, 18, 17, 3, 0, 0, ZoneOffset.ofHours(0)).toInstant),
+            duration = Some(Duration.ofSeconds(4)),
+            price = Some(Call.Price(-0.2, Iso4127CountryCode("USD"))),
             direction = Call.Direction.OutboundApi,
             answeredBy = Some(Call.AnsweredBy.Machine),
-            forwardedFrom = Call.ForwardedFrom("calledvia"),
+            forwardedFrom = Some(Call.ForwardedFrom("calledvia")),
             groupSid = Group.Sid("GPXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX").toOption,
-            callerName = Call.Name("callerid"),
+            callerName = Some(Call.Name("callerid")),
             queueTime = Duration.ofMillis(1000),
             trunkSid = Trunk.Sid("TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX").toOption
           )
