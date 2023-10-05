@@ -57,7 +57,7 @@ private[client] class CallFetchRequestExecutorImpl()(
       .flatMap { decoded =>
         decoded.code match {
           case 20404L =>
-            Left(CallFetchException.QueueNotFound(req.accountSid, req.sid))
+            Left(CallFetchException.CallNotFound(req.accountSid, req.sid))
           case other =>
             Left(
               CallFetchException.Unspecified(
