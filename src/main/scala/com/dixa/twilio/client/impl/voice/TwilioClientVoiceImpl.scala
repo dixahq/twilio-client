@@ -11,6 +11,7 @@ import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
 import com.dixa.twilio.client.voice.{
   CallCreateRequestExecutor,
+  CallFetchRequestExecutor,
   CallReadRequestExecutor,
   CallRecordingCreateRequestExecutor,
   CallRecordingReadRequestExecutor,
@@ -42,6 +43,8 @@ private[impl] final class TwilioClientVoiceImpl()(
   private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
 
   override val callCreate: CallCreateRequestExecutor = new CallCreateRequestExecutorImpl()
+
+  override val callFetch: CallFetchRequestExecutor = new CallFetchRequestExecutorImpl()
 
   override val callUpdate: CallUpdateRequestExecutor = new CallUpdateRequestExecutorImpl()
 
