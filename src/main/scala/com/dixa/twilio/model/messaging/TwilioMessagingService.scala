@@ -1,8 +1,9 @@
 package com.dixa.twilio.model.messaging
 
 import com.dixa.twilio.model.SidAbstract.Prefix
-import com.dixa.twilio.model.{HttpMethod, SidAbstract}
+import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.{HttpMethod, SidAbstract}
 import enumeratum.{Enum, EnumEntry}
 
 import java.net.URL
@@ -20,7 +21,7 @@ trait TwilioMessagingService {
   def friendlyName: FriendlyName
   def inboundRequestWebhook: Option[InboundRequestWebhook]
   def fallbackWebhook: Option[FallbackWebhook]
-  def statusCallback: Option[StatusCallback]
+  def statusCallback: Option[MessageStatusCallback]
   def useInboundWebhookOnNumber: UseInboundWebhookOnNumber
 }
 
@@ -55,7 +56,7 @@ object TwilioMessagingService {
       friendlyName: FriendlyName,
       inboundRequestWebhook: Option[InboundRequestWebhook],
       fallbackWebhook: Option[FallbackWebhook],
-      statusCallback: Option[StatusCallback],
+      statusCallback: Option[MessageStatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   ): TwilioMessagingService = DefaultImpl(
     sid,
@@ -73,7 +74,7 @@ object TwilioMessagingService {
       friendlyName: FriendlyName,
       inboundRequestWebhook: Option[InboundRequestWebhook],
       fallbackWebhook: Option[FallbackWebhook],
-      statusCallback: Option[StatusCallback],
+      statusCallback: Option[MessageStatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   ) extends TwilioMessagingService
 
