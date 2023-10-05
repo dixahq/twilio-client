@@ -2,11 +2,8 @@ package com.dixa.twilio.client.general
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
-import com.dixa.twilio.model.Iso8601DateTime
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.model.usage.UsageTrigger
-import com.dixa.twilio.model.voice.Call
 
 trait UsageTriggerReadRequestExecutor
     extends MultipleResponseRequestExecutor[
@@ -46,7 +43,7 @@ object UsageTriggerReadRequestExecutor {
 
     type BuilderStartState = Builder[RequestAttribute]
 
-    final class Builder[Attributes <: RequestAttribute] private[CallReadRequest] (
+    final class Builder[Attributes <: RequestAttribute] private[UsageTriggerReadRequest] (
         accountSid: Option[TwilioAccount.Sid],
         recurring: Option[UsageTrigger.Recurring],
         triggerBy: Option[UsageTrigger.TriggerBy],
@@ -84,6 +81,16 @@ object UsageTriggerReadRequestExecutor {
           recurring,
           triggerBy,
           Some(usageCategory)
+        )
+
+      def build()(
+          implicit ev: Attributes =:= RequestRequiredAttributes
+      ): UsageTriggerReadRequest =
+        UsageTriggerReadRequestImpl(
+          accountSid.get,
+          recurring,
+          triggerBy,
+          usageCategory
         )
     }
 

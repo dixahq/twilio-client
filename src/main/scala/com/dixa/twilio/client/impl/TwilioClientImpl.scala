@@ -3,7 +3,9 @@ package com.dixa.twilio.client.impl
 import akka.actor.ClassicActorSystemProvider
 import akka.http.scaladsl.{Http, HttpExt}
 import com.dixa.twilio.client.TwilioClient
+import com.dixa.twilio.client.general.TwilioClientGeneral
 import com.dixa.twilio.client.iam.TwilioClientIam
+import com.dixa.twilio.client.impl.general.TwilioClientGeneralImpl
 import com.dixa.twilio.client.impl.iam.TwilioClientIamImpl
 import com.dixa.twilio.client.impl.messaging.TwilioClientMessagingImpl
 import com.dixa.twilio.client.impl.phonenumber.TwilioClientPhoneNumberImpl
@@ -30,4 +32,6 @@ private[client] final class TwilioClientImpl()(
   override val messaging: TwilioClientMessaging = new TwilioClientMessagingImpl()
 
   override val phoneNumber: TwilioClientPhoneNumber = new TwilioClientPhoneNumberImpl()
+
+  override val general: TwilioClientGeneral = new TwilioClientGeneralImpl()
 }

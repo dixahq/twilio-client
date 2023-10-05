@@ -13,7 +13,7 @@ import scala.collection.immutable
 final case class UsageTrigger(
     accountSid: TwilioAccount.Sid,
     callBackMethod: HttpMethod,
-    callbackUrl: CallbackUrl,
+    callbackUrl: CallbackUrl.UsageTriggerUrl,
     currentValue: UsageTrigger.CurrentValue,
     dateCreated: Instant,
     dateFired: Option[Instant],

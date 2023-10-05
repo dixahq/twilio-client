@@ -28,4 +28,6 @@ object CallbackUrl {
 
   final case class VoiceUrl(asString: String) extends CallbackUrl(asString)
 
+  final case class UsageTriggerUrl(asString: String) extends CallbackUrl(asString)
+
 }
