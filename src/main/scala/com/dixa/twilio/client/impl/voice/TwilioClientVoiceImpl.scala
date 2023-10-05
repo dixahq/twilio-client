@@ -9,27 +9,7 @@ import com.dixa.twilio.client.impl.ApiVersion
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
-import com.dixa.twilio.client.voice.{
-  CallCreateRequestExecutor,
-  CallReadRequestExecutor,
-  CallRecordingCreateRequestExecutor,
-  CallRecordingReadRequestExecutor,
-  CallRecordingUpdateRequestExecutor,
-  CallUpdateRequestExecutor,
-  ConferenceParticipantDeleteRequestExecutor,
-  ConferenceParticipantReadRequestExecutor,
-  ConferenceParticipantUpdateRequestExecutor,
-  ConferenceReadRequestExecutor,
-  ConferenceRecordingReadRequestExecutor,
-  ConferenceRecordingUpdateRequestExecutor,
-  ConferenceUpdateRequestExecutor,
-  QueueFetchRequestExecutor,
-  QueueUpdateRequestExecutor,
-  RecordingDeleteRequestExecutor,
-  RecordingFetchRequestExecutor,
-  RecordingReadRequestExecutor,
-  TwilioClientVoice
-}
+import com.dixa.twilio.client.voice.{CallCreateRequestExecutor, CallFetchRequestExecutor, CallReadRequestExecutor, CallRecordingCreateRequestExecutor, CallRecordingReadRequestExecutor, CallRecordingUpdateRequestExecutor, CallUpdateRequestExecutor, ConferenceParticipantDeleteRequestExecutor, ConferenceParticipantReadRequestExecutor, ConferenceParticipantUpdateRequestExecutor, ConferenceReadRequestExecutor, ConferenceRecordingReadRequestExecutor, ConferenceRecordingUpdateRequestExecutor, ConferenceUpdateRequestExecutor, QueueFetchRequestExecutor, QueueUpdateRequestExecutor, RecordingDeleteRequestExecutor, RecordingFetchRequestExecutor, RecordingReadRequestExecutor, TwilioClientVoice}
 
 import scala.concurrent.ExecutionContext
 
@@ -42,6 +22,8 @@ private[impl] final class TwilioClientVoiceImpl()(
   private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
 
   override val callCreate: CallCreateRequestExecutor = new CallCreateRequestExecutorImpl()
+
+  override val callFetch: CallFetchRequestExecutor = new CallFetchRequestExecutorImpl()
 
   override val callUpdate: CallUpdateRequestExecutor = new CallUpdateRequestExecutorImpl()
 

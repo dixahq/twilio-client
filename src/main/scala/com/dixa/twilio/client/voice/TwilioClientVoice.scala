@@ -11,6 +11,8 @@ trait TwilioClientVoice {
 
   def callCreate: CallCreateRequestExecutor
 
+  def callFetch: CallFetchRequestExecutor
+
   def callUpdate: CallUpdateRequestExecutor
 
   def callRead: CallReadRequestExecutor
