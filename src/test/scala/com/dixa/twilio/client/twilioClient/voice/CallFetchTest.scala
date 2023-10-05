@@ -34,7 +34,7 @@ final class CallFetchTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(
+        val expected: Either[CallFetchRequestExecutor.CallFetchException, Call] = Right(
           Call(
             sid = callSid,
             dateCreated =
@@ -121,7 +121,7 @@ final class CallFetchTest extends TwilioClientTest {
   val twilioResponse1: String = {
     s"""{
        |  "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-       |  "answered_by": "machine_start",
+       |  "answered_by": "machine",
        |  "api_version": "2010-04-01",
        |  "caller_name": "callerid",
        |  "date_created": "Fri, 18 Oct 2019 17:00:00 +0000",
@@ -157,7 +157,6 @@ final class CallFetchTest extends TwilioClientTest {
        |  "trunk_sid": "TKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
        |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json",
        |  "queue_time": "1000"
-       |    
        |}""".stripMargin
   }
   private def twilioResponseQueueNotFound =
