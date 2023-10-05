@@ -1,10 +1,11 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.model.HttpMethod
-import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
-import com.dixa.twilio.model.messaging.{StatusCallback, TwilioMessagingService}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.callback.CallbackUrl.MessagingStatusCallback
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.messaging.TwilioMessagingService
+import com.dixa.twilio.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
 
 import java.net.URL
 
@@ -47,7 +48,7 @@ private[messaging] final case class MessagingServiceJsonRep(
   private def toStatusCallback = {
     val statusCallbackAsString = status_callback.getOrElse("")
     if (statusCallbackAsString.isEmpty) None
-    else Some(StatusCallback(new URL(statusCallbackAsString)))
+    else Some(MessagingStatusCallback(new URL(statusCallbackAsString)))
   }
 
   private[messaging] def toTwilioMessagingService = TwilioMessagingService(

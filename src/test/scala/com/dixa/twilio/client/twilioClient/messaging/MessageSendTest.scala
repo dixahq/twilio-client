@@ -8,6 +8,7 @@ import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.callback.CallbackUrl.MessagingStatusCallback
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -275,7 +276,7 @@ final class MessageSendTest extends TwilioClientTest {
       from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
       to = PhoneNumberE164.unsafe(to),
       body = MessageBody(messageBody),
-      statusCallback = StatusCallback(new URL(testStatusCallback))
+      statusCallback = MessagingStatusCallback(new URL(testStatusCallback))
     )
   }
 }

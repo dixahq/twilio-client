@@ -2,7 +2,9 @@ package com.dixa.twilio.model.callback
 
 import com.dixa.twilio.model.TwilioStringValue
 
-abstract class CallbackUrl private[model] (override val toString: String) extends TwilioStringValue
+import java.net.URL
+
+sealed abstract class CallbackUrl private (override val toString: String) extends TwilioStringValue
 
 object CallbackUrl {
 
@@ -13,4 +15,17 @@ object CallbackUrl {
   }
 
   private final class BaseImpl(wrapped: String) extends CallbackUrl(wrapped)
+
+  final case class SmsFallbackUrl(asString: String) extends CallbackUrl(toString)
+
+  final case class SmsStatusCallback(asString: String) extends CallbackUrl(asString)
+
+  final case class SmsUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class MessagingStatusCallback(url: URL) extends CallbackUrl(url.toString)
+
+  final case class VoiceFallbackUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class VoiceUrl(asString: String) extends CallbackUrl(asString)
+
 }
