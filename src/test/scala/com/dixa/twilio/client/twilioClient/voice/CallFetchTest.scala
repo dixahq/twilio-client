@@ -8,7 +8,6 @@ import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.dixa.twilio.model.voice.{Call, Group, Trunk}
-import com.dixa.twilio.model.voice.Call.Price
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
