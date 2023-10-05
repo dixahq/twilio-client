@@ -22,7 +22,7 @@ object CallbackUrl {
 
   final case class SmsUrl(asString: String) extends CallbackUrl(asString)
 
-  final case class MessagingStatusCallback(url: URL) extends CallbackUrl(url.toString)
+  final case class MessageStatusCallback(url: URL) extends CallbackUrl(url.toString)
 
   final case class VoiceFallbackUrl(asString: String) extends CallbackUrl(asString)
 

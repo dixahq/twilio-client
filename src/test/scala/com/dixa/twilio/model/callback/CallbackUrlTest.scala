@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.callback
 
-import com.dixa.twilio.model.callback.CallbackUrl.MessagingStatusCallback
+import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 import org.scalatest.wordspec.AnyWordSpec
 
 import java.net.URL
@@ -28,7 +28,7 @@ final class CallbackUrlTest extends AnyWordSpec {
 
     "MessagingStatusCallback subtype should print the urls string representation in it's toString" in {
       val urlAsString = "http://localhost:8347/CallbackPath"
-      val a           = MessagingStatusCallback(new URL(urlAsString))
+      val a           = MessageStatusCallback(new URL(urlAsString))
       assert(a.toString === urlAsString)
     }
   }

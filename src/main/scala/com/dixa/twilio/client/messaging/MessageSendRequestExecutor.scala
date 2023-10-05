@@ -6,7 +6,7 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.callback.CallbackUrl.MessagingStatusCallback
+import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 
 trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
@@ -27,7 +27,7 @@ object MessageSendRequestExecutor {
       from: MessageSender,
       to: PhoneNumberE164,
       body: MessageBody,
-      statusCallback: MessagingStatusCallback
+      statusCallback: MessageStatusCallback
   )
 
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages

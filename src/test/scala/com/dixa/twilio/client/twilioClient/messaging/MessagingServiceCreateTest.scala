@@ -4,7 +4,7 @@ import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod
-import com.dixa.twilio.model.callback.CallbackUrl.MessagingStatusCallback
+import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -26,7 +26,7 @@ final class MessagingServiceCreateTest extends TwilioClientTest {
               .InboundRequestWebhook(HttpMethod.Get, new URL("https://www.inbound.com/"))
           ),
           fallbackWebhook = None,
-          statusCallback = Some(MessagingStatusCallback(new URL("https://www.status.com"))),
+          statusCallback = Some(MessageStatusCallback(new URL("https://www.status.com"))),
           useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.True
         )
 

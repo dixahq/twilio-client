@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.TwilioConnectionSettings
-import com.dixa.twilio.model.callback.CallbackUrl.MessagingStatusCallback
+import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 import com.dixa.twilio.model.messaging.TwilioMessagingService.{
   FallbackWebhook,
   FriendlyName,
@@ -53,7 +53,7 @@ object TwilioClientMessaging {
       friendlyName: FriendlyName,
       inboundRequestWebhook: Option[InboundRequestWebhook],
       fallbackWebhook: Option[FallbackWebhook],
-      statusCallback: Option[MessagingStatusCallback],
+      statusCallback: Option[MessageStatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   )
 
