@@ -3,7 +3,12 @@ package com.dixa.twilio.client.impl.voice
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString
+}
 import com.dixa.twilio.client.voice.CallFetchRequestExecutor
 import com.dixa.twilio.client.voice.CallFetchRequestExecutor.{CallFetchException, CallFetchRequest}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}

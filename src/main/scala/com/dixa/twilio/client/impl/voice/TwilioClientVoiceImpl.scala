@@ -9,7 +9,28 @@ import com.dixa.twilio.client.impl.ApiVersion
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
-import com.dixa.twilio.client.voice.{CallCreateRequestExecutor, CallFetchRequestExecutor, CallReadRequestExecutor, CallRecordingCreateRequestExecutor, CallRecordingReadRequestExecutor, CallRecordingUpdateRequestExecutor, CallUpdateRequestExecutor, ConferenceParticipantDeleteRequestExecutor, ConferenceParticipantReadRequestExecutor, ConferenceParticipantUpdateRequestExecutor, ConferenceReadRequestExecutor, ConferenceRecordingReadRequestExecutor, ConferenceRecordingUpdateRequestExecutor, ConferenceUpdateRequestExecutor, QueueFetchRequestExecutor, QueueUpdateRequestExecutor, RecordingDeleteRequestExecutor, RecordingFetchRequestExecutor, RecordingReadRequestExecutor, TwilioClientVoice}
+import com.dixa.twilio.client.voice.{
+  CallCreateRequestExecutor,
+  CallFetchRequestExecutor,
+  CallReadRequestExecutor,
+  CallRecordingCreateRequestExecutor,
+  CallRecordingReadRequestExecutor,
+  CallRecordingUpdateRequestExecutor,
+  CallUpdateRequestExecutor,
+  ConferenceParticipantDeleteRequestExecutor,
+  ConferenceParticipantReadRequestExecutor,
+  ConferenceParticipantUpdateRequestExecutor,
+  ConferenceReadRequestExecutor,
+  ConferenceRecordingReadRequestExecutor,
+  ConferenceRecordingUpdateRequestExecutor,
+  ConferenceUpdateRequestExecutor,
+  QueueFetchRequestExecutor,
+  QueueUpdateRequestExecutor,
+  RecordingDeleteRequestExecutor,
+  RecordingFetchRequestExecutor,
+  RecordingReadRequestExecutor,
+  TwilioClientVoice
+}
 
 import scala.concurrent.ExecutionContext
 
