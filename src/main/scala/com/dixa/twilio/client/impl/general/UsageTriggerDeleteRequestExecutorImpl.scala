@@ -35,7 +35,7 @@ private[general] final class UsageTriggerDeleteRequestExecutorImpl()(
       req: UsageTriggerDeleteRequest
   ): Either[UsageTriggerDeleteException, HttpRequest] = {
     createHttpRequestFor(
-      s"/${apiVersion.twilioString}/Accounts/${req.accountSid.twilioString}/Usage/Triggers/${req.usageTriggerSid.twilioString}.json",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid.twilioString}/Usage/Triggers/${req.sid.twilioString}.json",
       connSettings
     )
   }
@@ -77,7 +77,7 @@ private[general] final class UsageTriggerDeleteRequestExecutorImpl()(
             // this code can mean for this API call.
             Left(
               UsageTriggerDeleteException
-                .UsageTriggerNotFoundOnAccountException(request.accountSid, request.usageTriggerSid)
+                .UsageTriggerNotFoundOnAccountException(request.accountSid, request.sid)
             )
           case other =>
             Left(

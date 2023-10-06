@@ -25,12 +25,12 @@ object UsageTriggerDeleteRequestExecutor {
 
   sealed trait UsageTriggerDeleteRequest {
     def accountSid: TwilioAccount.Sid
-    def usageTriggerSid: UsageTrigger.Sid
+    def sid: UsageTrigger.Sid
   }
 
   private final case class UsageTriggerDeleteRequestImpl(
       accountSid: TwilioAccount.Sid,
-      usageTriggerSid: UsageTrigger.Sid
+      sid: UsageTrigger.Sid
   ) extends UsageTriggerDeleteRequest
 
   object UsageTriggerDeleteRequest {
@@ -56,12 +56,12 @@ object UsageTriggerDeleteRequestExecutor {
           usageTriggerSid,
         )
 
-      def withUsageTriggerSid(
-          usageTriggerSid: UsageTrigger.Sid
+      def withSid(
+          sid: UsageTrigger.Sid
       ): Builder[Attributes with RequestUsageTriggerSidAttribute] =
         new Builder(
           accountSid,
-          Some(usageTriggerSid),
+          Some(sid),
         )
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes

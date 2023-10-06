@@ -74,7 +74,7 @@ final class UsageTriggerDeleteTest extends TwilioClientTest {
           Left(
             UsageTriggerDeleteException.UsageTriggerNotFoundOnAccountException(
               createRequest.accountSid,
-              createRequest.usageTriggerSid
+              createRequest.sid
             )
           )
 
@@ -91,7 +91,7 @@ final class UsageTriggerDeleteTest extends TwilioClientTest {
     val usageTriggerSid = UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val createRequest = UsageTriggerDeleteRequest.builder(
       _.withAccountSid(accountSid)
-        .withUsageTriggerSid(usageTriggerSid)
+        .withSid(usageTriggerSid)
         .build()
     )
 
