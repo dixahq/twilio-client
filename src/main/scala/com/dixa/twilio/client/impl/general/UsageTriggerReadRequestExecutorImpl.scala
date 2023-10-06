@@ -66,7 +66,6 @@ class UsageTriggerReadRequestExecutorImpl()(
   ]] = {
     responseEntity.parse[UsageTriggerListJsonRep]() match {
       case Left(ex) =>
-        println(ex)
         List(
           Left(
             UsageTriggerReadException.Unspecified(

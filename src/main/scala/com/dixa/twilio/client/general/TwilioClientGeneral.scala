@@ -8,4 +8,11 @@ trait TwilioClientGeneral {
     *   https://www.twilio.com/docs/usage/api/usage-trigger#read-multiple-usagetrigger-resources
     */
   def usageTriggerRead: UsageTriggerReadRequestExecutor
+
+  /** Delete Usage Triggers.
+    *
+    * @see
+    *   https://www.twilio.com/docs/usage/api/usage-trigger#delete-a-usagetrigger-resource
+    */
+  def usageTriggerDelete: UsageTriggerDeleteRequestExecutor
 }

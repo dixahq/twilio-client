@@ -95,7 +95,6 @@ final class ConferenceParticipantReadTest extends TwilioClientTest with Matchers
           instance.conferenceParticipantsRead.source(connectionSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.head.left.map { ex =>
-            println(ex.getMessage)
             ex.getStackTrace.map(println)
           }
           result.size shouldBe 1
