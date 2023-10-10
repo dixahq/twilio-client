@@ -215,7 +215,7 @@ object CallReadRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to fetch conferences"
+            "Unspecified error happened trying to read calls"
           ),
           cause.orNull
         )
