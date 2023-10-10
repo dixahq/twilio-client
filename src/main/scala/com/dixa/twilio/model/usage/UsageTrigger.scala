@@ -8,7 +8,7 @@ import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, SidAbstract, Twi
 import java.time.Instant
 import scala.collection.immutable
 
-/** Represent a Account or a Subaccount at Twilio
+/** A UsageTrigger is a webhook that notifies your application of usage thresholds.
   */
 final case class UsageTrigger(
     accountSid: TwilioAccount.Sid,
