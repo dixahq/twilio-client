@@ -52,11 +52,11 @@ object CallbackUrl {
 
   final case class VoiceUrl(asString: String) extends CallbackUrl(asString)
 
+  final case class UsageTriggerUrl(asString: String) extends CallbackUrl(asString)
+
   final case class VoiceStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
 
   final case class RecordingStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
 
   final case class AsyncAmdStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
-
-  final case class UsageTriggerUrl(asString: String) extends CallbackUrl(asString)
 }

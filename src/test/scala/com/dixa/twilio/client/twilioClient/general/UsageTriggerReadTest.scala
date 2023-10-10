@@ -78,7 +78,6 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         resultFut.map { res =>
           res.map {
             case Left(e) =>
-              println(e)
               fail(e)
             case Right(result) => result
           } shouldBe Seq(expected1, expected2)
