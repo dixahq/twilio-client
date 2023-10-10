@@ -41,11 +41,11 @@ object CallCreateRequestExecutor {
 
     def method: Option[HttpMethod]
 
-    def fallbackUrl: Option[CallbackUrl]
+    def fallbackUrl: Option[CallbackUrl.VoiceFallbackUrl]
 
     def fallbackMethod: Option[HttpMethod]
 
-    def statusCallback: Option[CallbackUrl]
+    def statusCallback: Option[CallbackUrl.VoiceStatusCallbackUrl]
 
     def statusCallbackEvents: Option[Seq[Call.ProgressEvent]]
 
@@ -59,7 +59,7 @@ object CallCreateRequestExecutor {
 
     def recordingChannels: Option[Call.RecordingChannels]
 
-    def recordingStatusCallback: Option[CallbackUrl]
+    def recordingStatusCallback: Option[CallbackUrl.RecordingStatusCallbackUrl]
 
     def recordingStatusCallbackEvents: Option[Seq[Call.RecordingEvent]]
 
@@ -87,7 +87,7 @@ object CallCreateRequestExecutor {
 
     def asyncAmd: Option[Boolean]
 
-    def asyncAmdStatusCallback: Option[CallbackUrl]
+    def asyncAmdStatusCallback: Option[CallbackUrl.AsyncAmdStatusCallbackUrl]
 
     def asyncAmdStatusCallbackMethod: Option[HttpMethod]
 
@@ -111,16 +111,16 @@ object CallCreateRequestExecutor {
       to: Call.CallerId,
       from: Call.CallerId,
       method: Option[HttpMethod],
-      fallbackUrl: Option[CallbackUrl],
+      fallbackUrl: Option[CallbackUrl.VoiceFallbackUrl],
       fallbackMethod: Option[HttpMethod],
-      statusCallback: Option[CallbackUrl],
+      statusCallback: Option[CallbackUrl.VoiceStatusCallbackUrl],
       statusCallbackEvents: Option[Seq[Call.ProgressEvent]],
       statusCallbackMethod: Option[HttpMethod],
       sendDigits: Option[DtmfString],
       timeout: Option[Call.Timeout],
       record: Option[Boolean],
       recordingChannels: Option[Call.RecordingChannels],
-      recordingStatusCallback: Option[CallbackUrl],
+      recordingStatusCallback: Option[CallbackUrl.RecordingStatusCallbackUrl],
       recordingStatusCallbackEvents: Option[Seq[Call.RecordingEvent]],
       recordingStatusCallbackMethod: Option[HttpMethod],
       recordingTrack: Option[Call.RecordingTrack],
@@ -134,13 +134,13 @@ object CallCreateRequestExecutor {
       trim: Option[Call.Trim],
       callerId: Option[Call.CallerId],
       asyncAmd: Option[Boolean],
-      asyncAmdStatusCallback: Option[CallbackUrl],
+      asyncAmdStatusCallback: Option[CallbackUrl.AsyncAmdStatusCallbackUrl],
       asyncAmdStatusCallbackMethod: Option[HttpMethod],
       byoc: Option[Trunk.Sid],
       callReason: Option[Call.Reason],
       callToken: Option[Call.Token],
       timeLimit: Option[Call.TimeLimit],
-      url: Option[CallbackUrl],
+      url: Option[CallbackUrl.VoiceUrl],
       twiml: Option[Response],
       applicationSid: Option[TwimlApplication.Sid]
   ) extends CallCreateRequest
@@ -294,16 +294,16 @@ object CallCreateRequestExecutor {
         to: Option[Call.CallerId],
         from: Option[Call.CallerId],
         method: Option[HttpMethod],
-        fallbackUrl: Option[CallbackUrl],
+        fallbackUrl: Option[CallbackUrl.VoiceFallbackUrl],
         fallbackMethod: Option[HttpMethod],
-        statusCallback: Option[CallbackUrl],
+        statusCallback: Option[CallbackUrl.VoiceStatusCallbackUrl],
         statusCallbackEvents: Option[Seq[Call.ProgressEvent]],
         statusCallbackMethod: Option[HttpMethod],
         sendDigits: Option[DtmfString],
         timeout: Option[Call.Timeout],
         record: Option[Boolean],
         recordingChannels: Option[Call.RecordingChannels],
-        recordingStatusCallback: Option[CallbackUrl],
+        recordingStatusCallback: Option[CallbackUrl.RecordingStatusCallbackUrl],
         recordingStatusCallbackEvents: Option[Seq[Call.RecordingEvent]],
         recordingStatusCallbackMethod: Option[HttpMethod],
         recordingTrack: Option[Call.RecordingTrack],
@@ -317,13 +317,13 @@ object CallCreateRequestExecutor {
         trim: Option[Call.Trim],
         callerId: Option[Call.CallerId],
         asyncAmd: Option[Boolean],
-        asyncAmdStatusCallback: Option[CallbackUrl],
+        asyncAmdStatusCallback: Option[CallbackUrl.AsyncAmdStatusCallbackUrl],
         asyncAmdStatusCallbackMethod: Option[HttpMethod],
         byoc: Option[Trunk.Sid],
         callReason: Option[Call.Reason],
         callToken: Option[Call.Token],
         timeLimit: Option[Call.TimeLimit],
-        url: Option[CallbackUrl],
+        url: Option[CallbackUrl.VoiceUrl],
         twiml: Option[Response],
         applicationSid: Option[TwimlApplication.Sid]
     ) {
@@ -570,7 +570,7 @@ object CallCreateRequestExecutor {
       }
 
       def withFallbackUrl(
-          fallbackUrl: CallbackUrl
+          fallbackUrl: CallbackUrl.VoiceFallbackUrl
       )(
           implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
@@ -695,7 +695,7 @@ object CallCreateRequestExecutor {
       }
 
       def withStatusCallback(
-          statusCallback: CallbackUrl
+          statusCallback: CallbackUrl.VoiceStatusCallbackUrl
       )(
           implicit ev: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
       ): Builder[
@@ -1129,7 +1129,7 @@ object CallCreateRequestExecutor {
       }
 
       def withRecordingStatusCallback(
-          recordingStatusCallback: CallbackUrl
+          recordingStatusCallback: CallbackUrl.RecordingStatusCallbackUrl
       )(
           implicit ev: RecordForRecordAttributesSet =:= HasRecordForRecordAttributesSetTrue
       ): Builder[
@@ -1986,7 +1986,7 @@ object CallCreateRequestExecutor {
       }
 
       def withAsyncAmdStatusCallback(
-          asyncAmdStatusCallback: CallbackUrl
+          asyncAmdStatusCallback: CallbackUrl.AsyncAmdStatusCallbackUrl
       )(
           implicit ev: AsyncAmdForAsyncAmdAttributesSet =:= HasAsyncAmdForAsyncAmdAttributesSetTrue
       ): Builder[
@@ -2352,7 +2352,7 @@ object CallCreateRequestExecutor {
       }
 
       def withUrl(
-          url: CallbackUrl
+          url: CallbackUrl.VoiceUrl
       )(
           implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
           ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse
