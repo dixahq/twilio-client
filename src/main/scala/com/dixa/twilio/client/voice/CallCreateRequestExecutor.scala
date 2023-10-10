@@ -140,7 +140,7 @@ object CallCreateRequestExecutor {
       callReason: Option[Call.Reason],
       callToken: Option[Call.Token],
       timeLimit: Option[Call.TimeLimit],
-      url: Option[CallbackUrl],
+      url: Option[CallbackUrl.VoiceUrl],
       twiml: Option[Response],
       applicationSid: Option[TwimlApplication.Sid]
   ) extends CallCreateRequest
@@ -323,7 +323,7 @@ object CallCreateRequestExecutor {
         callReason: Option[Call.Reason],
         callToken: Option[Call.Token],
         timeLimit: Option[Call.TimeLimit],
-        url: Option[CallbackUrl],
+        url: Option[CallbackUrl.VoiceUrl],
         twiml: Option[Response],
         applicationSid: Option[TwimlApplication.Sid]
     ) {
@@ -2352,7 +2352,7 @@ object CallCreateRequestExecutor {
       }
 
       def withUrl(
-          url: CallbackUrl
+          url: CallbackUrl.VoiceUrl
       )(
           implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse,
           ev2: IsIgnoredBecauseApplicationSidSet =:= IsIgnoredBecauseApplicationSidSetFalse

@@ -183,7 +183,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
     val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
-        .withUrl(CallbackUrl("http://demo.twilio.com/docs/voice.xml"))
+        .withUrl(CallbackUrl.VoiceUrl("http://demo.twilio.com/docs/voice.xml"))
         .build()
     )
 

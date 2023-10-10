@@ -90,7 +90,7 @@ final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
     val connSettings      = TwilioTestConstants.connSettings(wireMockServer.port())
     val toCallerId        = Call.CallerId("+14155551212")
     val fromCallerId      = Call.CallerId("+18668675310")
-    val url               = CallbackUrl("http://demo.twilio.com/docs/voice.xml")
+    val url               = CallbackUrl.VoiceUrl("http://demo.twilio.com/docs/voice.xml")
     val statusCallbackUrl = CallbackUrl.VoiceStatusCallbackUrl("https://www.myapp.com/events")
     val request =
       CallCreateRequestExecutor.CallCreateRequest.build(
