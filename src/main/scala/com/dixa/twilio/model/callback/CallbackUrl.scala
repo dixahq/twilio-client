@@ -44,19 +44,19 @@ object CallbackUrl {
 
   final case class SmsStatusCallback(asString: String) extends CallbackUrl(asString)
 
-  final case class SmsUrl(asString: String)                     extends CallbackUrl(asString)
+  final case class SmsUrl(asString: String) extends CallbackUrl(asString)
 
-  final case class MessageStatusCallback(url: URL)              extends CallbackUrl(url.toString)
-  
-  final case class VoiceFallbackUrl(asString: String)           extends CallbackUrl(asString)
-  
-  final case class VoiceUrl(asString: String)                   extends CallbackUrl(asString)
-  
-  final case class VoiceStatusCallbackUrl(asString: String)     extends CallbackUrl(asString)
-  
+  final case class MessageStatusCallback(url: URL) extends CallbackUrl(url.toString)
+
+  final case class VoiceFallbackUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class VoiceUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class VoiceStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
+
   final case class RecordingStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
-  
-  final case class AsyncAmdStatusCallbackUrl(asString: String)  extends CallbackUrl(asString)
-  
-  final case class UsageTriggerUrl(asString: String)            extends CallbackUrl(asString)
+
+  final case class AsyncAmdStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class UsageTriggerUrl(asString: String) extends CallbackUrl(asString)
 }
