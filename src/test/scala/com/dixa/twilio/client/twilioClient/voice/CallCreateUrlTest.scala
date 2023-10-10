@@ -89,7 +89,7 @@ final class CallCreateUrlTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val toCallerId   = Call.CallerId("+15558675310")
     val fromCallerId = Call.CallerId("+15017122661")
-    val url          = CallbackUrl("http://demo.twilio.com/docs/voice.xml")
+    val url          = CallbackUrl.VoiceUrl("http://demo.twilio.com/docs/voice.xml")
     val request =
       CallCreateRequestExecutor.CallCreateRequest.build(
         _.withAccountSid(connSettings.accountSid)
