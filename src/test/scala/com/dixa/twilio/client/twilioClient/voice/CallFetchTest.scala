@@ -192,7 +192,7 @@ final class CallFetchTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .get(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Call/$callSid.json"
+          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid.json"
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
