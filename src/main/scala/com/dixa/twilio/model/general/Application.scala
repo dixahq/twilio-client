@@ -1,5 +1,16 @@
 package com.dixa.twilio.model.general
 
+import com.dixa.twilio.model.{HttpMethod, SidAbstract}
+import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
+import com.dixa.twilio.model.callback.CallbackUrl.{
+  ApplicationStatusCallback,
+  MessageStatusCallback,
+  SmsFallbackUrl,
+  SmsStatusCallback,
+  SmsUrl,
+  VoiceFallbackUrl,
+  VoiceUrl
+}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import java.time.Instant
@@ -22,16 +33,44 @@ import java.time.Instant
   * http://myapp.com/answer, you can assign that application to all of your phone numbers and Twilio
   * will make a request to that URL whenever a call comes in.
   *
-  * @see https://www.twilio.com/docs/usage/api/applications#create-an-application-resource
+  * @see
+  *   https://www.twilio.com/docs/usage/api/applications#create-an-application-resource
   */
 final case class Application(
     accountSid: TwilioAccount.Sid,
     dateCreated: Instant,
     dateUpdated: Instant,
-    friendlyName: Application.FriendlyName
-                            ) {}
+    friendlyName: Application.FriendlyName,
+    messageStatusCallback: MessageStatusCallback,
+    sid: Application.Sid,
+    smsFallbackMethod: HttpMethod,
+    smsFallbackUrl: SmsFallbackUrl,
+    smsMethod: HttpMethod,
+    smsStatusCallback: SmsStatusCallback,
+    smsUrl: SmsUrl,
+    statusCallback: ApplicationStatusCallback,
+    statusCallbackMethod: HttpMethod,
+    voiceCallerIdLookup: Boolean,
+    voiceFallbackMethod: HttpMethod,
+    voiceFallbackUrl: VoiceFallbackUrl,
+    voiceMethod: HttpMethod,
+    voiceUrl: VoiceUrl,
+    publicApplicationConnectEnabled: Boolean
+) {}
 
 object Application {
+
+  /** Represent a Twilio Application SID
+    *
+    * Input must apply to the format that Twilio specify as a Application SID: "It is a 34 character
+    * string that starts with AP"
+    *
+    * @see
+    *   https://support.twilio.com/hc/en-us/articles/223136607-What-is-an-Application-SID-
+    */
+  final case class Sid private[Application] (override val toString: String) extends SidAbstract
+
+  object Sid extends SidCompanionObject(List(Prefix("AP")), new Sid(_))
 
   final case class FriendlyName(override val toString: String) extends AnyVal
 }
