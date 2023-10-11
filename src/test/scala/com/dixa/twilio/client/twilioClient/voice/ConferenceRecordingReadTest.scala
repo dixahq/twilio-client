@@ -77,7 +77,6 @@ final class ConferenceRecordingReadTest extends TwilioClientTest with Matchers {
         resultFut.map { res =>
           res.map {
             case Left(e) =>
-              println(e)
               fail(e)
             case Right(result) =>
               result

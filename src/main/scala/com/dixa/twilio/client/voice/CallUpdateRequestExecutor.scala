@@ -42,7 +42,7 @@ object CallUpdateRequestExecutor {
   private final case class CallUpdateRequestImpl(
       accountSid: TwilioAccount.Sid,
       sid: Call.Sid,
-      url: Option[CallbackUrl],
+      url: Option[CallbackUrl.VoiceUrl],
       method: Option[HttpMethod],
       status: Option[Call.StatusUpdate],
       fallbackUrl: Option[CallbackUrl],
@@ -114,7 +114,7 @@ object CallUpdateRequestExecutor {
     ] private[CallUpdateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         sid: Option[Call.Sid],
-        url: Option[CallbackUrl],
+        url: Option[CallbackUrl.VoiceUrl],
         method: Option[HttpMethod],
         status: Option[Call.StatusUpdate],
         fallbackUrl: Option[CallbackUrl],
@@ -176,7 +176,7 @@ object CallUpdateRequestExecutor {
           timeLimit
         )
 
-      def withUrl(url: CallbackUrl)(
+      def withUrl(url: CallbackUrl.VoiceUrl)(
           implicit ev: TwimlOrUrl =:= HasTwimlOrUrlSetFalse,
       ): Builder[
         AccountSidSet,

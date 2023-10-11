@@ -1,6 +1,7 @@
 package com.dixa.twilio.client
 
 import akka.actor.ClassicActorSystemProvider
+import com.dixa.twilio.client.general.TwilioClientGeneral
 import com.dixa.twilio.client.iam.TwilioClientIam
 import com.dixa.twilio.client.impl.TwilioClientImpl
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
@@ -39,6 +40,9 @@ trait TwilioClient {
 
   /** Return sub client for the Twilio phoneNumber API */
   def phoneNumber: TwilioClientPhoneNumber
+
+  /** Return sub client for the Twilio general API */
+  def general: TwilioClientGeneral
 }
 
 object TwilioClient {
