@@ -32,7 +32,7 @@ private[client] class CallFetchRequestExecutorImpl()(
       req: CallFetchRequestExecutor.CallFetchRequest
   ): Either[CallFetchException, HttpRequest] = {
     createHttpRequestFor(
-      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Call/${req.sid}.json",
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/Calls/${req.sid}.json",
       connSettings
     )
   }
