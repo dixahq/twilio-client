@@ -1,7 +1,18 @@
 package com.dixa.twilio.model.callback
 
 import com.dixa.twilio.model.TwilioStringValue
-import com.dixa.twilio.model.callback.CallbackUrl.{ApplicationStatusCallback, AsyncAmdStatusCallbackUrl, RecordingStatusCallbackUrl, SmsFallbackUrl, SmsStatusCallback, SmsUrl, UsageTriggerUrl, VoiceFallbackUrl, VoiceStatusCallbackUrl, VoiceUrl}
+import com.dixa.twilio.model.callback.CallbackUrl.{
+  ApplicationStatusCallback,
+  AsyncAmdStatusCallbackUrl,
+  RecordingStatusCallbackUrl,
+  SmsFallbackUrl,
+  SmsStatusCallback,
+  SmsUrl,
+  UsageTriggerUrl,
+  VoiceFallbackUrl,
+  VoiceStatusCallbackUrl,
+  VoiceUrl
+}
 
 import java.net.URL
 
@@ -31,13 +42,16 @@ object CallbackUrl {
 
   private final class BaseImpl(wrapped: String) extends CallbackUrl(wrapped)
 
-  final case class SmsFallbackUrl(asString: String) extends CallbackUrl(toString)
+  final case class SmsFallbackUrl(asString: String) extends CallbackUrl(asString)
 
   final case class SmsStatusCallback(asString: String) extends CallbackUrl(asString)
 
   final case class SmsUrl(asString: String) extends CallbackUrl(asString)
 
   final case class MessageStatusCallback(url: URL) extends CallbackUrl(url.toString)
+  object MessageStatusCallback {
+    def apply(s: String): MessageStatusCallback = MessageStatusCallback(new URL(s))
+  }
 
   final case class VoiceFallbackUrl(asString: String) extends CallbackUrl(asString)
 

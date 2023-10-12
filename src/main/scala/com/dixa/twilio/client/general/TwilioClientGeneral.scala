@@ -15,4 +15,11 @@ trait TwilioClientGeneral {
     *   https://www.twilio.com/docs/usage/api/usage-trigger#delete-a-usagetrigger-resource
     */
   def usageTriggerDelete: UsageTriggerDeleteRequestExecutor
+
+  /** Create an Application (TwimlApp).
+    *
+    * @see
+    *   https://www.twilio.com/docs/usage/api/applications#create-an-application-resource
+    */
+  def applicationCreate: ApplicationCreateRequestExecutor
 }

@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.general
 
-import com.dixa.twilio.model.{HttpMethod, SidAbstract}
+import com.dixa.twilio.model.{HttpMethod, SidAbstract, TwilioStringValue}
 import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
 import com.dixa.twilio.model.callback.CallbackUrl.{
   ApplicationStatusCallback,
@@ -40,21 +40,21 @@ final case class Application(
     accountSid: TwilioAccount.Sid,
     dateCreated: Instant,
     dateUpdated: Instant,
-    friendlyName: Application.FriendlyName,
-    messageStatusCallback: MessageStatusCallback,
+    friendlyName: Option[Application.FriendlyName],
+    messageStatusCallback: Option[MessageStatusCallback],
     sid: Application.Sid,
     smsFallbackMethod: HttpMethod,
-    smsFallbackUrl: SmsFallbackUrl,
+    smsFallbackUrl: Option[SmsFallbackUrl],
     smsMethod: HttpMethod,
-    smsStatusCallback: SmsStatusCallback,
-    smsUrl: SmsUrl,
-    statusCallback: ApplicationStatusCallback,
+    smsStatusCallback: Option[SmsStatusCallback],
+    smsUrl: Option[SmsUrl],
+    statusCallback: Option[ApplicationStatusCallback],
     statusCallbackMethod: HttpMethod,
     voiceCallerIdLookup: Boolean,
     voiceFallbackMethod: HttpMethod,
-    voiceFallbackUrl: VoiceFallbackUrl,
+    voiceFallbackUrl: Option[VoiceFallbackUrl],
     voiceMethod: HttpMethod,
-    voiceUrl: VoiceUrl,
+    voiceUrl: Option[VoiceUrl],
     publicApplicationConnectEnabled: Boolean
 ) {}
 
@@ -72,5 +72,6 @@ object Application {
 
   object Sid extends SidCompanionObject(List(Prefix("AP")), new Sid(_))
 
-  final case class FriendlyName(override val toString: String) extends AnyVal
+  // @TODO PR restrict this to max 64 chars
+  final case class FriendlyName(override val toString: String) extends TwilioStringValue
 }
