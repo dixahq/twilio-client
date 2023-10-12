@@ -44,7 +44,7 @@ final class ApplicationCreateTest extends TwilioClientTest {
                 new URL("http://www.example.com/sms-status-callback")
               )
             )
-            .withFriendlyName(Application.FriendlyName("Phone Me"))
+            .withFriendlyName(Application.FriendlyName.unsafe("Phone Me"))
             .withPublicApplicationConnectEnabled(true)
             .build()
         )
@@ -99,7 +99,7 @@ final class ApplicationCreateTest extends TwilioClientTest {
           accountSid = CommonFixtures.accountSid1,
           dateCreated = ZonedDateTime.of(2011, 8, 22, 20, 59, 45, 0, ZoneOffset.UTC).toInstant,
           dateUpdated = ZonedDateTime.of(2015, 8, 18, 16, 48, 57, 0, ZoneOffset.UTC).toInstant,
-          friendlyName = Some(Application.FriendlyName("Phone Me")),
+          friendlyName = Some(Application.FriendlyName.unsafe("Phone Me")),
           messageStatusCallback = Some(
             CallbackUrl.MessageStatusCallback(new URL("http://www.example.com/sms-status-callback"))
           ),

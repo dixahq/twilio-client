@@ -1,17 +1,9 @@
 package com.dixa.twilio.model.general
 
-import com.dixa.twilio.model.{HttpMethod, SidAbstract, TwilioStringValue}
 import com.dixa.twilio.model.SidAbstract.{Prefix, SidCompanionObject}
-import com.dixa.twilio.model.callback.CallbackUrl.{
-  ApplicationStatusCallback,
-  MessageStatusCallback,
-  SmsFallbackUrl,
-  SmsStatusCallback,
-  SmsUrl,
-  VoiceFallbackUrl,
-  VoiceUrl
-}
+import com.dixa.twilio.model.callback.CallbackUrl._
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.{ConstrainedString, HttpMethod, SidAbstract, TwilioStringValue}
 
 import java.time.Instant
 
@@ -72,6 +64,11 @@ object Application {
 
   object Sid extends SidCompanionObject(List(Prefix("AP")), new Sid(_))
 
-  // @TODO PR restrict this to max 64 chars
-  final case class FriendlyName(override val toString: String) extends TwilioStringValue
+  final case class FriendlyName private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](64) {
+    override protected def constructInstance(wrapped: String) = new FriendlyName(wrapped)
+  }
 }

@@ -37,7 +37,7 @@ private[general] case class ApplicationJsonRep(
     TwilioAccount.Sid.unsafe(account_sid),
     Instant.from(Formatter.dateTime.parse(date_created)),
     Instant.from(Formatter.dateTime.parse(date_updated)),
-    emptyStringToNone(friendly_name).map(Application.FriendlyName),
+    emptyStringToNone(friendly_name).map(Application.FriendlyName.unsafe),
     emptyStringToNone(message_status_callback).map(CallbackUrl.MessageStatusCallback.apply),
     Application.Sid.unsafe(sid),
     HttpMethod.fromTwilioStringUnsafe(sms_fallback_method),
