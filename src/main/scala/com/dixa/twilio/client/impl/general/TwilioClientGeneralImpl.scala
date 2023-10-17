@@ -5,6 +5,7 @@ import akka.stream.Materializer
 import com.dixa.twilio.client.general.{
   ApplicationCreateRequestExecutor,
   ApplicationDeleteRequestExecutor,
+  ApplicationReadRequestExecutor,
   TwilioClientGeneral,
   UsageTriggerDeleteRequestExecutor,
   UsageTriggerReadRequestExecutor
@@ -32,4 +33,7 @@ private[impl] final class TwilioClientGeneralImpl()(
 
   override def applicationDelete: ApplicationDeleteRequestExecutor =
     new ApplicationDeleteRequestExecutorImpl()
+
+  override def applicationRead: ApplicationReadRequestExecutor =
+    new ApplicationReadRequestExecutorImpl()
 }

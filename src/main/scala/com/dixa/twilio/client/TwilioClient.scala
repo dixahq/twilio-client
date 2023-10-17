@@ -43,7 +43,6 @@ trait TwilioClient {
 
   /** Return sub client for the Twilio general API */
   def general: TwilioClientGeneral
-
 }
 
 object TwilioClient {
