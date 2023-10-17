@@ -45,6 +45,16 @@ object ConstrainedString {
       )
       with CreationException
 
+  /** Error to be returned, if wrapped string is expected to represent a Decimal value but does not.
+    *
+    * A Decimal value is understood as a value only containing digits and optional a single `.`
+    */
+  abstract class NotDecimalException(wrapped: String)
+      extends IllegalArgumentException(
+        s"$wrapped is not a deciaml value as required"
+      )
+      with CreationException
+
   // format: off
   /** Class to be extended by the companion object of a Constraint Sid.
     *
@@ -58,7 +68,8 @@ object ConstrainedString {
     */
   // format: on
   abstract class ConstrainedStringCompanionObject[S <: ConstrainedString](
-      maxLength: Int
+      maxLength: Option[Int] = None,
+      decimalOnly: Boolean = false
   ) {
 
     @unused
@@ -86,10 +97,16 @@ object ConstrainedString {
         extends ConstrainedString.ToLongException(wrapped, maxLength)
         with CreationException
 
+    sealed case class NotDecimalException(wrapped: String)
+        extends ConstrainedString.NotDecimalException(wrapped)
+        with CreationException
+
     /** Construct an instance of this ConstrainedString, returning either an result or an error. */
     def safe(wrapped: String): Either[CreationException, S] =
       if (wrapped == null) Left(NullValueException())
-      else if (wrapped.length > maxLength) Left(ToLongException(wrapped, maxLength))
+      else if (maxLength.isDefined && wrapped.length > maxLength.get)
+        Left(ToLongException(wrapped, maxLength.get))
+      else if (decimalOnly && !representDecimalValue(wrapped)) Left(NotDecimalException(wrapped))
       else Right(constructInstance(wrapped))
 
     /** Construct an instance of this ConstrainedString, returning either an result or throwing an
@@ -97,6 +114,25 @@ object ConstrainedString {
       */
     def unsafe(wrapped: String): S = safe(wrapped).toTry.get
 
+    def representDecimalValue(s: String): Boolean = {
+      var dotEncountered = false
+      s.forall { c =>
+        if (
+          (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' ||
+          c == '7' || c == '8' || c == '9')
+        ) true
+        else if (c == '.') {
+          if (dotEncountered) {
+            // Then this is second dot, and that is not allowed
+            false
+          } else {
+            // First dot that is ok
+            dotEncountered = true
+            true
+          }
+        } else false
+      }
+    }
   }
 
 }

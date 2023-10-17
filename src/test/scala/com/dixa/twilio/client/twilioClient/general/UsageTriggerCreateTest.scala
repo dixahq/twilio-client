@@ -23,7 +23,7 @@ final class UsageTriggerCreateTest extends TwilioClientTest {
         val request = UsageTriggerCreateRequestExecutor.UsageTriggerCreateRequest.build(
           _.withAccountSid(CommonFixtures.accountSid1)
             .withCallbackUrl(CallbackUrl.UsageTriggerUrl("http://www.example.com"))
-            .withTriggerValue(UsageTrigger.TriggerValue("1000.000000"))
+            .withTriggerValue(UsageTrigger.TriggerValue.unsafe("1000.000000"))
             .withUsageCategory(UsageTrigger.UsageCategory.Sms)
             .withCallbackMethod(HttpMethod.Post)
             .withFriendlyName(UsageTrigger.FriendlyName.unsafe("Trigger for sms at usage of 1000"))
@@ -70,7 +70,7 @@ final class UsageTriggerCreateTest extends TwilioClientTest {
           Some(UsageTrigger.Recurring.Daily),
           UsageTrigger.Sid.unsafe("UTc142bed7b38c4f8186ef41a309814fd2"),
           UsageTrigger.TriggerBy.Usage,
-          UsageTrigger.TriggerValue("1000.000000"),
+          UsageTrigger.TriggerValue.unsafe("1000.000000"),
           UsageTrigger.UsageCategory.Sms
         )
 

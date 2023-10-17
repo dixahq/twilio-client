@@ -36,13 +36,23 @@ object UsageTrigger {
 
   final case class CurrentValue(override val toString: String) extends TwilioStringValue
 
-  // TODO PR: Make more safe
-  final case class TriggerValue(override val toString: String) extends TwilioStringValue
+  final case class TriggerValue private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+  object TriggerValue
+      extends ConstrainedString.ConstrainedStringCompanionObject[TriggerValue](decimalOnly = true) {
+    override protected def constructInstance(wrapped: String): TriggerValue = new TriggerValue(
+      wrapped
+    )
+  }
+
   final case class FriendlyName private (override val toString: String)
       extends ConstrainedString
       with TwilioStringValue
   object FriendlyName
-      extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](maxLength = 64) {
+      extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](maxLength =
+        Some(64)
+      ) {
     override protected def constructInstance(wrapped: String): FriendlyName = new FriendlyName(
       wrapped
     )

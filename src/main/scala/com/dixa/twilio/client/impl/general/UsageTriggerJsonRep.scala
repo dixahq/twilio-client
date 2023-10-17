@@ -40,7 +40,7 @@ private[impl] case class UsageTriggerJsonRep(
     recurring = emptyStringToNone(recurring).map(UsageTrigger.Recurring.fromTwilioStringUnsafe),
     sid = UsageTrigger.Sid.unsafe(sid),
     triggerBy = UsageTrigger.TriggerBy.fromTwilioStringUnsafe(trigger_by),
-    triggerValue = UsageTrigger.TriggerValue(trigger_value),
+    triggerValue = UsageTrigger.TriggerValue.unsafe(trigger_value),
     usageCategory = UsageTrigger.UsageCategory.fromTwilioStringUnsafe(usage_category)
   )
 }

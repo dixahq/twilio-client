@@ -218,7 +218,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         recurring = None,
         sid = sid,
         triggerBy = UsageTrigger.TriggerBy.Count,
-        triggerValue = UsageTrigger.TriggerValue("0.000000"),
+        triggerValue = UsageTrigger.TriggerValue.unsafe("0.000000"),
         usageCategory = UsageTrigger.UsageCategory.Calls
       )
 
