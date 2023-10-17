@@ -1,4 +1,4 @@
-package com.dixa.twilio.model.usage
+package com.dixa.twilio.model.general
 
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.callback.CallbackUrl
