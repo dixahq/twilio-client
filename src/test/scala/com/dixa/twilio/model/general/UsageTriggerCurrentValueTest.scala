@@ -2,7 +2,7 @@ package com.dixa.twilio.model.general
 
 import org.scalatest.wordspec.AnyWordSpec
 
-final class UsageCurrentValueTest extends AnyWordSpec {
+final class UsageTriggerCurrentValueTest extends AnyWordSpec {
 
   classOf[UsageTrigger.CurrentValue].getSimpleName should {
 
@@ -11,6 +11,12 @@ final class UsageCurrentValueTest extends AnyWordSpec {
         UsageTrigger.CurrentValue.safe("2342.33")
       val unwrappedResult = instance.getOrElse(fail("expected success here"))
       assert(unwrappedResult.twilioString == "2342.33")
+    }
+
+    "Expose value as a BigDecimal" in {
+      val instance = UsageTrigger.CurrentValue.unsafe("24.253")
+      val expected = BigDecimal("24.253")
+      assert(instance.toBigDecimal == expected)
     }
 
     "return a left if created value is decimal like, but have two dots" in {

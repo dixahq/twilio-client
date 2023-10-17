@@ -36,7 +36,14 @@ object UsageTrigger {
 
   final case class CurrentValue private (override val toString: String)
       extends ConstrainedString
-      with TwilioStringValue
+      with TwilioStringValue {
+
+    /** Return instance as BigDecimal value.
+      *
+      * This operation is safe, as value can only represent valid decimal values.
+      */
+    def toBigDecimal: BigDecimal = BigDecimal(toString)
+  }
   object CurrentValue
       extends ConstrainedString.ConstrainedStringCompanionObject[CurrentValue](decimalOnly = true) {
     override protected def constructInstance(wrapped: String): CurrentValue = new CurrentValue(
@@ -46,7 +53,14 @@ object UsageTrigger {
 
   final case class TriggerValue private (override val toString: String)
       extends ConstrainedString
-      with TwilioStringValue
+      with TwilioStringValue {
+
+    /** Return instance as BigDecimal value.
+      *
+      * This operation is safe, as value can only represent valid decimal values.
+      */
+    def toBigDecimal: BigDecimal = BigDecimal(toString)
+  }
   object TriggerValue
       extends ConstrainedString.ConstrainedStringCompanionObject[TriggerValue](decimalOnly = true) {
     override protected def constructInstance(wrapped: String): TriggerValue = new TriggerValue(
