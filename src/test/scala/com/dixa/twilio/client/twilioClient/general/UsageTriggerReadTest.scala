@@ -30,14 +30,63 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         val expected1 = usageTrigger(
           connSettings.accountSid,
           UsageTrigger.FriendlyName("a trigger"),
-          UsageTrigger.CurrentValue("20")
+          UsageTrigger.CurrentValue("20"),
+          UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
         )
 
         val expected2 = usageTrigger(
           connSettings.accountSid,
           UsageTrigger.FriendlyName("a test trigger"),
-          UsageTrigger.CurrentValue("10")
+          UsageTrigger.CurrentValue("10"),
+          UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
         )
+
+        val usageTriggerListResp =
+          s"""{
+             |    "first_page_uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily&Page=0&PageSize=50",
+             |   "previous_page_uri": null,
+             |   "usage_triggers": [
+             |       {
+             |         "usage_record_uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Records/Today.json?Category=calls",
+             |         "date_updated": "Sat, 29 Sep 2012 19:42:57 +0000",
+             |         "date_fired": null,
+             |         "friendly_name": "a trigger",
+             |         "uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers/UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1.json",
+             |         "account_sid": "${connSettings.accountSid}",
+             |         "callback_method": "POST",
+             |         "trigger_by": "count",
+             |         "sid": "UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
+             |         "current_value": "20",
+             |         "date_created": "Sun, 23 Sep 2012 23:07:29 +0000",
+             |         "callback_url": "http://www.google.com",
+             |         "recurring": "",
+             |         "usage_category": "calls",
+             |         "trigger_value": "0.000000"
+             |       },
+             |       {
+             |         "usage_record_uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Records/Today.json?Category=calls",
+             |         "date_updated": "Sat, 29 Sep 2012 19:42:57 +0000",
+             |         "date_fired": null,
+             |         "friendly_name": "a test trigger",
+             |         "uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers/UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2.json",
+             |         "account_sid": "${connSettings.accountSid}",
+             |         "callback_method": "POST",
+             |         "trigger_by": "count",
+             |         "sid": "UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2",
+             |         "current_value": "10",
+             |         "date_created": "Sun, 23 Sep 2012 23:07:29 +0000",
+             |         "callback_url": "http://www.google.com",
+             |         "recurring": null,
+             |         "usage_category": "calls",
+             |         "trigger_value": "0.000000"
+             |       }
+             |   ],
+             |   "uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily",
+             |   "page_size": 50,
+             |   "next_page_uri": null,
+             |   "page": 0
+             |}
+             |""".stripMargin
 
         val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?" +
           s"Recurring=daily&" +
@@ -54,12 +103,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
               aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(
-                  usageTriggerListResp(
-                    accountSid = connSettings.accountSid,
-                    usageTriggers = List(expected1, expected2)
-                  )
-                )
+                .withBody(usageTriggerListResp)
             )
         )
 
@@ -80,7 +124,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
             case Left(e) =>
               fail(e)
             case Right(result) => result
-          } shouldBe Seq(expected1, expected2)
+          } shouldBe Vector(expected1, expected2)
         }
       }
 
@@ -159,7 +203,8 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
     def usageTrigger(
         accountSid: TwilioAccount.Sid,
         friendlyName: UsageTrigger.FriendlyName,
-        currentValue: UsageTrigger.CurrentValue
+        currentValue: UsageTrigger.CurrentValue,
+        sid: UsageTrigger.Sid
     ) =
       UsageTrigger(
         accountSid = accountSid,
@@ -170,61 +215,12 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         dateFired = None,
         dateUpdated = updatedAtInstant,
         friendlyName = friendlyName,
-        recurring = Some(UsageTrigger.Recurring.Daily),
-        sid = usageTriggerSid,
+        recurring = None,
+        sid = sid,
         triggerBy = UsageTrigger.TriggerBy.Count,
         triggerValue = UsageTrigger.TriggerValue("0.000000"),
         usageCategory = UsageTrigger.UsageCategory.Calls
       )
-
-    def usageTriggerReferenceResp(
-        accountSid: TwilioAccount.Sid,
-        friendlyName: UsageTrigger.FriendlyName,
-        currentValue: UsageTrigger.CurrentValue
-    ): String = {
-      s"""{
-         |         "usage_record_uri": "/2010-04-01/Accounts/${accountSid.twilioString}/Usage/Records/Today.json?Category=calls", 
-         |         "date_updated": "Sat, 29 Sep 2012 19:42:57 +0000", 
-         |         "date_fired": null, 
-         |         "friendly_name": "${friendlyName.twilioString}", 
-         |         "uri": "/2010-04-01/Accounts/${accountSid.twilioString}/Usage/Triggers/UTc2db285b0cbf4c60a2f1a8db237a5fba.json", 
-         |         "account_sid": "${accountSid.twilioString}", 
-         |         "callback_method": "POST", 
-         |         "trigger_by": "count", 
-         |         "sid": "UTc2db285b0cbf4c60a2f1a8db237a5fba", 
-         |         "current_value": "${currentValue.twilioString}", 
-         |         "date_created": "Sun, 23 Sep 2012 23:07:29 +0000", 
-         |         "callback_url": "http://www.google.com", 
-         |         "recurring": "daily", 
-         |         "usage_category": "calls", 
-         |         "trigger_value": "0.000000"
-         |    }""".stripMargin
-    }
-
-    def usageTriggerListResp(
-        accountSid: TwilioAccount.Sid,
-        usageTriggers: List[UsageTrigger]
-    ): String =
-      s"""{
-         |    "first_page_uri": "/2010-04-01/Accounts/${accountSid.twilioString}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily&Page=0&PageSize=50",
-         |   "previous_page_uri": null,
-         |   "usage_triggers": [
-         |      ${usageTriggers
-          .map(trigger =>
-            usageTriggerReferenceResp(
-              accountSid,
-              trigger.friendlyName,
-              trigger.currentValue
-            )
-          )
-          .mkString(", ")}
-         |   ],
-         |   "uri": "/2010-04-01/Accounts/${accountSid.twilioString}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily",
-         |   "page_size": 50,
-         |   "next_page_uri": null,
-         |   "page": 0
-         |}
-         |""".stripMargin
 
     val instance: UsageTriggerReadRequestExecutor =
       TwilioClient.defaultImpl().general.usageTriggerRead
