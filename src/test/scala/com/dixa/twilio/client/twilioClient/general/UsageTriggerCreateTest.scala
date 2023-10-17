@@ -62,7 +62,7 @@ final class UsageTriggerCreateTest extends TwilioClientTest {
           CommonFixtures.accountSid1,
           HttpMethod.Post,
           CallbackUrl.UsageTriggerUrl("http://www.example.com"),
-          UsageTrigger.CurrentValue("57"),
+          UsageTrigger.CurrentValue.unsafe("57"),
           Instant.from(ZonedDateTime.of(2012, 10, 13, 21, 32, 30, 0, ZoneOffset.UTC)),
           None,
           Instant.from(ZonedDateTime.of(2012, 10, 13, 21, 32, 30, 0, ZoneOffset.UTC)),

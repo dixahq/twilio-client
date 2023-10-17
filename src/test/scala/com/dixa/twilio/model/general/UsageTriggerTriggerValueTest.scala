@@ -25,6 +25,10 @@ final class UsageTriggerTriggerValueTest extends AnyWordSpec {
       assert(instance == Left(UsageTrigger.TriggerValue.NotDecimalException("Hello")))
     }
 
+    "do not allow instance to be created with the constructor" in {
+      assertTypeError("""new UsageTrigger.TriggerValue("bla")""")
+    }
+
     "do not allow instances to be created with the default apply method of cases classes" in {
       assertTypeError("""UsageTrigger.TriggerValue("34234.234")""")
     }

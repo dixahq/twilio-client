@@ -34,7 +34,15 @@ final case class UsageTrigger(
 
 object UsageTrigger {
 
-  final case class CurrentValue(override val toString: String) extends TwilioStringValue
+  final case class CurrentValue private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+  object CurrentValue
+      extends ConstrainedString.ConstrainedStringCompanionObject[CurrentValue](decimalOnly = true) {
+    override protected def constructInstance(wrapped: String): CurrentValue = new CurrentValue(
+      wrapped
+    )
+  }
 
   final case class TriggerValue private (override val toString: String)
       extends ConstrainedString

@@ -32,7 +32,7 @@ private[impl] case class UsageTriggerJsonRep(
     accountSid = TwilioAccount.Sid.unsafe(account_sid),
     callBackMethod = HttpMethod.fromTwilioStringUnsafe(callback_method),
     callbackUrl = CallbackUrl.UsageTriggerUrl(callback_url),
-    currentValue = UsageTrigger.CurrentValue(current_value),
+    currentValue = UsageTrigger.CurrentValue.unsafe(current_value),
     dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
     dateFired = date_fired.map(string => Instant.from(Formatter.dateTime.parse(string))),
     dateUpdated = Instant.from(Formatter.dateTime.parse(date_updated)),
