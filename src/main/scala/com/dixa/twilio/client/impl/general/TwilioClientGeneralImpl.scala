@@ -7,6 +7,7 @@ import com.dixa.twilio.client.general.{
   ApplicationDeleteRequestExecutor,
   ApplicationReadRequestExecutor,
   TwilioClientGeneral,
+  UsageTriggerCreateRequestExecutor,
   UsageTriggerDeleteRequestExecutor,
   UsageTriggerReadRequestExecutor
 }
@@ -21,6 +22,9 @@ private[impl] final class TwilioClientGeneralImpl()(
 ) extends TwilioClientGeneral {
 
   private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
+
+  override def usageTriggerCreate: UsageTriggerCreateRequestExecutor =
+    new UsageTriggerCreateRequestExecutorImpl()
 
   override val usageTriggerRead: UsageTriggerReadRequestExecutor =
     new UsageTriggerReadRequestExecutorImpl()
