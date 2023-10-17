@@ -3,7 +3,13 @@ package com.dixa.twilio.model.general
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, SidAbstract, TwilioStringValue}
+import com.dixa.twilio.model.{
+  ConstrainedString,
+  EnumWithTwilioString,
+  HttpMethod,
+  SidAbstract,
+  TwilioStringValue
+}
 
 import java.time.Instant
 import scala.collection.immutable
@@ -32,8 +38,16 @@ object UsageTrigger {
 
   // TODO PR: Make more safe
   final case class TriggerValue(override val toString: String) extends TwilioStringValue
-  // TODO PR: Make more safe
-  final case class FriendlyName(override val toString: String) extends TwilioStringValue
+  final case class FriendlyName private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+  object FriendlyName
+      extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](maxLength = 64) {
+    override protected def constructInstance(wrapped: String): FriendlyName = new FriendlyName(
+      wrapped
+    )
+  }
+
   final case class Sid private (override val toString: String) extends SidAbstract
 
   object Sid extends SidAbstract.SidCompanionObject[Sid](List(Prefix("UT")), new Sid(_))

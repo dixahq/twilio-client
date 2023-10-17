@@ -36,7 +36,7 @@ private[impl] case class UsageTriggerJsonRep(
     dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
     dateFired = date_fired.map(string => Instant.from(Formatter.dateTime.parse(string))),
     dateUpdated = Instant.from(Formatter.dateTime.parse(date_updated)),
-    friendlyName = UsageTrigger.FriendlyName(friendly_name),
+    friendlyName = UsageTrigger.FriendlyName.unsafe(friendly_name),
     recurring = emptyStringToNone(recurring).map(UsageTrigger.Recurring.fromTwilioStringUnsafe),
     sid = UsageTrigger.Sid.unsafe(sid),
     triggerBy = UsageTrigger.TriggerBy.fromTwilioStringUnsafe(trigger_by),

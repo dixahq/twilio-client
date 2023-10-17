@@ -29,14 +29,14 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
 
         val expected1 = usageTrigger(
           connSettings.accountSid,
-          UsageTrigger.FriendlyName("a trigger"),
+          UsageTrigger.FriendlyName.unsafe("a trigger"),
           UsageTrigger.CurrentValue("20"),
           UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
         )
 
         val expected2 = usageTrigger(
           connSettings.accountSid,
-          UsageTrigger.FriendlyName("a test trigger"),
+          UsageTrigger.FriendlyName.unsafe("a test trigger"),
           UsageTrigger.CurrentValue("10"),
           UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
         )
