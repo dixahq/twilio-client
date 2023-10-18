@@ -1,5 +1,6 @@
 package com.dixa.twilio.model
 
+import scala.annotation.unused
 import scala.reflect.{classTag, ClassTag}
 
 /** Base type for all classes representing a SID in Twilio.
@@ -20,6 +21,12 @@ abstract class SidAbstract extends TwilioStringValue {
     * This will return the raw value, without any class names, parentheses etc.
     */
   def toString: String
+
+  @unused
+  private def copy(toString: String): ConstrainedString =
+    throw new UnsupportedOperationException(
+      "Disallow copy, as that would be a way to create instances that break the constraints"
+    )
 }
 
 object SidAbstract {

@@ -19,7 +19,7 @@ import scala.annotation.unused
 abstract class ConstrainedString() {
 
   @unused
-  private def copy(wrapped: String): ConstrainedString =
+  private def copy(toString: String): ConstrainedString =
     throw new UnsupportedOperationException(
       "Disallow copy, as that would be a way to create instances that break the length limitation"
     )
