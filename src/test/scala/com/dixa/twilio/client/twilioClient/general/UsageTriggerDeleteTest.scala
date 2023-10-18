@@ -9,8 +9,8 @@ import com.dixa.twilio.client.general.UsageTriggerDeleteRequestExecutor.{
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.general.UsageTrigger
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.usage.UsageTrigger
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 

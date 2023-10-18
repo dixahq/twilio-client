@@ -4,8 +4,8 @@ import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
+import com.dixa.twilio.model.general.UsageTrigger
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.usage.UsageTrigger
 
 import java.time.Instant
 

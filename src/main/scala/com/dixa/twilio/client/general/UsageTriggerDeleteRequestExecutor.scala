@@ -3,8 +3,8 @@ package com.dixa.twilio.client.general
 import akka.Done
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.general.UsageTrigger
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.usage.UsageTrigger
 
 trait UsageTriggerDeleteRequestExecutor
     extends SingleRequestExecutor[

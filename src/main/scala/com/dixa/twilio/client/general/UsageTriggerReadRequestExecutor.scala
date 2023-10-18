@@ -2,8 +2,8 @@ package com.dixa.twilio.client.general
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
+import com.dixa.twilio.model.general.UsageTrigger
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.usage.UsageTrigger
 
 trait UsageTriggerReadRequestExecutor
     extends MultipleResponseRequestExecutor[

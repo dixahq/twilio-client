@@ -7,8 +7,8 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.general.UsageTrigger
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.usage.UsageTrigger
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.scalatest.matchers.should.Matchers
