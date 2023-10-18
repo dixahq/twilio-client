@@ -3,6 +3,7 @@ package com.dixa.twilio.client.impl.general
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import com.dixa.twilio.client.general.{
+  ApplicationCreateRequestExecutor,
   TwilioClientGeneral,
   UsageTriggerDeleteRequestExecutor,
   UsageTriggerReadRequestExecutor
@@ -24,4 +25,7 @@ private[impl] final class TwilioClientGeneralImpl()(
 
   override val usageTriggerDelete: UsageTriggerDeleteRequestExecutor =
     new UsageTriggerDeleteRequestExecutorImpl()
+
+  override def applicationCreate: ApplicationCreateRequestExecutor =
+    new ApplicationCreateRequestExecutorImpl()
 }

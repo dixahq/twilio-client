@@ -2,6 +2,7 @@ package com.dixa.twilio.model.callback
 
 import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.callback.CallbackUrl.{
+  ApplicationStatusCallback,
   AsyncAmdStatusCallbackUrl,
   RecordingStatusCallbackUrl,
   SmsFallbackUrl,
@@ -28,6 +29,7 @@ sealed abstract class CallbackUrl private (override val toString: String)
   )
   def toAsyncAmdStatusCallbackUrl: AsyncAmdStatusCallbackUrl = AsyncAmdStatusCallbackUrl(toString)
   def toUsageTriggerUrl: UsageTriggerUrl                     = UsageTriggerUrl(toString)
+  def toApplicationStatusCallback: ApplicationStatusCallback = ApplicationStatusCallback(toString)
 }
 
 object CallbackUrl {
@@ -40,13 +42,16 @@ object CallbackUrl {
 
   private final class BaseImpl(wrapped: String) extends CallbackUrl(wrapped)
 
-  final case class SmsFallbackUrl(asString: String) extends CallbackUrl(toString)
+  final case class SmsFallbackUrl(asString: String) extends CallbackUrl(asString)
 
   final case class SmsStatusCallback(asString: String) extends CallbackUrl(asString)
 
   final case class SmsUrl(asString: String) extends CallbackUrl(asString)
 
   final case class MessageStatusCallback(url: URL) extends CallbackUrl(url.toString)
+  object MessageStatusCallback {
+    def apply(s: String): MessageStatusCallback = MessageStatusCallback(new URL(s))
+  }
 
   final case class VoiceFallbackUrl(asString: String) extends CallbackUrl(asString)
 
@@ -59,4 +64,8 @@ object CallbackUrl {
   final case class RecordingStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
 
   final case class AsyncAmdStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class ApplicationStatusCallback(asString: String) extends CallbackUrl(asString) {
+    override def toApplicationStatusCallback: ApplicationStatusCallback = this
+  }
 }
