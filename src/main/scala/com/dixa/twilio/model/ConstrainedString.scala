@@ -55,6 +55,21 @@ object ConstrainedString {
       )
       with CreationException
 
+  /** Error to be returned, if wrapped string is expected to only contain a specific set of chars,
+    * but does not.
+    */
+  abstract class InvalidCharException(wrapped: String, allowedChars: Set[Char])
+      extends IllegalArgumentException(
+        s"$wrapped contains invalid char. Valid chars are: $allowedChars"
+      )
+      with CreationException
+
+  /** Error to be returned if wrapped string is expected to end on a specific suffix, but does not.
+    */
+  abstract class InvalidSuffixException(wrapped: String, expectedSuffix: String)
+      extends IllegalArgumentException(s"$wrapped does not have required suffix: $expectedSuffix")
+      with CreationException
+
   // format: off
   /** Class to be extended by the companion object of a Constraint Sid.
     *
@@ -65,12 +80,32 @@ object ConstrainedString {
     *   3. Provide a unsafe method, for constructing instances in an unsafe way, throwing exception if
     *      input does not conform to constrains.
     *   4. Ensure that a default apply method is not generated in the companion object.
+    *   5. enforce all of the constraints specified by the companion object extending this.
+    *
+    * Constraints are specified by overriding methods. The default implementations don't activate any
+    * constraints, so you should always override at least one.
+    *
+    * @param requireSuffix
     */
   // format: on
-  abstract class ConstrainedStringCompanionObject[S <: ConstrainedString](
-      maxLength: Option[Int] = None,
-      decimalOnly: Boolean = false
-  ) {
+  abstract class ConstrainedStringCompanionObject[S <: ConstrainedString] {
+
+    protected def maxLength: Option[Int] = None
+
+    protected def decimalOnly: Boolean = false
+
+    /** set of chars that will be the only one allowed in the String.
+      *
+      * Provided empty set disables this constraint.
+      *
+      * Note that if requireSuffix is also set, then that suffix will be stripped from the string,
+      * before checking for invalid chars.
+      */
+    protected def validChars: Set[Char] = Set.empty
+
+    /** suffix that the string should end on. Providing empty string disabled this constraint
+      */
+    protected def requireSuffix: String = ""
 
     @unused
     protected final def apply(s: String): S = throw new UnsupportedOperationException(
@@ -101,12 +136,26 @@ object ConstrainedString {
         extends ConstrainedString.NotDecimalException(wrapped)
         with CreationException
 
+    sealed case class InvalidCharException(wrapped: String, allowedChars: Set[Char])
+        extends IllegalArgumentException(
+          s"$wrapped contains invalid char. Valid chars are: $allowedChars"
+        )
+        with CreationException
+
+    sealed case class InvalidSuffixException(wrapped: String, expectedSuffix: String)
+        extends IllegalArgumentException(s"$wrapped does not have required suffix: $expectedSuffix")
+        with CreationException
+
     /** Construct an instance of this ConstrainedString, returning either an result or an error. */
     def safe(wrapped: String): Either[CreationException, S] =
       if (wrapped == null) Left(NullValueException())
       else if (maxLength.isDefined && wrapped.length > maxLength.get)
         Left(ToLongException(wrapped, maxLength.get))
       else if (decimalOnly && !representDecimalValue(wrapped)) Left(NotDecimalException(wrapped))
+      else if (requireSuffix.nonEmpty && !wrapped.endsWith(requireSuffix))
+        Left(InvalidSuffixException(wrapped, requireSuffix))
+      else if (validChars.nonEmpty && containsInvalidValidChars(wrapped))
+        Left(InvalidCharException(wrapped, validChars))
       else Right(constructInstance(wrapped))
 
     /** Construct an instance of this ConstrainedString, returning either an result or throwing an
@@ -114,7 +163,7 @@ object ConstrainedString {
       */
     def unsafe(wrapped: String): S = safe(wrapped).toTry.get
 
-    def representDecimalValue(s: String): Boolean = {
+    private def representDecimalValue(s: String): Boolean = {
       var dotEncountered = false
       s.forall { c =>
         if (
@@ -132,6 +181,11 @@ object ConstrainedString {
           }
         } else false
       }
+    }
+
+    private def containsInvalidValidChars(s: String): Boolean = {
+      val toCheck = if (requireSuffix.nonEmpty) s.substring(0, s.indexOf(requireSuffix)) else s
+      toCheck.exists(!validChars.contains(_))
     }
   }
 

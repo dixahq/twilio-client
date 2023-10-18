@@ -44,11 +44,12 @@ object UsageTrigger {
       */
     def toBigDecimal: BigDecimal = BigDecimal(toString)
   }
-  object CurrentValue
-      extends ConstrainedString.ConstrainedStringCompanionObject[CurrentValue](decimalOnly = true) {
+  object CurrentValue extends ConstrainedString.ConstrainedStringCompanionObject[CurrentValue] {
     override protected def constructInstance(wrapped: String): CurrentValue = new CurrentValue(
       wrapped
     )
+
+    override protected val decimalOnly: Boolean = true
   }
 
   final case class TriggerValue private (override val toString: String)
@@ -61,23 +62,23 @@ object UsageTrigger {
       */
     def toBigDecimal: BigDecimal = BigDecimal(toString)
   }
-  object TriggerValue
-      extends ConstrainedString.ConstrainedStringCompanionObject[TriggerValue](decimalOnly = true) {
+  object TriggerValue extends ConstrainedString.ConstrainedStringCompanionObject[TriggerValue] {
     override protected def constructInstance(wrapped: String): TriggerValue = new TriggerValue(
       wrapped
     )
+
+    override protected val decimalOnly: Boolean = true
   }
 
   final case class FriendlyName private (override val toString: String)
       extends ConstrainedString
       with TwilioStringValue
-  object FriendlyName
-      extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](maxLength =
-        Some(64)
-      ) {
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName] {
     override protected def constructInstance(wrapped: String): FriendlyName = new FriendlyName(
       wrapped
     )
+
+    override protected val maxLength: Option[Int] = Some(64)
   }
 
   final case class Sid private (override val toString: String) extends SidAbstract
