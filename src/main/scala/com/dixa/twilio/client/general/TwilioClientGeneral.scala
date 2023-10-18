@@ -32,4 +32,11 @@ trait TwilioClientGeneral {
     *   https://www.twilio.com/docs/usage/api/applications#delete-an-application-resource
     */
   def applicationDelete: ApplicationDeleteRequestExecutor
+
+  /** Read all applications (TwimlApps) from a subaccount.
+    *
+    * @see
+    *   https://www.twilio.com/docs/usage/api/applications#read-multiple-application-resources
+    */
+  def applicationRead: ApplicationReadRequestExecutor
 }

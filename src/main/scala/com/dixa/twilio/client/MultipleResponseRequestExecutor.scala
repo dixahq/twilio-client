@@ -130,7 +130,7 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
     * the UndefinedException type of the request.
     *
     * When looking for errors, the [[buildResultForUnhandledResponse]] is an easy way to create a
-    * willcard for the cases not handled.
+    * wildcard for the cases not handled.
     *
     * @return
     *   Left in case of errors, right in case of success.
@@ -216,16 +216,15 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
   /** Helper method for creating a response to cases where we have no support for handling a
     * Responese.
     */
-  protected def buildResultForUnhandledResponse(
+  protected final def buildResultForUnhandledResponse(
       request: Req,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
-      entity: HttpEntity.Strict
+      entity: HttpEntityString
   ): Either[Err, Success] = {
-    val entityAsString = entity.data.utf8String
     val msg =
-      s"No support for handling response to $request, due to getting status code ${httpResponse.status} " +
-        s"after firing $httpRequest. Full entity of response is: $entityAsString"
+      s"No support for handling response to $request, due to status code ${httpResponse.status} " +
+        s"after firing $httpRequest. Full entity of response is: $entity"
     Left(createUnspecifiedException(Some(msg), None))
   }
 

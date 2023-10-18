@@ -3,9 +3,11 @@ package com.dixa.twilio.client
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
 import akka.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, TwilioUri}
+import com.dixa.twilio.client.impl.TwilioClientPickler.Reader
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
 
 import scala.concurrent.ExecutionContext
+import scala.reflect.ClassTag
 
 trait RequestExecutor[Req, Err <: RuntimeException] {
 
@@ -78,6 +80,13 @@ trait RequestExecutor[Req, Err <: RuntimeException] {
     .flatMap(_.createHttpRequest(connectionSettings))
     .left
     .map(createUnspecifiedException("Error creating HttpRequest", _))
+
+  /** Helper method for parsing entity as Json, wrapping errors in UnspecifiedException. */
+  protected final def parseEntityAs[A: ClassTag: Reader](
+      entity: HttpEntityString
+  ): Either[UnspecifiedException, A] = {
+    entity.parse[A]().left.map(e => createUnspecifiedException(None, Some(e)))
+  }
 
 }
 
