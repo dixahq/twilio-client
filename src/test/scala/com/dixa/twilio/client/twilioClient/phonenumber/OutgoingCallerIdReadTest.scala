@@ -18,6 +18,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo}
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.scalatest.matchers.should.Matchers
 
+import java.time.{Instant, LocalDate, LocalDateTime, LocalTime, OffsetDateTime, ZoneOffset}
 import java.util.{HashMap => JavaMap}
 
 final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
@@ -69,10 +70,27 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
 
   // noinspection TypeAnnotation
   class Fixture {
+    val dateCreated = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2009, 8, 21), LocalTime.of(0, 11, 24)),
+        ZoneOffset.UTC
+      )
+    )
+
+    val dateUpdated = Instant.from(
+      OffsetDateTime.of(
+        LocalDateTime.of(LocalDate.of(2009, 8, 21), LocalTime.of(0, 11, 24)),
+        ZoneOffset.UTC
+      )
+    )
+
     val outgoingCallerId = OutgoingCallerId(
       sid = OutgoingCallerId.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-      friendlyName = OutgoingCallerId.FriendlyName("(415) 867-5309"),
-      phoneNumber = PhoneNumberE164.unsafe("+141586753096")
+      accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+      friendlyName = Some(OutgoingCallerId.FriendlyName("(415) 867-5309")),
+      phoneNumber = PhoneNumberE164.unsafe("+141586753096"),
+      dateCreated = dateCreated,
+      dateUpdated = dateUpdated
     )
 
     val twilioResponse1 =

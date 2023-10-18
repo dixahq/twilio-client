@@ -59,4 +59,6 @@ object CallbackUrl {
   final case class RecordingStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
 
   final case class AsyncAmdStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
+
+  final case class OutgoingCallerIdVerificationUrl(asString: String) extends CallbackUrl(asString)
 }

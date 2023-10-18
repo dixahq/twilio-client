@@ -1,19 +1,28 @@
 package com.dixa.twilio.client.impl.phonenumber
 
+import com.dixa.twilio.client.impl.Formatter
 import com.dixa.twilio.model.phonenumber._
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.model.iam.TwilioAccount
+
+import java.time.Instant
 
 private[phonenumber] final case class OutgoingCallerIdJsonRep(
     sid: String,
     account_sid: String,
     phone_number: String,
-    friendly_name: String,
+    friendly_name: Option[String],
+    date_created: String,
+    date_updated: String,
 ) {
 
   private[phonenumber] def toModel = OutgoingCallerId(
     sid = OutgoingCallerId.Sid.unsafe(sid),
-    friendlyName = OutgoingCallerId.FriendlyName(friendly_name),
-    phoneNumber = PhoneNumberE164.unsafe(phone_number)
+    accountSid = TwilioAccount.Sid.unsafe(account_sid),
+    friendlyName = friendly_name.map(OutgoingCallerId.FriendlyName),
+    phoneNumber = PhoneNumberE164.unsafe(phone_number),
+    dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
+    dateUpdated = Instant.from(Formatter.dateTime.parse(date_updated)),
   )
 }
 

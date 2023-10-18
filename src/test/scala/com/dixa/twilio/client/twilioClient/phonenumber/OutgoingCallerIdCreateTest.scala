@@ -1,0 +1,110 @@
+package com.dixa.twilio.client.twilioClient.phonenumber
+
+import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor
+import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.voice.TwilioClientVoice
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.HttpMethod
+import com.dixa.twilio.model.callback.CallbackUrl
+import com.dixa.twilio.model.phonenumber.{
+  OutgoingCallerId,
+  OutgoingCallerIdCreateResponse,
+  PhoneNumberE164
+}
+import com.dixa.twilio.model.voice.Call
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+
+import scala.concurrent.Future
+
+final class OutgoingCallerIdCreateTest extends TwilioClientTest {
+  classOf[TwilioClientVoice].getSimpleName when {
+
+    "is asked to create a OutgoindCallerId" should {
+      "ask twilio to send it, and return the OutgoingCallerId it gets back from Twilio" in {
+
+        val phonenumber  = PhoneNumberE164.unsafe("+4588888888")
+        val friendlyName = OutgoingCallerId.FriendlyName("A new service")
+        val callDelay    = OutgoingCallerId.CallDelay.Seconds26
+        val extension    = OutgoingCallerId.Extension.apply(1234)
+        val callback     = CallbackUrl.OutgoingCallerIdVerificationUrl("test.i/test")
+        val createReq = OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest.build(
+          _.withAccountSid(TwilioTestConstants.accountSid)
+            .withPhoneNumber(phonenumber)
+            .withFriendlyName(friendlyName)
+            .withCallDelay(callDelay)
+            .withExtension(extension)
+            .withCallback(callback)
+            .withCallbackMethod(HttpMethod.Post)
+            .build()
+        )
+
+        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+
+        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/OutgoingCallerIds.json"
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(
+              WireMock.urlEqualTo(expectedPath)
+            )
+            .withFormParam("PhoneNumber", WireMock.equalTo(createReq.phoneNumber.twilioString))
+            .withFormParam(
+              "FriendlyName",
+              WireMock.equalTo(createReq.friendlyName.map(_.twilioString).getOrElse(""))
+            )
+            .withFormParam(
+              "CallDelay",
+              WireMock.equalTo(createReq.callDelay.map(_.twilioString).getOrElse(""))
+            )
+            .withFormParam(
+              "Extension",
+              WireMock.equalTo(createReq.extension.map(_.twilioString).getOrElse(""))
+            )
+            .withFormParam(
+              "StatusCallback",
+              WireMock.equalTo(createReq.statusCallback.map(_.twilioString).getOrElse(""))
+            )
+            .withFormParam(
+              "StatusCallbackMethod",
+              WireMock.equalTo(createReq.statusCallbackMethod.map(_.twilioString).getOrElse(""))
+            )
+            .withBasicAuth(
+              connSettings.accountSid.twilioString,
+              connSettings.authToken.asString
+            )
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                  s"""{
+                     |  "account_sid": "${TwilioTestConstants.accountSid.twilioString}",
+                     |  "call_sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                     |  "friendly_name": "${friendlyName.twilioString}",
+                     |  "phone_number": "${phonenumber.twilioString}",
+                     |  "validation_code": "11111"
+                     |}""".stripMargin
+                )
+            )
+        )
+
+        val expected = OutgoingCallerIdCreateResponse(
+          accountSid = createReq.accountSid,
+          friendlyName = Some(friendlyName),
+          phoneNumber = createReq.phoneNumber,
+          validationCode = OutgoingCallerIdCreateResponse.ValidationCode("11111"),
+          callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        )
+
+        val instance = TwilioClient.defaultImpl().phoneNumber
+        val resultFut: Future[Either[
+          OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException,
+          OutgoingCallerIdCreateResponse
+        ]] =
+          instance.outgoingCallerIdCreate.run(connSettings, createReq)
+        resultFut.map(result => assert(result === Right(expected)))
+      }
+    }
+  }
+}

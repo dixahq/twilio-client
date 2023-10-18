@@ -1,0 +1,85 @@
+package com.dixa.twilio.client.impl.phonenumber
+
+import akka.http.scaladsl.HttpExt
+import akka.http.scaladsl.model._
+import akka.stream.Materializer
+import com.dixa.twilio.client.impl._
+import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor
+import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.phonenumber.OutgoingCallerIdCreateResponse
+
+import scala.concurrent.ExecutionContext
+
+private[client] class OutgoingCallerIdCreateRequestExecutorImpl()(
+    implicit override protected val http: HttpExt,
+    override protected val materializer: Materializer,
+    override protected val executionContext: ExecutionContext,
+    apiVersion: ApiVersion
+) extends OutgoingCallerIdCreateRequestExecutor {
+
+  import OutgoingCallerIdCreateRequestExecutorImpl._
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+  override protected def method: HttpMethod = HttpMethods.POST
+
+  override protected def createHttpReq(
+      connSettings: TwilioConnectionSettings,
+      req: OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest
+  ): Either[OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException, HttpRequest] = {
+    val params =
+      QueryParamBuilder.empty
+        .withParam(phoneNumberKey, req.phoneNumber)
+        .withOptionalParam(friendlyNameKey, req.friendlyName)
+        .withOptionalParam(callDelayKey, req.callDelay)
+        .withOptionalParam(extensionKey, req.extension)
+        .withOptionalParam(statusCallbackKey, req.statusCallback)
+        .withOptionalParam(statusCallbackMethodKey, req.statusCallbackMethod)
+        .buildForPostParams
+
+    createHttpRequestFor(
+      s"/${apiVersion.twilioString}/Accounts/${req.accountSid}/OutgoingCallerIds.json",
+      connSettings
+    ).map(
+      _.withEntity(
+        HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params)
+      )
+    )
+  }
+
+  override protected def parseHttpResponse(
+      request: OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntityString
+  ): Either[
+    OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException,
+    OutgoingCallerIdCreateResponse
+  ] = {
+    httpResponse.status match {
+      case StatusCodes.Created | StatusCodes.OK =>
+        parseEntityAs[OutgoingCallerIdCreateResponseJsonRep](entity).map(_.toModel)
+      case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
+    }
+  }
+
+  override protected def mapApiException(
+      apiException: ApiException
+  ): OutgoingCallerIdCreateException.Api =
+    OutgoingCallerIdCreateException.Api(apiException)
+
+  override protected def createUnspecifiedException(
+      msg: Option[String],
+      cause: Option[Throwable]
+  ): OutgoingCallerIdCreateException.Unspecified =
+    OutgoingCallerIdCreateException.Unspecified(msg, cause)
+}
+
+private object OutgoingCallerIdCreateRequestExecutorImpl {
+  private val phoneNumberKey          = "PhoneNumber"
+  private val friendlyNameKey         = "FriendlyName"
+  private val callDelayKey            = "CallDelay"
+  private val extensionKey            = "Extension"
+  private val statusCallbackKey       = "StatusCallback"
+  private val statusCallbackMethodKey = "StatusCallbackMethod"
+}

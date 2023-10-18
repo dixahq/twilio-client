@@ -46,4 +46,11 @@ trait TwilioClientPhoneNumber {
     * making outgoing calls
     */
   def outgoingCallerIdDelete: OutgoingCallerIdDeleteRequestExecutor
+
+  /** Creates outgoing caller ID for a particular Twilio subaccount
+    *
+    * A Outgoing caller ID represents a single verified number that may be used as a caller ID when
+    * making outgoing calls
+    */
+  def outgoingCallerIdCreate: OutgoingCallerIdCreateRequestExecutor
 }
