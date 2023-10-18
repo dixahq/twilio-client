@@ -23,10 +23,10 @@ final class UsageTriggerCreateTest extends TwilioClientTest {
         val request = UsageTriggerCreateRequestExecutor.UsageTriggerCreateRequest.build(
           _.withAccountSid(CommonFixtures.accountSid1)
             .withCallbackUrl(CallbackUrl.UsageTriggerUrl("http://www.example.com"))
-            .withTriggerValue(UsageTrigger.TriggerValue("1000.000000"))
+            .withTriggerValue(UsageTrigger.TriggerValue.unsafe("1000.000000"))
             .withUsageCategory(UsageTrigger.UsageCategory.Sms)
             .withCallbackMethod(HttpMethod.Post)
-            .withFriendlyName(UsageTrigger.FriendlyName("Trigger for sms at usage of 1000"))
+            .withFriendlyName(UsageTrigger.FriendlyName.unsafe("Trigger for sms at usage of 1000"))
             .withRecurring(UsageTrigger.Recurring.Daily)
             .withTriggerBy(UsageTrigger.TriggerBy.Usage)
             .build()
@@ -62,15 +62,15 @@ final class UsageTriggerCreateTest extends TwilioClientTest {
           CommonFixtures.accountSid1,
           HttpMethod.Post,
           CallbackUrl.UsageTriggerUrl("http://www.example.com"),
-          UsageTrigger.CurrentValue("57"),
+          UsageTrigger.CurrentValue.unsafe("57"),
           Instant.from(ZonedDateTime.of(2012, 10, 13, 21, 32, 30, 0, ZoneOffset.UTC)),
           None,
           Instant.from(ZonedDateTime.of(2012, 10, 13, 21, 32, 30, 0, ZoneOffset.UTC)),
-          UsageTrigger.FriendlyName("Trigger for sms at usage of 1000"),
+          UsageTrigger.FriendlyName.unsafe("Trigger for sms at usage of 1000"),
           Some(UsageTrigger.Recurring.Daily),
           UsageTrigger.Sid.unsafe("UTc142bed7b38c4f8186ef41a309814fd2"),
           UsageTrigger.TriggerBy.Usage,
-          UsageTrigger.TriggerValue("1000.000000"),
+          UsageTrigger.TriggerValue.unsafe("1000.000000"),
           UsageTrigger.UsageCategory.Sms
         )
 
