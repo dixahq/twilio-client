@@ -2,6 +2,13 @@ package com.dixa.twilio.client.general
 
 trait TwilioClientGeneral {
 
+  /** Create a Usage Trigger.
+    *
+    * @see
+    *   https://www.twilio.com/docs/usage/api/usage-trigger#create-a-usagetrigger-resource
+    */
+  def usageTriggerCreate: UsageTriggerCreateRequestExecutor
+
   /** Read all Usage Triggers.
     *
     * @see
