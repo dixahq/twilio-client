@@ -22,4 +22,14 @@ trait TwilioClientGeneral {
     *   https://www.twilio.com/docs/usage/api/applications#create-an-application-resource
     */
   def applicationCreate: ApplicationCreateRequestExecutor
+
+  /** Delete an Application (TwimlApp)
+    *
+    * If this application's sid is assigned to any IncomingPhoneNumber resources as a
+    * VoiceApplicationSid or SmsApplicationSid it will be removed.
+    *
+    * @see
+    *   https://www.twilio.com/docs/usage/api/applications#delete-an-application-resource
+    */
+  def applicationDelete: ApplicationDeleteRequestExecutor
 }

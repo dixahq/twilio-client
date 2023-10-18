@@ -13,7 +13,6 @@ import scala.reflect.{classTag, ClassTag}
   * companion object extend the SidCompanionObject class. This will ensure consistency in how we
   * create Sid instances, Errors returned if creation fails, and save a lot of code.
   */
-// TODO PR Fix so that you cannot copy into invalid instance
 abstract class SidAbstract extends TwilioStringValue {
 
   /** The string representation of this SID.
