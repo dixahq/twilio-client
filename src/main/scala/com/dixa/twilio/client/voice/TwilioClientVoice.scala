@@ -3,6 +3,7 @@ package com.dixa.twilio.client.voice
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import com.dixa.twilio.client.TwilioConnectionSettings
+import com.dixa.twilio.client.impl.voice.SipDomainCreateRequestExecutor
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Conference
 import com.dixa.twilio.model.voice.Conference.ConferenceWithParticipants
@@ -51,4 +52,6 @@ trait TwilioClientVoice {
   def recordingRead: RecordingReadRequestExecutor
 
   def recordingDelete: RecordingDeleteRequestExecutor
+
+  def sipDomainCreate: SipDomainCreateRequestExecutor
 }

@@ -1,8 +1,8 @@
 package com.dixa.twilio.model.voice
 
+import com.dixa.twilio.model._
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model._
 
 import java.time.Instant
 
@@ -15,6 +15,11 @@ import java.time.Instant
   * Note that a SipDomain has sub resources in form of the ip access control lists and credential
   * lists. These sub resources are not included in this type, as Twilio represent them as seperate
   * resources in there API.
+  *
+  * Also note that at time of writing, this library has not implemented support for bring you own
+  * trunk, and emergency caller, and hence the specific Sid types for these don't exists yet. So for
+  * now it just specified as abstract sid, as that will allow us to change it to a more specific
+  * subtype when implemented, without breaking anything.
   */
 final case class SipDomain(
     accountSid: TwilioAccount.Sid,
@@ -67,10 +72,15 @@ object SipDomain {
     override protected val requireSuffix: String = ".sip.twilio.com"
   }
 
-  /** Friendly name of a SipDomain.
-    *
-    * A lot of other resources in Twilio, have a max length of 64 chars on there friendly name, but
-    * it does not look to be the case for SipDomain
-    */
-  final case class FriendlyName(override val toString: String)
+  /** Friendly name of a SipDomain. */
+  final case class FriendlyName private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName] {
+    override protected def constructInstance(wrapped: String): FriendlyName = new FriendlyName(
+      wrapped
+    )
+
+    override protected val maxLength: Option[Int] = Some(64)
+  }
 }
