@@ -8,11 +8,7 @@ import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.{DtmfDigit, DtmfString}
-import com.dixa.twilio.model.phonenumber.{
-  OutgoingCallerId,
-  OutgoingCallerIdCreateResponse,
-  PhoneNumberE164
-}
+import com.dixa.twilio.model.phonenumber.{OutgoingCallerId, PhoneNumberE164}
 import com.dixa.twilio.model.voice.Call
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -91,7 +87,7 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
             )
         )
 
-        val expected = OutgoingCallerIdCreateResponse(
+        val expected = OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse(
           accountSid = createReq.accountSid,
           friendlyName = Some(friendlyName),
           phoneNumber = createReq.phoneNumber,
@@ -103,7 +99,7 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
         val instance = TwilioClient.defaultImpl().phoneNumber
         val resultFut: Future[Either[
           OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException,
-          OutgoingCallerIdCreateResponse
+          OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse
         ]] =
           instance.outgoingCallerIdCreate.run(connSettings, createReq)
         resultFut.map(result => assert(result === Right(expected)))

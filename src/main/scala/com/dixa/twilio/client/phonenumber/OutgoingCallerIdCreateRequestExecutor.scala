@@ -7,11 +7,8 @@ import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.dtmf.DtmfString
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.OutgoingCallerId.FriendlyName
-import com.dixa.twilio.model.phonenumber.{
-  OutgoingCallerId,
-  OutgoingCallerIdCreateResponse,
-  PhoneNumberE164
-}
+import com.dixa.twilio.model.phonenumber.{OutgoingCallerId, PhoneNumberE164}
+import com.dixa.twilio.model.voice.Call
 
 import scala.collection.immutable
 
@@ -19,7 +16,7 @@ trait OutgoingCallerIdCreateRequestExecutor
     extends SingleRequestExecutor[
       OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest,
       OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException,
-      OutgoingCallerIdCreateResponse
+      OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse
     ] {
 
   import OutgoingCallerIdCreateRequestExecutor._
@@ -31,6 +28,14 @@ trait OutgoingCallerIdCreateRequestExecutor
 }
 
 object OutgoingCallerIdCreateRequestExecutor {
+
+  final case class OutgoingCallerIdCreateResponse(
+      accountSid: TwilioAccount.Sid,
+      phoneNumber: PhoneNumberE164,
+      friendlyName: Option[OutgoingCallerId.FriendlyName],
+      validationCode: DtmfString.OnlyDtmfDigits,
+      callSid: Call.Sid
+  )
 
   sealed abstract class CallDelay(
       override val twilioString: String,

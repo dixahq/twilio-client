@@ -11,11 +11,7 @@ import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor.
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.dtmf.DtmfString
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.phonenumber.{
-  OutgoingCallerId,
-  OutgoingCallerIdCreateResponse,
-  PhoneNumberE164
-}
+import com.dixa.twilio.model.phonenumber.{OutgoingCallerId, PhoneNumberE164}
 import com.dixa.twilio.model.voice.Call
 
 import scala.concurrent.ExecutionContext
@@ -63,7 +59,7 @@ private[client] class OutgoingCallerIdCreateRequestExecutorImpl()(
       entity: HttpEntityString
   ): Either[
     OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException,
-    OutgoingCallerIdCreateResponse
+    OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse
   ] = {
     httpResponse.status match {
       case StatusCodes.Created | StatusCodes.OK =>
@@ -102,12 +98,12 @@ private object OutgoingCallerIdCreateRequestExecutorImpl {
 
     private[phonenumber] def toModelSafe: Either[
       OutgoingCallerIdCreateException.ValidationCodeFormatException,
-      OutgoingCallerIdCreateResponse
+      OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse
     ] = {
       DtmfString
         .fromStringOnlyDtmfDigits(validation_code)
         .map(dtmfString =>
-          OutgoingCallerIdCreateResponse(
+          OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse(
             accountSid = TwilioAccount.Sid.unsafe(account_sid),
             friendlyName =
               emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName.constructInstance),
@@ -120,7 +116,8 @@ private object OutgoingCallerIdCreateRequestExecutorImpl {
         .map(ex => OutgoingCallerIdCreateException.ValidationCodeFormatException(ex.getMessage))
     }
 
-    private[phonenumber] def toModelUnsafe: OutgoingCallerIdCreateResponse = {
+    private[phonenumber] def toModelUnsafe
+        : OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse = {
       toModelSafe.fold(
         ex => throw ex,
         identity
