@@ -7,7 +7,7 @@ import com.dixa.twilio.client.general.UsageTriggerReadRequestExecutor
 import com.dixa.twilio.client.general.UsageTriggerReadRequestExecutor.UsageTriggerReadException
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.usage.UsageTrigger
+import com.dixa.twilio.model.general.UsageTrigger
 
 import scala.concurrent.ExecutionContext
 

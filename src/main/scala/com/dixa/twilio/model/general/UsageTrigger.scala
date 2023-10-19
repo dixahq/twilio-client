@@ -1,4 +1,4 @@
-package com.dixa.twilio.model.usage
+package com.dixa.twilio.model.general
 
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.callback.CallbackUrl
@@ -29,7 +29,10 @@ final case class UsageTrigger(
 object UsageTrigger {
 
   final case class CurrentValue(override val toString: String) extends TwilioStringValue
+
+  // TODO PR: Make more safe
   final case class TriggerValue(override val toString: String) extends TwilioStringValue
+  // TODO PR: Make more safe
   final case class FriendlyName(override val toString: String) extends TwilioStringValue
   final case class Sid private (override val toString: String) extends SidAbstract
 

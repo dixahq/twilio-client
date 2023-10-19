@@ -1,0 +1,102 @@
+package com.dixa.twilio.model
+
+import scala.annotation.unused
+
+/** Class that can be extended by classes that represent a String with constraints.
+  *
+  * This is a easy way to make a class that is basically a String wrapper, but should enforce
+  * constrains on what strings it could wrap. At time of writing max lenght is the only supported
+  * constraint, but more can be added as needed.
+  *
+  * For this class to work, you would need to make you class a case class having a private
+  * constructor, with exactly one parameter that is an override of toString. You should also create
+  * a companion object that extends the [[ConstrainedString.ConstrainedStringCompanionObject]]
+  * class.
+  *
+  * See [[com.dixa.twilio.model.general.Application.FriendlyName]] for an example of how to use
+  * this.
+  */
+abstract class ConstrainedString() {
+
+  @unused
+  private def copy(toString: String): ConstrainedString =
+    throw new UnsupportedOperationException(
+      "Disallow copy, as that would be a way to create instances that break the length limitation"
+    )
+}
+
+object ConstrainedString {
+
+  /** Base error type representing errors creating a [[ConstrainedString]].
+    *
+    * This is the Base error type of all the implementations of [[ConstrainedString]]. Each
+    * individual implementation will have it's own version of this, scoped withing it's companion
+    * object.
+    */
+  trait CreationException extends RuntimeException
+
+  abstract class NullValueException()
+      extends NullPointerException("ConstrainedString does not support wrapping null values")
+      with CreationException
+
+  abstract class ToLongException(wrapped: String, maxLength: Int)
+      extends IllegalArgumentException(
+        s"$wrapped does not conform to maxLength of $maxLength, as it has length: ${wrapped.length}"
+      )
+      with CreationException
+
+  // format: off
+  /** Class to be extended by the companion object of a Constraint Sid.
+    *
+    * This class will:
+    *
+    *   1. Provide a sub type of each of the error type.
+    *   2. Provide a safe method for constructing instances in a safe way.
+    *   3. Provide a unsafe method, for constructing instances in an unsafe way, throwing exception if
+    *      input does not conform to constrains.
+    *   4. Ensure that a default apply method is not generated in the companion object.
+    */
+  // format: on
+  abstract class ConstrainedStringCompanionObject[S <: ConstrainedString](
+      maxLength: Int
+  ) {
+
+    @unused
+    protected final def apply(s: String): S = throw new UnsupportedOperationException(
+      "override this as protected, to stop the scala compiler for generating a public apply method, that could " +
+        "create instances without checking the constraints. For some reason making it private does not work," +
+        "then the scala compiler actually somehow overrides it with a public method in the implementations."
+    )
+
+    protected def constructInstance(wrapped: String): S
+
+    sealed trait CreationException extends ConstrainedString.CreationException
+
+    // Follow implementations of CreationException should be final, but due to this issue:
+    // https://github.com/scala/bug/issues/4440
+    // that produces compile errors like:
+    // `The outer reference in this type test cannot be checked at run time.`
+    // So instead making them sealed, as that is practically the same, as they
+    // are not extended withing this file.
+    sealed case class NullValueException()
+        extends ConstrainedString.NullValueException
+        with CreationException
+
+    sealed case class ToLongException(wrapped: String, maxLength: Int)
+        extends ConstrainedString.ToLongException(wrapped, maxLength)
+        with CreationException
+
+    /** Construct an instance of this ConstrainedString, returning either an result or an error. */
+    def safe(wrapped: String): Either[CreationException, S] =
+      if (wrapped == null) Left(NullValueException())
+      else if (wrapped.length > maxLength) Left(ToLongException(wrapped, maxLength))
+      else Right(constructInstance(wrapped))
+
+    /** Construct an instance of this ConstrainedString, returning either an result or throwing an
+      * error.
+      */
+    def unsafe(wrapped: String): S = safe(wrapped).toTry.get
+
+  }
+
+}

@@ -26,7 +26,7 @@ private[general] final class UsageTriggerDeleteRequestExecutorImpl()(
     apiVersion: ApiVersion
 ) extends UsageTriggerDeleteRequestExecutor {
 
-  override protected def subDomain: ApiSubDomain = ApiSubDomain.Accounts
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
   override protected def method: HttpMethod = HttpMethods.DELETE
 
@@ -35,7 +35,7 @@ private[general] final class UsageTriggerDeleteRequestExecutorImpl()(
       req: UsageTriggerDeleteRequest
   ): Either[UsageTriggerDeleteException, HttpRequest] = {
     createHttpRequestFor(
-      s"/${apiVersion.twilioString}/Accounts/${req.accountSid.twilioString}/Usage/Triggers/${req.sid.twilioString}.json",
+      s"/$apiVersion/Accounts/${req.accountSid.twilioString}/Usage/Triggers/${req.sid.twilioString}.json",
       connSettings
     )
   }
