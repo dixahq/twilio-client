@@ -86,7 +86,7 @@ final class SipDomainCreateTest extends TwilioClientTest {
         )
         val expected = SipDomain(
           CommonFixtures.accountSid1,
-          SipDomain.AuthType.IpAcl,
+          Some(SipDomain.AuthType.IpAcl),
           ZonedDateTime.of(2015, 7, 20, 17, 27, 10, 0, ZoneOffset.UTC).toInstant,
           ZonedDateTime.of(2015, 7, 20, 17, 27, 10, 0, ZoneOffset.UTC).toInstant,
           SipDomain.DomainName.unsafe("unitTest.sip.twilio.com"),

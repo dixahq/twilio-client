@@ -13,7 +13,7 @@ import java.time.Instant
 
 final case class SipDomainJsonRep(
     account_sid: String,
-    auth_type: String,
+    auth_type: Option[String],
     date_created: String,
     date_updated: String,
     domain_name: String,
@@ -32,17 +32,20 @@ final case class SipDomainJsonRep(
     emergency_caller_sid: Option[String]
 ) {
 
-  private def authTypeToModel: SipDomain.AuthType =
-    if (auth_type.contains("IP_ACL") && auth_type.contains("CREDENTIAL_LIST"))
-      SipDomain.AuthType.IpAclAndCredentialList
-    else if (auth_type.contains("IP_ACL"))
-      SipDomain.AuthType.IpAcl
-    else if (auth_type.contains("CREDENTIAL_LIST"))
-      SipDomain.AuthType.CredentialList
-    else
-      throw new IllegalArgumentException(
-        s"Don't know how to parse auth_type value of '$auth_type' into known types of ${SipDomain.AuthType.values}"
-      )
+  private def authTypeToModel: Option[SipDomain.AuthType] = {
+    emptyStringToNone(auth_type).map { noneEmptyAuthType =>
+      if (noneEmptyAuthType.contains("IP_ACL") && noneEmptyAuthType.contains("CREDENTIAL_LIST"))
+        SipDomain.AuthType.IpAclAndCredentialList
+      else if (noneEmptyAuthType.contains("IP_ACL"))
+        SipDomain.AuthType.IpAcl
+      else if (noneEmptyAuthType.contains("CREDENTIAL_LIST"))
+        SipDomain.AuthType.CredentialList
+      else
+        throw new IllegalArgumentException(
+          s"Don't know how to parse noneEmptyAuthType value of '$noneEmptyAuthType' into known types of ${SipDomain.AuthType.values}"
+        )
+    }
+  }
 
   def toModelUnsafe: SipDomain = SipDomain(
     TwilioAccount.Sid.unsafe(account_sid),

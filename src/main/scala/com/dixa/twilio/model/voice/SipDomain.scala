@@ -19,7 +19,7 @@ import java.time.Instant
   */
 final case class SipDomain(
     accountSid: TwilioAccount.Sid,
-    authType: SipDomain.AuthType,
+    authType: Option[SipDomain.AuthType],
     dateCreated: Instant,
     dateUpdated: Instant,
     domainName: SipDomain.DomainName,
