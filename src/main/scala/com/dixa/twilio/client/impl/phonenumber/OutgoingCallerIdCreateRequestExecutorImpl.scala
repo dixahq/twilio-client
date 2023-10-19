@@ -99,13 +99,14 @@ private object OutgoingCallerIdCreateRequestExecutorImpl {
       call_sid: String,
   ) {
 
-    private def toModel = OutgoingCallerIdCreateResponse(
-      accountSid = TwilioAccount.Sid.unsafe(account_sid),
-      friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
-      phoneNumber = PhoneNumberE164.unsafe(phone_number),
-      validationCode = OutgoingCallerIdCreateResponse.ValidationCode(validation_code),
-      callSid = Call.Sid.unsafe(call_sid)
-    )
+    private[phonenumber] def toModel: OutgoingCallerIdCreateResponse =
+      OutgoingCallerIdCreateResponse(
+        accountSid = TwilioAccount.Sid.unsafe(account_sid),
+        friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
+        phoneNumber = PhoneNumberE164.unsafe(phone_number),
+        validationCode = OutgoingCallerIdCreateResponse.ValidationCode(validation_code),
+        callSid = Call.Sid.unsafe(call_sid)
+      )
   }
 
   private object OutgoingCallerIdCreateResponseJsonRep {
