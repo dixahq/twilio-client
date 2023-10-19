@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.impl.phonenumber
 
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.client.impl.JsonParsingUtil.emptyStringToNone
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber._
 import com.dixa.twilio.model.voice.Call
@@ -15,7 +16,7 @@ private[phonenumber] final case class OutgoingCallerIdCreateResponseJsonRep(
 
   private[phonenumber] def toModel = OutgoingCallerIdCreateResponse(
     accountSid = TwilioAccount.Sid.unsafe(account_sid),
-    friendlyName = friendly_name.map(OutgoingCallerId.FriendlyName),
+    friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
     phoneNumber = PhoneNumberE164.unsafe(phone_number),
     validationCode = OutgoingCallerIdCreateResponse.ValidationCode(validation_code),
     callSid = Call.Sid.unsafe(call_sid)
