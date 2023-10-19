@@ -87,7 +87,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
     val outgoingCallerId = OutgoingCallerId(
       sid = OutgoingCallerId.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
       accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-      friendlyName = Some(OutgoingCallerId.FriendlyName("(415) 867-5309")),
+      friendlyName = Some(OutgoingCallerId.FriendlyName.constructInstance("(415) 867-5309")),
       phoneNumber = PhoneNumberE164.unsafe("+141586753096"),
       dateCreated = dateCreated,
       dateUpdated = dateUpdated

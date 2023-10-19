@@ -20,7 +20,8 @@ private[phonenumber] final case class OutgoingCallerIdJsonRep(
   private[phonenumber] def toModel = OutgoingCallerId(
     sid = OutgoingCallerId.Sid.unsafe(sid),
     accountSid = TwilioAccount.Sid.unsafe(account_sid),
-    friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
+    friendlyName =
+      emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName.constructInstance),
     phoneNumber = PhoneNumberE164.unsafe(phone_number),
     dateCreated = Instant.from(Formatter.dateTime.parse(date_created)),
     dateUpdated = Instant.from(Formatter.dateTime.parse(date_updated)),

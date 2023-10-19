@@ -26,7 +26,7 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
       "ask twilio to send it, and return the OutgoingCallerId it gets back from Twilio" in {
 
         val phonenumber  = PhoneNumberE164.unsafe("+4588888888")
-        val friendlyName = OutgoingCallerId.FriendlyName("A new service")
+        val friendlyName = OutgoingCallerId.FriendlyName.constructInstance("A new service")
         val callDelay    = CallDelay.Seconds26
         val extension    = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`)
         val callback     = CallbackUrl.OutgoingCallerIdVerificationUrl("test.i/test")

@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.{SidAbstract, TwilioStringValue}
+import com.dixa.twilio.model.{ConstrainedString, SidAbstract, TwilioStringValue}
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.iam.TwilioAccount
 
@@ -29,5 +29,11 @@ object OutgoingCallerId {
 
   object Sid extends SidAbstract.SidCompanionObject(List(Prefix("PN")), new Sid(_))
 
-  final case class FriendlyName(override val toString: String) extends TwilioStringValue
+  final case class FriendlyName private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](64) {
+    override def constructInstance(wrapped: String) = new FriendlyName(wrapped)
+  }
 }

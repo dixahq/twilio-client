@@ -109,7 +109,8 @@ private object OutgoingCallerIdCreateRequestExecutorImpl {
         .map(dtmfString =>
           OutgoingCallerIdCreateResponse(
             accountSid = TwilioAccount.Sid.unsafe(account_sid),
-            friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
+            friendlyName =
+              emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName.constructInstance),
             phoneNumber = PhoneNumberE164.unsafe(phone_number),
             validationCode = dtmfString,
             callSid = Call.Sid.unsafe(call_sid)
