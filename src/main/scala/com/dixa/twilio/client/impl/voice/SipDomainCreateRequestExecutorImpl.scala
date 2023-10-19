@@ -4,6 +4,7 @@ import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
 import com.dixa.twilio.client.impl._
+import com.dixa.twilio.client.voice.SipDomainCreateRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.SipDomain
 
@@ -16,7 +17,7 @@ private[client] class SipDomainCreateRequestExecutorImpl()(
     apiVersion: ApiVersion
 ) extends SipDomainCreateRequestExecutor {
 
-  import SipDomainCreateRequestExecutor._
+  import com.dixa.twilio.client.voice.SipDomainCreateRequestExecutor._
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 

@@ -1,9 +1,9 @@
 package com.dixa.twilio.client.twilioClient.voice
 
 import com.dixa.twilio.CommonFixtures
-import com.dixa.twilio.client.impl.voice.SipDomainCreateRequestExecutor
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.voice.SipDomainCreateRequestExecutor
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
