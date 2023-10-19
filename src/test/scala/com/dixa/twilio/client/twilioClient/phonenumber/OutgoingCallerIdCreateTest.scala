@@ -1,11 +1,13 @@
 package com.dixa.twilio.client.twilioClient.phonenumber
 
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor
+import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor.CallDelay
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.callback.CallbackUrl
+import com.dixa.twilio.model.dtmf.{DtmfDigit, DtmfString}
 import com.dixa.twilio.model.phonenumber.{
   OutgoingCallerId,
   OutgoingCallerIdCreateResponse,
@@ -25,8 +27,8 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
 
         val phonenumber  = PhoneNumberE164.unsafe("+4588888888")
         val friendlyName = OutgoingCallerId.FriendlyName("A new service")
-        val callDelay    = OutgoingCallerId.CallDelay.Seconds26
-        val extension    = OutgoingCallerId.Extension.apply(1234)
+        val callDelay    = CallDelay.Seconds26
+        val extension    = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`)
         val callback     = CallbackUrl.OutgoingCallerIdVerificationUrl("test.i/test")
         val createReq = OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest.build(
           _.withAccountSid(TwilioTestConstants.accountSid)
@@ -93,7 +95,8 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
           accountSid = createReq.accountSid,
           friendlyName = Some(friendlyName),
           phoneNumber = createReq.phoneNumber,
-          validationCode = OutgoingCallerIdCreateResponse.ValidationCode("11111"),
+          validationCode =
+            DtmfString(DtmfDigit.`1`, DtmfDigit.`1`, DtmfDigit.`1`, DtmfDigit.`1`, DtmfDigit.`1`),
           callSid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         )
 

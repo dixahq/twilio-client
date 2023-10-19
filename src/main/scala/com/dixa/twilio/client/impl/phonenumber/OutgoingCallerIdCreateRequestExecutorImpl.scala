@@ -9,6 +9,7 @@ import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.dtmf.DtmfString
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.{
   OutgoingCallerId,
@@ -66,7 +67,7 @@ private[client] class OutgoingCallerIdCreateRequestExecutorImpl()(
   ] = {
     httpResponse.status match {
       case StatusCodes.Created | StatusCodes.OK =>
-        parseEntityAs[OutgoingCallerIdCreateResponseJsonRep](entity).map(_.toModel)
+        parseEntityAs[OutgoingCallerIdCreateResponseJsonRep](entity).flatMap(_.toModelSafe)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
@@ -99,14 +100,31 @@ private object OutgoingCallerIdCreateRequestExecutorImpl {
       call_sid: String,
   ) {
 
-    private[phonenumber] def toModel: OutgoingCallerIdCreateResponse =
-      OutgoingCallerIdCreateResponse(
-        accountSid = TwilioAccount.Sid.unsafe(account_sid),
-        friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
-        phoneNumber = PhoneNumberE164.unsafe(phone_number),
-        validationCode = OutgoingCallerIdCreateResponse.ValidationCode(validation_code),
-        callSid = Call.Sid.unsafe(call_sid)
+    private[phonenumber] def toModelSafe: Either[
+      OutgoingCallerIdCreateException.ValidationCodeFormatException,
+      OutgoingCallerIdCreateResponse
+    ] = {
+      DtmfString
+        .fromStringOnlyDtmfDigits(validation_code)
+        .map(dtmfString =>
+          OutgoingCallerIdCreateResponse(
+            accountSid = TwilioAccount.Sid.unsafe(account_sid),
+            friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
+            phoneNumber = PhoneNumberE164.unsafe(phone_number),
+            validationCode = dtmfString,
+            callSid = Call.Sid.unsafe(call_sid)
+          )
+        )
+        .left
+        .map(ex => OutgoingCallerIdCreateException.ValidationCodeFormatException(ex.getMessage))
+    }
+
+    private[phonenumber] def toModelUnsafe: OutgoingCallerIdCreateResponse = {
+      toModelSafe.fold(
+        ex => throw ex,
+        identity
       )
+    }
   }
 
   private object OutgoingCallerIdCreateResponseJsonRep {

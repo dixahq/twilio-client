@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.TwilioStringValue
+import com.dixa.twilio.model.dtmf.DtmfString
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.Call
 
@@ -18,17 +18,6 @@ final case class OutgoingCallerIdCreateResponse(
     accountSid: TwilioAccount.Sid,
     phoneNumber: PhoneNumberE164,
     friendlyName: Option[OutgoingCallerId.FriendlyName],
-    validationCode: OutgoingCallerIdCreateResponse.ValidationCode,
+    validationCode: DtmfString.OnlyDtmfDigits,
     callSid: Call.Sid
 )
-
-object OutgoingCallerIdCreateResponse {
-  final case class ValidationCode(code: String) extends TwilioStringValue {
-    def digits = {
-      code.map(_.asDigit)
-    }
-
-    override val toString: String = "XXXXXXX"
-  }
-
-}
