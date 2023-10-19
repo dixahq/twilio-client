@@ -3,11 +3,19 @@ package com.dixa.twilio.client.impl.phonenumber
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.client.impl.JsonParsingUtil.emptyStringToNone
 import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.phonenumber.OutgoingCallerIdCreateResponse
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.{
+  OutgoingCallerId,
+  OutgoingCallerIdCreateResponse,
+  PhoneNumberE164
+}
+import com.dixa.twilio.model.voice.Call
 
 import scala.concurrent.ExecutionContext
 
@@ -82,4 +90,27 @@ private object OutgoingCallerIdCreateRequestExecutorImpl {
   private val extensionKey            = "Extension"
   private val statusCallbackKey       = "StatusCallback"
   private val statusCallbackMethodKey = "StatusCallbackMethod"
+
+  private final case class OutgoingCallerIdCreateResponseJsonRep(
+      account_sid: String,
+      phone_number: String,
+      friendly_name: Option[String],
+      validation_code: String,
+      call_sid: String,
+  ) {
+
+    private def toModel = OutgoingCallerIdCreateResponse(
+      accountSid = TwilioAccount.Sid.unsafe(account_sid),
+      friendlyName = emptyStringToNone(friendly_name).map(OutgoingCallerId.FriendlyName),
+      phoneNumber = PhoneNumberE164.unsafe(phone_number),
+      validationCode = OutgoingCallerIdCreateResponse.ValidationCode(validation_code),
+      callSid = Call.Sid.unsafe(call_sid)
+    )
+  }
+
+  private object OutgoingCallerIdCreateResponseJsonRep {
+
+    implicit val outgoingCallerIdJsonRepReader: Reader[OutgoingCallerIdCreateResponseJsonRep] =
+      macroR[OutgoingCallerIdCreateResponseJsonRep]
+  }
 }
