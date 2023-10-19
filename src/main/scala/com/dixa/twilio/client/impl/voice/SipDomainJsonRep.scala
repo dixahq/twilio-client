@@ -1,12 +1,13 @@
 package com.dixa.twilio.client.impl.voice
 
 import com.dixa.twilio.client.impl.Formatter
-import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
-import com.dixa.twilio.model.voice.SipDomain
 import com.dixa.twilio.client.impl.JsonParsingUtil.emptyStringToNone
-import com.dixa.twilio.model.{CallbackUrlOptionalAndRequiredMethod, HttpMethod, SidAbstract}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
+import com.dixa.twilio.model.voice.{ByocTrunk, SipDomain}
+import com.dixa.twilio.model.{CallbackUrlOptionalAndRequiredMethod, HttpMethod}
 
 import java.time.Instant
 
@@ -66,8 +67,8 @@ final case class SipDomainJsonRep(
     sip_registration,
     emergency_calling_enabled,
     secure,
-    emptyStringToNone(byoc_trunk_sid).map(SipDomainJsonRep.TempPlaceHolderSid),
-    emptyStringToNone(emergency_caller_sid).map(SipDomainJsonRep.TempPlaceHolderSid)
+    emptyStringToNone(byoc_trunk_sid).map(ByocTrunk.Sid.unsafe),
+    emptyStringToNone(emergency_caller_sid).map(TwilioPhoneNumber.Sid.unsafe)
   )
 }
 
@@ -75,11 +76,4 @@ private[voice] object SipDomainJsonRep {
 
   implicit val upickleReader: Reader[SipDomainJsonRep] =
     macroR[SipDomainJsonRep]
-
-  /** Temp sid implementation to use as byoc trunc sid and emergency caller sid, until this library
-    * get real support for these conceps.
-    */
-  private[SipDomainJsonRep] final case class TempPlaceHolderSid private[SipDomainJsonRep] (
-      override val toString: String
-  ) extends SidAbstract
 }

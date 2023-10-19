@@ -4,7 +4,8 @@ import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.voice.SipDomain
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
+import com.dixa.twilio.model.voice.{ByocTrunk, SipDomain}
 import com.dixa.twilio.model.{HttpMethod, SidAbstract}
 
 trait SipDomainCreateRequestExecutor
@@ -276,7 +277,7 @@ object SipDomainCreateRequestExecutor {
         * As of now Byoc Trunk are not supported by this library, and as such we don't hava special
         * Sid type for it, and this method therefore takes any kind of Sid.
         */
-      def withByocTrunkSid(byocTrunkSid: SidAbstract): BuilderWithSameTypes =
+      def withByocTrunkSid(byocTrunkSid: ByocTrunk.Sid): BuilderWithSameTypes =
         copy(byocTrunkSid = Some(byocTrunkSid))
 
       /** Whether an emergency caller sid is configured for the domain. If present, this phone
@@ -285,7 +286,7 @@ object SipDomainCreateRequestExecutor {
         * As of now EmergencyCaller are not supported by this library, and as such we don't hava
         * special Sid type for it, and this method therefore takes any kind of Sid.
         */
-      def withEmergencyCallerSid(emergencyCallerSid: SidAbstract): BuilderWithSameTypes =
+      def withEmergencyCallerSid(emergencyCallerSid: TwilioPhoneNumber.Sid): BuilderWithSameTypes =
         copy(emergencyCallerSid = Some(emergencyCallerSid))
 
       def build()(

@@ -6,7 +6,8 @@ import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl
-import com.dixa.twilio.model.voice.{Call, SipDomain}
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
+import com.dixa.twilio.model.voice.{ByocTrunk, SipDomain}
 import com.dixa.twilio.model.{CallbackUrlOptionalAndRequiredMethod, HttpMethod}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -18,62 +19,6 @@ final class SipDomainCreateTest extends TwilioClientTest {
   classOf[TwilioClientMessaging].getSimpleName when {
 
     "ask to create an SipDomain" should {
-
-      "tempTest" in {
-        val i1 = SipDomain(
-          CommonFixtures.accountSid1,
-          SipDomain.AuthType.IpAcl,
-          ZonedDateTime.of(2015, 7, 20, 17, 27, 10, 0, ZoneOffset.UTC).toInstant,
-          ZonedDateTime.of(2015, 7, 20, 17, 27, 10, 0, ZoneOffset.UTC).toInstant,
-          SipDomain.DomainName.unsafe("unitTest.sip.twilio.com"),
-          Some(SipDomain.FriendlyName.unsafe("Unit test domain name")),
-          SipDomain.Sid.unsafe("SDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-          CallbackUrlOptionalAndRequiredMethod(
-            Some(CallbackUrl.VoiceFallbackUrl("http://unit.test/voice/fallback")),
-            HttpMethod.Post
-          ),
-          CallbackUrlOptionalAndRequiredMethod(
-            Some(CallbackUrl.VoiceStatusCallbackUrl("http://unit.test/voice/status")),
-            HttpMethod.Post
-          ),
-          CallbackUrlOptionalAndRequiredMethod(
-            Some(CallbackUrl.VoiceUrl("http://unit.test/voice/url")),
-            HttpMethod.Post
-          ),
-          true,
-          true,
-          true,
-          Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")),
-          Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"))
-        )
-        val i2 = SipDomain(
-          CommonFixtures.accountSid1,
-          SipDomain.AuthType.IpAcl,
-          ZonedDateTime.of(2015, 7, 20, 17, 27, 10, 0, ZoneOffset.UTC).toInstant,
-          ZonedDateTime.of(2015, 7, 20, 17, 27, 10, 0, ZoneOffset.UTC).toInstant,
-          SipDomain.DomainName.unsafe("unitTest.sip.twilio.com"),
-          Some(SipDomain.FriendlyName.unsafe("Unit test domain name")),
-          SipDomain.Sid.unsafe("SDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-          CallbackUrlOptionalAndRequiredMethod(
-            Some(CallbackUrl.VoiceFallbackUrl("http://unit.test/voice/fallback")),
-            HttpMethod.Post
-          ),
-          CallbackUrlOptionalAndRequiredMethod(
-            Some(CallbackUrl.VoiceStatusCallbackUrl("http://unit.test/voice/status")),
-            HttpMethod.Post
-          ),
-          CallbackUrlOptionalAndRequiredMethod(
-            Some(CallbackUrl.VoiceUrl("http://unit.test/voice/url")),
-            HttpMethod.Post
-          ),
-          true,
-          true,
-          true,
-          Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")),
-          Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"))
-        )
-        Future { assert(i1 == i2) }
-      }
 
       "ask twilio to create it, and return the SipDomain it gets back from Twilio" in {
 
@@ -93,8 +38,10 @@ final class SipDomainCreateTest extends TwilioClientTest {
             .withEmergencyCallingEnabled(true)
             .withSecure(true)
             // We don't have the specific sid types yet, so just use a a call sid for now.
-            .withByocTrunkSid(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"))
-            .withEmergencyCallerSid(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"))
+            .withByocTrunkSid(ByocTrunk.Sid.unsafe("BYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"))
+            .withEmergencyCallerSid(
+              TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
+            )
             .build()
         )
 
@@ -123,10 +70,10 @@ final class SipDomainCreateTest extends TwilioClientTest {
             .withRequestBody(WireMock.containing(s"EmergencyCallingEnabled=true"))
             .withRequestBody(WireMock.containing(s"Secure=true"))
             .withRequestBody(
-              WireMock.containing(s"ByocTrunkSid=CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
+              WireMock.containing(s"ByocTrunkSid=BYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
             )
             .withRequestBody(
-              WireMock.containing(s"EmergencyCallerSid=CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
+              WireMock.containing(s"EmergencyCallerSid=PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
             .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
@@ -160,8 +107,8 @@ final class SipDomainCreateTest extends TwilioClientTest {
           true,
           true,
           true,
-          Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")),
-          Some(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"))
+          Some(ByocTrunk.Sid.unsafe("BYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")),
+          Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"))
         )
 
         val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
@@ -207,8 +154,8 @@ final class SipDomainCreateTest extends TwilioClientTest {
        |  "voice_url": "http://unit.test/voice/url",
        |  "emergency_calling_enabled": true,
        |  "secure": true,
-       |  "byoc_trunk_sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
-       |  "emergency_caller_sid": "CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"
+       |  "byoc_trunk_sid": "BYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
+       |  "emergency_caller_sid": "PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2"
        |}
        |""".stripMargin
 }

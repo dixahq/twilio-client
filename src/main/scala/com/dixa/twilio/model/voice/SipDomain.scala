@@ -3,6 +3,7 @@ package com.dixa.twilio.model.voice
 import com.dixa.twilio.model._
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 
 import java.time.Instant
 
@@ -15,11 +16,6 @@ import java.time.Instant
   * Note that a SipDomain has sub resources in form of the ip access control lists and credential
   * lists. These sub resources are not included in this type, as Twilio represent them as seperate
   * resources in there API.
-  *
-  * Also note that at time of writing, this library has not implemented support for bring you own
-  * trunk, and emergency caller, and hence the specific Sid types for these don't exists yet. So for
-  * now it just specified as abstract sid, as that will allow us to change it to a more specific
-  * subtype when implemented, without breaking anything.
   */
 final case class SipDomain(
     accountSid: TwilioAccount.Sid,
@@ -37,8 +33,8 @@ final case class SipDomain(
     sipRegistration: Boolean,
     emergencyCallingEnabled: Boolean,
     secure: Boolean,
-    byocTrunkSid: Option[SidAbstract],
-    emergencyCallerSid: Option[SidAbstract]
+    byocTrunkSid: Option[ByocTrunk.Sid],
+    emergencyCallerSid: Option[TwilioPhoneNumber.Sid]
 )
 
 object SipDomain {
