@@ -115,7 +115,7 @@ final class IpAccessControlListReadTest extends TwilioClientTest {
        |  "uri": "$baseUrl?PageSize=1&Page=0",
        |  "page_size": 1,
        |  "page": 0,
-       |  "domains": [
+       |  "ip_access_control_lists": [
        |    {
        |      "account_sid": "${CommonFixtures.accountSid1}",
        |      "date_created": "Fri, 17 Jul 2015 21:25:15 +0000",
@@ -141,7 +141,7 @@ final class IpAccessControlListReadTest extends TwilioClientTest {
        |  "uri": "$twilioResponse1NextPageUri",
        |  "page_size": 1,
        |  "page": 1,
-       |  "domains": [
+       |  "ip_access_control_lists": [
        |    {
        |      "account_sid": "${CommonFixtures.accountSid1}",
        |      "date_created": "Fri, 17 Jul 2015 21:25:15 +0000",
