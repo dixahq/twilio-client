@@ -70,6 +70,10 @@ object ConstrainedString {
       extends IllegalArgumentException(s"$wrapped does not have required suffix: $expectedSuffix")
       with CreationException
 
+  abstract class NotIpv4Exception(wrapped: String)
+      extends IllegalArgumentException(s"$wrapped does not represent a Ipv4 address as required.")
+      with CreationException
+
   // format: off
   /** Class to be extended by the companion object of a Constraint Sid.
     *
@@ -107,6 +111,8 @@ object ConstrainedString {
       */
     protected def requireSuffix: String = ""
 
+    protected def ipv4Only: Boolean = false
+
     @unused
     protected final def apply(s: String): S = throw new UnsupportedOperationException(
       "override this as protected, to stop the scala compiler for generating a public apply method, that could " +
@@ -137,13 +143,15 @@ object ConstrainedString {
         with CreationException
 
     sealed case class InvalidCharException(wrapped: String, allowedChars: Set[Char])
-        extends IllegalArgumentException(
-          s"$wrapped contains invalid char. Valid chars are: $allowedChars"
-        )
+        extends ConstrainedString.InvalidCharException(wrapped, allowedChars)
         with CreationException
 
     sealed case class InvalidSuffixException(wrapped: String, expectedSuffix: String)
-        extends IllegalArgumentException(s"$wrapped does not have required suffix: $expectedSuffix")
+        extends ConstrainedString.InvalidSuffixException(wrapped, expectedSuffix)
+        with CreationException
+
+    sealed case class NotIpv4Exception(wrapped: String)
+        extends ConstrainedString.NotIpv4Exception(wrapped)
         with CreationException
 
     /** Construct an instance of this ConstrainedString, returning either an result or an error. */
@@ -156,6 +164,8 @@ object ConstrainedString {
         Left(InvalidSuffixException(wrapped, requireSuffix))
       else if (validChars.nonEmpty && containsInvalidValidChars(wrapped))
         Left(InvalidCharException(wrapped, validChars))
+      else if (ipv4Only && !representIpv4Address(wrapped))
+        Left(NotIpv4Exception(wrapped))
       else Right(constructInstance(wrapped))
 
     /** Construct an instance of this ConstrainedString, returning either an result or throwing an
@@ -186,6 +196,14 @@ object ConstrainedString {
     private def containsInvalidValidChars(s: String): Boolean = {
       val toCheck = if (requireSuffix.nonEmpty) s.substring(0, s.indexOf(requireSuffix)) else s
       toCheck.exists(!validChars.contains(_))
+    }
+
+    private def representIpv4Address(s: String): Boolean = {
+      val split = s.split('.')
+      if (split.length == 4)
+        split.forall(_.toIntOption.exists { partAsInt => partAsInt >= 0 && partAsInt <= 255 })
+      else
+        false
     }
   }
 

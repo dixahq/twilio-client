@@ -33,6 +33,7 @@ import com.dixa.twilio.client.voice.{
   RecordingReadRequestExecutor,
   SipDomainCreateRequestExecutor,
   SipDomainReadRequestExecutor,
+  SipIpAddressCreateRequestExecutor,
   TwilioClientVoice
 }
 
@@ -112,4 +113,7 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override def ipAccessControlListRead: IpAccessControlListReadRequestExecutor =
     new IpAccessControlListReadRequestExecutorImpl()
+
+  override def sipIpAddressCreate: SipIpAddressCreateRequestExecutor =
+    new SipIpAddressCreateRequestExecutorImpl()
 }
