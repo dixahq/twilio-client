@@ -65,6 +65,8 @@ object CallbackUrl {
 
   final case class AsyncAmdStatusCallbackUrl(asString: String) extends CallbackUrl(asString)
 
+  final case class OutgoingCallerIdVerificationUrl(asString: String) extends CallbackUrl(asString)
+
   final case class ApplicationStatusCallback(asString: String) extends CallbackUrl(asString) {
     override def toApplicationStatusCallback: ApplicationStatusCallback = this
   }
