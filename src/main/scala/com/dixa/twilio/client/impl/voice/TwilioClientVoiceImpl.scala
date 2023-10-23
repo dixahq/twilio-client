@@ -24,11 +24,16 @@ import com.dixa.twilio.client.voice.{
   ConferenceRecordingReadRequestExecutor,
   ConferenceRecordingUpdateRequestExecutor,
   ConferenceUpdateRequestExecutor,
+  IpAccessControlListCreateRequestExecutor,
+  IpAccessControlListReadRequestExecutor,
   QueueFetchRequestExecutor,
   QueueUpdateRequestExecutor,
   RecordingDeleteRequestExecutor,
   RecordingFetchRequestExecutor,
   RecordingReadRequestExecutor,
+  SipDomainCreateRequestExecutor,
+  SipDomainReadRequestExecutor,
+  SipIpAddressCreateRequestExecutor,
   TwilioClientVoice
 }
 
@@ -97,4 +102,18 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override val recordingDelete: RecordingDeleteRequestExecutor =
     new RecordingDeleteRequestExecutorImpl()
+
+  override def sipDomainCreate: SipDomainCreateRequestExecutor =
+    new SipDomainCreateRequestExecutorImpl()
+
+  override def sipDomainRead: SipDomainReadRequestExecutor = new SipDomainReadRequestExecutorImpl()
+
+  override def ipAccessControlListCreate: IpAccessControlListCreateRequestExecutor =
+    new IpAccessControlListCreateRequestExecutorImpl()
+
+  override def ipAccessControlListRead: IpAccessControlListReadRequestExecutor =
+    new IpAccessControlListReadRequestExecutorImpl()
+
+  override def sipIpAddressCreate: SipIpAddressCreateRequestExecutor =
+    new SipIpAddressCreateRequestExecutorImpl()
 }

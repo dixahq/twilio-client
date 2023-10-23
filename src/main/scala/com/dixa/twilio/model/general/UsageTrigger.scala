@@ -3,7 +3,13 @@ package com.dixa.twilio.model.general
 import com.dixa.twilio.model.SidAbstract.Prefix
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, SidAbstract, TwilioStringValue}
+import com.dixa.twilio.model.{
+  ConstrainedString,
+  EnumWithTwilioString,
+  HttpMethod,
+  SidAbstract,
+  TwilioStringValue
+}
 
 import java.time.Instant
 import scala.collection.immutable
@@ -28,12 +34,53 @@ final case class UsageTrigger(
 
 object UsageTrigger {
 
-  final case class CurrentValue(override val toString: String) extends TwilioStringValue
+  final case class CurrentValue private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue {
 
-  // TODO PR: Make more safe
-  final case class TriggerValue(override val toString: String) extends TwilioStringValue
-  // TODO PR: Make more safe
-  final case class FriendlyName(override val toString: String) extends TwilioStringValue
+    /** Return instance as BigDecimal value.
+      *
+      * This operation is safe, as value can only represent valid decimal values.
+      */
+    def toBigDecimal: BigDecimal = BigDecimal(toString)
+  }
+  object CurrentValue extends ConstrainedString.ConstrainedStringCompanionObject[CurrentValue] {
+    override protected def constructInstance(wrapped: String): CurrentValue = new CurrentValue(
+      wrapped
+    )
+
+    override protected val decimalOnly: Boolean = true
+  }
+
+  final case class TriggerValue private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue {
+
+    /** Return instance as BigDecimal value.
+      *
+      * This operation is safe, as value can only represent valid decimal values.
+      */
+    def toBigDecimal: BigDecimal = BigDecimal(toString)
+  }
+  object TriggerValue extends ConstrainedString.ConstrainedStringCompanionObject[TriggerValue] {
+    override protected def constructInstance(wrapped: String): TriggerValue = new TriggerValue(
+      wrapped
+    )
+
+    override protected val decimalOnly: Boolean = true
+  }
+
+  final case class FriendlyName private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName] {
+    override protected def constructInstance(wrapped: String): FriendlyName = new FriendlyName(
+      wrapped
+    )
+
+    override protected val maxLength: Option[Int] = Some(64)
+  }
+
   final case class Sid private (override val toString: String) extends SidAbstract
 
   object Sid extends SidAbstract.SidCompanionObject[Sid](List(Prefix("UT")), new Sid(_))

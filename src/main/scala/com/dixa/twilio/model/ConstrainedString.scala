@@ -45,6 +45,35 @@ object ConstrainedString {
       )
       with CreationException
 
+  /** Error to be returned, if wrapped string is expected to represent a Decimal value but does not.
+    *
+    * A Decimal value is understood as a value only containing digits and optional a single `.`
+    */
+  abstract class NotDecimalException(wrapped: String)
+      extends IllegalArgumentException(
+        s"$wrapped is not a deciaml value as required"
+      )
+      with CreationException
+
+  /** Error to be returned, if wrapped string is expected to only contain a specific set of chars,
+    * but does not.
+    */
+  abstract class InvalidCharException(wrapped: String, allowedChars: Set[Char])
+      extends IllegalArgumentException(
+        s"$wrapped contains invalid char. Valid chars are: $allowedChars"
+      )
+      with CreationException
+
+  /** Error to be returned if wrapped string is expected to end on a specific suffix, but does not.
+    */
+  abstract class InvalidSuffixException(wrapped: String, expectedSuffix: String)
+      extends IllegalArgumentException(s"$wrapped does not have required suffix: $expectedSuffix")
+      with CreationException
+
+  abstract class NotIpv4Exception(wrapped: String)
+      extends IllegalArgumentException(s"$wrapped does not represent a Ipv4 address as required.")
+      with CreationException
+
   // format: off
   /** Class to be extended by the companion object of a Constraint Sid.
     *
@@ -55,11 +84,34 @@ object ConstrainedString {
     *   3. Provide a unsafe method, for constructing instances in an unsafe way, throwing exception if
     *      input does not conform to constrains.
     *   4. Ensure that a default apply method is not generated in the companion object.
+    *   5. enforce all of the constraints specified by the companion object extending this.
+    *
+    * Constraints are specified by overriding methods. The default implementations don't activate any
+    * constraints, so you should always override at least one.
+    *
+    * @param requireSuffix
     */
   // format: on
-  abstract class ConstrainedStringCompanionObject[S <: ConstrainedString](
-      maxLength: Int
-  ) {
+  abstract class ConstrainedStringCompanionObject[S <: ConstrainedString] {
+
+    protected def maxLength: Option[Int] = None
+
+    protected def decimalOnly: Boolean = false
+
+    /** set of chars that will be the only one allowed in the String.
+      *
+      * Provided empty set disables this constraint.
+      *
+      * Note that if requireSuffix is also set, then that suffix will be stripped from the string,
+      * before checking for invalid chars.
+      */
+    protected def validChars: Set[Char] = Set.empty
+
+    /** suffix that the string should end on. Providing empty string disabled this constraint
+      */
+    protected def requireSuffix: String = ""
+
+    protected def ipv4Only: Boolean = false
 
     @unused
     protected final def apply(s: String): S = throw new UnsupportedOperationException(
@@ -86,10 +138,34 @@ object ConstrainedString {
         extends ConstrainedString.ToLongException(wrapped, maxLength)
         with CreationException
 
+    sealed case class NotDecimalException(wrapped: String)
+        extends ConstrainedString.NotDecimalException(wrapped)
+        with CreationException
+
+    sealed case class InvalidCharException(wrapped: String, allowedChars: Set[Char])
+        extends ConstrainedString.InvalidCharException(wrapped, allowedChars)
+        with CreationException
+
+    sealed case class InvalidSuffixException(wrapped: String, expectedSuffix: String)
+        extends ConstrainedString.InvalidSuffixException(wrapped, expectedSuffix)
+        with CreationException
+
+    sealed case class NotIpv4Exception(wrapped: String)
+        extends ConstrainedString.NotIpv4Exception(wrapped)
+        with CreationException
+
     /** Construct an instance of this ConstrainedString, returning either an result or an error. */
     def safe(wrapped: String): Either[CreationException, S] =
       if (wrapped == null) Left(NullValueException())
-      else if (wrapped.length > maxLength) Left(ToLongException(wrapped, maxLength))
+      else if (maxLength.isDefined && wrapped.length > maxLength.get)
+        Left(ToLongException(wrapped, maxLength.get))
+      else if (decimalOnly && !representDecimalValue(wrapped)) Left(NotDecimalException(wrapped))
+      else if (requireSuffix.nonEmpty && !wrapped.endsWith(requireSuffix))
+        Left(InvalidSuffixException(wrapped, requireSuffix))
+      else if (validChars.nonEmpty && containsInvalidValidChars(wrapped))
+        Left(InvalidCharException(wrapped, validChars))
+      else if (ipv4Only && !representIpv4Address(wrapped))
+        Left(NotIpv4Exception(wrapped))
       else Right(constructInstance(wrapped))
 
     /** Construct an instance of this ConstrainedString, returning either an result or throwing an
@@ -97,6 +173,38 @@ object ConstrainedString {
       */
     def unsafe(wrapped: String): S = safe(wrapped).toTry.get
 
+    private def representDecimalValue(s: String): Boolean = {
+      var dotEncountered = false
+      s.forall { c =>
+        if (
+          (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' ||
+          c == '7' || c == '8' || c == '9')
+        ) true
+        else if (c == '.') {
+          if (dotEncountered) {
+            // Then this is second dot, and that is not allowed
+            false
+          } else {
+            // First dot that is ok
+            dotEncountered = true
+            true
+          }
+        } else false
+      }
+    }
+
+    private def containsInvalidValidChars(s: String): Boolean = {
+      val toCheck = if (requireSuffix.nonEmpty) s.substring(0, s.indexOf(requireSuffix)) else s
+      toCheck.exists(!validChars.contains(_))
+    }
+
+    private def representIpv4Address(s: String): Boolean = {
+      val split = s.split('.')
+      if (split.length == 4)
+        split.forall(_.toIntOption.exists { partAsInt => partAsInt >= 0 && partAsInt <= 255 })
+      else
+        false
+    }
   }
 
 }

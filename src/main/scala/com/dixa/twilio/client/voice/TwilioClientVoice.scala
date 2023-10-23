@@ -51,4 +51,22 @@ trait TwilioClientVoice {
   def recordingRead: RecordingReadRequestExecutor
 
   def recordingDelete: RecordingDeleteRequestExecutor
+
+  def sipDomainCreate: SipDomainCreateRequestExecutor
+
+  /** Read all sip domains of account
+    *
+    * @see
+    *   https://www.twilio.com/docs/voice/sip/api/sip-domain-resource#read-multiple-sipdomain-resources
+    */
+  def sipDomainRead: SipDomainReadRequestExecutor
+
+  /** See [[IpAccessControlListCreateRequestExecutor]] */
+  def ipAccessControlListCreate: IpAccessControlListCreateRequestExecutor
+
+  /** See [[IpAccessControlListReadRequestExecutor]] */
+  def ipAccessControlListRead: IpAccessControlListReadRequestExecutor
+
+  /** See [[SipIpAddressCreateRequestExecutor]] */
+  def sipIpAddressCreate: SipIpAddressCreateRequestExecutor
 }

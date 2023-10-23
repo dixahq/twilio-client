@@ -29,15 +29,15 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
 
         val expected1 = usageTrigger(
           connSettings.accountSid,
-          UsageTrigger.FriendlyName("a trigger"),
-          UsageTrigger.CurrentValue("20"),
+          UsageTrigger.FriendlyName.unsafe("a trigger"),
+          UsageTrigger.CurrentValue.unsafe("20"),
           UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
         )
 
         val expected2 = usageTrigger(
           connSettings.accountSid,
-          UsageTrigger.FriendlyName("a test trigger"),
-          UsageTrigger.CurrentValue("10"),
+          UsageTrigger.FriendlyName.unsafe("a test trigger"),
+          UsageTrigger.CurrentValue.unsafe("10"),
           UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
         )
 
@@ -218,7 +218,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         recurring = None,
         sid = sid,
         triggerBy = UsageTrigger.TriggerBy.Count,
-        triggerValue = UsageTrigger.TriggerValue("0.000000"),
+        triggerValue = UsageTrigger.TriggerValue.unsafe("0.000000"),
         usageCategory = UsageTrigger.UsageCategory.Calls
       )
 
