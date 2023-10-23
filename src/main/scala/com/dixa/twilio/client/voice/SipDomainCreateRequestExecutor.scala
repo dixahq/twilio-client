@@ -1,4 +1,4 @@
-package com.dixa.twilio.client.impl.voice
+package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
