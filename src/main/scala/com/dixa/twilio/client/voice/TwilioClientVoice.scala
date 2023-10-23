@@ -60,4 +60,7 @@ trait TwilioClientVoice {
     *   https://www.twilio.com/docs/voice/sip/api/sip-domain-resource#read-multiple-sipdomain-resources
     */
   def sipDomainRead: SipDomainReadRequestExecutor
+
+  /** See [[IpAccessControlListCreateRequestExecutor]] */
+  def ipAccessControlListCreate: IpAccessControlListCreateRequestExecutor
 }
