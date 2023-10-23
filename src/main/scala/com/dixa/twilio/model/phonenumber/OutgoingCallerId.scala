@@ -33,7 +33,9 @@ object OutgoingCallerId {
       extends ConstrainedString
       with TwilioStringValue
 
-  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName](64) {
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName] {
     override def constructInstance(wrapped: String) = new FriendlyName(wrapped)
+
+    override protected val maxLength: Option[Int] = Some(64)
   }
 }
