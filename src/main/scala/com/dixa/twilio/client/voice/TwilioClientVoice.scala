@@ -69,4 +69,7 @@ trait TwilioClientVoice {
 
   /** See [[SipIpAddressCreateRequestExecutor]] */
   def sipIpAddressCreate: SipIpAddressCreateRequestExecutor
+
+  /** See [[IpAccessControlListMappingCreateRequestExecutor]] */
+  def ipAccessControlListMappingCreate: IpAccessControlListMappingCreateRequestExecutor
 }

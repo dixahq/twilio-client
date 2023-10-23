@@ -25,6 +25,7 @@ import com.dixa.twilio.client.voice.{
   ConferenceRecordingUpdateRequestExecutor,
   ConferenceUpdateRequestExecutor,
   IpAccessControlListCreateRequestExecutor,
+  IpAccessControlListMappingCreateRequestExecutor,
   IpAccessControlListReadRequestExecutor,
   QueueFetchRequestExecutor,
   QueueUpdateRequestExecutor,
@@ -116,4 +117,7 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override def sipIpAddressCreate: SipIpAddressCreateRequestExecutor =
     new SipIpAddressCreateRequestExecutorImpl()
+
+  override def ipAccessControlListMappingCreate: IpAccessControlListMappingCreateRequestExecutor =
+    new IpAccessControlListMappingCreateRequestExecutorImpl()
 }
