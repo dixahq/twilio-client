@@ -1,8 +1,9 @@
 package com.dixa.twilio.model.voice
 
+import com.dixa.twilio.model._
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model._
+import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 
 import java.time.Instant
 
@@ -18,7 +19,7 @@ import java.time.Instant
   */
 final case class SipDomain(
     accountSid: TwilioAccount.Sid,
-    authType: SipDomain.AuthType,
+    authType: Option[SipDomain.AuthType],
     dateCreated: Instant,
     dateUpdated: Instant,
     domainName: SipDomain.DomainName,
@@ -32,8 +33,8 @@ final case class SipDomain(
     sipRegistration: Boolean,
     emergencyCallingEnabled: Boolean,
     secure: Boolean,
-    byocTrunkSid: Option[SidAbstract],
-    emergencyCallerSid: Option[SidAbstract]
+    byocTrunkSid: Option[ByocTrunk.Sid],
+    emergencyCallerSid: Option[TwilioPhoneNumber.Sid]
 )
 
 object SipDomain {
@@ -67,10 +68,15 @@ object SipDomain {
     override protected val requireSuffix: String = ".sip.twilio.com"
   }
 
-  /** Friendly name of a SipDomain.
-    *
-    * A lot of other resources in Twilio, have a max length of 64 chars on there friendly name, but
-    * it does not look to be the case for SipDomain
-    */
-  final case class FriendlyName(override val toString: String)
+  /** Friendly name of a SipDomain. */
+  final case class FriendlyName private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
+  object FriendlyName extends ConstrainedString.ConstrainedStringCompanionObject[FriendlyName] {
+    override protected def constructInstance(wrapped: String): FriendlyName = new FriendlyName(
+      wrapped
+    )
+
+    override protected val maxLength: Option[Int] = Some(64)
+  }
 }

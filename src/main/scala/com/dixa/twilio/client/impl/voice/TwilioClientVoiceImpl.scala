@@ -97,4 +97,12 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override val recordingDelete: RecordingDeleteRequestExecutor =
     new RecordingDeleteRequestExecutorImpl()
+
+  /** Create a SipDomain resource
+    *
+    * @see
+    *   https://www.twilio.com/docs/voice/sip/api/sip-domain-resource#create-a-sipdomain-resource
+    */
+  override def sipDomainCreate: SipDomainCreateRequestExecutor =
+    new SipDomainCreateRequestExecutorImpl()
 }
