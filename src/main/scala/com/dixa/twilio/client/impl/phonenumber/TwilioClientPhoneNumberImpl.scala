@@ -2,10 +2,12 @@ package com.dixa.twilio.client.impl.phonenumber
 
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
+import com.dixa.twilio.client.impl.ApiVersion
 import com.dixa.twilio.client.phonenumber.{
   ActiveNumbersReadRequestExecutor,
   IncomingNumbersReadRequestExecutor,
   IncomingPhoneNumberDeleteRequestExecutor,
+  OutgoingCallerIdCreateRequestExecutor,
   OutgoingCallerIdDeleteRequestExecutor,
   OutgoingCallerIdReadRequestExecutor,
   TwilioClientPhoneNumber
@@ -18,6 +20,8 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
     materializer: Materializer,
     executionContext: ExecutionContext
 ) extends TwilioClientPhoneNumber {
+
+  private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
 
   override val incomingPhoneNumberList: IncomingNumbersReadRequestExecutor =
     new IncomingNumbersReadRequestExecutorImpl()
@@ -33,4 +37,7 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
 
   override val outgoingCallerIdDelete: OutgoingCallerIdDeleteRequestExecutor =
     new OutgoingCallerIdDeleteRequestExecutorImpl()
+
+  override val outgoingCallerIdCreate: OutgoingCallerIdCreateRequestExecutor =
+    new OutgoingCallerIdCreateRequestExecutorImpl()
 }
