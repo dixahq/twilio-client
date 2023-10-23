@@ -1,0 +1,89 @@
+package com.dixa.twilio.client.twilioClient.voice
+
+import com.dixa.twilio.CommonFixtures
+import com.dixa.twilio.client.messaging.TwilioClientMessaging
+import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.client.voice.IpAccessControlListMappingCreateRequestExecutor
+import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.voice.{IpAccessControlList, IpAccessControlListMapping, SipDomain}
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+
+import scala.concurrent.Future
+
+final class IpAccessControlListMappingCreateTest extends TwilioClientTest {
+  classOf[TwilioClientMessaging].getSimpleName when {
+
+    "ask to create an IpAccessControlListMapping" should {
+
+      "ask twilio to create it, and return the IpAccessControlListMapping it gets back from Twilio" in {
+
+        val request =
+          IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest
+            .build(
+              _.withAccountSid(CommonFixtures.accountSid1)
+                .withDomainSid(SipDomain.Sid.unsafe("SDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
+                .withIpAccessControlListSid(
+                  IpAccessControlList.Sid.unsafe("ALXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                )
+                .build()
+            )
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(
+              WireMock.urlPathEqualTo(
+                s"/2010-04-01/Accounts/${CommonFixtures.accountSid1}/SIP/Domains/SDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Auth/Calls/IpAccessControlListMappings.json"
+              )
+            )
+            .withRequestBody(
+              WireMock.containing("IpAccessControlListSid=ALXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+            )
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponse1)
+            )
+        )
+
+        val expected = IpAccessControlListMapping(
+          CommonFixtures.accountSid1,
+          SipDomain.Sid.unsafe("SDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+          IpAccessControlList.Sid.unsafe("ALXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        )
+
+        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: IpAccessControlListMappingCreateRequestExecutor =
+          TwilioClient.defaultImpl().voice.ipAccessControlListMappingCreate
+        val resultFut: Future[
+          Either[
+            IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateException,
+            IpAccessControlListMapping
+          ]
+        ] = {
+          instance.run(connSettings, request)
+        }
+        resultFut.map { result =>
+          val succResult = result.getOrElse {
+            val e = result.left.getOrElse(fail("No success or either, how can that happen :D"))
+            fail("expected successfully result here", e)
+          }
+          assert(succResult === expected)
+        }
+      }
+    }
+  }
+
+  private def twilioResponse1 =
+    s"""{
+       |  "account_sid": "${CommonFixtures.accountSid1}",
+       |  "date_created": "Thu, 30 Jul 2015 20:00:00 +0000",
+       |  "date_updated": "Thu, 30 Jul 2015 20:00:00 +0000",
+       |  "friendly_name": "Does not really matter, as it not the friendly name of the sub resource anyway",
+       |  "sid": "ALXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+       |}
+       |""".stripMargin
+}
