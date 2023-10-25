@@ -121,5 +121,9 @@ object UsageTrigger {
     case object Pv             extends UsageCategory("pv")
     case object Totalprice     extends UsageCategory("totalprice")
 
+    // The above is taken from the official documentation: https://www.twilio.com/docs/usage/api/usage-record#usage-categories
+    // However there seem to be more valid values, and these will be added below as we find them.
+
+    case object CallsOutbound extends UsageCategory("calls-outbound")
   }
 }
