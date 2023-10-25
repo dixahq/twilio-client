@@ -43,7 +43,7 @@ object OutgoingCallerIdCreateRequestExecutor {
 
   object CallDelay extends EnumWithTwilioString[CallDelay] {
     override val values: immutable.IndexedSeq[CallDelay] = findValues
-
+    case object Seconds0  extends CallDelay("0")
     case object Seconds1  extends CallDelay("1")
     case object Seconds2  extends CallDelay("2")
     case object Seconds3  extends CallDelay("3")
