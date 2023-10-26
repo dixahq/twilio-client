@@ -35,7 +35,7 @@ private[client] final class TwilioClientImpl()(
 
   override val phoneNumber: TwilioClientPhoneNumber = new TwilioClientPhoneNumberImpl()
 
-  override val general: TwilioClientGeneral   = new TwilioClientGeneralImpl()
+  override val general: TwilioClientGeneral = new TwilioClientGeneralImpl()
 
   override val stunTurn: TwilioClientStunTurn = new TwilioClientStunTurnImpl()
 }

@@ -3,11 +3,9 @@ package com.dixa.twilio.client.impl.stunTurn
 import akka.http.scaladsl.HttpExt
 import akka.http.scaladsl.model._
 import akka.stream.Materializer
-import com.dixa.twilio.client.general.TokenCreateRequestExecutor
 import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.stunTurn.TokenCreateRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.general.Token
 import com.dixa.twilio.model.stunTurn.Token
 
 import scala.concurrent.ExecutionContext

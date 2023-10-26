@@ -32,7 +32,6 @@ final class TokenCreateTest extends TwilioClientTest {
               )
             )
             .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
             .willReturn(
               aResponse()
                 .withStatus(201)
@@ -47,9 +46,9 @@ final class TokenCreateTest extends TwilioClientTest {
           PositiveInteger.unsafe(86400),
           CommonFixtures.accountSid1,
           Seq(
-            Token.IceServer("stun:global.stun.twilio.com:3478", None, None),
+            Token.IceServer(Token.IceServerUrl("stun:global.stun.twilio.com:3478"), None, None),
             Token.IceServer(
-              "turn:global.turn.twilio.com:3478?transport=udp",
+              Token.IceServerUrl("turn:global.turn.twilio.com:3478?transport=udp"),
               Some(
                 Token.IceServerUsername(
                   "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269"
@@ -58,7 +57,7 @@ final class TokenCreateTest extends TwilioClientTest {
               Some(Token.IceServerCredential("tE2DajzSJwnsSbc123"))
             ),
             Token.IceServer(
-              "turn:global.turn.twilio.com:3478?transport=tcp",
+              Token.IceServerUrl("turn:global.turn.twilio.com:3478?transport=tcp"),
               Some(
                 Token.IceServerUsername(
                   "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269"
@@ -67,7 +66,7 @@ final class TokenCreateTest extends TwilioClientTest {
               Some(Token.IceServerCredential("tE2DajzSJwnsSbc123"))
             ),
             Token.IceServer(
-              "turn:global.turn.twilio.com:443?transport=tcp",
+              Token.IceServerUrl("turn:global.turn.twilio.com:443?transport=tcp"),
               Some(
                 Token.IceServerUsername(
                   "dc2d2894d5a9023620c467b0e71cfa6a35457e6679785ed6ae9856fe5bdfa269"

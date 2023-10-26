@@ -80,7 +80,7 @@ object TokenCreateRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to create application"
+            "Unspecified error happened trying to create Token"
           ),
           cause.orNull
         )
