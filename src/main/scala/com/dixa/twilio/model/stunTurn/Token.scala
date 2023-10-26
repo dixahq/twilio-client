@@ -1,6 +1,6 @@
 package com.dixa.twilio.model.stunTurn
 
-import com.dixa.twilio.model.PositiveInteger
+import com.dixa.twilio.model.{PositiveInteger, TwilioStringValue}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import java.time.Instant
@@ -22,14 +22,14 @@ final case class Token(
 
 object Token {
 
-  final case class Username(override val toString: String)
+  final case class Username(override val toString: String) extends TwilioStringValue
 
-  final case class Password(override val toString: String)
+  final case class Password(override val toString: String) extends TwilioStringValue
 
-  final case class IceServerUrl(override val toString: String)
+  final case class IceServerUrl(override val toString: String) extends TwilioStringValue
 
-  final case class IceServerUsername(override val toString: String)
-  final case class IceServerCredential(override val toString: String)
+  final case class IceServerUsername(override val toString: String) extends TwilioStringValue
+  final case class IceServerCredential(override val toString: String) extends TwilioStringValue
 
   final case class IceServer(
       urls: IceServerUrl,
