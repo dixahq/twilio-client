@@ -2,6 +2,13 @@ package com.dixa.twilio.client.iam
 
 trait TwilioClientIam {
 
+  /** Create a new Account instance resource as a subaccount of the one used to make the request.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api/account#create-an-account-resource
+    */
+  def accountCreate: AccountCreateRequestExecutor
+
   /** Fetch a single account for an account sid.
     *
     * @see
