@@ -3,6 +3,7 @@ package com.dixa.twilio.client.impl.iam
 import akka.http.scaladsl.HttpExt
 import akka.stream.Materializer
 import com.dixa.twilio.client.iam.{
+  AccountCreateRequestExecutor,
   AccountFetchRequestExecutor,
   AccountUpdateRequestExecutor,
   AuthTokenPromoteRequestExecutor,
@@ -11,6 +12,7 @@ import com.dixa.twilio.client.iam.{
   ReadAllAccountsRequestExecutor,
   TwilioClientIam
 }
+import com.dixa.twilio.client.impl.ApiVersion
 
 import scala.concurrent.ExecutionContext
 
@@ -19,6 +21,10 @@ private[impl] final class TwilioClientIamImpl()(
     materializer: Materializer,
     httpExt: HttpExt
 ) extends TwilioClientIam {
+
+  private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
+
+  override val accountCreate: AccountCreateRequestExecutor = new AccountCreateRequestExecutorImpl()
 
   override val accountFetch: AccountFetchRequestExecutor = new AccountFetchRequestExecutorImpl()
 

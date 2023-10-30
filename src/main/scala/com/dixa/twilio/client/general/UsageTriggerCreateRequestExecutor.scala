@@ -254,7 +254,7 @@ object UsageTriggerCreateRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to create application"
+            "Unspecified error happened trying to create usage trigger"
           ),
           cause.orNull
         )
