@@ -61,7 +61,7 @@ lazy val `twilio-client` = project
       } getOrElse {
         Credentials(Path.userHome / ".sbt" / ".credentials")
       },
-      scalacOptions := scalacOpt,
+      scalacOptions      := scalacOpt,
       crossScalaVersions := Seq(scala2_13),
       releaseCrossBuild  := true,
       libraryDependencies ++= Seq(
@@ -80,9 +80,9 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.3",
 
         // Test
-        "org.scalatest"         %% "scalatest" % "3.2.17" % Test,
-        "org.scalamock"         %% "scalamock" % "5.2.0"  % Test,
-        "org.wiremock" % "wiremock"  % "3.2.0"  % Test,
+        "org.scalatest" %% "scalatest" % "3.2.17" % Test,
+        "org.scalamock" %% "scalamock" % "5.2.0"  % Test,
+        "org.wiremock"   % "wiremock"  % "3.2.0"  % Test,
       ),
       publish / skip := false,
       releaseProcess :=

@@ -23,7 +23,7 @@ private[impl] final class TwilioClientGeneralImpl()(
 
   private implicit val apiVersion: ApiVersion = ApiVersion.`2010-04-01`
 
-  override def usageTriggerCreate: UsageTriggerCreateRequestExecutor =
+  override val usageTriggerCreate: UsageTriggerCreateRequestExecutor =
     new UsageTriggerCreateRequestExecutorImpl()
 
   override val usageTriggerRead: UsageTriggerReadRequestExecutor =
@@ -32,12 +32,12 @@ private[impl] final class TwilioClientGeneralImpl()(
   override val usageTriggerDelete: UsageTriggerDeleteRequestExecutor =
     new UsageTriggerDeleteRequestExecutorImpl()
 
-  override def applicationCreate: ApplicationCreateRequestExecutor =
+  override val applicationCreate: ApplicationCreateRequestExecutor =
     new ApplicationCreateRequestExecutorImpl()
 
-  override def applicationDelete: ApplicationDeleteRequestExecutor =
+  override val applicationDelete: ApplicationDeleteRequestExecutor =
     new ApplicationDeleteRequestExecutorImpl()
 
-  override def applicationRead: ApplicationReadRequestExecutor =
+  override val applicationRead: ApplicationReadRequestExecutor =
     new ApplicationReadRequestExecutorImpl()
 }
