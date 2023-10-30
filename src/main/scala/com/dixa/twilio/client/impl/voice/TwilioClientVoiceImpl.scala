@@ -104,20 +104,20 @@ private[impl] final class TwilioClientVoiceImpl()(
   override val recordingDelete: RecordingDeleteRequestExecutor =
     new RecordingDeleteRequestExecutorImpl()
 
-  override def sipDomainCreate: SipDomainCreateRequestExecutor =
+  override val sipDomainCreate: SipDomainCreateRequestExecutor =
     new SipDomainCreateRequestExecutorImpl()
 
-  override def sipDomainRead: SipDomainReadRequestExecutor = new SipDomainReadRequestExecutorImpl()
+  override val sipDomainRead: SipDomainReadRequestExecutor = new SipDomainReadRequestExecutorImpl()
 
-  override def ipAccessControlListCreate: IpAccessControlListCreateRequestExecutor =
+  override val ipAccessControlListCreate: IpAccessControlListCreateRequestExecutor =
     new IpAccessControlListCreateRequestExecutorImpl()
 
-  override def ipAccessControlListRead: IpAccessControlListReadRequestExecutor =
+  override val ipAccessControlListRead: IpAccessControlListReadRequestExecutor =
     new IpAccessControlListReadRequestExecutorImpl()
 
-  override def sipIpAddressCreate: SipIpAddressCreateRequestExecutor =
+  override val sipIpAddressCreate: SipIpAddressCreateRequestExecutor =
     new SipIpAddressCreateRequestExecutorImpl()
 
-  override def ipAccessControlListMappingCreate: IpAccessControlListMappingCreateRequestExecutor =
+  override val ipAccessControlListMappingCreate: IpAccessControlListMappingCreateRequestExecutor =
     new IpAccessControlListMappingCreateRequestExecutorImpl()
 }

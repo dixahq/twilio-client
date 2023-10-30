@@ -13,4 +13,8 @@ package com.dixa.twilio.model
   */
 trait TwilioStringValue {
   def twilioString: String = toString
+
+  def startsWith(prefix: String): Boolean = twilioString.startsWith(prefix)
+
+  def contains(s: String): Boolean = twilioString.contains(s)
 }

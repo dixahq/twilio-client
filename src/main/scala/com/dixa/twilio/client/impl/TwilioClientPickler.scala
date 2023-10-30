@@ -12,6 +12,7 @@ private[client] object TwilioClientPickler extends upickle.AttributeTagged {
   override implicit def OptionReader[T: Reader]: Reader[Option[T]] = {
     new Reader.Delegate[Any, Option[T]](implicitly[Reader[T]].map(Some(_))) {
       override def visitNull(index: Int) = None
+
     }
   }
 }
