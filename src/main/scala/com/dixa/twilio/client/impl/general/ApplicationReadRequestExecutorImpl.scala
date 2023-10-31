@@ -31,6 +31,7 @@ private[client] class ApplicationReadRequestExecutorImpl()(
   ): Either[ApplicationReadException, HttpRequest] = {
     val params = QueryParamBuilder.empty
       .withParam("PageSize", "1000")
+      .withOptionalParam("FriendlyName", req.friendlyName)
       .build
 
     createHttpRequestFor(

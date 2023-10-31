@@ -28,6 +28,8 @@ object ApplicationReadRequestExecutor {
 
   sealed trait ApplicationReadRequest {
     def accountSid: TwilioAccount.Sid
+
+    def friendlyName: Option[Application.FriendlyName]
   }
 
   object ApplicationReadRequest {
@@ -45,29 +47,36 @@ object ApplicationReadRequestExecutor {
     final class Builder[
         AccountSidSet <: PhantomTypes.AccountSidSet
     ] private[ApplicationReadRequest] (
-        accountSid: Option[TwilioAccount.Sid]
+        accountSid: Option[TwilioAccount.Sid],
+        friendlyName: Option[Application.FriendlyName]
     ) {
 
       /** The SID of the Account that will read applications from. */
       def withAccountSid(
           accountSid: TwilioAccount.Sid
       ): Builder[PhantomTypes.AccountSidSetTrue] =
-        new Builder[PhantomTypes.AccountSidSetTrue](Some(accountSid))
+        new Builder[PhantomTypes.AccountSidSetTrue](Some(accountSid), friendlyName)
+
+      def withFriendlyName(friendlyName: Application.FriendlyName): Builder[AccountSidSet] =
+        new Builder[AccountSidSet](accountSid, Some(friendlyName))
 
       def build()(
           implicit accountSidSetEv: AccountSidSet =:= PhantomTypes.AccountSidSetTrue
-      ): ApplicationReadRequest = RequestImpl(accountSid.get)
+      ): ApplicationReadRequest = RequestImpl(accountSid.get, friendlyName)
     }
 
     object Builder {
-      val empty = new BuilderStartState(None)
+      val empty = new BuilderStartState(None, None)
     }
 
     def build(fun: BuilderStartState => ApplicationReadRequest): ApplicationReadRequest =
       fun(Builder.empty)
   }
 
-  private final case class RequestImpl(accountSid: TwilioAccount.Sid) extends ApplicationReadRequest
+  private final case class RequestImpl(
+      accountSid: TwilioAccount.Sid,
+      friendlyName: Option[Application.FriendlyName]
+  ) extends ApplicationReadRequest
 
   sealed trait ApplicationReadException extends RuntimeException
 
