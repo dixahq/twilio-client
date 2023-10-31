@@ -6,6 +6,7 @@ import com.dixa.twilio.client.iam.TwilioClientIam
 import com.dixa.twilio.client.impl.TwilioClientImpl
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
+import com.dixa.twilio.client.stunTurn.TwilioClientStunTurn
 import com.dixa.twilio.client.voice.TwilioClientVoice
 
 /** Main entry point for communicating with twilio.
@@ -43,6 +44,9 @@ trait TwilioClient {
 
   /** Return sub client for the Twilio general API */
   def general: TwilioClientGeneral
+
+  /** return a sub client for the Twilio Network Traversal Service */
+  def stunTurn: TwilioClientStunTurn
 }
 
 object TwilioClient {
