@@ -182,7 +182,7 @@ object DtmfString {
       }
   }
 
-  def fromStringOnlyDtmfDigitsUnsafe(s: String): DtmfString =
+  def fromStringOnlyDtmfDigitsUnsafe(s: String): OnlyDtmfDigits =
     fromStringOnlyDtmfDigits(s).fold(e => throw e, identity)
 
 }

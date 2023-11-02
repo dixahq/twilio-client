@@ -64,7 +64,7 @@ final class DtmfStringTest extends AnyWordSpec {
 
         val in       = "#86"
         val expected = DtmfString(DtmfDigit.`#`, DtmfDigit.`8`, DtmfDigit.`6`)
-        val result   = DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
+        val result: DtmfString.OnlyDtmfDigits = DtmfString.fromStringOnlyDtmfDigitsUnsafe(in)
         assert(result === expected)
       }
 
