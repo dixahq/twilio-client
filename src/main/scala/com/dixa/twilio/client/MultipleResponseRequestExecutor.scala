@@ -1,9 +1,9 @@
 package com.dixa.twilio.client
 
-import akka.NotUsed
-import akka.http.scaladsl.model._
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
-import akka.stream.{FlowShape, SourceShape}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
+import org.apache.pekko.stream.{FlowShape, SourceShape}
 import com.dixa.twilio.client.impl.{
   DefaultApiErrorEntityJsonRep,
   HttpEntityString,

@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.voice
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.{
   ContentTypes,
   HttpEntity,
   HttpMethod,
@@ -10,7 +10,7 @@ import akka.http.scaladsl.model.{
   HttpResponse,
   StatusCodes
 }
-import akka.stream.Materializer
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,

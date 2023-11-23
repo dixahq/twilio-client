@@ -1,9 +1,9 @@
 package com.dixa.twilio.client.impl.phonenumber
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.Uri.Query
+import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor.{

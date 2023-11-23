@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.phonenumber
 
-import akka.NotUsed
-import akka.stream.scaladsl.{Sink, Source}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
   IncomingNumbersReadException,
   IncomingNumbersReadRequest

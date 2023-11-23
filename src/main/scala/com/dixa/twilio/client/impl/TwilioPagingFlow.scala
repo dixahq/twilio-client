@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.impl
 
-import akka.NotUsed
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
-import akka.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
-import akka.stream.{Materializer, SourceShape}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
+import org.apache.pekko.stream.scaladsl.{Broadcast, Flow, GraphDSL, Merge, Source}
+import org.apache.pekko.stream.{Materializer, SourceShape}
 import com.dixa.twilio.client.TwilioConnectionSettings
 
 import scala.util.Try

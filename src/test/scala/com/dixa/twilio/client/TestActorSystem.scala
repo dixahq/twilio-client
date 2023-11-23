@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import akka.actor.{ActorSystem, ClassicActorSystemProvider}
+import org.apache.pekko.actor.{ActorSystem, ClassicActorSystemProvider}
 import org.scalatest.{BeforeAndAfterAll, Suite}
 
 import scala.concurrent.Await

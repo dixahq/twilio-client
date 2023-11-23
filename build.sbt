@@ -20,9 +20,9 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Akka     = "2.6.20"
-  val AkkaHttp = "10.2.10"
-  val Circe    = "0.14.5"
+  val Pekko     = "1.0.1"
+  val PekkoHttp = "1.0.0"
+  val Circe     = "0.14.5"
 }
 
 val scalacOpt = Seq(
@@ -65,10 +65,10 @@ lazy val `twilio-client` = project
       crossScalaVersions := Seq(scala2_13),
       releaseCrossBuild  := true,
       libraryDependencies ++= Seq(
-        // Akka
-        "com.typesafe.akka" %% "akka-actor-typed" % Version.Akka     % Provided,
-        "com.typesafe.akka" %% "akka-stream"      % Version.Akka     % Provided,
-        "com.typesafe.akka" %% "akka-http"        % Version.AkkaHttp % Provided,
+        // Pekko
+        "org.apache.pekko" %% "pekko-actor-typed" % Version.Pekko     % Provided,
+        "org.apache.pekko" %% "pekko-stream"      % Version.Pekko     % Provided,
+        "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
         "com.lihaoyi" %% "upickle" % "3.1.3",

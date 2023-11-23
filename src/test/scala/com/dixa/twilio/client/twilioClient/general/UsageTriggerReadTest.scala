@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.general
 
-import akka.stream.scaladsl.Sink
+import org.apache.pekko.stream.scaladsl.Sink
 import com.dixa.twilio.client.general.UsageTriggerReadRequestExecutor.UsageTriggerReadException
 import com.dixa.twilio.client.general.{TwilioClientGeneral, UsageTriggerReadRequestExecutor}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest

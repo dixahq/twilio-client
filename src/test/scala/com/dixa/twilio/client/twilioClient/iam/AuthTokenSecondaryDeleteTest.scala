@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.iam
 
-import akka.Done
+import org.apache.pekko.Done
 import com.dixa.twilio.CommonFixtures
 import com.dixa.twilio.client.iam.AuthTokenSecondaryDeleteRequestExecutor.{
   AuthTokenSecondaryDeleteException,

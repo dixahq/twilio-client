@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.general
 
-import akka.http.scaladsl.HttpExt
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.general.{
   ApplicationCreateRequestExecutor,
   ApplicationDeleteRequestExecutor,

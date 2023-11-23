@@ -13,9 +13,9 @@
     <logger name="com.corundumstudio.socketio" level="WARN" />
     <logger name="com.github.nkzawa" level="DEBUG" />
 
-    <logger name="akka.actor.LocalActorRef" level="WARN" />
-    <logger name="akka.event.slf4j.Slf4jLogger" level="WARN" />
-    <logger name="akka.event.EventStream" level="INFO" />
+    <logger name="org.apache.pekko.actor.LocalActorRef" level="WARN" />
+    <logger name="org.apache.pekko.event.slf4j.Slf4jLogger" level="WARN" />
+    <logger name="org.apache.pekko.event.EventStream" level="INFO" />
     <logger name="com.amazonaws" level="ERROR"/>
 
     <root level="INFO">

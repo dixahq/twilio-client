@@ -1,9 +1,9 @@
 package com.dixa.twilio.client.impl.messaging
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.Uri.Query
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.Uri.Query
+import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString}
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
@@ -59,7 +59,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
 
     createHttpRequestFor(
       // the `:` character present in the time instances in dateSent parameter should be URL encoded
-      // akka.http.scaladsl.model.Uri.Query doesn't URL encode the `:` character
+      // org.apache.pekko.http.scaladsl.model.Uri.Query doesn't URL encode the `:` character
       s"/2010-04-01/Accounts/${req.accountSid}/Messages.json?${query.toString().replace(":", "%3A")}",
       connSettings
     )
