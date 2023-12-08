@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.impl.stunTurn
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model._
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.stunTurn.TokenCreateRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}

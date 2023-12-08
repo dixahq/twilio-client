@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.phonenumber
 
-import akka.http.scaladsl.HttpExt
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.ApiVersion
 import com.dixa.twilio.client.phonenumber.{
   ActiveNumbersReadRequestExecutor,

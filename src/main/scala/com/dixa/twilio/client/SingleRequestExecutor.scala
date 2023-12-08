@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import akka.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
+import org.apache.pekko.http.scaladsl.model.{HttpEntity, HttpRequest, HttpResponse, StatusCodes}
 import com.dixa.twilio.client.impl.{DefaultApiErrorEntityJsonRep, HttpEntityString}
 
 import scala.concurrent.Future

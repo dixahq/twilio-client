@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl
 
-import akka.actor.ClassicActorSystemProvider
-import akka.http.scaladsl.{Http, HttpExt}
+import org.apache.pekko.actor.ClassicActorSystemProvider
+import org.apache.pekko.http.scaladsl.{Http, HttpExt}
 import com.dixa.twilio.client.TwilioClient
 import com.dixa.twilio.client.general.TwilioClientGeneral
 import com.dixa.twilio.client.iam.TwilioClientIam

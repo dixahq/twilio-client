@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.voice
 
-import akka.NotUsed
-import akka.stream.scaladsl.{Sink, Source}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.{Sink, Source}
 import com.dixa.twilio.CommonFixtures
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.twilioClient.TwilioClientTest

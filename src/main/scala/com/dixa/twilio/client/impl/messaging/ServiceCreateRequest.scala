@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.impl.messaging
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMethods, StatusCodes}
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.messaging.ServiceCreateRequest.createPostParamString
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}

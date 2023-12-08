@@ -1,9 +1,9 @@
 package com.dixa.twilio.client.impl.messaging
 
-import akka.Done
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model._
-import akka.stream.Materializer
+import org.apache.pekko.Done
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}

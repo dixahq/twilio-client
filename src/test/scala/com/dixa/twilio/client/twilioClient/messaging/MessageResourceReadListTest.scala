@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import akka.stream.scaladsl.Sink
+import org.apache.pekko.stream.scaladsl.Sink
 import com.dixa.twilio.client.messaging.{MessageResourceReadRequestExecutor, TwilioClientMessaging}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}

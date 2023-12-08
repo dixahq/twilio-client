@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.phonenumber
 
-import akka.stream.scaladsl.Sink
+import org.apache.pekko.stream.scaladsl.Sink
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor.{
   OutgoingCallerIdReadRequest,
   OutgoingCallerIdReadRequestFilter

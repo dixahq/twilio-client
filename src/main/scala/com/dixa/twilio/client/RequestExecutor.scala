@@ -1,8 +1,8 @@
 package com.dixa.twilio.client
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethod, HttpRequest}
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpRequest}
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.TwilioClientPickler.Reader
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
 

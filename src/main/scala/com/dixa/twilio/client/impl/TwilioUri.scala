@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl
 
-import akka.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
-import akka.http.scaladsl.model.{HttpMethod, HttpRequest, Uri}
+import org.apache.pekko.http.scaladsl.model.headers.{Authorization, BasicHttpCredentials}
+import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpRequest, Uri}
 import com.dixa.twilio.client.TwilioConnectionSettings
 
 import scala.util.Try

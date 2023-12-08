@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.impl.voice
 
-import akka.NotUsed
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.HttpMethods
-import akka.stream.Materializer
-import akka.stream.scaladsl.{Flow, Keep, Sink}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.HttpMethods
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.scaladsl.{Flow, Keep, Sink}
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.voice.ConferenceJsonRep.TwilioConferenceJsonResp
 import com.dixa.twilio.client.impl._

@@ -1,6 +1,6 @@
 package com.dixa.twilio.client
 
-import akka.actor.ClassicActorSystemProvider
+import org.apache.pekko.actor.ClassicActorSystemProvider
 import com.dixa.twilio.client.general.TwilioClientGeneral
 import com.dixa.twilio.client.iam.TwilioClientIam
 import com.dixa.twilio.client.impl.TwilioClientImpl

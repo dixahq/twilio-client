@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import akka.Done
+import org.apache.pekko.Done
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor.{
   PhoneNumberDeleteException,

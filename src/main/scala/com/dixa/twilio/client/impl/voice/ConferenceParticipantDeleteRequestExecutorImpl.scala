@@ -1,8 +1,8 @@
 package com.dixa.twilio.client.impl.voice
 
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model._
-import akka.stream.Materializer
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.voice.ConferenceParticipantDeleteRequestExecutor
 import com.dixa.twilio.client.voice.ConferenceParticipantDeleteRequestExecutor.{

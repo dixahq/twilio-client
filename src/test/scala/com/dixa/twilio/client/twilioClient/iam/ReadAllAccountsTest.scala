@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.iam
 
-import akka.NotUsed
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import org.apache.pekko.NotUsed
+import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
 import com.dixa.twilio.client.iam.ReadAllAccountsRequestExecutor.ReadAllAccountsRequest
 import com.dixa.twilio.client.iam.{ReadAllAccountsRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest

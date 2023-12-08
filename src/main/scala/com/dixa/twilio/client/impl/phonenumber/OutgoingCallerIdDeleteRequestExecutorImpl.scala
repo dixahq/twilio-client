@@ -1,9 +1,15 @@
 package com.dixa.twilio.client.impl.phonenumber
 
-import akka.Done
-import akka.http.scaladsl.HttpExt
-import akka.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
-import akka.stream.Materializer
+import org.apache.pekko.Done
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.{
+  HttpMethod,
+  HttpMethods,
+  HttpRequest,
+  HttpResponse,
+  StatusCodes
+}
+import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdDeleteRequestExecutor
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdDeleteRequestExecutor.OutgoingCallerIdDeleteException
