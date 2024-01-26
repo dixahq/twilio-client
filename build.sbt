@@ -1,16 +1,26 @@
 import sbt.Test
-import com.dixa.sbt.ReleaseStateTransformations.{
-  dixaAddGitHistoryToReleaseTag,
-  dixaCheckSnapshotDependencies,
-  dixaDetermineVersion,
-  dixaPushReleaseTag
-}
-import sbtrelease.ReleasePlugin.autoImport.{
-  releaseProcess,
-  releaseStepCommandAndRemaining,
-  ReleaseStep
-}
+import com.dixa.sbt.ReleaseStateTransformations.{dixaAddGitHistoryToReleaseTag, dixaCheckSnapshotDependencies, dixaDetermineVersion, dixaPushReleaseTag}
+import sbt.internal.SysProp
+import sbtrelease.ReleasePlugin.autoImport.{ReleaseStep, releaseProcess, releaseStepCommandAndRemaining}
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
+
+inThisBuild(List(
+  organization := "com.dixa",
+  homepage := Some(url("https://github.com/dixahq/twilio-client")),
+  // Alternatively License.Apache2 see https://github.com/sbt/librarymanagement/blob/develop/core/src/main/scala/sbt/librarymanagement/License.scala
+  licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+  developers := List(
+    Developer(
+      "lucashimizu",
+      "Lucas Shimizu",
+      "lsh@dixa.com",
+      url("https://www.dixa.com")
+    )
+  )
+))
+
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 val scala2_13          = "2.13.12"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
@@ -40,6 +50,7 @@ val scalacOpt = Seq(
 
 lazy val `twilio-client` = project
   .in(file("."))
+  .enablePlugins()
   .settings(
     Seq(
       organization := "com.dixa",
@@ -50,16 +61,20 @@ lazy val `twilio-client` = project
         snapshotsRepository,
         confluentHttpsRepo
       ),
-      credentials += sys.env.get("CI").map { _ =>
-        // Running on CI, so grab credentials from ENV
-        Credentials(
-          realm = "Sonatype Nexus Repository Manager",
-          host = "repo.dixa.io",
-          userName = sys.env("MAVEN_REPO_USER"),
-          passwd = sys.env("MAVEN_REPO_PASSWORD")
-        )
-      } getOrElse {
-        Credentials(Path.userHome / ".sbt" / ".credentials")
+      credentials += sys.env.get("RELEASE").flatMap { _ =>
+        SysProp.sbtCredentialsEnv
+      }.getOrElse {
+        sys.env.get("CI").map { _ =>
+          // Running on CI, so grab credentials from ENV
+          Credentials(
+            realm = "Sonatype Nexus Repository Manager",
+            host = "repo.dixa.io",
+            userName = sys.env("MAVEN_REPO_USER"),
+            passwd = sys.env("MAVEN_REPO_PASSWORD")
+          )
+        } getOrElse {
+          Credentials(Path.userHome / ".sbt" / ".credentials")
+        }
       },
       scalacOptions      := scalacOpt,
       crossScalaVersions := Seq(scala2_13),
@@ -98,6 +113,6 @@ lazy val `twilio-client` = project
         ),
 
       // Test
-      Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value
+      Test / compile := (Test / compile).dependsOn(Test / scalafmtCheckAll).value,
     )
   )

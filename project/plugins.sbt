@@ -14,4 +14,5 @@ libraryDependencySchemes ++= Seq(
 )
 addSbtPlugin("com.dixa"      % "sbt-dixa-release" % "6.2.30")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt"     % "2.5.2")
+addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
 addDependencyTreePlugin
