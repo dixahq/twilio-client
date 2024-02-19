@@ -16,7 +16,7 @@ import scala.collection.immutable
   *      constructed from a String
   *
   * This is modelled by having the classes that can be seen in this diagram:
-  * [[https://kroki.ci.mgmt.dixa.io/plantuml/svg/eNqFUDsOwjAM3X2KXKA3YOjExgJqdzdxUaTUqWzDxOERKm1DBGJ7el_LrRqK3aYEkY1kRE_uTDpnVgIc1AS9uaPk6ZQDJfAJVV1PEsdIoQh1fF_JxbMTdfpTuZhEvgKsq-7waJpicUOLsE1XgWIfdlxrP2u_Wf70vA9vicPrf0-uVXZ1]]
+  * [[https://kroki.dixa.io/plantuml/svg/eNqFUDsOwjAM3X2KXKA3YOjExgJqdzdxUaTUqWzDxOERKm1DBGJ7el_LrRqK3aYEkY1kRE_uTDpnVgIc1AS9uaPk6ZQDJfAJVV1PEsdIoQh1fF_JxbMTdfpTuZhEvgKsq-7waJpicUOLsE1XgWIfdlxrP2u_Wf70vA9vicPrf0-uVXZ1]]
   *
   * It is strongly recommended that you build your Response instance by using the
   * [[Response.build]] method, and avoid adding custom Verbs to it, so you are allowed to call
