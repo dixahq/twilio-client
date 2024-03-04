@@ -71,7 +71,7 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "3.1.3",
+        "com.lihaoyi" %% "upickle" % "3.1.4",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
@@ -82,7 +82,7 @@ lazy val `twilio-client` = project
         // Test
         "org.scalatest" %% "scalatest" % "3.2.17" % Test,
         "org.scalamock" %% "scalamock" % "5.2.0"  % Test,
-        "org.wiremock"   % "wiremock"  % "3.2.0"  % Test,
+        "org.wiremock"   % "wiremock"  % "3.3.1"  % Test,
       ),
       publish / skip := false,
       releaseProcess :=
