@@ -1,11 +1,11 @@
 package com.dixa.twilio.model.whatsapp
 
-import com.dixa.twilio.model.messaging.MessageAddressee
+import com.dixa.twilio.model.messaging.MessageRecipient
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import scala.util.Try
 
-sealed trait WhatsappNumber extends MessageAddressee {
+sealed trait WhatsappNumber extends MessageRecipient {
   def number: PhoneNumberE164
 
   private def asString: String = WhatsappNumber.Prefix + number.toString

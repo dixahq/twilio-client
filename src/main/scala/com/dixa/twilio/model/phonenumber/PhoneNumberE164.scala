@@ -1,10 +1,10 @@
 package com.dixa.twilio.model.phonenumber
 
-import com.dixa.twilio.model.messaging.MessageAddressee
+import com.dixa.twilio.model.messaging.MessageRecipient
 
 import scala.util.Try
 
-sealed trait PhoneNumberE164 extends MessageAddressee {
+sealed trait PhoneNumberE164 extends MessageRecipient {
 
   def asString: String
   override final val toString = asString

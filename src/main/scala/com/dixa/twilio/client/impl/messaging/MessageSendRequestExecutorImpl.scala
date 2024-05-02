@@ -44,7 +44,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
     val reqEntity = FormData(
       Map(
         "From"           -> req.from.asString,
-        "To"             -> req.to.toMessageAddressee,
+        "To"             -> req.to.toMessageRecipient,
         "Body"           -> req.body.toString,
         "StatusCallback" -> req.statusCallback.toString
       )
