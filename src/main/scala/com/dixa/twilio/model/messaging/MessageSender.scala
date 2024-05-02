@@ -3,6 +3,7 @@ package com.dixa.twilio.model.messaging
 import com.dixa.twilio.model.messaging.MessageSender.Alphanumeric.AlphanumericException.AlphanumericInvalidException
 import com.dixa.twilio.model.messaging.MessageSender.MessageSenderException.MessageSenderInvalidException
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.whatsapp.WhatsappNumber
 
 import scala.annotation.nowarn
 
@@ -22,14 +23,11 @@ object MessageSender {
   }
 
   def fromString(s: String): Either[MessageSenderException, MessageSender] = {
-    PhoneNumberE164(s) match {
-      case Some(pn) => Right(E164(pn))
-      case None =>
-        Alphanumeric.fromString(s).toOption match {
-          case Some(sender) => Right(sender)
-          case None         => Left(MessageSenderInvalidException(s))
-        }
-    }
+    PhoneNumberE164(s)
+      .map(E164)
+      .orElse(WhatsappNumber(s).map(Whatsapp))
+      .orElse(Alphanumeric.fromString(s).toOption)
+      .toRight(MessageSenderInvalidException(s))
   }
 
   def fromStringUnsafe(s: String): MessageSender = {
@@ -38,6 +36,10 @@ object MessageSender {
 
   final case class E164(phoneNumber: PhoneNumberE164) extends MessageSender {
     override def asString: String = phoneNumber.asString
+  }
+
+  final case class Whatsapp(whatsappNumber: WhatsappNumber) extends MessageSender {
+    override def asString: String = whatsappNumber.toString
   }
 
   final case class Alphanumeric private (override val asString: String) extends MessageSender
