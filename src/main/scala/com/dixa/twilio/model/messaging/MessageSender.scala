@@ -18,7 +18,9 @@ object MessageSender {
 
   object MessageSenderException {
     case class MessageSenderInvalidException(s: String)
-        extends RuntimeException(s"$s is not a valid phone number or alphanumeric sender id")
+        extends RuntimeException(
+          s"$s is not a valid phone number, whatsapp number or alphanumeric sender id"
+        )
         with MessageSenderException
   }
 

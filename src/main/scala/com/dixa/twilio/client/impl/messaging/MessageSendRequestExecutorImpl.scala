@@ -1,8 +1,5 @@
 package com.dixa.twilio.client.impl.messaging
 
-import org.apache.pekko.http.scaladsl.HttpExt
-import org.apache.pekko.http.scaladsl.model._
-import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.messaging.MessageSendRequestExecutorImpl.{
   parseDate,
   parseMessagingServiceSid
@@ -22,7 +19,9 @@ import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
@@ -130,7 +129,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
                       price = price,
                       sid = Message.Sid.unsafe(decoded.sid),
                       status = status,
-                      to = PhoneNumberE164.unsafe(decoded.to),
+                      to = MessageRecipient.fromStringUnsafe(decoded.to),
                       error = messageError
                     )
                   )

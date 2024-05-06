@@ -5,7 +5,6 @@ import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import java.time.Instant
 
@@ -29,8 +28,8 @@ object MessageResourceReadRequestExecutor {
   )
 
   final case class MessageResourcesReadRequestFilter(
-      to: Option[PhoneNumberE164] = None,
-      from: Option[PhoneNumberE164] = None,
+      to: Option[MessageRecipient] = None,
+      from: Option[MessageSender] = None,
       dateSentAfter: Option[Instant] = None,
       dateSentBefore: Option[Instant] = None,
       pageSize: Int = 20

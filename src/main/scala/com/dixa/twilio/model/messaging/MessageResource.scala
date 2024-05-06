@@ -1,7 +1,6 @@
 package com.dixa.twilio.model.messaging
 
 import com.dixa.twilio.model.iam.TwilioAccount
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import java.time.Instant
 
@@ -11,7 +10,7 @@ case class MessageResource(
     dateUpdated: Option[Instant],
     dateSent: Option[Instant],
     accountSid: TwilioAccount.Sid,
-    to: PhoneNumberE164,
+    to: MessageRecipient,
     from: MessageSender,
     messagingServiceSid: Option[TwilioMessagingService.Sid],
     body: MessageBody,

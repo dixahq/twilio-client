@@ -123,7 +123,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
 
         val filter = MessageResourceReadRequestExecutor.MessageResourcesReadRequestFilter(
           to = Some(expected.to),
-          from = Some(PhoneNumberE164.unsafe(expected.from.asString)),
+          from = Some(expected.from),
           dateSentAfter = Some(createdAtInstant),
           dateSentBefore = Some(updatedAtInstant)
         )
@@ -134,7 +134,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             )
             .withQueryParam("DateSent>", equalTo(createdAtInstant.toString))
             .withQueryParam("DateSent<", equalTo(updatedAtInstant.toString))
-            .withQueryParam("To", equalTo(expected.to.toString))
+            .withQueryParam("To", equalTo(expected.to.toMessageRecipient))
             .withQueryParam("From", equalTo(expected.from.asString))
             .withQueryParam("PageSize", equalTo(filter.pageSize.toString))
             .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
@@ -263,7 +263,7 @@ private object MessageResourceReadListTest {
        |  "price_unit": "${messageResource.price.map(_.unit).getOrElse("null")}",
        |  "sid": "${messageResource.sid}",
        |  "status": "${messageResource.status.twilioString}",
-       |  "to": "${messageResource.to.asString}",
+       |  "to": "${messageResource.to.toMessageRecipient}",
        |  "uri": "/2010-04-01/Accounts/$accountSid/Messages/${messageResource.sid}.json"
        |}""".stripMargin
   }

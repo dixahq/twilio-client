@@ -14,7 +14,7 @@ sealed trait WhatsappNumber extends MessageRecipient {
 }
 
 object WhatsappNumber {
-  private val Prefix = "whatsapp:"
+  val Prefix = "whatsapp:"
 
   def unsafe(asString: String): WhatsappNumber = {
     require(
