@@ -15,7 +15,7 @@ import org.scalatest.Assertion
 import org.scalatest.wordspec.AsyncWordSpec
 
 import java.io.{PrintWriter, StringWriter}
-import scala.annotation.{nowarn, tailrec}
+import scala.annotation.tailrec
 import scala.concurrent.ExecutionContext
 
 final class MultipleResponseRequestExecutorTest
@@ -295,7 +295,6 @@ private object MultipleResponseRequestExecutorTest {
 
   final case class TestSuccess(body: String = "")
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val testSuccessReader: Reader[TestSuccess] =
     macroR[TestSuccess]
 

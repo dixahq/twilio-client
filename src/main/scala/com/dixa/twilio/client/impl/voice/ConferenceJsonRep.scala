@@ -8,7 +8,6 @@ import com.dixa.twilio.model.voice.{Call, Conference}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
-import scala.annotation.nowarn
 
 private[voice] object ConferenceJsonRep {
 
@@ -18,7 +17,6 @@ private[voice] object ConferenceJsonRep {
     */
   private[voice] final case class TwilioConferenceSubUrisRep(participants: String)
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val twilioConferenceSubUrisRepReader: Reader[TwilioConferenceSubUrisRep] =
     macroR[TwilioConferenceSubUrisRep]
 

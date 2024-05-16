@@ -7,7 +7,7 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 import com.dixa.twilio.model.messaging.TwilioMessagingService.UseInboundWebhookOnNumber
 
-import java.net.URL
+import java.net.URI
 
 private[messaging] final case class MessagingServiceJsonRep(
     sid: String,
@@ -28,7 +28,7 @@ private[messaging] final case class MessagingServiceJsonRep(
       Some(
         TwilioMessagingService.InboundRequestWebhook(
           HttpMethod.withNameInsensitive(inbound_method.getOrElse("POST")),
-          new URL(urlAsString)
+          new URI(urlAsString).toURL
         )
       )
   }
@@ -40,7 +40,7 @@ private[messaging] final case class MessagingServiceJsonRep(
       Some(
         TwilioMessagingService.FallbackWebhook(
           HttpMethod.withNameInsensitive(fallback_method.getOrElse("POST")),
-          new URL(urlAsString)
+          new URI(urlAsString).toURL
         )
       )
   }
@@ -48,7 +48,7 @@ private[messaging] final case class MessagingServiceJsonRep(
   private def toStatusCallback = {
     val statusCallbackAsString = status_callback.getOrElse("")
     if (statusCallbackAsString.isEmpty) None
-    else Some(MessageStatusCallback(new URL(statusCallbackAsString)))
+    else Some(MessageStatusCallback(new URI(statusCallbackAsString).toURL))
   }
 
   private[messaging] def toTwilioMessagingService = TwilioMessagingService(
