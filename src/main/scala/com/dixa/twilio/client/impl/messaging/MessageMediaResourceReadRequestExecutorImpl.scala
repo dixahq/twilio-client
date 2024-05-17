@@ -17,7 +17,6 @@ import com.dixa.twilio.model.messaging.{Media, MediaResourceReference, Message}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import java.time.Instant
-import scala.annotation.nowarn
 import scala.concurrent.ExecutionContext
 import scala.util.Try
 
@@ -74,7 +73,6 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
     }
   }
 
-  @nowarn(value = "cat=unused") // Used by macro code
   private implicit val mediaResourcesReferenceJsonRepReader
       : Reader[MediaResourcesReferenceJsonRep] =
     macroR[MediaResourcesReferenceJsonRep]

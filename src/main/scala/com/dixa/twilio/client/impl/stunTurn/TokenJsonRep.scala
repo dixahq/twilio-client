@@ -8,7 +8,6 @@ import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.stunTurn.Token
 
 import java.time.Instant
-import scala.annotation.nowarn
 
 /** Json representation of a Token */
 private[stunTurn] case class TokenJsonRep(
@@ -46,7 +45,6 @@ private[stunTurn] object TokenJsonRep {
     )
   }
 
-  @nowarn(value = "cat=unused") // Used by upickle macro generated code.
   private implicit val iceServerReader: Reader[IceServerJsonRep] = macroR[IceServerJsonRep]
 
   implicit val upickleReader: Reader[TokenJsonRep] =

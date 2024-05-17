@@ -14,7 +14,7 @@ import com.dixa.twilio.model.callback.CallbackUrl.{
   VoiceUrl
 }
 
-import java.net.URL
+import java.net.{URI, URL}
 
 sealed abstract class CallbackUrl private (override val toString: String)
     extends TwilioStringValue {
@@ -50,7 +50,7 @@ object CallbackUrl {
 
   final case class MessageStatusCallback(url: URL) extends CallbackUrl(url.toString)
   object MessageStatusCallback {
-    def apply(s: String): MessageStatusCallback = MessageStatusCallback(new URL(s))
+    def apply(s: String): MessageStatusCallback = MessageStatusCallback(new URI(s).toURL)
   }
 
   final case class VoiceFallbackUrl(asString: String) extends CallbackUrl(asString)

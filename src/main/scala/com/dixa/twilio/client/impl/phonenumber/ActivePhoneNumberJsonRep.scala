@@ -8,8 +8,6 @@ import com.dixa.twilio.model.phonenumber._
 import com.neovisionaries.i18n.CountryCode
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
-import scala.annotation.nowarn
-
 private[phonenumber] final case class ActivePhoneNumberJsonRep(
     sid: String,
     account_sid: String,
@@ -102,7 +100,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       inbound_reachability: String,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberVoiceCapabilitiesJsonRepReader
       : Reader[PhoneNumberVoiceCapabilitiesJsonRep] =
     macroR[PhoneNumberVoiceCapabilitiesJsonRep]
@@ -117,7 +114,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       inbound_mps: Int,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberSmsCapabilitiesJsonRepReader
       : Reader[PhoneNumberSmsCapabilitiesJsonRep] =
     macroR[PhoneNumberSmsCapabilitiesJsonRep]
@@ -129,7 +125,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       inbound_mps: Int,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberMmsCapabilitiesJsonRepReader
       : Reader[PhoneNumberMmsCapabilitiesJsonRep] =
     macroR[PhoneNumberMmsCapabilitiesJsonRep]
@@ -140,7 +135,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       mms: PhoneNumberMmsCapabilitiesJsonRep,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberCapabilitiesJsonRepReader
       : Reader[PhoneNumberCapabilitiesJsonRep] =
     macroR[PhoneNumberCapabilitiesJsonRep]
@@ -156,7 +150,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       postal_code: Option[String] = None,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val outerJsonRepReader: Reader[PhoneNumberGeographyJsonRep] =
     macroR[PhoneNumberGeographyJsonRep]
 
@@ -164,7 +157,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       address_requirements: String,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberRegulatoryJsonRepReader: Reader[PhoneNumberRegulatoryJsonRep] =
     macroR[PhoneNumberRegulatoryJsonRep]
 
@@ -180,7 +172,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       caller_id_lookup: Option[Boolean] = None,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberVoiceConfigurationJsonRepReader
       : Reader[PhoneNumberVoiceConfigurationJsonRep] =
     macroR[PhoneNumberVoiceConfigurationJsonRep]
@@ -193,7 +184,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       application_sid: Option[String] = None,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberSmsConfigurationJsonRepReader
       : Reader[PhoneNumberSmsConfigurationJsonRep] =
     macroR[PhoneNumberSmsConfigurationJsonRep]
@@ -206,7 +196,6 @@ private[phonenumber] object ActivePhoneNumberJsonRep {
       sms: PhoneNumberSmsConfigurationJsonRep,
   )
 
-  @nowarn(value = "cat=unused") // used by macro generated code
   private implicit val phoneNumberConfigurationJsonRepReader
       : Reader[PhoneNumberConfigurationJsonRep] =
     macroR[PhoneNumberConfigurationJsonRep]
