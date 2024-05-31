@@ -4,7 +4,7 @@ import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.MessageSendException
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.messaging.MessageRecipient
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 
@@ -25,7 +25,7 @@ object MessageSendRequestExecutor {
   final case class MessageSendRequest(
       accountSid: TwilioAccount.Sid,
       from: MessageSender,
-      to: PhoneNumberE164,
+      to: MessageRecipient,
       body: MessageBody,
       statusCallback: MessageStatusCallback
   )

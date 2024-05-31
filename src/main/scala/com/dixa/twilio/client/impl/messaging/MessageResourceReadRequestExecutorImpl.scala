@@ -1,9 +1,5 @@
 package com.dixa.twilio.client.impl.messaging
 
-import org.apache.pekko.http.scaladsl.HttpExt
-import org.apache.pekko.http.scaladsl.model.Uri.Query
-import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
-import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, Formatter, HttpEntityString}
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor
 import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
@@ -11,7 +7,10 @@ import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Iso4127CountryCode
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging._
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.Uri.Query
+import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
+import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
@@ -40,11 +39,11 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
         date =>
           "DateSent<" -> date.toString
       }
-      val toParameter: Option[(String, String)] = req.filter.to.map { number =>
-        "To" -> number.toString
+      val toParameter: Option[(String, String)] = req.filter.to.map { recipient =>
+        "To" -> recipient.toMessageRecipient
       }
-      val fromParameter: Option[(String, String)] = req.filter.from.map { number =>
-        "From" -> number.toString
+      val fromParameter: Option[(String, String)] = req.filter.from.map { sender =>
+        "From" -> sender.asString
       }
       Query(
         Map("PageSize" -> req.filter.pageSize.toString) ++
@@ -114,7 +113,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
         dateUpdated = jsonRep.date_updated.flatMap(parseDate),
         dateSent = jsonRep.date_sent.flatMap(parseDate),
         accountSid = accountSid,
-        to = PhoneNumberE164.unsafe(jsonRep.to),
+        to = MessageRecipient.fromStringUnsafe(jsonRep.to),
         from = MessageSender.fromStringUnsafe(jsonRep.from),
         messagingServiceSid = jsonRep.messaging_service_sid.flatMap(parseMessagingServiceSid),
         body = MessageBody(jsonRep.body),
