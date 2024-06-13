@@ -14,4 +14,6 @@ private[client] object ApiVersion extends EnumWithTwilioString[ApiVersion] {
   override val values: immutable.IndexedSeq[ApiVersion] = findValues
 
   case object `2010-04-01` extends ApiVersion("2010-04-01")
+
+  case object V1 extends ApiVersion("v1")
 }

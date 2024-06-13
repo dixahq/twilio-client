@@ -71,7 +71,7 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "3.2.0",
+        "com.lihaoyi" %% "upickle" % "3.3.1",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
