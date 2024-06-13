@@ -10,8 +10,8 @@ import java.time.Instant
 
 trait ChannelSenderFetchRequestExecutor
     extends SingleRequestExecutor[
-      ChannelSenderFetchRequestExecutor.ChannelSenderRequest,
-      ChannelSenderFetchRequestExecutor.ChannelSenderReadException,
+      ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest,
+      ChannelSenderFetchRequestExecutor.ChannelSenderFetchException,
       ChannelSender
     ] {
 
@@ -22,15 +22,15 @@ trait ChannelSenderFetchRequestExecutor
 
 object ChannelSenderFetchRequestExecutor {
 
-  final case class ChannelSenderRequest(
-      accountSid: ChannelSender.Sid,
+  final case class ChannelSenderFetchRequest(
+      channelSenderSid: ChannelSender.Sid,
   )
 
-  sealed trait ChannelSenderReadException extends RuntimeException
-  object ChannelSenderReadException {
+  sealed trait ChannelSenderFetchException extends RuntimeException
+  object ChannelSenderFetchException {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
-        with ChannelSenderReadException
+        with ChannelSenderFetchException
         with ApiExceptionWrapper
 
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
@@ -40,7 +40,7 @@ object ChannelSenderFetchRequestExecutor {
           ),
           cause.orNull
         )
-        with ChannelSenderReadException {
+        with ChannelSenderFetchException {
       def this(msg: String) = this(Some(msg), None)
       def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
     }
