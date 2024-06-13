@@ -4,6 +4,7 @@ import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
+  ChannelSenderFetchRequestExecutor,
   MessageMediaResourceReadRequestExecutor,
   MessageResourceReadRequestExecutor,
   MessageSendRequestExecutor,
@@ -44,4 +45,7 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val messageResourceRead: MessageResourceReadRequestExecutor =
     new MessageResourceReadRequestExecutorImpl()
+
+  override val channelSenderFetch: ChannelSenderFetchRequestExecutor =
+    new ChannelSenderFetchRequestExecutorImpl()
 }

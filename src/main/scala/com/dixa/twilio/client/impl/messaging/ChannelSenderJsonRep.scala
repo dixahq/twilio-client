@@ -1,34 +1,37 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.impl.TwilioClientPickler.{Reader, macroR}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
-// Response example: https://www.twilio.com/docs/sms/send-messages
-// Message properties/Response entity in more detail: https://www.twilio.com/docs/sms/api/message-resource#message-properties
-private[messaging] final case class MessageJsonRep(
-    sid: String,
-    date_created: Option[String] = None,
-    date_updated: Option[String] = None,
-    date_sent: Option[String] = None,
-    account_sid: String,
-    to: String,
-    from: String,
-    messaging_service_sid: Option[String] = None,
-    body: String,
+private[messaging] final case class ChannelSenderJsonRep(
+    sender_id: String,
     status: String,
-    num_segments: String,
-    num_media: String,
-    direction: String,
-    api_version: String,
-    price: Option[String] = None,
-    price_unit: Option[String] = None,
-    error_code: Option[Int] = None,
-    error_message: Option[String] = None,
-    uri: String,
-//    subresource_uris: SubresourceUris
+    profile: ChannelSenderJsonRep.ProfileJsonRep,
+    url: String,
+    webhook: ChannelSenderJsonRep.WebhooksJsonRep,
+    sid: String,
+    configuration: ChannelSenderJsonRep.ConfigurationJsonRep
 )
-//private[messaging] final case class SubresourceUris(media: String)
 
-private[messaging] object MessageJsonRep {
+private[messaging] object ChannelSenderJsonRep {
 
-  implicit val messageJsonRepReader: Reader[MessageJsonRep] = macroR[MessageJsonRep]
+  final case class WebhooksJsonRep(
+      fallback_method: Option[String],
+      fallback_url: Option[String],
+      status_callback_url: Option[String],
+      status_callback_method: Option[String],
+      callback_method: Option[String],
+      callback_url: Option[String]
+  )
+  final case class ProfileJsonRep(name: String)
+
+  final case class ConfigurationJsonRep(waba_id: Option[String])
+
+  implicit val webhooksJsonRepReader: Reader[WebhooksJsonRep] =
+    macroR[WebhooksJsonRep]
+  implicit val ProfileJsonRepReader: Reader[ProfileJsonRep] =
+    macroR[ProfileJsonRep]
+  implicit val ConfigurationJsonRepReader: Reader[ConfigurationJsonRep] =
+    macroR[ConfigurationJsonRep]
+  implicit val channelSenderJsonRepReader: Reader[ChannelSenderJsonRep] =
+    macroR[ChannelSenderJsonRep]
 }

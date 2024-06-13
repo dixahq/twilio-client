@@ -2,7 +2,6 @@ package com.dixa.twilio.model.messaging
 
 import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import com.dixa.twilio.model.whatsapp.WhatsappNumber
 
 abstract class MessageRecipient private[model] extends TwilioStringValue {
 

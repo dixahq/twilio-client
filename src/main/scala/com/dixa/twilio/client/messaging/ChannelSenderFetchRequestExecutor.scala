@@ -1,12 +1,9 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor, SingleRequestExecutor}
-import com.dixa.twilio.client.messaging.MessageResourceReadRequestExecutor.MessageResourceReadException
-import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor.ChannelSenderFetchException
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.messaging._
-
-import java.time.Instant
 
 trait ChannelSenderFetchRequestExecutor
     extends SingleRequestExecutor[
@@ -15,9 +12,9 @@ trait ChannelSenderFetchRequestExecutor
       ChannelSender
     ] {
 
-  override protected type ApiExceptionWrapper = MessageResourceReadException.Api
+  override protected type ApiExceptionWrapper = ChannelSenderFetchException.Api
 
-  override protected type UnspecifiedException = MessageResourceReadException.Unspecified
+  override protected type UnspecifiedException = ChannelSenderFetchException.Unspecified
 }
 
 object ChannelSenderFetchRequestExecutor {
@@ -28,6 +25,10 @@ object ChannelSenderFetchRequestExecutor {
 
   sealed trait ChannelSenderFetchException extends RuntimeException
   object ChannelSenderFetchException {
+
+    final case class ParseFailure(msg: String)
+        extends RuntimeException(msg)
+        with ChannelSenderFetchException
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with ChannelSenderFetchException
