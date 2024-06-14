@@ -3,16 +3,13 @@ package com.dixa.twilio.client.impl.messaging
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, DefaultApiErrorEntityJsonRep, HttpEntityString}
 import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor
-import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{
-  PhoneNumberCreateException,
-  PhoneNumberCreateRequest
-}
+import com.dixa.twilio.client.messaging.PhoneNumberCreateRequestExecutor.{PhoneNumberCreateException, PhoneNumberCreateRequest}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.{TwilioMessagingPhoneNumber, TwilioMessagingService}
 import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
-import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{Reader, macroR}
 
 import scala.concurrent.ExecutionContext
 
@@ -33,7 +30,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
       req: PhoneNumberCreateRequest
   ): Either[PhoneNumberCreateException, HttpRequest] = {
     val postParam = s"PhoneNumberSid=${req.phoneNumberSid}"
-    createHttpRequestFor(s"/v1/Services/${req.serviceSid}/PhoneNumbers", connSettings)
+    createHttpRequestFor(s"/${ApiVersion.V1}/Services/${req.serviceSid}/PhoneNumbers", connSettings)
       .map(_.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParam)))
   }
 
