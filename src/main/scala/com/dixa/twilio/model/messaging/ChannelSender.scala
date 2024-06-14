@@ -5,6 +5,8 @@ import com.dixa.twilio.model.SidAbstract.Prefix
 
 import scala.collection.immutable
 
+/** Channel Sender represents a sender that can send messages through a specific channel
+  */
 sealed trait ChannelSender {
   val status: ChannelSender.Status
   val profile: ChannelSender.Profile
@@ -12,17 +14,19 @@ sealed trait ChannelSender {
   val sid: ChannelSender.Sid
   val webhooks: ChannelSender.Webhooks
   val configuration: ChannelSender.Configuration
+  val properties: ChannelSender.Properties
 }
 
 object ChannelSender {
 
   final case class WhatsappSender(
       status: ChannelSender.Status,
-      profile: ChannelSender.Profile,
+      profile: ChannelSender.Profile.WhatsappProfile,
       senderId: WhatsappNumber,
       sid: ChannelSender.Sid,
       webhooks: ChannelSender.Webhooks,
-      configuration: ChannelSender.Configuration.WabaId
+      configuration: ChannelSender.Configuration.WabaId,
+      properties: ChannelSender.Properties.WhatsappProperties
   ) extends ChannelSender
 
   final case class Sid private[ChannelSender] (override val toString: String) extends SidAbstract
@@ -35,16 +39,46 @@ object ChannelSender {
   object Status extends EnumWithTwilioString[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
 
-    case object Online  extends Status("ONLINE")
-    case object Unknown extends Status("UNKNOWN")
+    case object Online              extends Status("ONLINE")
+    case object Offline             extends Status("OFFLINE")
+    case object Creating            extends Status("CREATING")
+    case object Verifying           extends Status("VERIFYING")
+    case object PendingVerification extends Status("PENDING_VERIFICATION")
+    case object Unknown             extends Status("UNKNOWN")
   }
 
-  final case class Profile(name: String)
+  sealed trait Profile
+
+  object Profile {
+
+    /** The profile of the sender in the case of Waba only containing the waba name.
+      */
+    final case class WhatsappProfile(about: String, phoneNumberDisplayName: String) extends Profile
+  }
 
   sealed trait Configuration
 
   object Configuration {
     final case class WabaId(wabaId: String) extends Configuration
+  }
+
+  sealed abstract class QualityRating(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
+
+  object QualityRating extends EnumWithTwilioString[QualityRating] {
+    override val values: immutable.IndexedSeq[QualityRating] = findValues
+
+    case object High    extends QualityRating("HIGH")
+    case object Unknown extends QualityRating("UNKNOWN")
+  }
+
+  sealed trait Properties
+
+  object Properties {
+    final case class WhatsappProperties(
+        messagingLimit: Option[String],
+        qualityRating: QualityRating
+    ) extends Properties
   }
 
   case class Webhook(method: HttpMethod, url: String)

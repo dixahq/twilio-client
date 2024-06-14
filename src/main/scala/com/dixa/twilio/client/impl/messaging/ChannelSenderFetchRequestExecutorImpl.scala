@@ -1,6 +1,9 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.impl.messaging.ChannelSenderJsonRep.WebhooksJsonRep
+import com.dixa.twilio.client.impl.messaging.ChannelSenderJsonRep.{
+  PropertiesJsonRep,
+  WebhooksJsonRep
+}
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor
 import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor.ChannelSenderFetchException
@@ -82,6 +85,29 @@ private[impl] class ChannelSenderFetchRequestExecutorImpl(
   }
 
   private def toModel(
+      qualityRatingJsonRep: PropertiesJsonRep
+  ): ChannelSender.Properties.WhatsappProperties = {
+    val messagingLimit = qualityRatingJsonRep.messaging_limit.flatMap {
+      case limit if limit.isEmpty => None
+      case limit                  => Some(limit)
+    }
+    qualityRatingJsonRep.quality_rating.flatMap(
+      ChannelSender.QualityRating.fromTwilioString
+    ) match {
+      case Some(qualityRating) =>
+        ChannelSender.Properties.WhatsappProperties(
+          messagingLimit = messagingLimit,
+          qualityRating = qualityRating
+        )
+      case _ =>
+        ChannelSender.Properties.WhatsappProperties(
+          messagingLimit = messagingLimit,
+          qualityRating = ChannelSender.QualityRating.Unknown
+        )
+    }
+  }
+
+  private def toModel(
       jsonRep: ChannelSenderJsonRep
   ): Either[ChannelSenderFetchException, ChannelSender] = {
     MessageRecipient.fromString(jsonRep.sender_id) match {
@@ -92,11 +118,16 @@ private[impl] class ChannelSenderFetchRequestExecutorImpl(
         Right(
           ChannelSender.WhatsappSender(
             status = status,
-            profile = ChannelSender.Profile(jsonRep.profile.name),
+            profile = ChannelSender.Profile
+              .WhatsappProfile(
+                about = jsonRep.profile.about,
+                phoneNumberDisplayName = jsonRep.profile.name
+              ),
             senderId = whatsapp,
             sid = ChannelSender.Sid.unsafe(jsonRep.sid),
             webhooks = toModel(jsonRep.webhook),
-            configuration = ChannelSender.Configuration.WabaId(jsonRep.configuration.waba_id.get)
+            configuration = ChannelSender.Configuration.WabaId(jsonRep.configuration.waba_id.get),
+            properties = toModel(jsonRep.properties)
           )
         )
       case Some(phoneNumber: PhoneNumberE164) =>

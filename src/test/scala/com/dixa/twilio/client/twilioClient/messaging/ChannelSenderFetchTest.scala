@@ -102,11 +102,16 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     val channelSenderSid = ChannelSender.Sid.unsafe("XEcfd04c72e3397a53e24bd6c7408aff83")
     val whatsappChannelSender: ChannelSender = ChannelSender.WhatsappSender(
       status = ChannelSender.Status.Online,
-      profile = ChannelSender.Profile("Dixa Twilio WABA"),
+      profile = ChannelSender.Profile
+        .WhatsappProfile(about = "", phoneNumberDisplayName = "Dixa Twilio WABA"),
       senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
       sid = channelSenderSid,
       webhooks = Webhooks(None, None, None),
-      configuration = ChannelSender.Configuration.WabaId("316806161514452")
+      configuration = ChannelSender.Configuration.WabaId("316806161514452"),
+      properties = ChannelSender.Properties.WhatsappProperties(
+        messagingLimit = None,
+        qualityRating = ChannelSender.QualityRating.Unknown
+      )
     )
 
     val fetchRequest = ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest(
@@ -130,6 +135,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     """{
       |    "status": "ONLINE",
       |    "profile": {
+      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
@@ -145,6 +151,10 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
       |        "waba_id": "316806161514452"
+      |    },
+      |    "properties":{
+      |        "messaging_limit": "",
+      |        "quality_rating": ""
       |    }
       |}
       |""".stripMargin
@@ -153,6 +163,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     """{
       |    "status": "ONLINE",
       |    "profile": {
+      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
@@ -168,6 +179,10 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
       |        "waba_id": "316806161514452"
+      |    },
+      |    "properties":{
+      |        "messaging_limit": "",
+      |        "quality_rating": ""
       |    }
       |}
       |""".stripMargin
@@ -176,6 +191,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     """{
       |    "status": "ONLINE",
       |    "profile": {
+      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
@@ -191,6 +207,10 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
       |        "waba_id": "316806161514452"
+      |    },
+      |    "properties":{
+      |        "messaging_limit": "",
+      |        "quality_rating": ""
       |    }
       |}
       |""".stripMargin

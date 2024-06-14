@@ -9,7 +9,8 @@ private[messaging] final case class ChannelSenderJsonRep(
     url: String,
     webhook: ChannelSenderJsonRep.WebhooksJsonRep,
     sid: String,
-    configuration: ChannelSenderJsonRep.ConfigurationJsonRep
+    configuration: ChannelSenderJsonRep.ConfigurationJsonRep,
+    properties: ChannelSenderJsonRep.PropertiesJsonRep
 )
 
 private[messaging] object ChannelSenderJsonRep {
@@ -22,16 +23,24 @@ private[messaging] object ChannelSenderJsonRep {
       callback_method: Option[String],
       callback_url: Option[String]
   )
-  final case class ProfileJsonRep(name: String)
+  final case class ProfileJsonRep(about: String, name: String)
 
   final case class ConfigurationJsonRep(waba_id: Option[String])
 
+  final case class PropertiesJsonRep(
+      quality_rating: Option[String],
+      messaging_limit: Option[String],
+  )
+
   implicit val webhooksJsonRepReader: Reader[WebhooksJsonRep] =
     macroR[WebhooksJsonRep]
-  implicit val ProfileJsonRepReader: Reader[ProfileJsonRep] =
+  implicit val profileJsonRepReader: Reader[ProfileJsonRep] =
     macroR[ProfileJsonRep]
-  implicit val ConfigurationJsonRepReader: Reader[ConfigurationJsonRep] =
+  implicit val configurationJsonRepReader: Reader[ConfigurationJsonRep] =
     macroR[ConfigurationJsonRep]
+  implicit val propertiesJsonRepReader: Reader[PropertiesJsonRep] =
+    macroR[PropertiesJsonRep]
   implicit val channelSenderJsonRepReader: Reader[ChannelSenderJsonRep] =
     macroR[ChannelSenderJsonRep]
+
 }
