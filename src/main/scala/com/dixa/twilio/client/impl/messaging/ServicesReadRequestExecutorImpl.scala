@@ -6,9 +6,9 @@ import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor.ServicesReadException
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings, messaging}
+import com.dixa.twilio.client.{messaging, ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.TwilioMessagingService
-import com.dixa.twilio.client.impl.TwilioClientPickler.{Reader, macroR}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 
 import scala.concurrent.ExecutionContext
 
