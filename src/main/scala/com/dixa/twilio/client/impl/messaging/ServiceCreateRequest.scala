@@ -5,7 +5,7 @@ import org.apache.pekko.http.scaladsl.model.{ContentTypes, HttpEntity, HttpMetho
 import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.impl.messaging.ServiceCreateRequest.createPostParamString
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, TwilioUri}
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioUri}
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 
@@ -27,7 +27,7 @@ private[impl] final class ServiceCreateRequest()(
       .createPathUnsafe(
         ApiSubDomain.Messaging,
         HttpMethods.POST,
-        "/v1/Services"
+        s"/${ApiVersion.V1}/Services"
       )
       .createHttpRequestUnsafe(connSettings)
       .withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, postParams))

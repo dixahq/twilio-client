@@ -3,7 +3,7 @@ package com.dixa.twilio.client.impl.messaging
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor
 import com.dixa.twilio.client.messaging.ServicesReadRequestExecutor.ServicesReadException
 import com.dixa.twilio.client.{messaging, ApiException, TwilioConnectionSettings}
@@ -27,7 +27,7 @@ private[impl] class ServicesReadRequestExecutorImpl(
       connSettings: TwilioConnectionSettings,
       req: messaging.ServicesReadRequestExecutor.ServicesReadRequest
   ): Either[ServicesReadException, HttpRequest] =
-    createHttpRequestFor("/v1/Services?PageSize=1000", connSettings)
+    createHttpRequestFor(s"/${ApiVersion.V1}/Services?PageSize=1000", connSettings)
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
     ServicesReadException.Api.apply(apiException)

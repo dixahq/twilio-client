@@ -4,7 +4,12 @@ import org.apache.pekko.Done
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString
+}
 import com.dixa.twilio.client.messaging.PhoneNumberDeleteRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 
@@ -27,7 +32,7 @@ private[impl] final class PhoneNumberDeleteRequestExecutorImpl()(
       req: PhoneNumberDeleteRequest
   ): Either[PhoneNumberDeleteException, HttpRequest] =
     createHttpRequestFor(
-      s"/v1/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}",
+      s"/${ApiVersion.V1}/Services/${req.serviceSid}/PhoneNumbers/${req.phoneNumberSid}",
       connSettings
     )
 
