@@ -42,5 +42,4 @@ private[messaging] object ChannelSenderJsonRep {
     macroR[PropertiesJsonRep]
   implicit val channelSenderJsonRepReader: Reader[ChannelSenderJsonRep] =
     macroR[ChannelSenderJsonRep]
-
 }

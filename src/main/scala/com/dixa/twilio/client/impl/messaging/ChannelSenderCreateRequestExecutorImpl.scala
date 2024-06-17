@@ -1,0 +1,137 @@
+package com.dixa.twilio.client.impl.messaging
+
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
+import com.dixa.twilio.client.messaging.ChannelSenderCreateRequestExecutor
+import com.dixa.twilio.client.messaging.ChannelSenderCreateRequestExecutor.ChannelSenderCreateException
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
+import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import upickle.default._
+import com.dixa.twilio.client.impl.messaging.WhatsappSenderCreateJsonRep._
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model.{
+  ContentTypes,
+  HttpEntity,
+  HttpMethods,
+  HttpRequest,
+  HttpResponse
+}
+import org.apache.pekko.stream.Materializer
+
+import scala.concurrent.ExecutionContext
+
+private[impl] class ChannelSenderCreateRequestExecutorImpl(
+    implicit override protected val http: HttpExt,
+    override protected val materializer: Materializer,
+    override protected val executionContext: ExecutionContext
+) extends ChannelSenderCreateRequestExecutor {
+
+  override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
+
+  override protected def method: org.apache.pekko.http.scaladsl.model.HttpMethod = HttpMethods.POST
+
+  override def createHttpReq(
+      connSettings: TwilioConnectionSettings,
+      req: ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest
+  ): Either[ChannelSenderCreateException, HttpRequest] = {
+    val jsonBodyEither = (req.senderId, req.profile, req.configuration) match {
+      case (
+            number: WhatsappNumber,
+            profile: ChannelSender.Profile.WhatsappProfile,
+            configuration: ChannelSender.Configuration.WhatsappVerificationMethod
+          ) =>
+        Right(
+          WhatsappSenderCreateJsonRep(
+            sender_id = number.twilioString,
+            profile = toJson(profile),
+            webhook = toJson(req.webhooks),
+            configuration = toJson(configuration)
+          )
+        )
+      case (_: PhoneNumberE164, _, _) =>
+        Left(ChannelSenderCreateException.ChannelNotSupported("PhoneNumberE164"))
+      case _ => Left(ChannelSenderCreateException.ChannelNotSupported("Unknown"))
+    }
+    jsonBodyEither.flatMap(jsonBody =>
+      createHttpRequestFor(
+        s"/${ApiVersion.V2}/Channels/Senders",
+        connSettings
+      ).map(
+        _.withEntity(
+          HttpEntity(
+            ContentTypes.`application/json`,
+            write[WhatsappSenderCreateJsonRep](jsonBody)
+          )
+        )
+      )
+    )
+
+  }
+
+  override protected def mapApiException(
+      apiException: ApiException
+  ): ChannelSenderCreateException.Api =
+    ChannelSenderCreateException.Api(apiException)
+
+  override protected def createUnspecifiedException(
+      msg: Option[String],
+      cause: Option[Throwable]
+  ): ChannelSenderCreateException.Unspecified = ChannelSenderCreateException.Unspecified(msg, cause)
+
+  override protected def parseHttpResponse(
+      request: ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntityString
+  ): Either[ChannelSenderCreateException, ChannelSender.Sid] = {
+    ChannelSender
+      .Sid(entity.toString)
+      .map(Right(_))
+      .getOrElse(
+        Left(
+          ChannelSenderCreateException.ParseFailure(
+            s"Failed to parse ChannelSender.Sid: ${entity.toString}"
+          )
+        )
+      )
+  }
+
+  private def toJson(
+      profile: ChannelSender.Profile.WhatsappProfile
+  ): WhatsappSenderCreateJsonRep.ProfileJsonRep = {
+    WhatsappSenderCreateJsonRep.ProfileJsonRep(
+      about = profile.about,
+      name = profile.phoneNumberDisplayName
+    )
+  }
+
+  private def toJson(
+      webhooks: ChannelSender.Webhooks
+  ): WhatsappSenderCreateJsonRep.WebhooksJsonRep = {
+    val (fallbackMethod, fallbackUrl): (Option[String], Option[String]) = toJson(webhooks.fallback)
+    val (statusCallbackMethod, statusCallbackUrl): (Option[String], Option[String]) = toJson(
+      webhooks.statusCallback
+    )
+    val (callbackMethod, callbackUrl): (Option[String], Option[String]) = toJson(webhooks.callback)
+    WhatsappSenderCreateJsonRep.WebhooksJsonRep(
+      fallback_method = fallbackMethod.getOrElse(""),
+      fallback_url = fallbackUrl.getOrElse(""),
+      status_callback_url = statusCallbackUrl.getOrElse(""),
+      status_callback_method = statusCallbackMethod.getOrElse(""),
+      callback_method = callbackMethod.getOrElse(""),
+      callback_url = callbackUrl.getOrElse("")
+    )
+  }
+
+  private def toJson(
+      webhook: Option[ChannelSender.Webhook]
+  ): (Option[String], Option[String]) =
+    webhook.map(hook => (Some(hook.method.twilioString), Some(hook.url))).getOrElse((None, None))
+
+  private def toJson(
+      configuration: ChannelSender.Configuration.WhatsappVerificationMethod
+  ) =
+    WhatsappSenderCreateJsonRep.ConfigurationJsonRep(
+      verification_method = configuration.verificationMethod.twilioString
+    )
+}
