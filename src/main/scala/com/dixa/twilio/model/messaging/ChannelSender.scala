@@ -1,6 +1,5 @@
 package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.model
 import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, SidAbstract}
 import com.dixa.twilio.model.SidAbstract.Prefix
 
