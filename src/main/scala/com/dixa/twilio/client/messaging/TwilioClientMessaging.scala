@@ -54,6 +54,10 @@ trait TwilioClientMessaging {
   /** Creates a channel sender for a specific channel
     */
   def channelSenderCreate: ChannelSenderCreateRequestExecutor
+
+  /** Send channel sender verification code
+    */
+  def channelSenderVerification: ChannelSenderVerificationRequestExecutor
 }
 
 object TwilioClientMessaging {
