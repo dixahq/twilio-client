@@ -39,12 +39,14 @@ object ChannelSender {
   object Status extends EnumWithTwilioString[Status] {
     override val values: immutable.IndexedSeq[Status] = findValues
 
-    case object Online              extends Status("ONLINE")
-    case object Offline             extends Status("OFFLINE")
-    case object Creating            extends Status("CREATING")
-    case object Verifying           extends Status("VERIFYING")
-    case object PendingVerification extends Status("PENDING_VERIFICATION")
-    case object Unknown             extends Status("UNKNOWN")
+    case object Online                    extends Status("ONLINE")
+    case object OnlineUpdating            extends Status("ONLINE:UPDATING")
+    case object OnlinePendingVerification extends Status("ONLINE:PENDING_VERIFICATION")
+    case object Offline                   extends Status("OFFLINE")
+    case object Creating                  extends Status("CREATING")
+    case object Verifying                 extends Status("VERIFYING")
+    case object PendingVerification       extends Status("PENDING_VERIFICATION")
+    case object Unknown                   extends Status("UNKNOWN")
   }
 
   sealed trait Profile
