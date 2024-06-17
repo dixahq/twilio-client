@@ -1,6 +1,5 @@
-package com.dixa.twilio.model.whatsapp
+package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.model.messaging.MessageRecipient
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import scala.util.Try

@@ -3,7 +3,6 @@ package com.dixa.twilio.model.messaging
 import com.dixa.twilio.model.messaging.MessageSender.Alphanumeric.AlphanumericException.AlphanumericInvalidException
 import com.dixa.twilio.model.messaging.MessageSender.MessageSenderException.MessageSenderInvalidException
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import com.dixa.twilio.model.whatsapp.WhatsappNumber
 
 import scala.annotation.nowarn
 
