@@ -43,7 +43,7 @@ object ChannelSenderCreateRequestExecutor {
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
-            "Unspecified error happened trying to fetch channel sender resource"
+            "Unspecified error happened when trying to create channel sender resource"
           ),
           cause.orNull
         )
