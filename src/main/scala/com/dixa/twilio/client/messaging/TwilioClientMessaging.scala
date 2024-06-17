@@ -50,6 +50,10 @@ trait TwilioClientMessaging {
     * channel sender sid
     */
   def channelSenderFetch: ChannelSenderFetchRequestExecutor
+
+  /** Creates a channel sender for a specific channel
+    */
+  def channelSenderCreate: ChannelSenderCreateRequestExecutor
 }
 
 object TwilioClientMessaging {

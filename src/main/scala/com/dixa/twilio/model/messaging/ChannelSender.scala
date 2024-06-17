@@ -58,10 +58,22 @@ object ChannelSender {
     final case class WhatsappProfile(about: String, phoneNumberDisplayName: String) extends Profile
   }
 
+  sealed abstract class VerificationMethod(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
+
+  object VerificationMethod extends EnumWithTwilioString[VerificationMethod] {
+    override val values: immutable.IndexedSeq[VerificationMethod] = findValues
+
+    case object SMS   extends VerificationMethod("sms")
+    case object Voice extends VerificationMethod("voice")
+  }
+
   sealed trait Configuration
 
   object Configuration {
     final case class WabaId(wabaId: String) extends Configuration
+    final case class WhatsappVerificationMethod(verificationMethod: VerificationMethod)
+        extends Configuration
   }
 
   sealed abstract class QualityRating(override val twilioString: String)
