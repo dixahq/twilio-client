@@ -8,7 +8,12 @@ import com.dixa.twilio.client.iam.AuthTokenSecondaryCreateRequestExecutor.{
   AuthTokenSecondaryCreateException,
   AuthTokenSecondaryCreateRequest
 }
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.AuthToken
 
@@ -28,7 +33,7 @@ private[iam] final class AuthTokenSecondaryCreateRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: AuthTokenSecondaryCreateRequest
   ): Either[AuthTokenSecondaryCreateException, HttpRequest] =
-    createHttpRequestFor(s"/v1/AuthTokens/Secondary", connSettings)
+    createHttpRequestFor(s"/${ApiVersion.V1}/AuthTokens/Secondary", connSettings)
 
   override protected def mapApiException(
       apiException: ApiException

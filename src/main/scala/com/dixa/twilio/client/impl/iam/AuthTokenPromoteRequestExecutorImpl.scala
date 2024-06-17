@@ -8,7 +8,12 @@ import com.dixa.twilio.client.iam.AuthTokenPromoteRequestExecutor.{
   AuthTokenPromoteException,
   AuthTokenPromoteRequest
 }
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.AuthToken
 
@@ -28,7 +33,7 @@ private[iam] final class AuthTokenPromoteRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: AuthTokenPromoteRequest
   ): Either[AuthTokenPromoteException, HttpRequest] =
-    createHttpRequestFor(s"/v1/AuthTokens/Promote", connSettings)
+    createHttpRequestFor(s"/${ApiVersion.V1}/AuthTokens/Promote", connSettings)
 
   override protected def mapApiException(
       apiException: ApiException

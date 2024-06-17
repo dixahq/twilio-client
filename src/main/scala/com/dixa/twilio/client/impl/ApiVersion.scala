@@ -15,5 +15,7 @@ private[client] object ApiVersion extends EnumWithTwilioString[ApiVersion] {
 
   case object `2010-04-01` extends ApiVersion("2010-04-01")
 
+  case object V1 extends ApiVersion("v1")
+
   case object V2 extends ApiVersion("v2")
 }

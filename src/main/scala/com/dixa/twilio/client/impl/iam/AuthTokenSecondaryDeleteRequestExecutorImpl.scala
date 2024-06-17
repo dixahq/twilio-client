@@ -9,7 +9,12 @@ import com.dixa.twilio.client.iam.AuthTokenSecondaryDeleteRequestExecutor.{
   AuthTokenSecondaryDeleteException,
   AuthTokenSecondaryDeleteRequest
 }
-import com.dixa.twilio.client.impl.{ApiSubDomain, DefaultApiErrorEntityJsonRep, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 
 import scala.concurrent.ExecutionContext
@@ -28,7 +33,7 @@ private[iam] final class AuthTokenSecondaryDeleteRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: AuthTokenSecondaryDeleteRequest
   ): Either[AuthTokenSecondaryDeleteException, HttpRequest] =
-    createHttpRequestFor(s"/v1/AuthTokens/Secondary", connSettings)
+    createHttpRequestFor(s"/${ApiVersion.V1}/AuthTokens/Secondary", connSettings)
 
   override protected def mapApiException(
       apiException: ApiException
