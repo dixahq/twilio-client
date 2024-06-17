@@ -6,6 +6,7 @@ import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
   ChannelSenderCreateRequestExecutor,
   ChannelSenderFetchRequestExecutor,
+  ChannelSenderVerificationRequestExecutor,
   MessageMediaResourceReadRequestExecutor,
   MessageResourceReadRequestExecutor,
   MessageSendRequestExecutor,
@@ -52,4 +53,7 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val channelSenderCreate: ChannelSenderCreateRequestExecutor =
     new ChannelSenderCreateRequestExecutorImpl()
+
+  override val channelSenderVerification: ChannelSenderVerificationRequestExecutor =
+    new ChannelSenderVerificationRequestExecutorImpl()
 }

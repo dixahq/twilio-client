@@ -74,6 +74,9 @@ object ChannelSender {
     final case class WabaId(wabaId: String) extends Configuration
     final case class WhatsappVerificationMethod(verificationMethod: VerificationMethod)
         extends Configuration
+    final case class VerificationCode(verificationCode: String) extends Configuration {
+      override def toString: String = "VerificationCode(*****)"
+    }
   }
 
   sealed abstract class QualityRating(override val twilioString: String)
@@ -95,9 +98,9 @@ object ChannelSender {
     ) extends Properties
   }
 
-  case class Webhook(method: HttpMethod, url: String)
+  final case class Webhook(method: HttpMethod, url: String)
 
-  case class Webhooks(
+  final case class Webhooks(
       fallback: Option[Webhook],
       statusCallback: Option[Webhook],
       callback: Option[Webhook]
