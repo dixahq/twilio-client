@@ -45,6 +45,11 @@ trait TwilioClientMessaging {
     * phone number and sent date
     */
   def messageResourceRead: MessageResourceReadRequestExecutor
+
+  /** Returns channel sender for a given messenger service integration with third party based on a
+    * channel sender sid
+    */
+  def channelSenderFetch: ChannelSenderFetchRequestExecutor
 }
 
 object TwilioClientMessaging {
