@@ -103,11 +103,11 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     val whatsappChannelSender: ChannelSender = ChannelSender.WhatsappSender(
       status = ChannelSender.Status.Online,
       profile = ChannelSender.Profile
-        .WhatsappProfile(about = "", phoneNumberDisplayName = "Dixa Twilio WABA"),
+        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA"),
       senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
       sid = channelSenderSid,
       webhooks = Webhooks(None, None, None),
-      configuration = ChannelSender.Configuration.WabaId("316806161514452"),
+      configuration = ChannelSender.Configuration(wabaId = Some("316806161514452")),
       properties = ChannelSender.Properties.WhatsappProperties(
         messagingLimit = None,
         qualityRating = ChannelSender.QualityRating.Unknown
@@ -135,27 +135,16 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     """{
       |    "status": "ONLINE",
       |    "profile": {
-      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "whatsapp:+4552511283",
-      |    "webhook": {
-      |        "fallback_method": "",
-      |        "fallback_url": "",
-      |        "status_callback_url": "",
-      |        "callback_method": "",
-      |        "callback_url": "",
-      |        "status_callback_method": ""
-      |    },
+      |    "webhook": { },
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
       |        "waba_id": "316806161514452"
       |    },
-      |    "properties":{
-      |        "messaging_limit": "",
-      |        "quality_rating": ""
-      |    }
+      |    "properties":{ }
       |}
       |""".stripMargin
 
@@ -163,27 +152,16 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     """{
       |    "status": "ONLINE",
       |    "profile": {
-      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "@twitterhandel",
-      |    "webhook": {
-      |        "fallback_method": "",
-      |        "fallback_url": "",
-      |        "status_callback_url": "",
-      |        "callback_method": "",
-      |        "callback_url": "",
-      |        "status_callback_method": ""
-      |    },
+      |    "webhook": { },
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
       |        "waba_id": "316806161514452"
       |    },
-      |    "properties":{
-      |        "messaging_limit": "",
-      |        "quality_rating": ""
-      |    }
+      |    "properties":{ }
       |}
       |""".stripMargin
 
@@ -191,27 +169,16 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
     """{
       |    "status": "ONLINE",
       |    "profile": {
-      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "+4552511283",
-      |    "webhook": {
-      |        "fallback_method": "",
-      |        "fallback_url": "",
-      |        "status_callback_url": "",
-      |        "callback_method": "",
-      |        "callback_url": "",
-      |        "status_callback_method": ""
-      |    },
+      |    "webhook": { },
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
       |        "waba_id": "316806161514452"
       |    },
-      |    "properties":{
-      |        "messaging_limit": "",
-      |        "quality_rating": ""
-      |    }
+      |    "properties":{ }
       |}
       |""".stripMargin
 }

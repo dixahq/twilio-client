@@ -9,7 +9,7 @@ import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor
 import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor.ChannelSenderFetchException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.HttpMethod
-import com.dixa.twilio.model.messaging.ChannelSender.Webhook
+import com.dixa.twilio.model.messaging.ChannelSender.{VerificationMethod, Webhook}
 import com.dixa.twilio.model.messaging.{ChannelSender, MessageRecipient, WhatsappNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import org.apache.pekko.http.scaladsl.HttpExt
@@ -126,7 +126,11 @@ private[impl] class ChannelSenderFetchRequestExecutorImpl(
             senderId = whatsapp,
             sid = ChannelSender.Sid.unsafe(jsonRep.sid),
             webhooks = toModel(jsonRep.webhook),
-            configuration = ChannelSender.Configuration.WabaId(jsonRep.configuration.waba_id.get),
+            configuration = ChannelSender.Configuration(
+              wabaId = jsonRep.configuration.waba_id,
+              verificationMethod = jsonRep.configuration.verificationMethod
+                .flatMap(VerificationMethod.fromTwilioString)
+            ),
             properties = toModel(jsonRep.properties)
           )
         )
