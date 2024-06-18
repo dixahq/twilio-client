@@ -23,7 +23,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
 
         wireMockServer.stubFor(
           wireMockBuilderExpectedTwilioRequest
-            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioResponse))
+            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -47,7 +47,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
 
         wireMockServer.stubFor(
           wireMockBuilderExpectedTwilioRequest
-            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioResponse1))
+            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest1))
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -71,7 +71,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
 
         wireMockServer.stubFor(
           wireMockBuilderExpectedTwilioRequest
-            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioResponse2))
+            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest2))
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -139,7 +139,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
       TwilioClient.defaultImpl().messaging.channelSenderCreate
   }
 
-  private def createChannelWhatsappSenderTwilioResponse =
+  private def createChannelWhatsappSenderTwilioRequest =
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
@@ -153,7 +153,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
       |
       |""".stripMargin
 
-  private def createChannelWhatsappSenderTwilioResponse1 =
+  private def createChannelWhatsappSenderTwilioRequest1 =
     """{
       |    "sender_id": "+4552511283",
       |    "profile": {
@@ -167,7 +167,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
       |
       |""".stripMargin
 
-  private def createChannelWhatsappSenderTwilioResponse2 =
+  private def createChannelWhatsappSenderTwilioRequest2 =
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {

@@ -71,8 +71,12 @@ object ChannelSender {
 
   final case class Configuration(
       wabaId: Option[String] = None,
-      verificationMethod: Option[VerificationMethod] = None
-  )
+      verificationMethod: Option[VerificationMethod] = None,
+      verificationCode: Option[String] = None
+  ) {
+    override def toString: String =
+      s"Configuration($wabaId, $verificationMethod, ${verificationCode.map("*****")})"
+  }
 
   sealed abstract class QualityRating(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
@@ -93,9 +97,9 @@ object ChannelSender {
     ) extends Properties
   }
 
-  case class Webhook(method: HttpMethod, url: String)
+  final case class Webhook(method: HttpMethod, url: String)
 
-  case class Webhooks(
+  final case class Webhooks(
       fallback: Option[Webhook],
       statusCallback: Option[Webhook],
       callback: Option[Webhook]
