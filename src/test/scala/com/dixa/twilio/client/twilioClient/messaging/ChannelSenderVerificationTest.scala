@@ -48,7 +48,7 @@ final class ChannelSenderVerificationTest extends TwilioClientTest {
 
     val createRequest = ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationRequest(
       senderSid = channelSenderSid,
-      verificationCode = ChannelSender.Configuration.VerificationCode(
+      verificationCode = ChannelSender.VerificationCodeConfiguration(
         "123456"
       ),
     )

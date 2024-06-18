@@ -14,7 +14,7 @@ sealed trait ChannelSender {
   val sid: ChannelSender.Sid
   val webhooks: ChannelSender.Webhooks
   val configuration: ChannelSender.Configuration
-  val properties: ChannelSender.Properties
+  val properties: ChannelSender.Properties.WhatsappProperties
 }
 
 object ChannelSender {
@@ -72,10 +72,13 @@ object ChannelSender {
   final case class Configuration(
       wabaId: Option[String] = None,
       verificationMethod: Option[VerificationMethod] = None,
-      verificationCode: Option[String] = None
+  )
+
+  final case class VerificationCodeConfiguration(
+      verificationCode: String
   ) {
     override def toString: String =
-      s"Configuration($wabaId, $verificationMethod, ${verificationCode.map("*****")})"
+      s"VerificationCodeConfiguration(*****)"
   }
 
   sealed abstract class QualityRating(override val twilioString: String)
