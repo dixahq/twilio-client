@@ -46,5 +46,4 @@ object ChannelSenderFetchRequestExecutor {
       def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
     }
   }
-
 }

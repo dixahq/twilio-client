@@ -16,20 +16,23 @@ private[messaging] final case class ChannelSenderJsonRep(
 private[messaging] object ChannelSenderJsonRep {
 
   final case class WebhooksJsonRep(
-      fallback_method: Option[String],
-      fallback_url: Option[String],
-      status_callback_url: Option[String],
-      status_callback_method: Option[String],
-      callback_method: Option[String],
-      callback_url: Option[String]
+      fallback_method: Option[String] = None,
+      fallback_url: Option[String] = None,
+      status_callback_url: Option[String] = None,
+      status_callback_method: Option[String] = None,
+      callback_method: Option[String] = None,
+      callback_url: Option[String] = None
   )
-  final case class ProfileJsonRep(about: String, name: String)
+  final case class ProfileJsonRep(about: Option[String] = None, name: String)
 
-  final case class ConfigurationJsonRep(waba_id: Option[String])
+  final case class ConfigurationJsonRep(
+      waba_id: Option[String] = None,
+      verificationMethod: Option[String] = None
+  )
 
   final case class PropertiesJsonRep(
-      quality_rating: Option[String],
-      messaging_limit: Option[String],
+      quality_rating: Option[String] = None,
+      messaging_limit: Option[String] = None,
   )
 
   implicit val webhooksJsonRepReader: Reader[WebhooksJsonRep] =

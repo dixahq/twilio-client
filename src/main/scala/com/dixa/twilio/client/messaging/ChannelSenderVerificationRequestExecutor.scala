@@ -21,7 +21,7 @@ object ChannelSenderVerificationRequestExecutor {
 
   final case class ChannelSenderVerificationRequest(
       senderSid: ChannelSender.Sid,
-      verificationCode: ChannelSender.Configuration.VerificationCode
+      verificationCode: ChannelSender.VerificationCodeConfiguration
   )
 
   sealed trait ChannelSenderVerificationException extends RuntimeException

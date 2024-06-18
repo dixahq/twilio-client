@@ -15,4 +15,11 @@ private[client] object TwilioClientPickler extends upickle.AttributeTagged {
 
     }
   }
+
+  override implicit def OptionWriter[T: Writer]: Writer[Option[T]] = {
+    implicitly[Writer[T]].comap[Option[T]] {
+      case Some(value) => value
+      case None        => null.asInstanceOf[T]
+    }
+  }
 }

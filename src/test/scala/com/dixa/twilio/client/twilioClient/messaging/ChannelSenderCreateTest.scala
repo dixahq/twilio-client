@@ -64,6 +64,41 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
           instance.run(connSettings, createRequest1)
         resultFut.map { result => assert(result === expected) }
       }
+
+      "Call Twilio to create a Whatsapp sender with a waba id" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest2))
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(channelSenderSid.toString)
+            )
+        )
+
+        val req = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
+          senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
+          configuration = ChannelSender.Configuration(
+            wabaId = Some("316806161514452"),
+            verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
+          ),
+          webhooks = Webhooks(None, None, None),
+          profile = ChannelSender.Profile
+            .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+        )
+
+        val expected = Right(channelSenderSid)
+
+        val resultFut: Future[
+          Either[ChannelSenderCreateException, ChannelSender.Sid]
+        ] =
+          instance.run(connSettings, req)
+        resultFut.map { result => assert(result === expected) }
+      }
     }
   }
 
@@ -73,22 +108,22 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
 
     val createRequest = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
       senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
-      configuration = ChannelSender.Configuration.WhatsappVerificationMethod(
-        ChannelSender.VerificationMethod.SMS
+      configuration = ChannelSender.Configuration(
+        verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
       ),
       webhooks = Webhooks(None, None, None),
       profile = ChannelSender.Profile
-        .WhatsappProfile(about = "", phoneNumberDisplayName = "Dixa Twilio WABA")
+        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
     )
 
     val createRequest1 = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
       senderId = PhoneNumberE164.unsafe("+4552511283"),
-      configuration = ChannelSender.Configuration.WhatsappVerificationMethod(
-        ChannelSender.VerificationMethod.SMS
+      configuration = ChannelSender.Configuration(
+        verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
       ),
       webhooks = Webhooks(None, None, None),
       profile = ChannelSender.Profile
-        .WhatsappProfile(about = "", phoneNumberDisplayName = "Dixa Twilio WABA")
+        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
@@ -108,17 +143,9 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
-      |    "webhook": {
-      |        "callback_url": "",
-      |        "callback_method": "",
-      |        "fallback_url": "",
-      |        "fallback_method": "",
-      |        "status_callback_url": "",
-      |        "status_callback_method": ""
-      |    },
+      |    "webhook": { },
       |    "configuration": {
       |        "verification_method": "sms"
       |    }
@@ -130,18 +157,25 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
     """{
       |    "sender_id": "+4552511283",
       |    "profile": {
-      |        "about": "",
       |        "name": "Dixa Twilio WABA"
       |    },
-      |    "webhook": {
-      |        "callback_url": "",
-      |        "callback_method": "",
-      |        "fallback_url": "",
-      |        "fallback_method": "",
-      |        "status_callback_url": "",
-      |        "status_callback_method": ""
-      |    },
+      |    "webhook": { },
       |    "configuration": {
+      |        "verification_method": "sms"
+      |    }
+      |}
+      |
+      |""".stripMargin
+
+  private def createChannelWhatsappSenderTwilioRequest2 =
+    """{
+      |    "sender_id": "whatsapp:+4552511283",
+      |    "profile": {
+      |        "name": "Dixa Twilio WABA"
+      |    },
+      |    "webhook": { },
+      |    "configuration": {
+      |        "waba_id": "316806161514452",
       |        "verification_method": "sms"
       |    }
       |}

@@ -14,7 +14,7 @@ sealed trait ChannelSender {
   val sid: ChannelSender.Sid
   val webhooks: ChannelSender.Webhooks
   val configuration: ChannelSender.Configuration
-  val properties: ChannelSender.Properties
+  val properties: ChannelSender.Properties.WhatsappProperties
 }
 
 object ChannelSender {
@@ -25,7 +25,7 @@ object ChannelSender {
       senderId: WhatsappNumber,
       sid: ChannelSender.Sid,
       webhooks: ChannelSender.Webhooks,
-      configuration: ChannelSender.Configuration.WabaId,
+      configuration: ChannelSender.Configuration,
       properties: ChannelSender.Properties.WhatsappProperties
   ) extends ChannelSender
 
@@ -55,7 +55,8 @@ object ChannelSender {
 
     /** The profile of the sender in the case of Waba only containing the waba name.
       */
-    final case class WhatsappProfile(about: String, phoneNumberDisplayName: String) extends Profile
+    final case class WhatsappProfile(about: Option[String] = None, phoneNumberDisplayName: String)
+        extends Profile
   }
 
   sealed abstract class VerificationMethod(override val twilioString: String)
@@ -68,15 +69,16 @@ object ChannelSender {
     case object Voice extends VerificationMethod("voice")
   }
 
-  sealed trait Configuration
+  final case class Configuration(
+      wabaId: Option[String] = None,
+      verificationMethod: Option[VerificationMethod] = None,
+  )
 
-  object Configuration {
-    final case class WabaId(wabaId: String) extends Configuration
-    final case class WhatsappVerificationMethod(verificationMethod: VerificationMethod)
-        extends Configuration
-    final case class VerificationCode(verificationCode: String) extends Configuration {
-      override def toString: String = "VerificationCode(*****)"
-    }
+  final case class VerificationCodeConfiguration(
+      verificationCode: String
+  ) {
+    override def toString: String =
+      s"VerificationCodeConfiguration(*****)"
   }
 
   sealed abstract class QualityRating(override val twilioString: String)
