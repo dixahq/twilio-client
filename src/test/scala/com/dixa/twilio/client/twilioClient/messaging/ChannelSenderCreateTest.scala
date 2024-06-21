@@ -28,7 +28,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
               aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(channelSenderSid.toString)
+                .withBody(createChannelWhatsappSenderTwilioResponse)
             )
         )
 
@@ -52,7 +52,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
               aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(channelSenderSid.toString)
+                .withBody(createChannelWhatsappSenderTwilioResponse)
             )
         )
 
@@ -76,7 +76,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
               aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
-                .withBody(channelSenderSid.toString)
+                .withBody(createChannelWhatsappSenderTwilioResponse)
             )
         )
 
@@ -152,6 +152,27 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
       |}
       |
       |""".stripMargin
+
+  private def createChannelWhatsappSenderTwilioResponse =
+    s"""{
+       |    "status": "CREATING",
+       |    "profile": {
+       |        "name": "Dixa Twilio WABA"
+       |    },
+       |    "offline_reasons": null,
+       |    "sender_id": "whatsapp:+4552511283",
+       |    "webhook": {
+       |        "callback_method": "POST",
+       |        "callback_url": "https://webhook.messages"
+       |    },
+       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEcfd04c72e3397a53e24bd6c7408aff83",
+       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
+       |    "configuration": {
+       |        "waba_id": "316806161514452"
+       |    },
+       |    "properties": null
+       |}
+       |""".stripMargin
 
   private def createChannelWhatsappSenderTwilioRequest1 =
     """{

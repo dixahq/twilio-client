@@ -82,16 +82,25 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
       httpResponse: HttpResponse,
       entity: HttpEntityString
   ): Either[ChannelSenderCreateException, ChannelSender.Sid] = {
-    ChannelSender
-      .Sid(entity.toString)
-      .map(Right(_))
-      .getOrElse(
+    entity.parse[ChannelSenderJsonRep]() match {
+      case Left(_) =>
         Left(
           ChannelSenderCreateException.ParseFailure(
-            s"Failed to parse ChannelSender.Sid: ${entity.toString}"
+            s"Failed to parse ChannelSender response: ${entity.toString}"
           )
         )
-      )
+      case Right(decoded: ChannelSenderJsonRep) =>
+        ChannelSender
+          .Sid(decoded.sid)
+          .map(Right(_))
+          .getOrElse(
+            Left(
+              ChannelSenderCreateException.ParseFailure(
+                s"Failed to parse ChannelSender.Sid: ${decoded.sid}"
+              )
+            )
+          )
+    }
   }
 
   private def toJson(
