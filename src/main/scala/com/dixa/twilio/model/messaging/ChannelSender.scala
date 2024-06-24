@@ -14,7 +14,7 @@ sealed trait ChannelSender {
   val sid: ChannelSender.Sid
   val webhooks: ChannelSender.Webhooks
   val configuration: ChannelSender.Configuration
-  val properties: ChannelSender.Properties.WhatsappProperties
+  val properties: Option[ChannelSender.Properties.WhatsappProperties]
 }
 
 object ChannelSender {
@@ -26,7 +26,7 @@ object ChannelSender {
       sid: ChannelSender.Sid,
       webhooks: ChannelSender.Webhooks,
       configuration: ChannelSender.Configuration,
-      properties: ChannelSender.Properties.WhatsappProperties
+      properties: Option[ChannelSender.Properties.WhatsappProperties]
   ) extends ChannelSender
 
   final case class Sid private[ChannelSender] (override val toString: String) extends SidAbstract

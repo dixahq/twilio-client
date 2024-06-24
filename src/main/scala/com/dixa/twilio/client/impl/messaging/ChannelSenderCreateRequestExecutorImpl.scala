@@ -1,8 +1,7 @@
 package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioClientPickler}
-import com.dixa.twilio.client.messaging.ChannelSenderCreateRequestExecutor
-import com.dixa.twilio.client.messaging.ChannelSenderCreateRequestExecutor.ChannelSenderCreateException
+import com.dixa.twilio.client.messaging.{ChannelSenderCreateRequestExecutor, ChannelSenderException}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -32,7 +31,7 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest
-  ): Either[ChannelSenderCreateException, HttpRequest] = {
+  ): Either[ChannelSenderException, HttpRequest] = {
     val jsonBodyEither = (req.senderId, req.profile) match {
       case (
             number: WhatsappNumber,
@@ -47,8 +46,8 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
           )
         )
       case (_: PhoneNumberE164, _) =>
-        Left(ChannelSenderCreateException.ChannelNotSupported("PhoneNumberE164"))
-      case _ => Left(ChannelSenderCreateException.ChannelNotSupported("Unknown"))
+        Left(ChannelSenderException.ChannelNotSupported("PhoneNumberE164"))
+      case _ => Left(ChannelSenderException.ChannelNotSupported("Unknown"))
     }
     jsonBodyEither.flatMap(jsonBody =>
       createHttpRequestFor(
@@ -68,30 +67,27 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): ChannelSenderCreateException.Api =
-    ChannelSenderCreateException.Api(apiException)
+  ): ChannelSenderException.Api =
+    ChannelSenderException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderCreateException.Unspecified = ChannelSenderCreateException.Unspecified(msg, cause)
+  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
       request: ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ChannelSenderCreateException, ChannelSender.Sid] = {
-    ChannelSender
-      .Sid(entity.toString)
-      .map(Right(_))
-      .getOrElse(
+  ): Either[ChannelSenderException, ChannelSender] = {
+    entity.parse[ChannelSenderJsonRep]() match {
+      case Left(ex) =>
         Left(
-          ChannelSenderCreateException.ParseFailure(
-            s"Failed to parse ChannelSender.Sid: ${entity.toString}"
-          )
+          ChannelSenderException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
         )
-      )
+      case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
+    }
   }
 
   private def toJson(
