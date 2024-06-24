@@ -1,17 +1,9 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.impl.messaging.ChannelSenderJsonRep.{
-  PropertiesJsonRep,
-  WebhooksJsonRep
-}
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
-import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor
-import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor.ChannelSenderFetchException
+import com.dixa.twilio.client.messaging.{ChannelSenderException, ChannelSenderFetchRequestExecutor}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.HttpMethod
-import com.dixa.twilio.model.messaging.ChannelSender.{VerificationMethod, Webhook}
-import com.dixa.twilio.model.messaging.{ChannelSender, MessageRecipient, WhatsappNumber}
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.messaging.ChannelSender
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
 import org.apache.pekko.stream.Materializer
@@ -31,7 +23,7 @@ private[impl] class ChannelSenderFetchRequestExecutorImpl(
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest
-  ): Either[ChannelSenderFetchException, HttpRequest] = {
+  ): Either[ChannelSenderException, HttpRequest] = {
     createHttpRequestFor(
       s"/${ApiVersion.V2}/Channels/Senders/${req.channelSenderSid}",
       connSettings
@@ -40,116 +32,26 @@ private[impl] class ChannelSenderFetchRequestExecutorImpl(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): ChannelSenderFetchException.Api =
-    ChannelSenderFetchException.Api(apiException)
+  ): ChannelSenderException.Api =
+    ChannelSenderException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderFetchException.Unspecified = ChannelSenderFetchException.Unspecified(msg, cause)
+  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
       request: ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ChannelSenderFetchException, ChannelSender] = {
+  ): Either[ChannelSenderException, ChannelSender] = {
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderFetchException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
+          ChannelSenderException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
         )
-      case Right(decoded: ChannelSenderJsonRep) => toModel(decoded)
-    }
-  }
-
-  private def toModel(
-      webHooksJsonRep: WebhooksJsonRep
-  ): ChannelSender.Webhooks = {
-    ChannelSender.Webhooks(
-      fallback = toModel(webHooksJsonRep.fallback_method, webHooksJsonRep.fallback_url),
-      statusCallback =
-        toModel(webHooksJsonRep.status_callback_method, webHooksJsonRep.status_callback_url),
-      callback = toModel(webHooksJsonRep.callback_method, webHooksJsonRep.callback_url)
-    )
-  }
-
-  private def toModel(
-      methodString: Option[String],
-      urlString: Option[String]
-  ): Option[ChannelSender.Webhook] = {
-    (methodString.flatMap(HttpMethod.fromTwilioString), urlString) match {
-      case (Some(method: HttpMethod), Some(url)) => Option(Webhook(method, url))
-      case _                                     => None
-    }
-  }
-
-  private def toModel(
-      qualityRatingJsonRep: PropertiesJsonRep
-  ): ChannelSender.Properties.WhatsappProperties = {
-    val messagingLimit = qualityRatingJsonRep.messaging_limit.flatMap {
-      case limit if limit.isEmpty => None
-      case limit                  => Some(limit)
-    }
-    qualityRatingJsonRep.quality_rating.flatMap(
-      ChannelSender.QualityRating.fromTwilioString
-    ) match {
-      case Some(qualityRating) =>
-        ChannelSender.Properties.WhatsappProperties(
-          messagingLimit = messagingLimit,
-          qualityRating = qualityRating
-        )
-      case _ =>
-        ChannelSender.Properties.WhatsappProperties(
-          messagingLimit = messagingLimit,
-          qualityRating = ChannelSender.QualityRating.Unknown
-        )
-    }
-  }
-
-  private def toModel(
-      jsonRep: ChannelSenderJsonRep
-  ): Either[ChannelSenderFetchException, ChannelSender] = {
-    MessageRecipient.fromString(jsonRep.sender_id) match {
-      case Some(whatsapp: WhatsappNumber) if jsonRep.configuration.waba_id.isDefined =>
-        val status = ChannelSender.Status
-          .fromTwilioString(jsonRep.status)
-          .getOrElse(ChannelSender.Status.Unknown)
-        Right(
-          ChannelSender.WhatsappSender(
-            status = status,
-            profile = ChannelSender.Profile
-              .WhatsappProfile(
-                about = jsonRep.profile.about,
-                phoneNumberDisplayName = jsonRep.profile.name
-              ),
-            senderId = whatsapp,
-            sid = ChannelSender.Sid.unsafe(jsonRep.sid),
-            webhooks = toModel(jsonRep.webhook),
-            configuration = ChannelSender.Configuration(
-              wabaId = jsonRep.configuration.waba_id,
-              verificationMethod = jsonRep.configuration.verificationMethod
-                .flatMap(VerificationMethod.fromTwilioString)
-            ),
-            properties = toModel(jsonRep.properties)
-          )
-        )
-      case Some(phoneNumber: PhoneNumberE164) =>
-        Left(
-          ChannelSenderFetchException.ParseFailure(
-            s"PhoneNumber Channel Sender with id $phoneNumber not supported"
-          )
-        )
-      case Some(unknown) =>
-        Left(
-          ChannelSenderFetchException.ParseFailure(s"Unknown Channel Sender $unknown not supported")
-        )
-      case None =>
-        Left(
-          ChannelSenderFetchException.ParseFailure(
-            s"Channel Sender id ${jsonRep.sender_id} of unknown type not supported"
-          )
-        )
+      case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
     }
   }
 }

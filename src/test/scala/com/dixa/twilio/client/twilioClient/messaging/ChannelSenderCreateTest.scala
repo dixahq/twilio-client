@@ -1,9 +1,13 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.messaging.ChannelSenderCreateRequestExecutor.ChannelSenderCreateException
-import com.dixa.twilio.client.messaging.{ChannelSenderCreateRequestExecutor, TwilioClientMessaging}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderCreateRequestExecutor,
+  ChannelSenderException,
+  TwilioClientMessaging
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.HttpMethod.Post
 import com.dixa.twilio.model.messaging.ChannelSender.Webhooks
 import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -12,7 +16,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson}
 
 import scala.concurrent.Future
 
-final class ChannelSenderCreateTest extends TwilioClientTest {
+final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
 
   classOf[TwilioClientMessaging].getSimpleName when {
     "Asked to create a channel sender" should {
@@ -32,10 +36,19 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
             )
         )
 
-        val expected = Right(channelSenderSid)
+        val expected = Right(
+          whatsappChannelSender.copy(
+            properties = None,
+            webhooks = Webhooks(
+              callback = Some(ChannelSender.Webhook(Post, "https://webhook.messages")),
+              fallback = None,
+              statusCallback = None
+            )
+          )
+        )
 
         val resultFut: Future[
-          Either[ChannelSenderCreateException, ChannelSender.Sid]
+          Either[ChannelSenderException, ChannelSender]
         ] =
           instance.run(connSettings, createRequest)
         resultFut.map { result => assert(result === expected) }
@@ -56,10 +69,10 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
             )
         )
 
-        val expected = Left(ChannelSenderCreateException.ChannelNotSupported("PhoneNumberE164"))
+        val expected = Left(ChannelSenderException.ChannelNotSupported("PhoneNumberE164"))
 
         val resultFut: Future[
-          Either[ChannelSenderCreateException, ChannelSender.Sid]
+          Either[ChannelSenderException, ChannelSender]
         ] =
           instance.run(connSettings, createRequest1)
         resultFut.map { result => assert(result === expected) }
@@ -91,10 +104,19 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
             .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
         )
 
-        val expected = Right(channelSenderSid)
+        val expected = Right(
+          whatsappChannelSender.copy(
+            properties = None,
+            webhooks = Webhooks(
+              callback = Some(ChannelSender.Webhook(Post, "https://webhook.messages")),
+              fallback = None,
+              statusCallback = None
+            )
+          )
+        )
 
         val resultFut: Future[
-          Either[ChannelSenderCreateException, ChannelSender.Sid]
+          Either[ChannelSenderException, ChannelSender]
         ] =
           instance.run(connSettings, req)
         resultFut.map { result => assert(result === expected) }
@@ -104,8 +126,6 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
 
   // noinspection TypeAnnotation
   final class Fixture {
-    val channelSenderSid = ChannelSender.Sid.unsafe("XEcfd04c72e3397a53e24bd6c7408aff83")
-
     val createRequest = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
       senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
       configuration = ChannelSender.Configuration(
@@ -155,7 +175,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest {
 
   private def createChannelWhatsappSenderTwilioResponse =
     s"""{
-       |    "status": "CREATING",
+       |    "status": "ONLINE",
        |    "profile": {
        |        "name": "Dixa Twilio WABA"
        |    },
