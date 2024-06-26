@@ -1,17 +1,19 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.messaging.ChannelSenderFetchRequestExecutor.ChannelSenderFetchException
-import com.dixa.twilio.client.messaging.{ChannelSenderFetchRequestExecutor, TwilioClientMessaging}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderException,
+  ChannelSenderFetchRequestExecutor,
+  TwilioClientMessaging
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.messaging.ChannelSender.Webhooks
-import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
+import com.dixa.twilio.model.messaging.ChannelSender
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class ChannelSenderFetchTest extends TwilioClientTest {
+final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
 
   classOf[TwilioClientMessaging].getSimpleName when {
     "Asked to fetch an channel sender" should {
@@ -33,7 +35,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
         val expected = Right(whatsappChannelSender)
 
         val resultFut: Future[
-          Either[ChannelSenderFetchException, ChannelSender]
+          Either[ChannelSenderException, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map { result => assert(result === expected) }
@@ -53,12 +55,12 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
             )
         )
 
-        val expected = ChannelSenderFetchException.ParseFailure(
+        val expected = ChannelSenderException.ParseFailure(
           "Channel Sender id @twitterhandel of unknown type not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSenderFetchException, ChannelSender]
+          Either[ChannelSenderException, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
@@ -81,12 +83,12 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
             )
         )
 
-        val expected = ChannelSenderFetchException.ParseFailure(
+        val expected = ChannelSenderException.ParseFailure(
           "PhoneNumber Channel Sender with id +4552511283 not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSenderFetchException, ChannelSender]
+          Either[ChannelSenderException, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
@@ -99,21 +101,6 @@ final class ChannelSenderFetchTest extends TwilioClientTest {
 
   // noinspection TypeAnnotation
   final class Fixture {
-    val channelSenderSid = ChannelSender.Sid.unsafe("XEcfd04c72e3397a53e24bd6c7408aff83")
-    val whatsappChannelSender: ChannelSender = ChannelSender.WhatsappSender(
-      status = ChannelSender.Status.Online,
-      profile = ChannelSender.Profile
-        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA"),
-      senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
-      sid = channelSenderSid,
-      webhooks = Webhooks(None, None, None),
-      configuration = ChannelSender.Configuration(wabaId = Some("316806161514452")),
-      properties = ChannelSender.Properties.WhatsappProperties(
-        messagingLimit = None,
-        qualityRating = ChannelSender.QualityRating.Unknown
-      )
-    )
-
     val fetchRequest = ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest(
       channelSenderSid = channelSenderSid,
     )
