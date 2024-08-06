@@ -12,7 +12,12 @@ private[client] final case class DefaultApiErrorEntityJsonRep(
     message: String,
     more_info: String,
     status: Int
-)
+) {
+
+  override def toString: String =
+    s"Code: $code, Message: $message, More info: $more_info, Status: $status"
+
+}
 
 private[client] object DefaultApiErrorEntityJsonRep {
 
