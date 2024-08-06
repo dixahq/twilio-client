@@ -1,18 +1,21 @@
 package com.dixa.twilio.client.impl.messaging
 
+import com.dixa.twilio.client.ApiException.BadRequestException
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioClientPickler}
 import com.dixa.twilio.client.messaging.{ChannelSenderCreateRequestExecutor, ChannelSenderException}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.client.impl.messaging.WhatsappSenderCreateJsonRep._
+import com.dixa.twilio.client.messaging.ChannelSenderException.Api
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{
   ContentTypes,
   HttpEntity,
   HttpMethods,
   HttpRequest,
-  HttpResponse
+  HttpResponse,
+  StatusCodes
 }
 import org.apache.pekko.stream.Materializer
 
@@ -81,6 +84,13 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
       httpResponse: HttpResponse,
       entity: HttpEntityString
   ): Either[ChannelSenderException, ChannelSender] = {
+    httpResponse.status match {
+      case StatusCodes.BadRequest => Left(Api(BadRequestException(entity.toString)))
+      case _                      => parseBody(entity)
+    }
+  }
+
+  private def parseBody(entity: HttpEntityString) = {
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(

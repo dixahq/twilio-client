@@ -15,7 +15,9 @@ object ApiException {
   final case class AuthenticationException() extends ApiException
 
   /** There was an error with the request. The body of the response will have more info. */
-  final case class BadRequestException() extends ApiException
+  final case class BadRequestException(message: String) extends ApiException {
+    override def getMessage: String = message
+  }
 
   /** API usage limit. If you reach API usage limits, a 429 will be returned. Please wait until you
     * pass the limit and attempt the call again
