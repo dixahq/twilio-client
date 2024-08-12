@@ -4,7 +4,8 @@ import com.dixa.twilio.model.twiml.verb.SayVerb.{LanguageCode, Voice}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ResponseSayTest extends AnyWordSpec {
-  s"${classOf[Response].getSimpleName}" when {
+
+  "Response" when {
 
     "Constructing responses with Say directives" should {
 
@@ -73,36 +74,36 @@ final class ResponseSayTest extends AnyWordSpec {
         assert(xmlPretty === expectedXmlPretty)
       }
 
-//      "construct a valid response and fallback to a male voice if male voice is the only voice that is available" in {
-//
-//        val textToSay = "Some text to say"
-//        val language  = LanguageCode.`lt-LT`
-//
-//        val result: Response.Verified = Response.build { responseBuilder =>
-//          responseBuilder
-//            .addSay { sayBuilder =>
-//              sayBuilder
-//                .withText(textToSay)
-//                .withBestQualityVoiceFemale(language)
-//                .withLoop(5)
-//                .build()
-//            }
-//            .buildVerified()
-//        }
-//
-//        val xmlCompact = result.xmlCompact
-//        val expectedXmlCompact =
-//          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="lt-LT" voice="Google.lt-LT-Standard-A" loop="5">$textToSay</Say></Response>"""
-//        assert(xmlCompact == expectedXmlCompact)
-//
-//        val xmlPretty = result.xmlPretty
-//        val expectedXmlPretty =
-//          s"""<?xml version="1.0" encoding="UTF-8"?>
-//             |<Response>
-//             |  <Say language="lt-LT" voice="Google.lt-LT-Standard-A" loop="5">$textToSay</Say>
-//             |</Response>""".stripMargin
-//        assert(xmlPretty === expectedXmlPretty)
-//      }
+      "construct a valid response and fallback to a male voice if male voice is the only voice that is available" in {
+
+        val textToSay = "Some text to say"
+        val language  = LanguageCode.`lt-LT`
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addSay { sayBuilder =>
+              sayBuilder
+                .withText(textToSay)
+                .withBestQualityVoiceFemale(language)
+                .withLoop(5)
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val xmlCompact = result.xmlCompact
+        val expectedXmlCompact =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="lt-LT" voice="Google.lt-LT-Standard-A" loop="5">$textToSay</Say></Response>"""
+        assert(xmlCompact == expectedXmlCompact)
+
+        val xmlPretty = result.xmlPretty
+        val expectedXmlPretty =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Say language="lt-LT" voice="Google.lt-LT-Standard-A" loop="5">$textToSay</Say>
+             |</Response>""".stripMargin
+        assert(xmlPretty === expectedXmlPretty)
+      }
     }
   }
 }

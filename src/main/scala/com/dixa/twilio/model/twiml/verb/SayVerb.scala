@@ -101,6 +101,7 @@ object SayVerb {
         with SupportsPollyIvyNeural
         with SupportsPollyJoannaNeural
         with SupportsPollyKendraNeural
+        with SupportsPollyKevinNeural
         with SupportsPollyKimberlyNeural
         with SupportsPollySalliNeural
         with SupportsPollyJoeyNeural
@@ -1232,12 +1233,18 @@ object SayVerb {
     }
 
     def withBestQualityVoiceFemale(language: LanguageCode): Builder[B] = {
-      val voicesWithLanguageAndGender =
+      val femaleVoices =
         Voice.values.filter(v => v.languageCode == language && v.gender == Gender.Female)
-      val voiceOpt = voicesWithLanguageAndGender
+      val femaleVoiceOpt = femaleVoices
         .find(_.quality == Quality.Premium)
         // So far every voice has a Standard quality
-        .orElse(voicesWithLanguageAndGender.find(_.quality == Quality.Standard))
+        .orElse(femaleVoices.find(_.quality == Quality.Standard))
+      val voiceOpt = femaleVoiceOpt.orElse(
+        Voice.values
+          // Fallback to male voice if no female voice exists
+          .filter(v => v.languageCode == language && v.gender == Gender.Male)
+          .find(v => v.quality == Quality.Premium || v.quality == Quality.Standard)
+      )
       new Builder[B](text, language = Some(language), voice = voiceOpt, loop)
     }
 
