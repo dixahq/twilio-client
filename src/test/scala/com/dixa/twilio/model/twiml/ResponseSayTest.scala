@@ -53,7 +53,7 @@ final class ResponseSayTest extends AnyWordSpec {
             .addSay { sayBuilder =>
               sayBuilder
                 .withText(textToSay)
-                .withBestQualityVoiceFemale(language)
+                .withBestQualityVoiceFemalePreferred(language)
                 .withLoop(5)
                 .build()
             }
@@ -84,7 +84,7 @@ final class ResponseSayTest extends AnyWordSpec {
             .addSay { sayBuilder =>
               sayBuilder
                 .withText(textToSay)
-                .withBestQualityVoiceFemale(language)
+                .withBestQualityVoiceFemalePreferred(language)
                 .withLoop(5)
                 .build()
             }

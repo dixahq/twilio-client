@@ -1232,7 +1232,8 @@ object SayVerb {
       new Builder[B](text, language = Some(voice.languageCode), voice = Some(voice), loop)
     }
 
-    def withBestQualityVoiceFemale(language: LanguageCode): Builder[B] = {
+    /** Will prioritize selecting female voice, but if none exist then falls back to male voice */
+    def withBestQualityVoiceFemalePreferred(language: LanguageCode): Builder[B] = {
       val femaleVoices =
         Voice.values.filter(v => v.languageCode == language && v.gender == Gender.Female)
       val femaleVoiceOpt = femaleVoices
