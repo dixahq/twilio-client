@@ -101,6 +101,7 @@ object SayVerb {
         with SupportsPollyIvyNeural
         with SupportsPollyJoannaNeural
         with SupportsPollyKendraNeural
+        with SupportsPollyKevinNeural
         with SupportsPollyKimberlyNeural
         with SupportsPollySalliNeural
         with SupportsPollyJoeyNeural
@@ -225,7 +226,7 @@ object SayVerb {
         with SupportsPollyLiv
         with SupportsPollyIdaNeural
 
-    /** "Polish -Poland" */
+    /** "Polish, Poland" */
     case object `pl-PL`
         extends LanguageCode("pl-PL")
         with SupportsPollyJacek
@@ -268,6 +269,84 @@ object SayVerb {
 
     /** "Turkish, Turkey" */
     case object `tr-TR` extends LanguageCode("tr-TR") with SupportsPollyFiliz
+
+    /** "Lithuanian, Lithuania" */
+    case object `lt-LT` extends LanguageCode("lt-LT") with SupportsGoogleLithuanianStandardA
+
+    /** "Latvian, Latvia" */
+    case object `lv-LV` extends LanguageCode("lv-LV") with SupportsGoogleLatvianStandardA
+
+    /** "Hungarian, Hungary" */
+    case object `hu-HU`
+        extends LanguageCode("hu-HU")
+        with SupportsGoogleHungarianStandardA
+        with SupportsGoogleHungarianWavenetA
+
+    /** "Thai, Thailand" */
+    case object `th-TH` extends LanguageCode("th-TH") with SupportsGoogleThaiStandardA
+
+    /** "Bulgarian, Bulgaria" */
+    case object `bg-BG` extends LanguageCode("bg-BG") with SupportsGoogleBulgarianStandardA
+
+    /** "Czech, Czech Republic" */
+    case object `cs-CZ`
+        extends LanguageCode("cs-CZ")
+        with SupportsGoogleCzechStandardA
+        with SupportsGoogleCzechWavenetA
+
+    /** "Greek, Greece" */
+    case object `el-GR`
+        extends LanguageCode("el-GR")
+        with SupportsGoogleGreekStandardA
+        with SupportsGoogleGreekWavenetA
+
+    /** "Hebrew, Israel" */
+    case object `he-IL`
+        extends LanguageCode("he-IL")
+        with SupportsGoogleHebrewStandardA
+        with SupportsGoogleHebrewStandardB
+        with SupportsGoogleHebrewStandardC
+        with SupportsGoogleHebrewStandardD
+        with SupportsGoogleHebrewWavenetA
+        with SupportsGoogleHebrewWavenetB
+        with SupportsGoogleHebrewWavenetC
+        with SupportsGoogleHebrewWavenetD
+
+    /** "Indonesian, Indonesia" */
+    case object `id-ID`
+        extends LanguageCode("id-ID")
+        with SupportsGoogleIndonesianStandardA
+        with SupportsGoogleIndonesianStandardB
+        with SupportsGoogleIndonesianStandardC
+        with SupportsGoogleIndonesianStandardD
+        with SupportsGoogleIndonesianWavenetA
+        with SupportsGoogleIndonesianWavenetB
+        with SupportsGoogleIndonesianWavenetC
+        with SupportsGoogleIndonesianWavenetD
+
+    /** "Slovak, Slovakia" */
+    case object `sk-SK`
+        extends LanguageCode("sk-SK")
+        with SupportsGoogleSlovakStandardA
+        with SupportsGoogleSlovakWavenetA
+
+    /** "Ukrainian, Ukraine" */
+    case object `uk-UA`
+        extends LanguageCode("uk-UA")
+        with SupportsGoogleUkrainianStandardA
+        with SupportsGoogleUkrainianWavenetA
+
+    /** "Vietnamese, Vietnam" */
+    case object `vi-VN`
+        extends LanguageCode("vi-VN")
+        with SupportsGoogleVietnameseStandardA
+        with SupportsGoogleVietnameseStandardB
+        with SupportsGoogleVietnameseStandardC
+        with SupportsGoogleVietnameseStandardD
+        with SupportsGoogleVietnameseWavenetA
+        with SupportsGoogleVietnameseWavenetB
+        with SupportsGoogleVietnameseWavenetC
+        with SupportsGoogleVietnameseWavenetD
 
     sealed trait SupportsManVoice
     sealed trait SupportsWomanVoice
@@ -382,6 +461,44 @@ object SayVerb {
     sealed trait SupportsPollyElinNeural
     sealed trait SupportsPollyFiliz
     sealed trait SupportsPollyGwyneth
+    sealed trait SupportsGoogleLithuanianStandardA
+    sealed trait SupportsGoogleLatvianStandardA
+    sealed trait SupportsGoogleHungarianStandardA
+    sealed trait SupportsGoogleHungarianWavenetA
+    sealed trait SupportsGoogleThaiStandardA
+    sealed trait SupportsGoogleBulgarianStandardA
+    sealed trait SupportsGoogleCzechStandardA
+    sealed trait SupportsGoogleCzechWavenetA
+    sealed trait SupportsGoogleGreekStandardA
+    sealed trait SupportsGoogleGreekWavenetA
+    sealed trait SupportsGoogleHebrewStandardA
+    sealed trait SupportsGoogleHebrewStandardB
+    sealed trait SupportsGoogleHebrewStandardC
+    sealed trait SupportsGoogleHebrewStandardD
+    sealed trait SupportsGoogleHebrewWavenetA
+    sealed trait SupportsGoogleHebrewWavenetB
+    sealed trait SupportsGoogleHebrewWavenetC
+    sealed trait SupportsGoogleHebrewWavenetD
+    sealed trait SupportsGoogleIndonesianStandardA
+    sealed trait SupportsGoogleIndonesianStandardB
+    sealed trait SupportsGoogleIndonesianStandardC
+    sealed trait SupportsGoogleIndonesianStandardD
+    sealed trait SupportsGoogleIndonesianWavenetA
+    sealed trait SupportsGoogleIndonesianWavenetB
+    sealed trait SupportsGoogleIndonesianWavenetC
+    sealed trait SupportsGoogleIndonesianWavenetD
+    sealed trait SupportsGoogleSlovakStandardA
+    sealed trait SupportsGoogleSlovakWavenetA
+    sealed trait SupportsGoogleUkrainianStandardA
+    sealed trait SupportsGoogleUkrainianWavenetA
+    sealed trait SupportsGoogleVietnameseStandardA
+    sealed trait SupportsGoogleVietnameseStandardB
+    sealed trait SupportsGoogleVietnameseStandardC
+    sealed trait SupportsGoogleVietnameseStandardD
+    sealed trait SupportsGoogleVietnameseWavenetA
+    sealed trait SupportsGoogleVietnameseWavenetB
+    sealed trait SupportsGoogleVietnameseWavenetC
+    sealed trait SupportsGoogleVietnameseWavenetD
 
   }
 
@@ -398,6 +515,7 @@ object SayVerb {
 
   sealed abstract class Quality extends enumeratum.EnumEntry
 
+  /** This is Twilio specific definition of Quality */
   object Quality extends enumeratum.Enum[Quality] {
     val values: immutable.IndexedSeq[Quality] = findValues
 
@@ -425,6 +543,7 @@ object SayVerb {
     val values: immutable.IndexedSeq[Voice] = findValues
 
     sealed trait SupportsPolly
+    sealed trait SupportsGoogle
 
     case object `man-EnGB` extends Voice("man", Gender.Male, LanguageCode.`en-GB`, Quality.Basic)
     case object `man-EnUS` extends Voice("man", Gender.Male, LanguageCode.`en-US`, Quality.Basic)
@@ -793,6 +912,300 @@ object SayVerb {
     case object `Polly.Gwyneth`
         extends Voice("Polly.Gwyneth", Gender.Female, LanguageCode.`cy-GB`, Quality.Standard)
         with SupportsPolly
+    case object `Google.LithuanianStandardA`
+        extends Voice(
+          "Google.lt-LT-Standard-A",
+          Gender.Male,
+          LanguageCode.`lt-LT`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.LatvianStandardA`
+        extends Voice(
+          "Google.lv-LV-Standard-A",
+          Gender.Male,
+          LanguageCode.`lv-LV`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.HungarianStandardA`
+        extends Voice(
+          "Google.hu-HU-Standard-A",
+          Gender.Female,
+          LanguageCode.`hu-HU`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.HungarianWavenetA`
+        extends Voice(
+          "Google.hu-HU-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`hu-HU`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.ThaiStandardA`
+        extends Voice(
+          "Google.th-TH-Standard-A",
+          Gender.Female,
+          LanguageCode.`th-TH`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.BulgarianStandardA`
+        extends Voice(
+          "Google.bg-BG-Standard-A",
+          Gender.Female,
+          LanguageCode.`bg-BG`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.CzechStandardA`
+        extends Voice(
+          "Google.cs-CZ-Standard-A",
+          Gender.Female,
+          LanguageCode.`cs-CZ`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.CzechWavenetA`
+        extends Voice(
+          "Google.cs-CZ-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`cs-CZ`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.GreekStandardA`
+        extends Voice(
+          "Google.el-GR-Standard-A",
+          Gender.Female,
+          LanguageCode.`el-GR`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.GreekWavenetA`
+        extends Voice(
+          "Google.el-GR-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`el-GR`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.HebrewStandardA`
+        extends Voice(
+          "Google.he-IL-Standard-A",
+          Gender.Female,
+          LanguageCode.`he-IL`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.HebrewStandardB`
+        extends Voice(
+          "Google.he-IL-Standard-B",
+          Gender.Male,
+          LanguageCode.`he-IL`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.HebrewStandardC`
+        extends Voice(
+          "Google.he-IL-Standard-C",
+          Gender.Female,
+          LanguageCode.`he-IL`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.HebrewStandardD`
+        extends Voice(
+          "Google.he-IL-Standard-D",
+          Gender.Male,
+          LanguageCode.`he-IL`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.HebrewWavenetA`
+        extends Voice(
+          "Google.he-IL-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`he-IL`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.HebrewWavenetB`
+        extends Voice("Google.he-IL-Wavenet-B", Gender.Male, LanguageCode.`he-IL`, Quality.Premium)
+        with SupportsGoogle
+    case object `Google.HebrewWavenetC`
+        extends Voice(
+          "Google.he-IL-Wavenet-C",
+          Gender.Female,
+          LanguageCode.`he-IL`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.HebrewWavenetD`
+        extends Voice("Google.he-IL-Wavenet-D", Gender.Male, LanguageCode.`he-IL`, Quality.Premium)
+        with SupportsGoogle
+    case object `Google.IndonesianStandardA`
+        extends Voice(
+          "Google.id-ID-Standard-A",
+          Gender.Female,
+          LanguageCode.`id-ID`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianStandardB`
+        extends Voice(
+          "Google.id-ID-Standard-B",
+          Gender.Male,
+          LanguageCode.`id-ID`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianStandardC`
+        extends Voice(
+          "Google.id-ID-Standard-C",
+          Gender.Male,
+          LanguageCode.`id-ID`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianStandardD`
+        extends Voice(
+          "Google.id-ID-Standard-D",
+          Gender.Female,
+          LanguageCode.`id-ID`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianWavenetA`
+        extends Voice(
+          "Google.id-ID-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`id-ID`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianWavenetB`
+        extends Voice(
+          "Google.id-ID-Wavenet-B",
+          Gender.Male,
+          LanguageCode.`id-ID`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianWavenetC`
+        extends Voice(
+          "Google.id-ID-Wavenet-C",
+          Gender.Male,
+          LanguageCode.`id-ID`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.IndonesianWavenetD`
+        extends Voice(
+          "Google.id-ID-Wavenet-D",
+          Gender.Female,
+          LanguageCode.`id-ID`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.SlovakStandardA`
+        extends Voice(
+          "Google.sk-SK-Standard-A",
+          Gender.Female,
+          LanguageCode.`sk-SK`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.SlovakWavenetA`
+        extends Voice(
+          "Google.sk-SK-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`sk-SK`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.UkrainianStandardA`
+        extends Voice(
+          "Google.uk-UA-Standard-A",
+          Gender.Female,
+          LanguageCode.`uk-UA`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.UkrainianWavenetA`
+        extends Voice(
+          "Google.uk-UA-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`uk-UA`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseStandardA`
+        extends Voice(
+          "Google.vi-VN-Standard-A",
+          Gender.Female,
+          LanguageCode.`vi-VN`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseStandardB`
+        extends Voice(
+          "Google.vi-VN-Standard-B",
+          Gender.Male,
+          LanguageCode.`vi-VN`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseStandardC`
+        extends Voice(
+          "Google.vi-VN-Standard-C",
+          Gender.Female,
+          LanguageCode.`vi-VN`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseStandardD`
+        extends Voice(
+          "Google.vi-VN-Standard-D",
+          Gender.Male,
+          LanguageCode.`vi-VN`,
+          Quality.Standard
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseWavenetA`
+        extends Voice(
+          "Google.vi-VN-Wavenet-A",
+          Gender.Female,
+          LanguageCode.`vi-VN`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseWavenetB`
+        extends Voice(
+          "Google.vi-VN-Wavenet-B",
+          Gender.Male,
+          LanguageCode.`vi-VN`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseWavenetC`
+        extends Voice(
+          "Google.vi-VN-Wavenet-C",
+          Gender.Female,
+          LanguageCode.`vi-VN`,
+          Quality.Premium
+        )
+        with SupportsGoogle
+    case object `Google.VietnameseWavenetD`
+        extends Voice(
+          "Google.vi-VN-Wavenet-D",
+          Gender.Male,
+          LanguageCode.`vi-VN`,
+          Quality.Premium
+        )
+        with SupportsGoogle
   }
 
   /** The loop attribute specifies how many times you'd like the text repeated. The default is once.
@@ -819,13 +1232,20 @@ object SayVerb {
       new Builder[B](text, language = Some(voice.languageCode), voice = Some(voice), loop)
     }
 
-    def withBestQualityVoiceFemale(language: LanguageCode): Builder[B] = {
-      val voicesWithLanguageAndGender =
+    /** Will prioritize selecting female voice, but if none exist then falls back to male voice */
+    def withBestQualityVoiceFemalePreferred(language: LanguageCode): Builder[B] = {
+      val femaleVoices =
         Voice.values.filter(v => v.languageCode == language && v.gender == Gender.Female)
-      val voiceOpt = voicesWithLanguageAndGender
+      val femaleVoiceOpt = femaleVoices
         .find(_.quality == Quality.Premium)
-        // Currently standard Polly voices are available for every language
-        .orElse(voicesWithLanguageAndGender.find(_.quality == Quality.Standard))
+        // So far every voice has a Standard quality
+        .orElse(femaleVoices.find(_.quality == Quality.Standard))
+      val voiceOpt = femaleVoiceOpt.orElse(
+        Voice.values
+          // Fallback to male voice if no female voice exists
+          .filter(v => v.languageCode == language && v.gender == Gender.Male)
+          .find(v => v.quality == Quality.Premium || v.quality == Quality.Standard)
+      )
       new Builder[B](text, language = Some(language), voice = voiceOpt, loop)
     }
 
