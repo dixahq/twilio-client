@@ -11,7 +11,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 final class ChannelSenderDeleteTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
 
   "TwilioClientMessaging" when {
-    "Asked to delete a channel sender" should {
+    "asked to delete a channel sender" should {
 
       "succeed" in {
 
@@ -83,7 +83,7 @@ final class ChannelSenderDeleteTest extends TwilioClientTest with ChannelSenderT
       )
 
     val wireMockBuilderExpectedTwilioRequest: MappingBuilder = WireMock
-      .get(
+      .delete(
         WireMock.urlPathEqualTo(
           "/v2/Channels/Senders/XEcfd04c72e3397a53e24bd6c7408aff83"
         )
