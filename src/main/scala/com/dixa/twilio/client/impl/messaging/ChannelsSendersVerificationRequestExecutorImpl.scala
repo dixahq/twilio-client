@@ -1,10 +1,10 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.impl.messaging.ChannelSenderVerificationConfigurationJsonRep.ConfigurationJsonRep
-import com.dixa.twilio.client.impl.messaging.ChannelSenderVerificationConfigurationJsonRep._
+import com.dixa.twilio.client.impl.messaging.ChannelsSendersVerificationConfigurationJsonRep.ConfigurationJsonRep
+import com.dixa.twilio.client.impl.messaging.ChannelsSendersVerificationConfigurationJsonRep._
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
-import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor
-import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationException
+import com.dixa.twilio.client.messaging.ChannelsSendersVerificationRequestExecutor
+import com.dixa.twilio.client.messaging.ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationException
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
@@ -13,11 +13,11 @@ import upickle.default._
 
 import scala.concurrent.ExecutionContext
 
-private[impl] class ChannelSenderVerificationRequestExecutorImpl(
+private[impl] class ChannelsSendersVerificationRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends ChannelSenderVerificationRequestExecutor {
+) extends ChannelsSendersVerificationRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
 
@@ -25,7 +25,7 @@ private[impl] class ChannelSenderVerificationRequestExecutorImpl(
 
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationRequest
+      req: ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest
   ): Either[ChannelSenderVerificationException, HttpRequest] = {
     createHttpRequestFor(
       s"/${ApiVersion.V2}/Channels/Senders/${req.senderSid}",
@@ -34,8 +34,8 @@ private[impl] class ChannelSenderVerificationRequestExecutorImpl(
       _.withEntity(
         HttpEntity(
           ContentTypes.`application/json`,
-          write[ChannelSenderVerificationConfigurationJsonRep](
-            ChannelSenderVerificationConfigurationJsonRep(
+          write[ChannelsSendersVerificationConfigurationJsonRep](
+            ChannelsSendersVerificationConfigurationJsonRep(
               ConfigurationJsonRep(req.verificationCode.verificationCode)
             )
           )
@@ -57,7 +57,7 @@ private[impl] class ChannelSenderVerificationRequestExecutorImpl(
     ChannelSenderVerificationException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-      request: ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationRequest,
+      request: ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString

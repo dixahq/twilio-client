@@ -3,7 +3,10 @@ package com.dixa.twilio.client.impl.messaging
 import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.messaging.ChannelSenderException.Api
-import com.dixa.twilio.client.messaging.{ChannelSenderDeleteRequestExecutor, ChannelSenderException}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderException,
+  ChannelsSendersDeleteRequestExecutor
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.FUnit
 import org.apache.pekko.http.scaladsl.HttpExt
@@ -12,11 +15,11 @@ import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
 
-class ChannelSenderDeleteRequestExecutorImpl(
+class ChannelsSendersDeleteRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends ChannelSenderDeleteRequestExecutor {
+) extends ChannelsSendersDeleteRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
 
@@ -24,7 +27,7 @@ class ChannelSenderDeleteRequestExecutorImpl(
 
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: ChannelSenderDeleteRequestExecutor.ChannelSenderDeleteRequest
+      req: ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest
   ): Either[ChannelSenderException, HttpRequest] = {
     createHttpRequestFor(
       s"/${ApiVersion.V2}/Channels/Senders/${req.channelSenderSid.twilioString}",
@@ -33,7 +36,7 @@ class ChannelSenderDeleteRequestExecutorImpl(
   }
 
   override protected def parseHttpResponse(
-      request: ChannelSenderDeleteRequestExecutor.ChannelSenderDeleteRequest,
+      request: ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString

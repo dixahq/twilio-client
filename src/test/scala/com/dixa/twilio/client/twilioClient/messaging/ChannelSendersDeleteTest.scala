@@ -2,13 +2,16 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
 import com.dixa.twilio.client.{TwilioClient, TwilioConnectionSettings, TwilioTestConstants}
-import com.dixa.twilio.client.messaging.{ChannelSenderDeleteRequestExecutor, ChannelSenderException}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderException,
+  ChannelsSendersDeleteRequestExecutor
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.model.FUnit
 import com.github.tomakehurst.wiremock.client.{MappingBuilder, WireMock}
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-final class ChannelSenderDeleteTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
+final class ChannelSendersDeleteTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "asked to delete a channel sender" should {
@@ -77,8 +80,8 @@ final class ChannelSenderDeleteTest extends TwilioClientTest with ChannelSenderT
   }
 
   final class Fixture {
-    val deleteReq: ChannelSenderDeleteRequestExecutor.ChannelSenderDeleteRequest =
-      ChannelSenderDeleteRequestExecutor.ChannelSenderDeleteRequest(channelSenderSid =
+    val deleteReq: ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest =
+      ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest(channelSenderSid =
         channelSenderSid
       )
 
@@ -92,8 +95,8 @@ final class ChannelSenderDeleteTest extends TwilioClientTest with ChannelSenderT
 
     val connSettings: TwilioConnectionSettings =
       TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: ChannelSenderDeleteRequestExecutor =
-      TwilioClient.defaultImpl().messaging.channelSenderDelete
+    val instance: ChannelsSendersDeleteRequestExecutor =
+      TwilioClient.defaultImpl().messaging.channelsSendersDelete
 
     val deleteSenderNotFoundError: String = {
       """{

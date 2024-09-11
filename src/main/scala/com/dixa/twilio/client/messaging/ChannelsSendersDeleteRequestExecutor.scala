@@ -4,9 +4,9 @@ import com.dixa.twilio.client.SingleRequestExecutor
 import com.dixa.twilio.model.FUnit
 import com.dixa.twilio.model.messaging.ChannelSender
 
-trait ChannelSenderDeleteRequestExecutor
+trait ChannelsSendersDeleteRequestExecutor
     extends SingleRequestExecutor[
-      ChannelSenderDeleteRequestExecutor.ChannelSenderDeleteRequest,
+      ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest,
       ChannelSenderException,
       FUnit
     ] {
@@ -17,7 +17,7 @@ trait ChannelSenderDeleteRequestExecutor
 
 }
 
-object ChannelSenderDeleteRequestExecutor {
+object ChannelsSendersDeleteRequestExecutor {
 
   final case class ChannelSenderDeleteRequest(
       channelSenderSid: ChannelSender.Sid

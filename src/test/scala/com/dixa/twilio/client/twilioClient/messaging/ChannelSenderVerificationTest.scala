@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationException
-import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor
+import com.dixa.twilio.client.messaging.ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationException
+import com.dixa.twilio.client.messaging.ChannelsSendersVerificationRequestExecutor
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.messaging.ChannelSender
@@ -43,7 +43,7 @@ final class ChannelSenderVerificationTest extends TwilioClientTest {
   final class Fixture {
     val channelSenderSid = ChannelSender.Sid.unsafe("XEcfd04c72e3397a53e24bd6c7408aff83")
 
-    val createRequest = ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationRequest(
+    val createRequest = ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest(
       senderSid = channelSenderSid,
       verificationCode = ChannelSender.VerificationCodeConfiguration(
         "123456"
@@ -59,8 +59,8 @@ final class ChannelSenderVerificationTest extends TwilioClientTest {
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: ChannelSenderVerificationRequestExecutor =
-      TwilioClient.defaultImpl().messaging.channelSenderVerification
+    val instance: ChannelsSendersVerificationRequestExecutor =
+      TwilioClient.defaultImpl().messaging.channelsSendersVerification
   }
 
   private val verifyChannelSenderRequest =

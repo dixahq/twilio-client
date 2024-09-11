@@ -1,7 +1,10 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.ApiException.BadRequestException
-import com.dixa.twilio.client.messaging.{ChannelSenderCreateRequestExecutor, ChannelSenderException}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderException,
+  ChannelsSendersCreateRequestExecutor
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod.Post
@@ -90,7 +93,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
             )
         )
 
-        val req = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
+        val req = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
           senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
           configuration = ChannelSender.Configuration(
             wabaId = Some("316806161514452"),
@@ -133,7 +136,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
                 .withBody(createChannelBrokenWabaIdResponse)
             )
         )
-        val createBadRequest = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
+        val createBadRequest = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
           senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
           configuration = ChannelSender.Configuration(
             wabaId = Some("316806161514452BROKENID")
@@ -166,7 +169,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
 
   // noinspection TypeAnnotation
   final class Fixture {
-    val createRequest = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
+    val createRequest = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
       senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
       configuration = ChannelSender.Configuration(
         verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
@@ -176,7 +179,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
         .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
     )
 
-    val createRequest1 = ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest(
+    val createRequest1 = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
       senderId = PhoneNumberE164.unsafe("+4552511283"),
       configuration = ChannelSender.Configuration(
         verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
@@ -195,8 +198,8 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: ChannelSenderCreateRequestExecutor =
-      TwilioClient.defaultImpl().messaging.channelSenderCreate
+    val instance: ChannelsSendersCreateRequestExecutor =
+      TwilioClient.defaultImpl().messaging.channelsSendersCreate
   }
 
   private def createChannelWhatsappSenderTwilioRequest =

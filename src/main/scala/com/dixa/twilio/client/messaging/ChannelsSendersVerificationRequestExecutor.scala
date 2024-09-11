@@ -1,14 +1,14 @@
 package com.dixa.twilio.client.messaging
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationException
+import com.dixa.twilio.client.messaging.ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationException
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.messaging._
 
-trait ChannelSenderVerificationRequestExecutor
+trait ChannelsSendersVerificationRequestExecutor
     extends SingleRequestExecutor[
-      ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationRequest,
-      ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationException,
+      ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest,
+      ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationException,
       Unit
     ] {
 
@@ -17,7 +17,7 @@ trait ChannelSenderVerificationRequestExecutor
   override protected type UnspecifiedException = ChannelSenderVerificationException.Unspecified
 }
 
-object ChannelSenderVerificationRequestExecutor {
+object ChannelsSendersVerificationRequestExecutor {
 
   final case class ChannelSenderVerificationRequest(
       senderSid: ChannelSender.Sid,

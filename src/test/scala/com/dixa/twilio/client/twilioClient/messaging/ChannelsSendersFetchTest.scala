@@ -1,6 +1,9 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.messaging.{ChannelSenderException, ChannelSenderFetchRequestExecutor}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderException,
+  ChannelsSendersFetchRequestExecutor
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.messaging.ChannelSender
@@ -98,7 +101,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
   // noinspection TypeAnnotation
   final class Fixture {
     val fetchRequest =
-      ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest(channelSenderSid =
+      ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest(channelSenderSid =
         channelSenderSid
       )
 
@@ -111,8 +114,8 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: ChannelSenderFetchRequestExecutor =
-      TwilioClient.defaultImpl().messaging.channelSenderFetch
+    val instance: ChannelsSendersFetchRequestExecutor =
+      TwilioClient.defaultImpl().messaging.channelsSendersFetch
   }
 
   private def channelWhatsappSenderTwilioResponse1 =

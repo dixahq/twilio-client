@@ -49,19 +49,19 @@ trait TwilioClientMessaging {
   /** Returns channel sender for a given messenger service integration with third party based on a
     * channel sender sid
     */
-  def channelSenderFetch: ChannelSenderFetchRequestExecutor
+  def channelsSendersFetch: ChannelsSendersFetchRequestExecutor
 
   /** Creates a channel sender for a specific channel
     */
-  def channelSenderCreate: ChannelSenderCreateRequestExecutor
+  def channelsSendersCreate: ChannelsSendersCreateRequestExecutor
 
   /** Send channel sender verification code
     */
-  def channelSenderVerification: ChannelSenderVerificationRequestExecutor
+  def channelsSendersVerification: ChannelsSendersVerificationRequestExecutor
 
   /** Deletes a channel sender for a specific channel
     */
-  def channelSenderDelete: ChannelSenderDeleteRequestExecutor
+  def channelsSendersDelete: ChannelsSendersDeleteRequestExecutor
 }
 
 object TwilioClientMessaging {

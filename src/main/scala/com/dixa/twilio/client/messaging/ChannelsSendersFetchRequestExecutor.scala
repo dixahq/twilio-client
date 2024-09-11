@@ -3,9 +3,9 @@ package com.dixa.twilio.client.messaging
 import com.dixa.twilio.client.SingleRequestExecutor
 import com.dixa.twilio.model.messaging._
 
-trait ChannelSenderCreateRequestExecutor
+trait ChannelsSendersFetchRequestExecutor
     extends SingleRequestExecutor[
-      ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest,
+      ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest,
       ChannelSenderException,
       ChannelSender
     ] {
@@ -15,12 +15,9 @@ trait ChannelSenderCreateRequestExecutor
   override protected type UnspecifiedException = ChannelSenderException.Unspecified
 }
 
-object ChannelSenderCreateRequestExecutor {
+object ChannelsSendersFetchRequestExecutor {
 
-  final case class ChannelSenderCreateRequest(
-      senderId: MessageRecipient,
-      configuration: ChannelSender.Configuration,
-      webhooks: ChannelSender.Webhooks,
-      profile: ChannelSender.Profile,
+  final case class ChannelSenderFetchRequest(
+      channelSenderSid: ChannelSender.Sid,
   )
 }
