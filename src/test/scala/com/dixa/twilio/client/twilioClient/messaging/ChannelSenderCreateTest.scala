@@ -1,11 +1,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.ApiException.BadRequestException
-import com.dixa.twilio.client.messaging.{
-  ChannelSenderCreateRequestExecutor,
-  ChannelSenderException,
-  TwilioClientMessaging
-}
+import com.dixa.twilio.client.messaging.{ChannelSenderCreateRequestExecutor, ChannelSenderException}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod.Post
@@ -19,7 +15,7 @@ import scala.concurrent.Future
 
 final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
 
-  classOf[TwilioClientMessaging].getSimpleName when {
+  "TwilioClientMessaging" when {
     "Asked to create a channel sender" should {
 
       "Call Twilio to create a Whatsapp sender" in {

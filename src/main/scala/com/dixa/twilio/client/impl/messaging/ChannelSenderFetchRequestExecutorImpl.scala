@@ -5,7 +5,7 @@ import com.dixa.twilio.client.messaging.{ChannelSenderException, ChannelSenderFe
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.ChannelSender
 import org.apache.pekko.http.scaladsl.HttpExt
-import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse}
+import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
@@ -46,10 +46,21 @@ private[impl] class ChannelSenderFetchRequestExecutorImpl(
       httpResponse: HttpResponse,
       entity: HttpEntityString
   ): Either[ChannelSenderException, ChannelSender] = {
+    httpResponse.status match {
+      case StatusCodes.OK =>
+        parseBody(entity)
+      case _ =>
+        Left(
+          ChannelSenderException.Unexpected(Some(entity.toString), None)
+        )
+    }
+  }
+
+  private def parseBody(entity: HttpEntityString): Either[ChannelSenderException, ChannelSender] = {
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
+          ChannelSenderException.ParseFailure(ex.cause.getMessage)
         )
       case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
     }

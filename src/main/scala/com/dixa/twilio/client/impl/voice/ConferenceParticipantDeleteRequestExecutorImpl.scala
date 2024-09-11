@@ -10,7 +10,7 @@ import com.dixa.twilio.client.voice.ConferenceParticipantDeleteRequestExecutor.{
   ConferenceParticipantDeleteRequest
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.Funit
+import com.dixa.twilio.model.FUnit
 
 import scala.concurrent.ExecutionContext
 
@@ -51,8 +51,8 @@ private[client] class ConferenceParticipantDeleteRequestExecutorImpl()(
       httpReq: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ConferenceParticipantDeleteException, Funit] = httpResponse.status match {
-    case StatusCodes.NoContent => Right(Funit)
+  ): Either[ConferenceParticipantDeleteException, FUnit] = httpResponse.status match {
+    case StatusCodes.NoContent => Right(FUnit)
     case StatusCodes.NotFound  => buildResultForNotFoundResponse(req, entity)
     case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)
   }

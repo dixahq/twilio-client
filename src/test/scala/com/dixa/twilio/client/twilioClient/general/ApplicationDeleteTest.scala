@@ -5,7 +5,7 @@ import com.dixa.twilio.client.general.ApplicationDeleteRequestExecutor
 import com.dixa.twilio.client.messaging.TwilioClientMessaging
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.Funit
+import com.dixa.twilio.model.FUnit
 import com.dixa.twilio.model.general.Application
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -42,7 +42,7 @@ final class ApplicationDeleteTest extends TwilioClientTest {
         val instance: ApplicationDeleteRequestExecutor =
           TwilioClient.defaultImpl().general.applicationDelete
         val resultFut: Future[
-          Either[ApplicationDeleteRequestExecutor.ApplicationDeleteException, Funit]
+          Either[ApplicationDeleteRequestExecutor.ApplicationDeleteException, FUnit]
         ] = {
           instance.run(connSettings, request)
         }
@@ -51,7 +51,7 @@ final class ApplicationDeleteTest extends TwilioClientTest {
             val e = result.left.getOrElse(fail("No success or either, how can that happen :D"))
             fail("expected successfully result here", e)
           }
-          assert(succResult === Funit)
+          assert(succResult === FUnit)
         }
       }
     }

@@ -1,10 +1,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor.ChannelSenderVerificationException
-import com.dixa.twilio.client.messaging.{
-  ChannelSenderVerificationRequestExecutor,
-  TwilioClientMessaging
-}
+import com.dixa.twilio.client.messaging.ChannelSenderVerificationRequestExecutor
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.messaging.ChannelSender
@@ -15,7 +12,7 @@ import scala.concurrent.Future
 
 final class ChannelSenderVerificationTest extends TwilioClientTest {
 
-  classOf[TwilioClientMessaging].getSimpleName when {
+  "TwilioClientMessaging" when {
     "Sending verification code" should {
 
       "Call Twilio to verify with code" in {

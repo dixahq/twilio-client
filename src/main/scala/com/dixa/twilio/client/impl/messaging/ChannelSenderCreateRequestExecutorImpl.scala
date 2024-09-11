@@ -94,7 +94,7 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
+          ChannelSenderException.ParseFailure(ex.cause.getMessage)
         )
       case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
     }

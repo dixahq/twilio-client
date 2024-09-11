@@ -5,6 +5,7 @@ import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
   ChannelSenderCreateRequestExecutor,
+  ChannelSenderDeleteRequestExecutor,
   ChannelSenderFetchRequestExecutor,
   ChannelSenderVerificationRequestExecutor,
   MessageMediaResourceReadRequestExecutor,
@@ -56,4 +57,7 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val channelSenderVerification: ChannelSenderVerificationRequestExecutor =
     new ChannelSenderVerificationRequestExecutorImpl()
+
+  override val channelSenderDelete: ChannelSenderDeleteRequestExecutor =
+    new ChannelSenderDeleteRequestExecutorImpl()
 }
