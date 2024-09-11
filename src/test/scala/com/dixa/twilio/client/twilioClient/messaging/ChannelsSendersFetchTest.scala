@@ -2,8 +2,7 @@ package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.messaging.{
   ChannelSenderException,
-  ChannelSenderFetchRequestExecutor,
-  TwilioClientMessaging
+  ChannelsSendersFetchRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
@@ -15,7 +14,7 @@ import scala.concurrent.Future
 
 final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
 
-  classOf[TwilioClientMessaging].getSimpleName when {
+  "TwilioClientMessaging" when {
     "Asked to fetch an channel sender" should {
 
       "Return the whatsapp channel sender that it receives from twilio" in {
@@ -101,9 +100,10 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
 
   // noinspection TypeAnnotation
   final class Fixture {
-    val fetchRequest = ChannelSenderFetchRequestExecutor.ChannelSenderFetchRequest(
-      channelSenderSid = channelSenderSid,
-    )
+    val fetchRequest =
+      ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest(channelSenderSid =
+        channelSenderSid
+      )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .get(
@@ -114,8 +114,8 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-    val instance: ChannelSenderFetchRequestExecutor =
-      TwilioClient.defaultImpl().messaging.channelSenderFetch
+    val instance: ChannelsSendersFetchRequestExecutor =
+      TwilioClient.defaultImpl().messaging.channelsSendersFetch
   }
 
   private def channelWhatsappSenderTwilioResponse1 =

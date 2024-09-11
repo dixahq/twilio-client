@@ -8,7 +8,7 @@ sealed trait ChannelSenderException extends RuntimeException
 object ChannelSenderException {
 
   final case class ChannelNotSupported(channel: String)
-      extends RuntimeException(s"Channel are not supported: $channel")
+      extends RuntimeException(s"Channel is not supported: $channel")
       with ChannelSenderException
 
   final case class ParseFailure(msg: String)
@@ -23,7 +23,20 @@ object ChannelSenderException {
   final case class Unspecified(msg: Option[String], cause: Option[Throwable])
       extends RuntimeException(
         msg.getOrElse(
-          "Unspecified error happened when parsing ChannelSender resource"
+          "Unspecified error for ChannelSender resource"
+        ),
+        cause.orNull
+      )
+      with ChannelSenderException {
+    def this(msg: String) = this(Some(msg), None)
+
+    def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
+  }
+
+  final case class Unexpected(msg: Option[String], cause: Option[Throwable])
+      extends RuntimeException(
+        msg.getOrElse(
+          "Unexpected error from Senders API"
         ),
         cause.orNull
       )

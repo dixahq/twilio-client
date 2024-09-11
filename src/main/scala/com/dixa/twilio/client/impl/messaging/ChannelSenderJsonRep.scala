@@ -48,7 +48,7 @@ private[messaging] object ChannelSenderJsonRep {
     macroR[ConfigurationJsonRep]
   implicit val propertiesJsonRepReader: Reader[PropertiesJsonRep] =
     macroR[PropertiesJsonRep]
-  implicit val channelSenderJsonRepReader: Reader[ChannelSenderJsonRep] =
+  implicit val ChannelSenderJsonRepReader: Reader[ChannelSenderJsonRep] =
     macroR[ChannelSenderJsonRep]
 
   def toModel(

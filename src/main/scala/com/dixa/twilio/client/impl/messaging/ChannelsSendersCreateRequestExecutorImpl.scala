@@ -2,7 +2,10 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.ApiException.BadRequestException
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioClientPickler}
-import com.dixa.twilio.client.messaging.{ChannelSenderCreateRequestExecutor, ChannelSenderException}
+import com.dixa.twilio.client.messaging.{
+  ChannelSenderException,
+  ChannelsSendersCreateRequestExecutor
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -21,11 +24,11 @@ import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
 
-private[impl] class ChannelSenderCreateRequestExecutorImpl(
+private[impl] class ChannelsSendersCreateRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends ChannelSenderCreateRequestExecutor {
+) extends ChannelsSendersCreateRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Messaging
 
@@ -33,7 +36,7 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
 
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest
+      req: ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest
   ): Either[ChannelSenderException, HttpRequest] = {
     val jsonBodyEither = (req.senderId, req.profile) match {
       case (
@@ -79,7 +82,7 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
   ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-      request: ChannelSenderCreateRequestExecutor.ChannelSenderCreateRequest,
+      request: ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
@@ -94,7 +97,7 @@ private[impl] class ChannelSenderCreateRequestExecutorImpl(
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))
+          ChannelSenderException.ParseFailure(ex.cause.getMessage)
         )
       case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
     }

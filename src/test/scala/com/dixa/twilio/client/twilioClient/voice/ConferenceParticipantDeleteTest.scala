@@ -4,7 +4,7 @@ import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.voice.ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest
 import com.dixa.twilio.client.voice.TwilioClientVoice
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.Funit
+import com.dixa.twilio.model.FUnit
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -42,7 +42,7 @@ final class ConferenceParticipantDeleteTest extends TwilioClientTest with Matche
 
         val resultFut = instance.conferenceParticipantDelete.run(twilioConnectionSetting, req)
 
-        resultFut.map(res => assert(res === Right(Funit)))
+        resultFut.map(res => assert(res === Right(FUnit)))
       }
     }
   }

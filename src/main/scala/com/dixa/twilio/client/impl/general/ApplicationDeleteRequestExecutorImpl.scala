@@ -6,7 +6,7 @@ import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.general.ApplicationDeleteRequestExecutor
 import com.dixa.twilio.client.impl._
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.Funit
+import com.dixa.twilio.model.FUnit
 
 import scala.concurrent.ExecutionContext
 
@@ -38,9 +38,9 @@ private[client] class ApplicationDeleteRequestExecutorImpl()(
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ApplicationDeleteException, Funit] = {
+  ): Either[ApplicationDeleteException, FUnit] = {
     httpResponse.status match {
-      case StatusCodes.NoContent => Right(Funit)
+      case StatusCodes.NoContent => Right(FUnit)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }

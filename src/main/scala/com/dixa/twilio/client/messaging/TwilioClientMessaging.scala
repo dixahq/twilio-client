@@ -8,7 +8,7 @@ import com.dixa.twilio.model.messaging.TwilioMessagingService.{
   InboundRequestWebhook,
   UseInboundWebhookOnNumber
 }
-import com.dixa.twilio.model.messaging.{Message, TwilioMessagingService}
+import com.dixa.twilio.model.messaging.TwilioMessagingService
 
 import scala.concurrent.Future
 
@@ -49,15 +49,19 @@ trait TwilioClientMessaging {
   /** Returns channel sender for a given messenger service integration with third party based on a
     * channel sender sid
     */
-  def channelSenderFetch: ChannelSenderFetchRequestExecutor
+  def channelsSendersFetch: ChannelsSendersFetchRequestExecutor
 
   /** Creates a channel sender for a specific channel
     */
-  def channelSenderCreate: ChannelSenderCreateRequestExecutor
+  def channelsSendersCreate: ChannelsSendersCreateRequestExecutor
 
   /** Send channel sender verification code
     */
-  def channelSenderVerification: ChannelSenderVerificationRequestExecutor
+  def channelsSendersVerification: ChannelsSendersVerificationRequestExecutor
+
+  /** Deletes a channel sender for a specific channel
+    */
+  def channelsSendersDelete: ChannelsSendersDeleteRequestExecutor
 }
 
 object TwilioClientMessaging {
@@ -69,7 +73,4 @@ object TwilioClientMessaging {
       statusCallback: Option[MessageStatusCallback],
       useInboundWebhookOnNumber: UseInboundWebhookOnNumber
   )
-
-  final case class MediaResourceReadRequest(messageSid: Message.Sid)
-
 }

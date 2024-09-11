@@ -2,7 +2,7 @@ package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.Funit
+import com.dixa.twilio.model.FUnit
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{Call, Conference}
 
@@ -10,7 +10,7 @@ trait ConferenceParticipantDeleteRequestExecutor
     extends SingleRequestExecutor[
       ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest,
       ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteException,
-      Funit
+      FUnit
     ] {
 
   import ConferenceParticipantDeleteRequestExecutor._

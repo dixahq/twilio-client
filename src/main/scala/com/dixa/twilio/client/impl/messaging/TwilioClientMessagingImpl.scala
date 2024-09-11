@@ -4,9 +4,10 @@ import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.TwilioConnectionSettings
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderCreateRequestExecutor,
-  ChannelSenderFetchRequestExecutor,
-  ChannelSenderVerificationRequestExecutor,
+  ChannelsSendersCreateRequestExecutor,
+  ChannelsSendersDeleteRequestExecutor,
+  ChannelsSendersFetchRequestExecutor,
+  ChannelsSendersVerificationRequestExecutor,
   MessageMediaResourceReadRequestExecutor,
   MessageResourceReadRequestExecutor,
   MessageSendRequestExecutor,
@@ -48,12 +49,15 @@ private[client] final class TwilioClientMessagingImpl(
   override val messageResourceRead: MessageResourceReadRequestExecutor =
     new MessageResourceReadRequestExecutorImpl()
 
-  override val channelSenderFetch: ChannelSenderFetchRequestExecutor =
-    new ChannelSenderFetchRequestExecutorImpl()
+  override val channelsSendersFetch: ChannelsSendersFetchRequestExecutor =
+    new ChannelsSendersFetchRequestExecutorImpl()
 
-  override val channelSenderCreate: ChannelSenderCreateRequestExecutor =
-    new ChannelSenderCreateRequestExecutorImpl()
+  override val channelsSendersCreate: ChannelsSendersCreateRequestExecutor =
+    new ChannelsSendersCreateRequestExecutorImpl()
 
-  override val channelSenderVerification: ChannelSenderVerificationRequestExecutor =
-    new ChannelSenderVerificationRequestExecutorImpl()
+  override val channelsSendersVerification: ChannelsSendersVerificationRequestExecutor =
+    new ChannelsSendersVerificationRequestExecutorImpl()
+
+  override val channelsSendersDelete: ChannelsSendersDeleteRequestExecutor =
+    new ChannelsSendersDeleteRequestExecutorImpl()
 }

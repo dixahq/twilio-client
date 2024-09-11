@@ -35,4 +35,9 @@ object ApiException {
         "Failed due to conflict. More info: https://www.twilio.com/docs/errors/20409"
       )
       with ApiException
+
+  /** Requested resource was not found. More info: https://www.twilio.com/docs/errors/20404 */
+  final case class NotFound(message: String) extends ApiException {
+    override def getMessage: String = message
+  }
 }
