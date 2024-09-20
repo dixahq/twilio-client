@@ -40,4 +40,8 @@ object ApiException {
   final case class NotFound(message: String) extends ApiException {
     override def getMessage: String = message
   }
+
+  final case class Unspecified(message: String) extends ApiException {
+    override def getMessage: String = message
+  }
 }
