@@ -32,6 +32,7 @@ object OutgoingCallerIdReadRequestExecutor {
 
   sealed trait OutgoingCallerIdReadException extends RuntimeException
   object OutgoingCallerIdReadException {
+
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
         with OutgoingCallerIdReadException
