@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.impl.phonenumber
 
-import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
+import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound, Unspecified}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.Uri.Query
 import org.apache.pekko.http.scaladsl.model.{
@@ -43,7 +43,8 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
         List(Left(OutgoingCallerIdReadException.Api(BadRequestException(responseEntity.toString))))
       case StatusCodes.NotFound =>
         List(Left(OutgoingCallerIdReadException.Api(NotFound(responseEntity.toString))))
-      case _ => parseBody(responseEntity)
+      case StatusCodes.OK => parseBody(responseEntity)
+      case _ => List(Left(OutgoingCallerIdReadException.Api(Unspecified(responseEntity.toString))))
     }
   }
 
