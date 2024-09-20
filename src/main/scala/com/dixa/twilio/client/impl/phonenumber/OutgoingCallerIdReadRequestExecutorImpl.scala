@@ -1,8 +1,15 @@
 package com.dixa.twilio.client.impl.phonenumber
 
+import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.Uri.Query
-import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
+import org.apache.pekko.http.scaladsl.model.{
+  HttpMethod,
+  HttpMethods,
+  HttpRequest,
+  HttpResponse,
+  StatusCodes
+}
 import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.phonenumber.OutgoingCallerIdReadRequestExecutor
@@ -29,9 +36,19 @@ private[impl] class OutgoingCallerIdReadRequestExecutorImpl(
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
   ): List[
-    Either[OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadException, OutgoingCallerId]
+    Either[OutgoingCallerIdReadException, OutgoingCallerId]
   ] = {
-    responseEntity.parse[OuterJsonRep]() match {
+    httpResponse.status match {
+      case StatusCodes.BadRequest =>
+        List(Left(OutgoingCallerIdReadException.Api(BadRequestException(responseEntity.toString))))
+      case StatusCodes.NotFound =>
+        List(Left(OutgoingCallerIdReadException.Api(NotFound(responseEntity.toString))))
+      case _ => parseBody(responseEntity)
+    }
+  }
+
+  private def parseBody(entity: HttpEntityString) = {
+    entity.parse[OuterJsonRep]() match {
       case Left(ex) =>
         List(
           Left(OutgoingCallerIdReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause)))
