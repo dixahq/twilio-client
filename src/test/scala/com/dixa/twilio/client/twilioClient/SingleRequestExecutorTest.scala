@@ -1,23 +1,17 @@
 package com.dixa.twilio.client.twilioClient
 
-import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
-import org.apache.pekko.http.scaladsl.{Http, HttpExt}
-import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
-import com.dixa.twilio.client.{
-  ApiException,
-  SingleRequestExecutor,
-  TwilioClient,
-  TwilioConnectionSettings,
-  TwilioTestConstants
-}
+import com.dixa.twilio.client._
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import org.apache.pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse}
+import org.apache.pekko.http.scaladsl.{Http, HttpExt}
+import org.apache.pekko.stream.Materializer
 import org.scalamock.scalatest.proxy.AsyncMockFactory
 
 import java.time.Instant
@@ -43,42 +37,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
             )
         )
 
-        val impl = new SingleRequestExecutorTestBaseImplemented {
-
-          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
-
-          override protected def method: HttpMethod = HttpMethods.GET
-          override protected def createHttpReq(
-              connSettings: TwilioConnectionSettings,
-              req: TestRequest
-          ): Either[AbstractTestException, HttpRequest] = Right(
-            HttpRequest(
-              method,
-              uri = s"http://localhost:${wireMockServer.port()}/test"
-            )
-          )
-
-          override protected def parseHttpResponse(
-              request: TestRequest,
-              httpRequest: HttpRequest,
-              httpResponse: HttpResponse,
-              entity: HttpEntityString
-          ): Either[AbstractTestException, TestSuccess] = {
-            if (entity.toString == "ResponseFromTwilio") Right(TestSuccess())
-            else
-              Left(
-                AbstractTestException.Undefined(
-                  Some(s"Wrong entity given to implementation: $entity"),
-                  None
-                )
-              )
-          }
-        }
-
-        impl.run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
-          result =>
+        impl(defaultResponseParser)
+          .run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
+          .map { result =>
             assert(result === Right(TestSuccess()))
-        }
+          }
       }
 
     "Provide a run method that async executes the http request the implementation provides, and " +
@@ -96,36 +59,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
             )
         )
 
-        val impl = new SingleRequestExecutorTestBaseImplemented {
-
-          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
-
-          override protected def method: HttpMethod = HttpMethods.GET
-
-          override protected def createHttpReq(
-              connSettings: TwilioConnectionSettings,
-              req: TestRequest
-          ): Either[AbstractTestException, HttpRequest] = Right(
-            HttpRequest(
-              method = method,
-              uri = s"http://localhost:${wireMockServer.port()}/test"
-            )
-          )
-
-          override protected def parseHttpResponse(
-              request: TestRequest,
-              httpRequest: HttpRequest,
-              httpResponse: HttpResponse,
-              entity: HttpEntityString
-          ): Either[AbstractTestException, TestSuccess] = {
-            Left(AbstractTestException.ConcreateTestException())
-          }
-        }
-
-        impl.run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
-          result =>
+        impl(defaultFailingResponseParser)
+          .run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
+          .map { result =>
             assert(result === Left(AbstractTestException.ConcreateTestException()))
-        }
+          }
       }
 
     "Provide a unsafeRun that does the same as the run method that returns result not wrapped in an either" in {
@@ -141,43 +79,11 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           )
       )
 
-      val impl = new SingleRequestExecutorTestBaseImplemented {
-
-        override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
-
-        override protected def method: HttpMethod = HttpMethods.GET
-
-        override protected def createHttpReq(
-            connSettings: TwilioConnectionSettings,
-            req: TestRequest
-        ): Either[AbstractTestException, HttpRequest] = Right(
-          HttpRequest(
-            method = method,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
-          )
-        )
-
-        override protected def parseHttpResponse(
-            request: TestRequest,
-            httpRequest: HttpRequest,
-            httpResponse: HttpResponse,
-            entity: HttpEntityString
-        ): Either[AbstractTestException, TestSuccess] = {
-          if (entity.toString == "ResponseFromTwilio") Right(TestSuccess())
-          else
-            Left(
-              AbstractTestException.Undefined(
-                Some(s"Wrong entity given to implementation: $entity"),
-                None
-              )
-            )
-        }
-      }
-
-      impl.unsafeRun(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
-        result =>
+      impl(defaultResponseParser)
+        .unsafeRun(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
+        .map { result =>
           assert(result === TestSuccess())
-      }
+        }
     }
 
     "Provide a unsafeRun that does the same as the run method but returns failures as a failed Future" in {
@@ -193,33 +99,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
           )
       )
 
-      val impl = new SingleRequestExecutorTestBaseImplemented {
-
-        override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
-
-        override protected def method: HttpMethod = HttpMethods.GET
-
-        override protected def createHttpReq(
-            connSettings: TwilioConnectionSettings,
-            req: TestRequest
-        ): Either[AbstractTestException, HttpRequest] = Right(
-          HttpRequest(
-            method,
-            uri = s"http://localhost:${wireMockServer.port()}/test"
-          )
-        )
-
-        override protected def parseHttpResponse(
-            request: TestRequest,
-            httpRequest: HttpRequest,
-            httpResponse: HttpResponse,
-            entity: HttpEntityString
-        ): Either[AbstractTestException, TestSuccess] = {
-          Left(AbstractTestException.ConcreateTestException())
-        }
-      }
-
-      impl
+      impl(defaultFailingResponseParser)
         .unsafeRun(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
         .map(_ => fail("Should have gotten an exception by know"))
         .recover { case AbstractTestException.ConcreateTestException() =>
@@ -243,38 +123,22 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
         val toThrow = new NullPointerException("Booom")
 
-        val impl = new SingleRequestExecutorTestBaseImplemented {
+        val customResponseParser = (
+            request: TestRequest,
+            httpRequest: HttpRequest,
+            httpResponse: HttpResponse,
+            entity: HttpEntityString
+        ) => throw toThrow
 
-          override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
-
-          override protected def method: HttpMethod = HttpMethods.GET
-
-          override protected def createHttpReq(
-              connSettings: TwilioConnectionSettings,
-              req: TestRequest
-          ): Either[AbstractTestException, HttpRequest] = Right(
-            HttpRequest(
-              method = HttpMethods.GET,
-              uri = s"http://localhost:${wireMockServer.port()}/test"
-            )
-          )
-
-          override protected def parseHttpResponse(
-              request: TestRequest,
-              httpRequest: HttpRequest,
-              httpResponse: HttpResponse,
-              entity: HttpEntityString
-          ): Either[AbstractTestException, TestSuccess] = throw toThrow
-        }
-
-        impl.run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest()).map {
-          result =>
+        impl(customResponseParser)
+          .run(TwilioTestConstants.connSettings(wireMockServer.port()), TestRequest())
+          .map { result =>
             assert(result.isLeft)
             result match {
               case Left(ue: AbstractTestException.Undefined) => assert(ue.getCause === toThrow)
               case _                                         => fail("Wrong cause in Exception")
             }
-        }
+          }
       }
 
     "SingleRequestExecutor's run methods should be able to be overridden for testing and not throw " +
@@ -355,6 +219,60 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         cause: Option[Throwable]
     ): UnspecifiedException = AbstractTestException.Undefined(msg, cause)
   }
+
+  private def impl(
+      responseParser: (
+          TestRequest,
+          HttpRequest,
+          HttpResponse,
+          HttpEntityString
+      ) => Either[AbstractTestException, TestSuccess]
+  ) = new SingleRequestExecutorTestBaseImplemented {
+
+    override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
+
+    override protected def method: HttpMethod = HttpMethods.GET
+    override protected def createHttpReq(
+        connSettings: TwilioConnectionSettings,
+        req: TestRequest
+    ): Either[AbstractTestException, HttpRequest] = Right(
+      HttpRequest(
+        method,
+        uri = s"http://localhost:${wireMockServer.port()}/test"
+      )
+    )
+
+    override protected def parseHttpResponse(
+        request: TestRequest,
+        httpRequest: HttpRequest,
+        httpResponse: HttpResponse,
+        entity: HttpEntityString
+    ): Either[AbstractTestException, TestSuccess] =
+      responseParser(request, httpRequest, httpResponse, entity)
+  }
+
+  private val defaultResponseParser = (
+      request: TestRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntityString
+  ) => {
+    if (entity.toString == "ResponseFromTwilio") Right(TestSuccess())
+    else
+      Left(
+        AbstractTestException.Undefined(
+          Some(s"Wrong entity given to implementation: $entity"),
+          None
+        )
+      )
+  }
+
+  private val defaultFailingResponseParser = (
+      request: TestRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntityString
+  ) => Left(AbstractTestException.ConcreateTestException())
 }
 
 private object SingleRequestExecutorTest {
