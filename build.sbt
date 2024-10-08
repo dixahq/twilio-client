@@ -20,9 +20,8 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.0.2"
-  val PekkoHttp = "1.0.1"
-  val Circe     = "0.14.5"
+  val Pekko     = "1.1.1"
+  val PekkoHttp = "1.1.0"
 }
 
 val scalacOpt = Seq(
@@ -71,18 +70,18 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "3.3.1",
+        "com.lihaoyi" %% "upickle" % "4.0.2",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
-        "com.beachape" %% "enumeratum" % "1.7.3",
+        "com.beachape" %% "enumeratum" % "1.7.5",
 
         // Test
-        "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+        "org.scalatest" %% "scalatest" % "3.2.19" % Test,
         "org.scalamock" %% "scalamock" % "6.0.0"  % Test,
-        "org.wiremock"   % "wiremock"  % "3.5.4"  % Test,
+        "org.wiremock"   % "wiremock"  % "3.9.1"  % Test,
       ),
       publish / skip := false,
       releaseProcess :=
