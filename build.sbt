@@ -81,7 +81,7 @@ lazy val `twilio-client` = project
         // Test
         "org.scalatest" %% "scalatest" % "3.2.19" % Test,
         "org.scalamock" %% "scalamock" % "6.0.0"  % Test,
-        "org.wiremock"   % "wiremock"  % "3.9.1"  % Test,
+        "org.wiremock"   % "wiremock"  % "3.9.2"  % Test,
       ),
       publish / skip := false,
       releaseProcess :=
