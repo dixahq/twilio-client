@@ -83,6 +83,9 @@ lazy val `twilio-client` = project
         "org.scalamock" %% "scalamock" % "6.0.0"  % Test,
         "org.wiremock"   % "wiremock"  % "3.9.2"  % Test,
       ),
+      dependencyOverrides ++= Seq(
+        "commons-io" % "commons-io" % "2.17.0" % Test,
+      ),
       publish / skip := false,
       releaseProcess :=
         Seq[ReleaseStep](
