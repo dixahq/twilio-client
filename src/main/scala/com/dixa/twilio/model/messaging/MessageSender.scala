@@ -76,12 +76,22 @@ object MessageSender {
       else true
     }
 
+    /** Create a new Alphanumeric instance from a string.
+      *
+      * The input String will be trimmed, as leading or trailing whitespaces don't make sense in a
+      * alphanumeric sender id. Twilio does the same, if we allowed untrimmed values here, we would
+      * end in situations where Twilio send back a different value in their response, than we send
+      * them in the request.
+      */
     def fromString(s: String): Either[AlphanumericException, Alphanumeric] = {
-      if (isValid(s)) Right(new Alphanumeric(s)) else Left(AlphanumericInvalidException(s))
+      val trimmed = s.trim
+      if (isValid(trimmed)) Right(new Alphanumeric(trimmed))
+      else Left(AlphanumericInvalidException(s))
     }
 
+    /** Exception throwing version of [[fromString]] */
     def fromStringUnsafe(s: String): Alphanumeric = {
-      if (isValid(s)) new Alphanumeric(s) else throw AlphanumericInvalidException(s)
+      fromString(s).toTry.get
     }
   }
 }

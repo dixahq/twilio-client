@@ -73,6 +73,17 @@ class MessageSenderTest extends AnyWordSpec {
 
         assert(result.asString == alphanumericSender)
       }
+
+      "succeed in trimming away leading or trailing whitespaces" in {
+        val alphanumericSender = "  Candy  "
+        val result = Alphanumeric
+          .fromString(alphanumericSender)
+          .getOrElse(
+            fail("This SmsSender is supposed to be a valid SmsSender")
+          )
+
+        assert(result.asString == "Candy")
+      }
     }
 
     "created from invalid alphanumeric sender id" should {
