@@ -84,7 +84,7 @@ lazy val `twilio-client` = project
         "org.wiremock"   % "wiremock-jetty12" % "3.9.2"  % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io" % "commons-io" % "2.16.1" % Test
+        "commons-io" % "commons-io" % "2.18.0" % Test
       ),
       publish / skip := false,
       releaseProcess :=
