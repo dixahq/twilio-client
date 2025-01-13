@@ -20,7 +20,7 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.1.2"
+  val Pekko     = "1.1.3"
   val PekkoHttp = "1.1.0"
 }
 
