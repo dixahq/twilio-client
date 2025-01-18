@@ -12,7 +12,7 @@ import sbtrelease.ReleasePlugin.autoImport.{
 }
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_13          = "2.13.14"
+val scala2_13          = "2.13.15"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
@@ -20,7 +20,7 @@ val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.1.2"
+  val Pekko     = "1.1.3"
   val PekkoHttp = "1.1.0"
 }
 
@@ -70,7 +70,7 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "4.0.2",
+        "com.lihaoyi" %% "upickle" % "4.1.0",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
@@ -79,12 +79,12 @@ lazy val `twilio-client` = project
         "com.beachape" %% "enumeratum" % "1.7.5",
 
         // Test
-        "org.scalatest" %% "scalatest" % "3.2.19" % Test,
-        "org.scalamock" %% "scalamock" % "6.0.0"  % Test,
-        "org.wiremock"   % "wiremock-jetty12"  % "3.9.2"  % Test,
+        "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
+        "org.scalamock" %% "scalamock"        % "6.1.1"  % Test,
+        "org.wiremock"   % "wiremock-jetty12" % "3.10.0" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io" % "commons-io" % "2.16.1" % Test
+        "commons-io" % "commons-io" % "2.18.0" % Test
       ),
       publish / skip := false,
       releaseProcess :=
