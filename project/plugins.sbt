@@ -12,7 +12,10 @@ credentials += sys.env.get("CI").fold(Credentials(Path.userHome / ".sbt" / ".cre
 libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
-addSbtPlugin("com.dixa"         % "sbt-dixa-release"     % "6.2.33")
+// Internal plugins
+addSbtPlugin("com.dixa"         % "sbt-dixa-release"     % "7.0.2")
+
+// External plugins
 addSbtPlugin("org.scalameta"    % "sbt-scalafmt"         % "2.5.4")
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 addDependencyTreePlugin
