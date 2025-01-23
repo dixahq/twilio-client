@@ -5,6 +5,7 @@ import org.scalatest.Assertions.assertDoesNotCompile
 
 final class MessageSidTest
     extends SidAbstractTest[Message.Sid, SidAbstract.SidCompanionObject[Message.Sid]](
-      Message.Sid,
-      { assertDoesNotCompile("""new Message.Sid("NotValidInput")""") }
+      Message.Sid, {
+        assertDoesNotCompile("""new Message.Sid("NotValidInput")""")
+      }
     )

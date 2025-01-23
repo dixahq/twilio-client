@@ -105,7 +105,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
   }
 
   //format: off
-  private def twilioResponse1 =    
+  private def twilioResponse1 =
     s"""{
       |  "meta": {
       |    "page": 0,

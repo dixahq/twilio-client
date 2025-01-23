@@ -5,6 +5,7 @@ import org.scalatest.Assertions.assertDoesNotCompile
 
 final class TwilioAccountSidTest
     extends SidAbstractTest[TwilioAccount.Sid, SidAbstract.SidCompanionObject[TwilioAccount.Sid]](
-      TwilioAccount.Sid,
-      { assertDoesNotCompile("""new TwilioAccount.Sid("invalid input")""") }
+      TwilioAccount.Sid, {
+        assertDoesNotCompile("""new TwilioAccount.Sid("invalid input")""")
+      }
     )
