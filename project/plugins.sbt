@@ -13,6 +13,6 @@ libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 addSbtPlugin("com.dixa"         % "sbt-dixa-release"     % "6.2.33")
-addSbtPlugin("org.scalameta"    % "sbt-scalafmt"         % "2.5.2")
+addSbtPlugin("org.scalameta"    % "sbt-scalafmt"         % "2.5.4")
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 addDependencyTreePlugin
