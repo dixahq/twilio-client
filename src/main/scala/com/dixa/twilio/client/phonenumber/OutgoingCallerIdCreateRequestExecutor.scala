@@ -111,7 +111,7 @@ object OutgoingCallerIdCreateRequestExecutor {
     def phoneNumber: PhoneNumberE164
     def friendlyName: Option[OutgoingCallerId.FriendlyName]
     def callDelay: Option[CallDelay]
-    def extension: Option[DtmfString.OnlyDtmfDigits]
+    def extension: Option[DtmfString]
     def statusCallback: Option[CallbackUrl.OutgoingCallerIdVerificationUrl]
     def statusCallbackMethod: Option[HttpMethod]
   }
@@ -121,7 +121,7 @@ object OutgoingCallerIdCreateRequestExecutor {
       phoneNumber: PhoneNumberE164,
       friendlyName: Option[OutgoingCallerId.FriendlyName],
       callDelay: Option[CallDelay],
-      extension: Option[DtmfString.OnlyDtmfDigits],
+      extension: Option[DtmfString],
       statusCallback: Option[CallbackUrl.OutgoingCallerIdVerificationUrl],
       statusCallbackMethod: Option[HttpMethod],
   ) extends OutgoingCallerIdCreateRequest
@@ -159,7 +159,7 @@ object OutgoingCallerIdCreateRequestExecutor {
         phoneNumber: Option[PhoneNumberE164],
         friendlyName: Option[OutgoingCallerId.FriendlyName],
         callDelay: Option[CallDelay],
-        extension: Option[DtmfString.OnlyDtmfDigits],
+        extension: Option[DtmfString],
         statusCallback: Option[CallbackUrl.OutgoingCallerIdVerificationUrl],
         statusCallbackMethod: Option[HttpMethod],
     ) {
@@ -236,8 +236,13 @@ object OutgoingCallerIdCreateRequestExecutor {
         )
       }
 
+      /** Digits to dial after connecting the verification call.
+        *
+        * See here for more information:
+        * https://help.twilio.com/articles/223180048-How-to-Add-and-Remove-a-Verified-Phone-Number-or-Caller-ID-with-Twilio#h_01JC6QWAXEKD4ZH103F775EMCG
+        */
       def withExtension(
-          extension: DtmfString.OnlyDtmfDigits
+          extension: DtmfString
       ): Builder[
         AccountSidSet,
         PhoneNumberSet,
