@@ -7,6 +7,7 @@ final class OutgoingCallerIdSidTest
     extends SidAbstractTest[OutgoingCallerId.Sid, SidAbstract.SidCompanionObject[
       OutgoingCallerId.Sid
     ]](
-      OutgoingCallerId.Sid,
-      { assertDoesNotCompile("""new OutgoingCallerId.Sid("NotValidInput")""") }
+      OutgoingCallerId.Sid, {
+        assertDoesNotCompile("""new OutgoingCallerId.Sid("NotValidInput")""")
+      }
     )

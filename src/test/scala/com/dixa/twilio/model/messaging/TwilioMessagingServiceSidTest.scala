@@ -7,6 +7,7 @@ final class TwilioMessagingServiceSidTest
     extends SidAbstractTest[TwilioMessagingService.Sid, SidAbstract.SidCompanionObject[
       TwilioMessagingService.Sid
     ]](
-      TwilioMessagingService.Sid,
-      { assertDoesNotCompile("""new TwilioMessagingService.Sid("NotValidInput")""") }
+      TwilioMessagingService.Sid, {
+        assertDoesNotCompile("""new TwilioMessagingService.Sid("NotValidInput")""")
+      }
     )

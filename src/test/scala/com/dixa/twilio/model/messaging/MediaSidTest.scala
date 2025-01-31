@@ -5,6 +5,7 @@ import org.scalatest.Assertions.assertDoesNotCompile
 
 final class MediaSidTest
     extends SidAbstractTest[Media.Sid, SidAbstract.SidCompanionObject[Media.Sid]](
-      Media.Sid,
-      { assertDoesNotCompile("""new Media.Sid("NotValidInput")""") }
+      Media.Sid, {
+        assertDoesNotCompile("""new Media.Sid("NotValidInput")""")
+      }
     )

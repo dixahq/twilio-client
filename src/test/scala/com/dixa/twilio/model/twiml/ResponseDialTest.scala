@@ -66,7 +66,7 @@ final class ResponseDialTest extends AnyWordSpec {
         assert(result.xmlPretty === expectedPrettyXml)
         
         // format: off
-        val expectedCompactXml = 
+        val expectedCompactXml =
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Conference muted="true" beep="false" startConferenceOnEnter="false" endConferenceOnExit="true" participantLabel="customLabel" jitterBufferSize="medium" waitUrl="" maxParticipants="233" record="record-from-start" region="jp1" trim="do-not-trim" coach="CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" statusCallbackEvent="start end" statusCallback="http://localhost/status" statusCallbackMethod="POST" recordingStatusCallback="http://localhost/recording" recordingStatusCallbackMethod="GET" recordingStatusCallbackEvent="completed absent">$conferenceFriendlyName</Conference></Dial></Response>"""
         // format: on
         assert(result.xmlCompact == expectedCompactXml)
