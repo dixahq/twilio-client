@@ -90,7 +90,7 @@ final class ResponseRedirectTest extends AnyWordSpec {
     "not allow more verbs to be added to the response after a redirect" in {
       assertTypeError(
         """val callbackUrl = CallbackUrl("relative/url")
-          |      
+          |
           |val result: Response.Verified = Response.build { responseBuilder =>
           |  responseBuilder.addRedirect { redirectBuilder =>
           |    redirectBuilder.withCallbackUrl(callbackUrl).withMethod(HttpMethod.Get).build()

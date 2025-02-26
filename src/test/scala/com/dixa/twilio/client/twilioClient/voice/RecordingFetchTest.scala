@@ -172,7 +172,7 @@ final class RecordingFetchTest extends TwilioClientTest {
 
   private def twilioResponseCallNotFound =
     """{
-      |  "code": 20404, 
+      |  "code": 20404,
       |  "message": "The requested resource /2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Calls/CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Recordings/REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json was not found",
       |  "more_info": "https://www.twilio.com/docs/errors/20404",
       |  "status": 404
