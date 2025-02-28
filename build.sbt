@@ -1,15 +1,6 @@
+import com.dixa.sbt.ReleaseStateTransformations.{dixaAddGitHistoryToReleaseTag, dixaCheckSnapshotDependencies, dixaDetermineVersion, dixaPushReleaseTag}
 import sbt.Test
-import com.dixa.sbt.ReleaseStateTransformations.{
-  dixaAddGitHistoryToReleaseTag,
-  dixaCheckSnapshotDependencies,
-  dixaDetermineVersion,
-  dixaPushReleaseTag
-}
-import sbtrelease.ReleasePlugin.autoImport.{
-  releaseProcess,
-  releaseStepCommandAndRemaining,
-  ReleaseStep
-}
+import sbtrelease.ReleasePlugin.autoImport.{ReleaseStep, releaseProcess, releaseStepCommandAndRemaining}
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
 val scala2_13          = "2.13.16"
@@ -84,7 +75,8 @@ lazy val `twilio-client` = project
         "org.wiremock"   % "wiremock-jetty12" % "3.12.0" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io" % "commons-io" % "2.18.0" % Test
+        "commons-io"  % "commons-io" % "2.18.0" % Test,
+        "net.minidev" % "json-smart" % "2.5.2"  % Test // Vulnerability from wiremock
       ),
       publish / skip := false,
       releaseProcess :=
