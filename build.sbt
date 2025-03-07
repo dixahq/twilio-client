@@ -1,6 +1,15 @@
-import com.dixa.sbt.ReleaseStateTransformations.{dixaAddGitHistoryToReleaseTag, dixaCheckSnapshotDependencies, dixaDetermineVersion, dixaPushReleaseTag}
+import com.dixa.sbt.ReleaseStateTransformations.{
+  dixaAddGitHistoryToReleaseTag,
+  dixaCheckSnapshotDependencies,
+  dixaDetermineVersion,
+  dixaPushReleaseTag
+}
 import sbt.Test
-import sbtrelease.ReleasePlugin.autoImport.{ReleaseStep, releaseProcess, releaseStepCommandAndRemaining}
+import sbtrelease.ReleasePlugin.autoImport.{
+  releaseProcess,
+  releaseStepCommandAndRemaining,
+  ReleaseStep
+}
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
 val scala2_13          = "2.13.16"
@@ -72,7 +81,7 @@ lazy val `twilio-client` = project
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
         "org.scalamock" %% "scalamock"        % "6.2.0"  % Test,
-        "org.wiremock"   % "wiremock-jetty12" % "3.12.0" % Test,
+        "org.wiremock"   % "wiremock-jetty12" % "3.12.1" % Test,
       ),
       dependencyOverrides ++= Seq(
         "commons-io"  % "commons-io" % "2.18.0" % Test,
