@@ -1,6 +1,15 @@
-import com.dixa.sbt.ReleaseStateTransformations.{dixaAddGitHistoryToReleaseTag, dixaCheckSnapshotDependencies, dixaDetermineVersion, dixaPushReleaseTag}
+import com.dixa.sbt.ReleaseStateTransformations.{
+  dixaAddGitHistoryToReleaseTag,
+  dixaCheckSnapshotDependencies,
+  dixaDetermineVersion,
+  dixaPushReleaseTag
+}
 import sbt.Test
-import sbtrelease.ReleasePlugin.autoImport.{ReleaseStep, releaseProcess, releaseStepCommandAndRemaining}
+import sbtrelease.ReleasePlugin.autoImport.{
+  releaseProcess,
+  releaseStepCommandAndRemaining,
+  ReleaseStep
+}
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
 val scala2_13          = "2.13.16"
