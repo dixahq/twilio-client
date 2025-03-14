@@ -16,7 +16,6 @@ val scala2_13          = "2.13.16"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
-val twitterHttpsRepo   = "Twitter Repository https" at "https://maven.twttr.com/"
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
@@ -45,7 +44,6 @@ lazy val `twilio-client` = project
       scalaVersion := scala2_13,
       resolvers ++= Seq(
         releasesRepository,
-        twitterHttpsRepo,
         snapshotsRepository,
         confluentHttpsRepo
       ),
