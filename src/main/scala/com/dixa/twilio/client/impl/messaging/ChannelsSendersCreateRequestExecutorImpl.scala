@@ -91,7 +91,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
       case StatusCodes.NotFound                   => Left(Api(NotFound(entity.toString)))
       case StatusCodes.BadRequest                 => Left(Api(BadRequestException(entity.toString)))
       case StatusCodes.OK | StatusCodes.NoContent => parseBody(entity)
-      case _ => Left(ChannelSenderException.Unexpected(Some(entity.toString), None))
+      case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
 
