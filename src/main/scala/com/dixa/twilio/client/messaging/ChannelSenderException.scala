@@ -20,6 +20,21 @@ object ChannelSenderException {
       with ChannelSenderException
       with ApiExceptionWrapper
 
+  final case class SenderIdAlreadyExists(senderId: String, apiMsg: String, apiLink: String)
+      extends RuntimeException(
+        s"SenderId already exists: $senderId - ${apiMsg} - ${apiLink}"
+      )
+      with ChannelSenderException
+
+  final case class CouldNotExtendCreditLine(
+      wabaId: Option[String],
+      apiMsg: String,
+      apiLink: String
+  ) extends RuntimeException(
+        s"Could not extend credit line for WABA: ${wabaId.getOrElse("WABA ID Not found")} - ${apiMsg} - ${apiLink}"
+      )
+      with ChannelSenderException
+
   final case class Unspecified(msg: Option[String], cause: Option[Throwable])
       extends RuntimeException(
         msg.getOrElse(
