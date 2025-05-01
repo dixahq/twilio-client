@@ -100,7 +100,6 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
         val f = new Fixture
         import f._
 
-        println("whatever")
 
         wireMockServer.stubFor(
           wireMockBuilderExpectedTwilioRequest
