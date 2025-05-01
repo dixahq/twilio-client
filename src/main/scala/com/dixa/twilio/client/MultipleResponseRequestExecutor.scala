@@ -308,8 +308,12 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
       case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
       case StatusCodes.Conflict =>
         httpEntityString.parse[DefaultApiErrorEntityJsonRep]() match {
-          case Right(DefaultApiErrorEntityJsonRep(20409L, _, _, _)) =>
-            Left(ApiException.Conflict())
+          case Right(DefaultApiErrorEntityJsonRep(20409L, message, moreInfo, status)) =>
+            Left(
+              ApiException.Conflict(
+                Option(s"Code: 20409, Message: $message, More info: $moreInfo, Status: $status")
+              )
+            )
           case _ => Right((resp, httpEntityString))
         }
       case _ => Right((resp, httpEntityString))

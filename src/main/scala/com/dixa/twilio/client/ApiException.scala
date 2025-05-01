@@ -30,9 +30,11 @@ object ApiException {
   /** The request could not be completed due to a conflict with the current state of the target
     * resource. For more info: https://www.twilio.com/docs/errors/20409
     */
-  final case class Conflict()
+  final case class Conflict(message: Option[String])
       extends IllegalStateException(
-        "Failed due to conflict. More info: https://www.twilio.com/docs/errors/20409"
+        message.getOrElse(
+          "Failed due to conflict. More info: https://www.twilio.com/docs/errors/20409"
+        )
       )
       with ApiException
 

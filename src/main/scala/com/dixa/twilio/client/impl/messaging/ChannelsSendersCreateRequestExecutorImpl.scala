@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
+import com.dixa.twilio.client.ApiException.{BadRequestException, Conflict, NotFound}
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioClientPickler}
 import com.dixa.twilio.client.messaging.{
   ChannelSenderException,
@@ -88,9 +88,10 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
       entity: HttpEntityString
   ): Either[ChannelSenderException, ChannelSender] = {
     httpResponse.status match {
-      case StatusCodes.NotFound                   => Left(Api(NotFound(entity.toString)))
-      case StatusCodes.BadRequest                 => Left(Api(BadRequestException(entity.toString)))
-      case StatusCodes.OK | StatusCodes.NoContent => parseBody(entity)
+      case StatusCodes.NotFound   => Left(Api(NotFound(entity.toString)))
+      case StatusCodes.BadRequest => Left(Api(BadRequestException(entity.toString)))
+      case StatusCodes.Conflict   => Left(Api(Conflict(Option(entity.toString))))
+      case StatusCodes.OK | StatusCodes.NoContent | StatusCodes.Accepted => parseBody(entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
