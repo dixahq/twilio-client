@@ -12,7 +12,8 @@ import com.dixa.twilio.model.phonenumber.TwilioPhoneNumber
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+import scala.concurrent.{Await, Future}
 
 final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
@@ -109,14 +110,19 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
             )
         )
 
-        val resultFut: Future[
-          Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
-        ] =
-          instance.run(connSettings, createRequest)
+        val result: Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber] =
+          Await.result(instance.run(connSettings, createRequest), 50.seconds)
         val expected =
-          Left(PhoneNumberCreateException.Api(cause = ApiException.Conflict()))
-        resultFut.map(res => assert(res === expected))
-
+          Left(
+            PhoneNumberCreateException.Api(cause =
+              ApiException.Conflict(
+                Some(
+                  "Code: 20409, Message: Number registration failed due to conflict., More info: https://www.twilio.com/docs/errors/20409, Status: 409"
+                )
+              )
+            )
+          )
+        assert(result === expected)
       }
 
       "Return a Left if credentials are wrong" in {

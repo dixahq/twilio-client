@@ -21,37 +21,73 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
   "TwilioClientMessaging" when {
     "Asked to create a channel sender" should {
 
-      "Call Twilio to create a Whatsapp sender" in {
-        val f = new Fixture
-        import f._
+      "Call Twilio to create a Whatsapp sender" should {
 
-        wireMockServer.stubFor(
-          wireMockBuilderExpectedTwilioRequest
-            .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
-            .willReturn(
-              aResponse()
-                .withStatus(200)
-                .withHeader("Content-Type", "application/json")
-                .withBody(createChannelWhatsappSenderTwilioResponse)
-            )
-        )
+        "handle 200 response" in {
+          val f = new Fixture
+          import f._
 
-        val expected = Right(
-          whatsappChannelSender.copy(
-            properties = None,
-            webhooks = Webhooks(
-              callback = Some(ChannelSender.Webhook(Post, "https://webhook.messages")),
-              fallback = None,
-              statusCallback = None
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
+              .willReturn(
+                aResponse()
+                  .withStatus(200)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(createChannelWhatsappSenderTwilioResponse)
+              )
+          )
+
+          val expected = Right(
+            whatsappChannelSender.copy(
+              properties = None,
+              webhooks = Webhooks(
+                callback = Some(ChannelSender.Webhook(Post, "https://webhook.messages")),
+                fallback = None,
+                statusCallback = None
+              )
             )
           )
-        )
 
-        val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
-        ] =
-          instance.run(connSettings, createRequest)
-        resultFut.map { result => assert(result === expected) }
+          val resultFut: Future[
+            Either[ChannelSenderException, ChannelSender]
+          ] =
+            instance.run(connSettings, createRequest)
+          resultFut.map { result => assert(result === expected) }
+        }
+
+        "handle 202 response" in {
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
+              .willReturn(
+                aResponse()
+                  .withStatus(202)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(createChannelWhatsappSenderTwilioResponse)
+              )
+          )
+
+          val expected = Right(
+            whatsappChannelSender.copy(
+              properties = None,
+              webhooks = Webhooks(
+                callback = Some(ChannelSender.Webhook(Post, "https://webhook.messages")),
+                fallback = None,
+                statusCallback = None
+              )
+            )
+          )
+
+          val resultFut: Future[
+            Either[ChannelSenderException, ChannelSender]
+          ] =
+            instance.run(connSettings, createRequest)
+          resultFut.map { result => assert(result === expected) }
+        }
       }
 
       "Call Twilio to create a Whatsapp sender with phonenumber sender id and get exception" in {
@@ -163,6 +199,79 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
         ] =
           instance.run(connSettings, createBadRequest)
         resultFut.map { result => assert(result === expected) }
+      }
+
+      "fail when receiving a conflict response with error code from Twilio" should {
+        "map to exception when receiving code 63100 'sender_id provided already exists'" in {
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
+              .willReturn(
+                aResponse()
+                  .withStatus(409)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(createSenderIdAlreadyExistsResponse)
+              )
+          )
+
+          val expected = Left(
+            ChannelSenderException.SenderIdAlreadyExists(
+              "whatsapp:+4552511283",
+              "sender_id provided already exists",
+              "https://www.twilio.com/docs/errors/63100"
+            )
+          )
+
+          val resultFut: Future[
+            Either[ChannelSenderException, ChannelSender]
+          ] =
+            instance.run(connSettings, createRequest)
+          resultFut.map { result => assert(result === expected) }
+        }
+
+        "map to exception when receiving code 63103 'Could not extend credit line to the waba_id provided'" in {
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest2))
+              .willReturn(
+                aResponse()
+                  .withStatus(409)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(couldNotExtendCreditLineResponse)
+              )
+          )
+
+          val req = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
+            senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
+            configuration = ChannelSender.Configuration(
+              wabaId = Some("316806161514452"),
+              verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
+            ),
+            webhooks = Webhooks(None, None, None),
+            profile = ChannelSender.Profile
+              .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+          )
+
+          val expected = Left(
+            ChannelSenderException.CouldNotExtendCreditLine(
+              Some("316806161514452"),
+              "Could not extend credit line to the waba_id provided",
+              "https://www.twilio.com/docs/errors/63103"
+            )
+          )
+
+          val resultFut: Future[
+            Either[ChannelSenderException, ChannelSender]
+          ] =
+            instance.run(connSettings, req)
+          resultFut.map { result => assert(result === expected) }
+        }
       }
     }
   }
@@ -282,6 +391,13 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       |}
       |""".stripMargin
 
+  private def createSenderIdAlreadyExistsResponse =
+    """{
+      |"code":63100,
+      |"message":"sender_id provided already exists",
+      |"more_info":"https://www.twilio.com/docs/errors/63100",
+      |"status":409}""".stripMargin
+
   private def createChannelBrokenWabaIdResponse =
     """{
       |"code": 63101,
@@ -289,5 +405,12 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       |"more_info": "https://www.twilio.com/docs/errors/63101",
       |"status": 400
       |}""".stripMargin
+
+  private def couldNotExtendCreditLineResponse =
+    """{
+      |"code":63103,
+      |"message":"Could not extend credit line to the waba_id provided",
+      |"more_info":"https://www.twilio.com/docs/errors/63103",
+      |"status":409}""".stripMargin
 
 }

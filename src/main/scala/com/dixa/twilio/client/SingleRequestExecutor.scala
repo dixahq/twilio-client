@@ -125,8 +125,12 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
           parseEntityAs[DefaultApiErrorEntityJsonRep](
             HttpEntityString(entity.data.utf8String)
           ) match {
-            case Right(DefaultApiErrorEntityJsonRep(20409L, _, _, _)) =>
-              Left(ApiException.Conflict())
+            case Right(DefaultApiErrorEntityJsonRep(20409L, message, more_info, status)) =>
+              Left(
+                ApiException.Conflict(
+                  Option(s"Code: 20409, Message: $message, More info: $more_info, Status: $status")
+                )
+              )
             case _ => Right((httpReq, httpResp, entity))
           }
         // Fill in more cases here as we find them

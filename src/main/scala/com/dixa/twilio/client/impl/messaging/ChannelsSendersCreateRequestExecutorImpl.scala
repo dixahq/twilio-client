@@ -1,7 +1,13 @@
 package com.dixa.twilio.client.impl.messaging
 
-import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
-import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, TwilioClientPickler}
+import com.dixa.twilio.client.ApiException.{BadRequestException, Conflict, NotFound}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString,
+  TwilioClientPickler
+}
 import com.dixa.twilio.client.messaging.{
   ChannelSenderException,
   ChannelsSendersCreateRequestExecutor
@@ -88,9 +94,33 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
       entity: HttpEntityString
   ): Either[ChannelSenderException, ChannelSender] = {
     httpResponse.status match {
-      case StatusCodes.NotFound                   => Left(Api(NotFound(entity.toString)))
-      case StatusCodes.BadRequest                 => Left(Api(BadRequestException(entity.toString)))
-      case StatusCodes.OK | StatusCodes.NoContent => parseBody(entity)
+      case StatusCodes.NotFound   => Left(Api(NotFound(entity.toString)))
+      case StatusCodes.BadRequest => Left(Api(BadRequestException(entity.toString)))
+      case StatusCodes.Conflict =>
+        entity.parse[DefaultApiErrorEntityJsonRep]() match {
+          case Left(_) => Left(Api(Conflict(Some(entity.toString))))
+          case Right(defaultApiError) =>
+            (defaultApiError.code, defaultApiError.message) match {
+              case (63100L, "sender_id provided already exists") =>
+                Left(
+                  ChannelSenderException.SenderIdAlreadyExists(
+                    request.senderId.twilioString,
+                    defaultApiError.message,
+                    defaultApiError.more_info
+                  )
+                )
+              case (63103L, "Could not extend credit line to the waba_id provided") =>
+                Left(
+                  ChannelSenderException.CouldNotExtendCreditLine(
+                    request.configuration.wabaId,
+                    defaultApiError.message,
+                    defaultApiError.more_info
+                  )
+                )
+              case _ => Left(Api(Conflict(Some(entity.toString))))
+            }
+        }
+      case StatusCodes.OK | StatusCodes.NoContent | StatusCodes.Accepted => parseBody(entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
