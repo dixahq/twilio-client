@@ -15,6 +15,7 @@ import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.client.impl.{
   ApiSubDomain,
   ApiVersion,
+  DefaultApiErrorEntityJsonRep,
   HasSidJsonRep,
   HttpEntityString,
   QueryParamBuilder
@@ -33,6 +34,7 @@ private[client] class CallCreateRequestExecutorImpl()(
 ) extends CallCreateRequestExecutor {
 
   import CallCreateRequestExecutorImpl._
+
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Api
 
   override protected def method: HttpMethod = HttpMethods.POST
@@ -123,6 +125,20 @@ private[client] class CallCreateRequestExecutorImpl()(
     httpResponse.status match {
       case StatusCodes.Created | StatusCodes.OK =>
         parseEntityAs[HasSidJsonRep](entity).map(j => Call.Sid.unsafe(j.sid))
+      case StatusCodes.BadRequest =>
+        parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+          .map(e => CallCreateException.Unspecified(None, Some(e)))
+          .flatMap { decoded =>
+            decoded.code match {
+              case 21216L =>
+                Left(
+                  CallCreateException
+                    .AccountNotAllowedToCallNumber(request.accountSid, request.to, request.from)
+                )
+              case _ =>
+                buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
+            }
+          }
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }

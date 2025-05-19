@@ -149,106 +149,145 @@ object CallCreateRequestExecutor {
 
     /** Phantom type used to require account sid to be supplied before build can be called */
     sealed trait AccountSidAttributeSet
-    sealed trait AccountSidAttributeSetTrue  extends AccountSidAttributeSet
+
+    sealed trait AccountSidAttributeSetTrue extends AccountSidAttributeSet
+
     sealed trait AccountSidAttributeSetFalse extends AccountSidAttributeSet
 
     /** Phantom type used to require to caller id to be supplied before build can be called */
     sealed trait ToCallerIdAttributeSet
-    sealed trait ToCallerIdAttributeSetTrue  extends ToCallerIdAttributeSet
+
+    sealed trait ToCallerIdAttributeSetTrue extends ToCallerIdAttributeSet
+
     sealed trait ToCallerIdAttributeSetFalse extends ToCallerIdAttributeSet
 
     /** Phantom type used to require from caller id to be supplied before build can be called */
     sealed trait FromCallerIdAttributeSet
-    sealed trait FromCallerIdAttributeSetTrue  extends FromCallerIdAttributeSet
+
+    sealed trait FromCallerIdAttributeSetTrue extends FromCallerIdAttributeSet
+
     sealed trait FromCallerIdAttributeSetFalse extends FromCallerIdAttributeSet
 
     /** Phantom type used to require one of url, twiml or applicationSid to be supplied before build
       * can be called
       */
     sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSet
+
     sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue
         extends OneOfUrlOrTwimlOrApplicationSidAttributeSet
+
     sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSetFalse
         extends OneOfUrlOrTwimlOrApplicationSidAttributeSet
 
     sealed trait HasUrlForMethodSet
-    sealed trait HasUrlForMethodSetTrue  extends HasUrlForMethodSet
+
+    sealed trait HasUrlForMethodSetTrue extends HasUrlForMethodSet
+
     sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
 
     sealed trait HasFallbackUrlForMethodSet
-    sealed trait HasFallbackUrlForMethodSetTrue  extends HasFallbackUrlForMethodSet
+
+    sealed trait HasFallbackUrlForMethodSetTrue extends HasFallbackUrlForMethodSet
+
     sealed trait HasFallbackUrlForMethodSetFalse extends HasFallbackUrlForMethodSet
 
     sealed trait HasStatusCallbackUrlForMethodSet
-    sealed trait HasStatusCallbackUrlForMethodTrue  extends HasStatusCallbackUrlForMethodSet
+
+    sealed trait HasStatusCallbackUrlForMethodTrue extends HasStatusCallbackUrlForMethodSet
+
     sealed trait HasStatusCallbackUrlForMethodFalse extends HasStatusCallbackUrlForMethodSet
 
     sealed trait HasRecordingStatusCallbackUrlForMethodSet
+
     sealed trait HasRecordingStatusCallbackUrlForMethodTrue
         extends HasRecordingStatusCallbackUrlForMethodSet
+
     sealed trait HasRecordingStatusCallbackUrlForMethodFalse
         extends HasRecordingStatusCallbackUrlForMethodSet
 
     sealed trait HasAsyncAmdStatusCallbackUrlForMethodSet
+
     sealed trait HasAsyncAmdStatusCallbackUrlForMethodTrue
         extends HasAsyncAmdStatusCallbackUrlForMethodSet
+
     sealed trait HasAsyncAmdStatusCallbackUrlForMethodFalse
         extends HasAsyncAmdStatusCallbackUrlForMethodSet
 
     /** Require record to be set because other record attributes will be useless without it */
     sealed trait HasRecordForRecordAttributesSet
-    sealed trait HasRecordForRecordAttributesSetTrue  extends HasRecordForRecordAttributesSet
+
+    sealed trait HasRecordForRecordAttributesSetTrue extends HasRecordForRecordAttributesSet
+
     sealed trait HasRecordForRecordAttributesSetFalse extends HasRecordForRecordAttributesSet
 
     /** Require asyncAmd to be set because other asyncAmd attributes will be useless without it */
     sealed trait HasAsyncAmdForAsyncAmdAttributesSet
+
     sealed trait HasAsyncAmdForAsyncAmdAttributesSetTrue extends HasAsyncAmdForAsyncAmdAttributesSet
+
     sealed trait HasAsyncAmdForAsyncAmdAttributesSetFalse
         extends HasAsyncAmdForAsyncAmdAttributesSet
 
     // url and appSid: url is ignored if app sid is set
     // url and twiml: twiml is ignored if url is set
     // twiml and appSid: probably (?) twiml is ignored if app sid is set
+
     /** Allows to set only one of the url, twiml or applicationSid attributes */
     sealed trait HasUrlOrTwimlOrApplicationSidSet
-    sealed trait HasUrlOrTwimlOrApplicationSidTrue  extends HasUrlOrTwimlOrApplicationSidSet
+
+    sealed trait HasUrlOrTwimlOrApplicationSidTrue extends HasUrlOrTwimlOrApplicationSidSet
+
     sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
 
     // From ignored attribute's point of view - I am ignored
     sealed trait IsIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait IsIgnoredBecauseApplicationSidSetTrue
         extends IsIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait IsIgnoredBecauseApplicationSidSetFalse
         extends IsIgnoredBecauseApplicationSidAttributeSet
 
     // From application sid point of view - they are ignored
     sealed trait AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait MethodIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait UrlIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait FallbackUrlIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait FallbackMethodIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait StatusCallbackIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait StatusCallbackMethodIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait StatusCallbackEventsIgnoredBecauseApplicationSidSetTrue
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
+
     sealed trait AttributeIgnoredBecauseApplicationSidSetFalse
         extends AttributeIgnoredBecauseApplicationSidAttributeSet
 
     // From machine detection point of view - I am ignored because sendDigits is here
     sealed trait IsIgnoredBecauseSendDigitsAttributeSet
-    sealed trait IsIgnoredBecauseSendDigitsSetTrue  extends IsIgnoredBecauseSendDigitsAttributeSet
+
+    sealed trait IsIgnoredBecauseSendDigitsSetTrue extends IsIgnoredBecauseSendDigitsAttributeSet
+
     sealed trait IsIgnoredBecauseSendDigitsSetFalse extends IsIgnoredBecauseSendDigitsAttributeSet
 
     // From sendDigits point of view - they (machine detection) are ignored
     sealed trait MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+
     sealed trait MachineDetectionIgnoredBecauseSendDigitsSetTrue
         extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
+
     sealed trait MachineDetectionIgnoredBecauseSendDigitsSetFalse
         extends MachineDetectionIgnoredBecauseSendDigitsAttributeSet
 
@@ -2635,6 +2674,15 @@ object CallCreateRequestExecutor {
         extends RuntimeException(cause)
         with CallCreateException
         with ApiExceptionWrapper
+
+    final case class AccountNotAllowedToCallNumber(
+        accountSid: TwilioAccount.Sid,
+        to: Call.CallerId,
+        from: Call.CallerId
+    ) extends IllegalStateException(
+          s"Account $accountSid is not allowed to call number $to from number $from - more_info https://www.twilio.com/docs/errors/21216"
+        )
+        with CallCreateException
 
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
