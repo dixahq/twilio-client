@@ -136,6 +136,16 @@ object CallRecordingReadRequestExecutor {
         )
         with CallRecordingReadException
 
+    final case class UnspecifiedWithResponseBody(
+        responseBody: String,
+        msg: Option[String],
+        cause: Option[Throwable]
+    ) extends RuntimeException(
+          s"Unspecified error happened trying to read recordings: $msg - with full raw response: $responseBody",
+          cause.orNull
+        )
+        with CallRecordingReadException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
