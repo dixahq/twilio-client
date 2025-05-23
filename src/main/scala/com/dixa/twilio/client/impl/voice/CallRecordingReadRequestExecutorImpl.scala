@@ -71,7 +71,7 @@ class CallRecordingReadRequestExecutorImpl()(
           Left(
             CallRecordingReadException.ResponseParsingFailed(
               responseEntity.toString,
-              None,
+              parsingException.getMessage,
               Some(parsingException.cause)
             )
           )

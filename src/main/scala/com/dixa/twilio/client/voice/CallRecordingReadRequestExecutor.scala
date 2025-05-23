@@ -128,12 +128,10 @@ object CallRecordingReadRequestExecutor {
 
     final case class ResponseParsingFailed(
         rawResponse: String,
-        msg: Option[String],
+        msg: String,
         cause: Option[Throwable]
     ) extends RuntimeException(
-          msg.getOrElse(
-            s"Failed to parse response: $rawResponse"
-          ),
+          s"$msg - with full raw response: $rawResponse",
           cause.orNull
         )
         with CallRecordingReadException
