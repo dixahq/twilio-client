@@ -79,8 +79,7 @@ class CallRecordingReadRequestExecutorImpl()(
       case Left(ex) =>
         List(
           Left(
-            CallRecordingReadException.UnspecifiedWithResponseBody(
-              responseEntity.toString,
+            CallRecordingReadException.Unspecified(
               Some(ex.getMessage),
               Some(ex)
             )

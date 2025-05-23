@@ -79,8 +79,7 @@ class RecordingReadRequestExecutorImpl()(
       case Left(ex) =>
         List(
           Left(
-            RecordingReadException.UnspecifiedWithResponseBody(
-              responseEntity.toString,
+            RecordingReadException.Unspecified(
               Some(ex.getMessage),
               Some(ex)
             )
