@@ -70,18 +70,19 @@ class CallRecordingReadRequestExecutorImpl()(
         List(
           Left(
             CallRecordingReadException.ResponseParsingFailed(
-              responseEntity.toString,
+              parsingException.entity.toString,
               parsingException.getMessage,
-              Some(parsingException.cause)
+              Some(parsingException)
             )
           )
         )
       case Left(ex) =>
         List(
           Left(
-            CallRecordingReadException.Unspecified(
-              Some(ex.cause.getMessage),
-              Some(ex.cause)
+            CallRecordingReadException.UnspecifiedWithResponseBody(
+              responseEntity.toString,
+              Some(ex.getMessage),
+              Some(ex)
             )
           )
         )
