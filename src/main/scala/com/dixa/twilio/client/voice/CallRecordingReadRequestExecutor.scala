@@ -126,6 +126,16 @@ object CallRecordingReadRequestExecutor {
         with CallRecordingReadException
         with ApiExceptionWrapper
 
+    final case class ResponseParsingFailed(
+        rawResponse: String,
+        msg: String,
+        cause: Option[Throwable]
+    ) extends RuntimeException(
+          s"$msg - with full raw response: $rawResponse",
+          cause.orNull
+        )
+        with CallRecordingReadException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
