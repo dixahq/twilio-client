@@ -80,7 +80,7 @@ class CallRecordingReadRequestExecutorImpl()(
         List(
           Left(
             CallRecordingReadException.Unspecified(
-              Some(s"${ex.cause.getMessage}"),
+              Some(ex.cause.getMessage),
               Some(ex.cause)
             )
           )
