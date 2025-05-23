@@ -20,7 +20,7 @@ val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/
 
 val Version = new AnyRef {
   val Pekko     = "1.1.3"
-  val PekkoHttp = "1.1.0"
+  val PekkoHttp = "1.2.0"
 }
 
 val scalacOpt = Seq(
@@ -68,7 +68,7 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "4.1.0",
+        "com.lihaoyi" %% "upickle" % "4.2.1",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
