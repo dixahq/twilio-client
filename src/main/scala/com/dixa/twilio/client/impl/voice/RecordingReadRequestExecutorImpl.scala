@@ -66,12 +66,23 @@ class RecordingReadRequestExecutorImpl()(
     Recording
   ]] = {
     responseEntity.parse[RecordingListJsonRep]() match {
+      case Left(parsingException: HttpEntityString.JsonParsingException) =>
+        List(
+          Left(
+            RecordingReadException.ResponseParsingFailed(
+              parsingException.entity.toString,
+              parsingException.getMessage,
+              Some(parsingException)
+            )
+          )
+        )
       case Left(ex) =>
         List(
           Left(
-            RecordingReadException.Unspecified(
-              Some(ex.cause.getMessage),
-              Some(ex.cause)
+            RecordingReadException.UnspecifiedWithResponseBody(
+              responseEntity.toString,
+              Some(ex.getMessage),
+              Some(ex)
             )
           )
         )

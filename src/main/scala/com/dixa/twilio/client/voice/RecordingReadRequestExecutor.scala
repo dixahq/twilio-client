@@ -123,6 +123,26 @@ object RecordingReadRequestExecutor {
         with RecordingReadException
         with ApiExceptionWrapper
 
+    final case class ResponseParsingFailed(
+        rawResponse: String,
+        msg: String,
+        cause: Option[Throwable]
+    ) extends RuntimeException(
+          s"$msg - with full raw response: $rawResponse",
+          cause.orNull
+        )
+        with RecordingReadException
+
+    final case class UnspecifiedWithResponseBody(
+        responseBody: String,
+        msg: Option[String],
+        cause: Option[Throwable]
+    ) extends RuntimeException(
+          s"Unspecified error happened trying to read recordings: $msg - with full raw response: $responseBody",
+          cause.orNull
+        )
+        with RecordingReadException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
