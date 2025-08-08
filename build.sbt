@@ -19,7 +19,7 @@ val snapshotsRepository =
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.1.4"
+  val Pekko     = "1.1.5"
   val PekkoHttp = "1.2.0"
 }
 
