@@ -82,7 +82,7 @@ lazy val `twilio-client` = project
         "org.wiremock"   % "wiremock-jetty12" % "3.13.1" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io"  % "commons-io" % "2.19.0" % Test,
+        "commons-io"  % "commons-io" % "2.20.0" % Test,
         "net.minidev" % "json-smart" % "2.5.2"  % Test, // Vulnerability from wiremock
         "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.23" % Test // Vulnerability from wiremock
       ),
