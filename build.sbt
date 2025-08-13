@@ -19,7 +19,7 @@ val snapshotsRepository =
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.1.4"
+  val Pekko     = "1.1.5"
   val PekkoHttp = "1.2.0"
 }
 
@@ -78,13 +78,13 @@ lazy val `twilio-client` = project
 
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
-        "org.scalamock" %% "scalamock"        % "7.4.0"  % Test,
+        "org.scalamock" %% "scalamock"        % "7.4.1"  % Test,
         "org.wiremock"   % "wiremock-jetty12" % "3.13.1" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io"  % "commons-io" % "2.19.0" % Test,
-        "net.minidev" % "json-smart" % "2.5.2"  % Test, // Vulnerability from wiremock
-        "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.23" % Test // Vulnerability from wiremock
+        "commons-io"  % "commons-io" % "2.20.0" % Test,
+        "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
+        "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.24" % Test // Vulnerability from wiremock
       ),
       publish / skip := false,
       releaseProcess :=
