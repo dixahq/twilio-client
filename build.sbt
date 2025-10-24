@@ -33,7 +33,8 @@ val scalacOpt = Seq(
   "-Xfatal-warnings",
   "-release",
   "17",
-  "-Wconf:msg=discarding unmoored doc comment:s"
+  "-Wconf:msg=discarding unmoored doc comment:s",
+  "-Wconf:msg=Usages of trait.*will be easy to mistake:s",
 )
 
 lazy val `twilio-client` = project
