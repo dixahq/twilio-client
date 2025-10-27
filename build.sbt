@@ -12,14 +12,14 @@ import sbtrelease.ReleasePlugin.autoImport.{
 }
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_13          = "2.13.16"
+val scala2_13          = "2.13.17"
 val releasesRepository = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.1.5"
+  val Pekko     = "1.2.1"
   val PekkoHttp = "1.2.0"
 }
 
@@ -33,7 +33,8 @@ val scalacOpt = Seq(
   "-Xfatal-warnings",
   "-release",
   "17",
-  "-Wconf:msg=discarding unmoored doc comment:s"
+  "-Wconf:msg=discarding unmoored doc comment:s",
+  "-Wconf:msg=Usages of trait.*will be easy to mistake:s",
 )
 
 lazy val `twilio-client` = project
@@ -68,7 +69,7 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "4.2.1",
+        "com.lihaoyi" %% "upickle" % "4.4.0",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
@@ -78,13 +79,13 @@ lazy val `twilio-client` = project
 
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
-        "org.scalamock" %% "scalamock"        % "7.4.1"  % Test,
+        "org.scalamock" %% "scalamock"        % "7.4.2"  % Test,
         "org.wiremock"   % "wiremock-jetty12" % "3.13.1" % Test,
       ),
       dependencyOverrides ++= Seq(
         "commons-io"  % "commons-io" % "2.20.0" % Test,
         "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
-        "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.25" % Test // Vulnerability from wiremock
+        "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.29" % Test // Vulnerability from wiremock
       ),
       publish / skip := false,
       releaseProcess :=
