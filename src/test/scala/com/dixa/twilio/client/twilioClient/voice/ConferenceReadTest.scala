@@ -47,7 +47,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
+        val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .build()
         )
@@ -88,7 +88,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
+        val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .build()
         )
@@ -147,7 +147,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
+        val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .build()
         )
@@ -196,7 +196,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().voice
-        val req = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
+        val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.builder(
           _.withAccountSid(accountSid)
             .withDateCreated(Iso8601DateTime.Before(createdAtInstant.plus(30, ChronoUnit.DAYS)))
             .withDateUpdated(Iso8601DateTime.Before(updatedAtInstant.plus(30, ChronoUnit.DAYS)))

@@ -18,12 +18,12 @@ import java.net.{URI, URL}
 
 sealed abstract class CallbackUrl private (override val toString: String)
     extends TwilioStringValue {
-  def toSmsFallbackUrl: SmsFallbackUrl                 = SmsFallbackUrl(toString)
-  def toSmsStatusCallback: SmsStatusCallback           = SmsStatusCallback(toString)
-  def toSmsUrl: SmsUrl                                 = SmsUrl(toString)
-  def toVoiceFallbackUrl: VoiceFallbackUrl             = VoiceFallbackUrl(toString)
-  def toVoiceUrl: VoiceUrl                             = VoiceUrl(toString)
-  def toVoiceStatusCallbackUrl: VoiceStatusCallbackUrl = VoiceStatusCallbackUrl(toString)
+  def toSmsFallbackUrl: SmsFallbackUrl                         = SmsFallbackUrl(toString)
+  def toSmsStatusCallback: SmsStatusCallback                   = SmsStatusCallback(toString)
+  def toSmsUrl: SmsUrl                                         = SmsUrl(toString)
+  def toVoiceFallbackUrl: VoiceFallbackUrl                     = VoiceFallbackUrl(toString)
+  def toVoiceUrl: VoiceUrl                                     = VoiceUrl(toString)
+  def toVoiceStatusCallbackUrl: VoiceStatusCallbackUrl         = VoiceStatusCallbackUrl(toString)
   def toRecordingStatusCallbackUrl: RecordingStatusCallbackUrl = RecordingStatusCallbackUrl(
     toString
   )

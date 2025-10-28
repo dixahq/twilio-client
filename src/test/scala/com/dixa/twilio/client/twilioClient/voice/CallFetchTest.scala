@@ -183,7 +183,7 @@ final class CallFetchTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = CallFetchRequestExecutor.CallFetchRequest.build(
+    val request      = CallFetchRequestExecutor.CallFetchRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withSid(callSid)
         .build()

@@ -23,7 +23,7 @@ private[impl] final class ServiceCreateRequest()(
       req: TwilioClientMessaging.ServiceCreateRequest
   ): Future[TwilioMessagingService] = {
     val postParams = createPostParamString(req)
-    val httpReq = TwilioUri
+    val httpReq    = TwilioUri
       .createPathUnsafe(
         ApiSubDomain.Messaging,
         HttpMethods.POST,

@@ -61,7 +61,7 @@ final case class TwilioConnectionSettings(
 object TwilioConnectionSettings {
 
   sealed abstract class Protocol(override val toString: String) extends EnumEntry
-  object Protocol extends Enum[Protocol] {
+  object Protocol                                               extends Enum[Protocol] {
     override val values: immutable.IndexedSeq[Protocol] = findValues
     case object Http  extends Protocol("http")
     case object Https extends Protocol("https")

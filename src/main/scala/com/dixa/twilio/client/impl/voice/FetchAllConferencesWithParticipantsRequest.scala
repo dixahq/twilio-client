@@ -33,7 +33,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
       accountSid =>
         {
           val statusParam = statusFilter.map(f => s"Status=${f.twilioString}&").getOrElse("")
-          val initPath = TwilioUri.createPathUnsafe(
+          val initPath    = TwilioUri.createPathUnsafe(
             ApiSubDomain.Api,
             HttpMethods.GET,
             s"/${apiVersion.twilioString}/Accounts/$accountSid/Conferences.json?${statusParam}PageSize=1000"

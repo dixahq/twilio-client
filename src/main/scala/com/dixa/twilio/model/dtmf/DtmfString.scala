@@ -143,9 +143,9 @@ object DtmfString {
 
   def fromStringIncludeWaits(s: String): Either[DtmfStringException, IncludeWaits] = s match {
     case empty if empty == null || empty.isEmpty => Left(DtmfStringException.EmptyValue)
-    case singleChar if singleChar.length == 1 =>
+    case singleChar if singleChar.length == 1    =>
       singleChar.head match {
-        case 'w' => Right(new IncludeWaits(Vector(w)))
+        case 'w'           => Right(new IncludeWaits(Vector(w)))
         case possibleDigit =>
           DtmfDigit
             .fromChar(possibleDigit)
@@ -160,7 +160,7 @@ object DtmfString {
       }
       mapped.find(_.isLeft) match {
         case Some(Left(e)) => Left(DtmfStringException.InvalidChar(e))
-        case _ =>
+        case _             =>
           val mappedUnwrapped = mapped.flatMap(_.toOption)
           Right(new IncludeWaits(mappedUnwrapped.toVector))
       }
@@ -171,7 +171,7 @@ object DtmfString {
 
   def fromStringOnlyDtmfDigits(s: String): Either[DtmfStringException, OnlyDtmfDigits] = s match {
     case empty if empty == null || empty.isEmpty => Left(DtmfStringException.EmptyValue)
-    case charString =>
+    case charString                              =>
       val mapped = charString.map { possibleDigit =>
         DtmfDigit.fromChar(possibleDigit)
       }

@@ -51,7 +51,7 @@ final class SipDomainDomainNameTest extends AnyWordSpec {
     }
 
     "return Right if created with with valid input" in {
-      val result = SipDomain.DomainName.safe("valid.sip.twilio.com")
+      val result                          = SipDomain.DomainName.safe("valid.sip.twilio.com")
       val unwrapped: SipDomain.DomainName =
         result.getOrElse(fail("Expected success result here"))
       assert(unwrapped.toString == "valid.sip.twilio.com")

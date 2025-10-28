@@ -36,7 +36,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
   def run(connSettings: TwilioConnectionSettings, req: Req): Future[Either[Err, Success]] =
     Future {
       createHttpReq(connSettings, req) match {
-        case Left(value) => Future.successful(Left(value))
+        case Left(value)        => Future.successful(Left(value))
         case Right(httpRequest) =>
           execWithCheckForApiException(httpRequest, connSettings.timeouts).map { apiErrorOrResp =>
             apiErrorOrResp.left
@@ -121,7 +121,7 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
       entity   <- httpResp.entity.toStrict(timeouts.requestEntityTimeout)
       result = httpResp.status match {
         case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
-        case StatusCodes.Conflict =>
+        case StatusCodes.Conflict     =>
           parseEntityAs[DefaultApiErrorEntityJsonRep](
             HttpEntityString(entity.data.utf8String)
           ) match {

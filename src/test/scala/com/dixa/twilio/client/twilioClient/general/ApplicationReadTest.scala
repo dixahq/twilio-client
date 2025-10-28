@@ -141,7 +141,7 @@ final class ApplicationReadTest extends TwilioClientTest {
 
       "Only return the single application matching the friendly name, if one such was supplied" in {
         val friendlyName = Application.FriendlyName.unsafe("Phone Me")
-        val request = ApplicationReadRequestExecutor.ApplicationReadRequest.build(
+        val request      = ApplicationReadRequestExecutor.ApplicationReadRequest.build(
           _.withAccountSid(CommonFixtures.accountSid1)
             .withFriendlyName(friendlyName)
             .build()
@@ -218,7 +218,7 @@ final class ApplicationReadTest extends TwilioClientTest {
     }
   }
 
-  def nextPageToken = "PAAP43d194ab52aefee77ec51e4e185f3e38"
+  def nextPageToken                      = "PAAP43d194ab52aefee77ec51e4e185f3e38"
   private def twilioResponse1NextPageUri =
     s"/2010-04-01/Accounts/${CommonFixtures.accountSid1}/Applications.json?PageSize=1&Page=1&PageToken=$nextPageToken"
 

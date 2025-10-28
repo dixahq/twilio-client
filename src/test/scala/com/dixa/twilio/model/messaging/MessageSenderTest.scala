@@ -10,7 +10,7 @@ class MessageSenderTest extends AnyWordSpec {
     "created from a valid alphanumeric sender id" should {
       "succeed 1" in {
         val alphanumericSender = "Twilio"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -21,7 +21,7 @@ class MessageSenderTest extends AnyWordSpec {
 
       "succeed 2" in {
         val alphanumericSender = "Cafe Bar 33"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -32,7 +32,7 @@ class MessageSenderTest extends AnyWordSpec {
 
       "succeed 3" in {
         val alphanumericSender = "130 cakes"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -43,7 +43,7 @@ class MessageSenderTest extends AnyWordSpec {
 
       "succeed 4" in {
         val alphanumericSender = "1337 5p34k"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -54,7 +54,7 @@ class MessageSenderTest extends AnyWordSpec {
 
       "succeed 5" in {
         val alphanumericSender = "ma23am"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -65,7 +65,7 @@ class MessageSenderTest extends AnyWordSpec {
 
       "succeed with one letter" in {
         val alphanumericSender = "D12345"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -76,7 +76,7 @@ class MessageSenderTest extends AnyWordSpec {
 
       "succeed in trimming away leading or trailing whitespaces" in {
         val alphanumericSender = "  Candy  "
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
           .getOrElse(
             fail("This SmsSender is supposed to be a valid SmsSender")
@@ -89,28 +89,28 @@ class MessageSenderTest extends AnyWordSpec {
     "created from invalid alphanumeric sender id" should {
       "fail when provided alphanumeric sender is longer than 11 characters" in {
         val alphanumericSender = "Ring ring it is Twilio"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
         assert(result.isLeft)
       }
 
       "fail when provided alphanumeric sender includes invalid characters" in {
         val alphanumericSender = "*Twilio*"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
         assert(result.isLeft)
       }
 
       "fail when provided alphanumeric sender is only space characters" in {
         val alphanumericSender = "   "
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
         assert(result.isLeft)
       }
 
       "fail when provided alphanumeric sender consists only of numbers and no letters" in {
         val alphanumericSender = "56789"
-        val result = Alphanumeric
+        val result             = Alphanumeric
           .fromString(alphanumericSender)
         assert(result.isLeft)
       }

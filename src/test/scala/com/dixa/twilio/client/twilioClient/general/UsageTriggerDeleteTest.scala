@@ -89,7 +89,7 @@ final class UsageTriggerDeleteTest extends TwilioClientTest {
   final class Fixture extends CommonFixtures.AccountSid {
     val accountSid      = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val usageTriggerSid = UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val createRequest = UsageTriggerDeleteRequest.builder(
+    val createRequest   = UsageTriggerDeleteRequest.builder(
       _.withAccountSid(accountSid)
         .withSid(usageTriggerSid)
         .build()

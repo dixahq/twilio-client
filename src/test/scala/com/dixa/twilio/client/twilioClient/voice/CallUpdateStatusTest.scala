@@ -218,7 +218,7 @@ final class CallUpdateStatusTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
+    val request      = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withStatus(Call.StatusUpdate.Completed)

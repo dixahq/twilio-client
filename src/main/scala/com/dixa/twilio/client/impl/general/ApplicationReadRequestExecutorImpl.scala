@@ -49,7 +49,7 @@ private[client] class ApplicationReadRequestExecutorImpl()(
   ): List[Either[ApplicationReadException, Application]] = httpResponse.status match {
     case StatusCodes.OK =>
       parseEntityAs[ApplicationListJsonRep](entity) match {
-        case Left(ex) => List(Left(ex))
+        case Left(ex)           => List(Left(ex))
         case Right(parseResult) =>
           parseResult.applications.map(appResult => Right(appResult.toModelUnsafe))
       }

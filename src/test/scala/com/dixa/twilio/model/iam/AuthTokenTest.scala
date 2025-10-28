@@ -102,7 +102,7 @@ final class AuthTokenTest extends AnyWordSpec {
     }
 
     "have a wrapper class containing an auth token and it's metadata" in {
-      val t: AuthToken.Primary = AuthToken.Primary("token")
+      val t: AuthToken.Primary  = AuthToken.Primary("token")
       val m: AuthToken.MetaData = AuthToken.MetaData(
         accountSid = TwilioTestConstants.accountSid,
         createdTime = TwilioTestConstants.createdTime,

@@ -222,7 +222,7 @@ final class ResponseDialTest extends AnyWordSpec {
 
       "Be able to nest a plain phonenumber within the dial" in {
 
-        val pn = "+4533442255"
+        val pn                        = "+4533442255"
         val result: Response.Verified = Response.build { responseBuilder =>
           responseBuilder
             .addDial { dialBuilder =>

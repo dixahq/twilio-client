@@ -314,7 +314,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val stopRequest = CallRecordingUpdateRequestExecutor.CallRecordingUpdateRequest.build(
+    val stopRequest  = CallRecordingUpdateRequestExecutor.CallRecordingUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withSid(recordingSid)

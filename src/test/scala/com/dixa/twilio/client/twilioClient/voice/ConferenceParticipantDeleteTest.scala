@@ -32,7 +32,7 @@ final class ConferenceParticipantDeleteTest extends TwilioClientTest with Matche
 
         val twilioConnectionSetting     = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
-        val req =
+        val req                         =
           ConferenceParticipantDeleteRequest.build(
             _.withAccountSid(TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
               .withConferenceSid(Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))

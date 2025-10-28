@@ -136,7 +136,7 @@ final class QueueFetchTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val queueSid     = Queue.Sid.unsafe("QUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = QueueFetchRequestExecutor.QueueFetchRequest.build(
+    val request      = QueueFetchRequestExecutor.QueueFetchRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withSid(queueSid)
         .build()

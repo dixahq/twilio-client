@@ -33,7 +33,7 @@ final class ApplicationFriendlyNameTest extends AnyWordSpec {
     }
 
     "return Right if created with the max length of 64 chars" in {
-      val result = Application.FriendlyName.safe(length64String)
+      val result                              = Application.FriendlyName.safe(length64String)
       val unwrapped: Application.FriendlyName =
         result.getOrElse(fail("Expected success result here"))
       assert(unwrapped.toString == length64String)

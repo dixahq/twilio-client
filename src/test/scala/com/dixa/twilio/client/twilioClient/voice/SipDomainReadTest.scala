@@ -137,7 +137,7 @@ final class SipDomainReadTest extends TwilioClientTest {
     }
   }
 
-  def nextPageToken = "PAAP43d194ab52aefee77ec51e4e185f3e38"
+  def nextPageToken                      = "PAAP43d194ab52aefee77ec51e4e185f3e38"
   private def twilioResponse1NextPageUri =
     s"/2010-04-01/Accounts/${CommonFixtures.accountSid1}/SIP/Domains.json?PageSize=1&Page=1&PageToken=$nextPageToken"
 

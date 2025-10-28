@@ -14,7 +14,7 @@ private[iam] final case class AuthTokenSecondaryJsonRep(
 ) {
 
   def toModel: AuthToken.AuthTokenAndMetaData[AuthToken.Secondary] = {
-    val token = AuthToken.Secondary(secondary_auth_token)
+    val token    = AuthToken.Secondary(secondary_auth_token)
     val metadata = AuthToken.MetaData(
       TwilioAccount.Sid.unsafe(account_sid),
       Instant.from(Formatter.newApiDateTimeFormatter.parse(date_created)),

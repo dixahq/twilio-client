@@ -33,7 +33,7 @@ object Token {
   final case class IceServerUrl(override val toString: String) extends TwilioStringValue
 
   final case class IceServerUsername(override val toString: String) extends TwilioStringValue
-  final case class IceServerCredential(asString: String) extends TwilioStringValue {
+  final case class IceServerCredential(asString: String)            extends TwilioStringValue {
     override def twilioString: String = asString
 
     override def toString: String = "***"

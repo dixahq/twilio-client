@@ -147,7 +147,7 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         val accountSid      = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXB")
         val accountToken    = AuthToken.Primary("TestAuthToken")
         val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
-        val account = TwilioAccount(
+        val account         = TwilioAccount(
           name = TwilioAccount.Name("TestAccount"),
           sid = accountSid,
           status = TwilioAccount.Status.Active,

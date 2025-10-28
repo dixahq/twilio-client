@@ -26,8 +26,8 @@ private[messaging] object WhatsappSenderCreateJsonRep {
       verification_method: Option[String] = None
   )
 
-  implicit val webhooksJsonRepWriter: Writer[WebhooksJsonRep] = macroW[WebhooksJsonRep]
-  implicit val profileJsonRepWriter: Writer[ProfileJsonRep]   = macroW[ProfileJsonRep]
+  implicit val webhooksJsonRepWriter: Writer[WebhooksJsonRep]           = macroW[WebhooksJsonRep]
+  implicit val profileJsonRepWriter: Writer[ProfileJsonRep]             = macroW[ProfileJsonRep]
   implicit val configurationJsonRepWriter: Writer[ConfigurationJsonRep] =
     macroW[ConfigurationJsonRep]
   implicit val whatsappSenderCreateJsonRepWriter: Writer[WhatsappSenderCreateJsonRep] =

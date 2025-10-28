@@ -195,7 +195,7 @@ final class RecordingFetchTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val req =
+    val req          =
       RecordingFetchRequestExecutor.RecordingFetchRequest.build(
         _.withAccountSid(connSettings.accountSid)
           .withSid(recordingSid)

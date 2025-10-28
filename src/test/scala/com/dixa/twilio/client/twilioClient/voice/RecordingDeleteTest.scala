@@ -126,7 +126,7 @@ final class RecordingDeleteTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val req =
+    val req          =
       RecordingDeleteRequestExecutor.RecordingDeleteRequest.build(
         _.withAccountSid(connSettings.accountSid)
           .withSid(recordingSid)

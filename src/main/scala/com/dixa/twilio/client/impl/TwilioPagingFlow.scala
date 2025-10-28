@@ -48,7 +48,7 @@ private[impl] object TwilioPagingFlow {
       val httpReqMerge  = builder.add(Merge[HttpRequest](2))
       val httpReqTupler = Flow[HttpRequest].map((_, NotUsed))
 
-      val httpFlow = builder.add(http.superPool[NotUsed]())
+      val httpFlow            = builder.add(http.superPool[NotUsed]())
       val httpResponseHandler = builder.add(
         Flow[(Try[HttpResponse], NotUsed)]
           .map { tuple2 =>
@@ -104,7 +104,7 @@ private[impl] object TwilioPagingFlow {
       apiSubDomain: ApiSubDomain
   ): Option[TwilioUri] = {
     val optionalUri = apiSubDomain.pagingStyle match {
-      case PagingStyle.NoPaging => None
+      case PagingStyle.NoPaging                   => None
       case PagingStyle.PagingAttributesInRootJson =>
         in.parseUnsafe[TwilioResponseNextPageJsonRep]().next_page_uri
       case PagingStyle.MetaObject =>

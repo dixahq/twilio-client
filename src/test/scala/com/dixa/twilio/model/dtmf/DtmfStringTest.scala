@@ -144,7 +144,7 @@ final class DtmfStringTest extends AnyWordSpec {
     "allow map of an OnlyDtmfDigits instance into a IncludeWait instance" in {
       val in: DtmfString.OnlyDtmfDigits = DtmfString(DtmfDigit.`1`, DtmfDigit.`2`, DtmfDigit.`3`)
       val expected                      = DtmfString(DtmfString.`w`, DtmfDigit.`3`, DtmfDigit.`4`)
-      val result = in.map { d =>
+      val result                        = in.map { d =>
         if (d == DtmfDigit.`1`) DtmfString.w
         else {
           val asInt   = d.twilioString.toInt
@@ -177,10 +177,10 @@ final class DtmfStringTest extends AnyWordSpec {
 
     "allow map of an IncludeWaits instance into another IncludeWaits instance" in {
       val in: DtmfString.IncludeWaits = DtmfString(DtmfString.w, DtmfDigit.`2`, DtmfDigit.`3`)
-      val expected =
+      val expected                    =
         DtmfString(DtmfString.w, DtmfDigit.`3`, DtmfDigit.`4`)
       val result: DtmfString.IncludeWaits = in.map {
-        case DtmfString.DtmfStringElement.WaitElement => DtmfString.w
+        case DtmfString.DtmfStringElement.WaitElement         => DtmfString.w
         case DtmfString.DtmfStringElement.DtmfDigitElement(d) =>
           val asInt   = d.twilioString.toInt
           val plusOne = asInt + 1
@@ -237,7 +237,7 @@ final class DtmfStringTest extends AnyWordSpec {
 
     "allow flatmap of an IncludeWaits instance into another IncludeWaits instance" in {
       val in: DtmfString.IncludeWaits = DtmfString(DtmfString.w, DtmfDigit.`2`, DtmfDigit.`3`)
-      val expected = DtmfString(
+      val expected                    = DtmfString(
         DtmfString.w,
         DtmfString.w,
         DtmfString.w,

@@ -41,7 +41,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
         result.map { result =>
           result.isEmpty shouldBe true
@@ -67,7 +67,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
         val expected = messageResource(accountSid)
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
         result.map { result =>
           result.head.left.map(ex => println(ex.getMessage))
@@ -106,7 +106,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.messageResourceRead.source(connectionSettings, req(accountSid)).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 3
@@ -151,7 +151,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
         )
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.messageResourceRead
             .source(connectionSettings, req(accountSid, filter))
             .runWith(Sink.seq)
@@ -217,7 +217,7 @@ private object MessageResourceReadListTest {
   private val sender     = MessageSender.E164(PhoneNumberE164.unsafe("+12019235161"))
   private val serviceSid = TwilioMessagingService.Sid.unsafe("MGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   private val numberSegments = MessageNumSegments.apply(1)
-  private val price = MessagePrice(
+  private val price          = MessagePrice(
     BigDecimal(0.234324),
     Iso4127CountryCode("DKK")
   )
