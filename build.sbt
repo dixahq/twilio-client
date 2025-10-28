@@ -85,7 +85,8 @@ lazy val `twilio-client` = project
       dependencyOverrides ++= Seq(
         "commons-io"  % "commons-io" % "2.20.0" % Test,
         "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
-        "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.1.3" % Test // Vulnerability from wiremock
+        // Vulnerability from wiremock
+        "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.29" % Test // scala-steward:off
       ),
       publish / skip := false,
       releaseProcess :=
