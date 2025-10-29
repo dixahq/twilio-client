@@ -48,7 +48,7 @@ private[client] class SipDomainReadRequestExecutorImpl()(
   ): List[Either[SipDomainReadException, SipDomain]] = httpResponse.status match {
     case StatusCodes.OK =>
       parseEntityAs[SipDomainListJsonRep](entity) match {
-        case Left(ex) => List(Left(ex))
+        case Left(ex)           => List(Left(ex))
         case Right(parseResult) =>
           parseResult.domains.map(appResult => Right(appResult.toModelUnsafe))
       }

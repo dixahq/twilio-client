@@ -52,7 +52,7 @@ final class OutgoingCallerIdReadTest extends TwilioClientTest with Matchers {
 
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
-        val req =
+        val req                               =
           OutgoingCallerIdReadRequest(
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             filter

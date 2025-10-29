@@ -57,7 +57,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           NotUsed
         ] =
           instance.accountRead.source(connSettings, req)
-        val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
+        val resultFut     = resultSource.toMat(Sink.seq)(Keep.right).run()
         val expectedValue = Set(
           Right(
             TwilioAccount(
@@ -150,7 +150,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
 
         val connSettings              = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientIam = TwilioClient.defaultImpl().iam
-        val req = ReadAllAccountsRequest(
+        val req                       = ReadAllAccountsRequest(
           Some(TwilioAccount.Status.Suspended),
           Some(TwilioAccount.Name("FriendlyNameToQueryFor"))
         )
@@ -159,7 +159,7 @@ final class ReadAllAccountsTest extends TwilioClientTest {
           NotUsed
         ] =
           instance.accountRead.source(connSettings, req)
-        val resultFut = resultSource.toMat(Sink.seq)(Keep.right).run()
+        val resultFut     = resultSource.toMat(Sink.seq)(Keep.right).run()
         val expectedValue = Set(
           Right(
             TwilioAccount(

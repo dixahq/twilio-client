@@ -104,7 +104,7 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
     val authToken = AuthToken.UnknownType("invalidToken")
 
     val xTwilioSignature = XTwilioSignature("kwVt9t4pyirEUMK+Bm/w6YIC0cc=")
-    val requestUrl =
+    val requestUrl       =
       "https://sms-twilio.euw1.stag.dixa.io/v1/e7a04fc4-bba8-48a8-a92e-013606a188a6/sms"
     val validationSignature =
       requestValidator.validate(requestUrl, authToken, requestParams, xTwilioSignature)

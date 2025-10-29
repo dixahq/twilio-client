@@ -168,7 +168,7 @@ final class CallRecordingCreateTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val req =
+    val req          =
       CallRecordingCreateRequestExecutor.CallRecordingCreateRequest.build(
         _.withAccountSid(connSettings.accountSid)
           .withCallSid(callSid)

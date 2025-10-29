@@ -33,7 +33,7 @@ final class UsageTriggerFriendlyNameTest extends AnyWordSpec {
     }
 
     "return Right if created with the max length of 64 chars" in {
-      val result = UsageTrigger.FriendlyName.safe(length64String)
+      val result                               = UsageTrigger.FriendlyName.safe(length64String)
       val unwrapped: UsageTrigger.FriendlyName =
         result.getOrElse(fail("Expected success result here"))
       assert(unwrapped.toString == length64String)

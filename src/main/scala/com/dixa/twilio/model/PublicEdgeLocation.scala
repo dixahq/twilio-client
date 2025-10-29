@@ -36,7 +36,7 @@ object PublicEdgeLocation extends EnumWithTwilioString[PublicEdgeLocation] {
   }
 
   sealed abstract class LegacyRegion(val id: String) extends EnumWithTwilioString.EnumEntry
-  object LegacyRegion extends EnumWithTwilioString[LegacyRegion] {
+  object LegacyRegion                                extends EnumWithTwilioString[LegacyRegion] {
 
     override def values: immutable.IndexedSeq[LegacyRegion] = findValues
 

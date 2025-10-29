@@ -49,7 +49,7 @@ private[client] class IpAccessControlListReadRequestExecutorImpl()(
     httpResponse.status match {
       case StatusCodes.OK =>
         parseEntityAs[IpAccessControlListListJsonRep](entity) match {
-          case Left(ex) => List(Left(ex))
+          case Left(ex)           => List(Left(ex))
           case Right(parseResult) =>
             parseResult.ip_access_control_lists.map(appResult => Right(appResult.toModelUnsafe))
         }

@@ -10,7 +10,7 @@ final class TwilioAccountJsonRepTest extends AnyWordSpec {
       "mistake ends up in a log somewhere" in {
 
         val authTokenString = "testAuthToken"
-        val instance = TwilioAccountJsonRep(
+        val instance        = TwilioAccountJsonRep(
           "testStatus",
           "Wed, 23 Feb 2022 17:13:40 +0000",
           authTokenString,

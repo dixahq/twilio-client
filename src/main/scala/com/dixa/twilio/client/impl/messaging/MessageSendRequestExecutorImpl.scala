@@ -148,7 +148,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
         case 21212L => Left(MessageSendException.FromNumberNotValid())
         case 21606L => Left(MessageSendException.NotMessageCapableNumber())
         case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
-        case other =>
+        case other  =>
           Left(
             new MessageSendException.Unspecified(
               s"Got status ${decoded.status} from Twilio, but we do not know what code: " +

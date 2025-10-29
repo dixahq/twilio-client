@@ -35,7 +35,7 @@ final class ActivePhoneNumberListTest extends TwilioClientTest with Matchers {
 
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
-        val req =
+        val req                               =
           ActiveNumbersReadRequest(
             Some(TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"))
           )

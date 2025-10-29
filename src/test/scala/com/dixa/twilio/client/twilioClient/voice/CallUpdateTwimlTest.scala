@@ -194,7 +194,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
+    val request      = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withTwiml(Response.build { _.addSay(_.withText("Ahoy there").build()).buildVerified() })

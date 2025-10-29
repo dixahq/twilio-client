@@ -65,7 +65,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
         )
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.isEmpty shouldBe true
@@ -99,7 +99,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
         )
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 1
@@ -165,7 +165,7 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
         )
 
         val instance = TwilioClient.defaultImpl().messaging
-        val result =
+        val result   =
           instance.mediaResourceRead.source(connSettings, req).runWith(Sink.seq)
         result.map { result =>
           result.size shouldBe 3

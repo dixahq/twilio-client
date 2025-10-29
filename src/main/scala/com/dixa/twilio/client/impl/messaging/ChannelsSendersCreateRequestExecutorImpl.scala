@@ -96,9 +96,9 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
     httpResponse.status match {
       case StatusCodes.NotFound   => Left(Api(NotFound(entity.toString)))
       case StatusCodes.BadRequest => Left(Api(BadRequestException(entity.toString)))
-      case StatusCodes.Conflict =>
+      case StatusCodes.Conflict   =>
         entity.parse[DefaultApiErrorEntityJsonRep]() match {
-          case Left(_) => Left(Api(Conflict(Some(entity.toString))))
+          case Left(_)                => Left(Api(Conflict(Some(entity.toString))))
           case Right(defaultApiError) =>
             (defaultApiError.code, defaultApiError.message) match {
               case (63100L, "sender_id provided already exists") =>

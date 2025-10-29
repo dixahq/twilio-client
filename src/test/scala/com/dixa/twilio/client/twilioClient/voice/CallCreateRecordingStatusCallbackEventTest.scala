@@ -92,7 +92,7 @@ final class CallCreateRecordingStatusCallbackEventTest extends TwilioClientTest 
     val fromCallerId      = Call.CallerId("+18668675310")
     val url               = CallbackUrl.VoiceUrl("http://demo.twilio.com/docs/voice.xml")
     val statusCallbackUrl = CallbackUrl.VoiceStatusCallbackUrl("https://www.myapp.com/events")
-    val request =
+    val request           =
       CallCreateRequestExecutor.CallCreateRequest.build(
         _.withAccountSid(connSettings.accountSid)
           .withToCallerId(toCallerId)

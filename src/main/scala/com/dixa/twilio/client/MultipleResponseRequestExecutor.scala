@@ -159,7 +159,7 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
       entityString: HttpEntityString
   ): Either[Err, Option[HttpRequest]] = {
     subDomain.pagingStyle match {
-      case PagingStyle.NoPaging => Right(None)
+      case PagingStyle.NoPaging                   => Right(None)
       case PagingStyle.PagingAttributesInRootJson =>
         extractNextPageFromRootJson(entityString)
           .flatMap(fromOptionalNextPageUriToHttpRequest(_, connectionSettings))
@@ -290,7 +290,7 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
   ): Flow[Either[Err, HttpResponse], Either[Err, (HttpResponse, HttpEntityString)], NotUsed] =
     Flow[Either[Err, HttpResponse]]
       .mapAsync(connectionSettings.parallelFactor.asInt) {
-        case Left(value) => Future.successful(Left(value))
+        case Left(value)     => Future.successful(Left(value))
         case Right(response) =>
           response.entity
             .toStrict(connectionSettings.timeouts.requestEntityTimeout)
@@ -306,7 +306,7 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
   ): Either[ApiException, (HttpResponse, HttpEntityString)] = {
     resp.status match {
       case StatusCodes.Unauthorized => Left(ApiException.AuthenticationException())
-      case StatusCodes.Conflict =>
+      case StatusCodes.Conflict     =>
         httpEntityString.parse[DefaultApiErrorEntityJsonRep]() match {
           case Right(DefaultApiErrorEntityJsonRep(20409L, message, moreInfo, status)) =>
             Left(
@@ -328,7 +328,7 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
         for {
           responseEntity        <- responseEither
           nextPageRequestOption <- nextPageHttpRequestBuilder(connectionSettings, responseEntity._2)
-          nextPageRequest <- nextPageRequestOption.toRight(
+          nextPageRequest       <- nextPageRequestOption.toRight(
             createUnspecifiedException(Some("next page is not defined"), None)
           )
         } yield nextPageRequest
@@ -342,11 +342,11 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
   ): Flow[Either[Err, (HttpResponse, HttpEntityString)], Either[Err, Success], NotUsed] =
     Flow[Either[Err, (HttpResponse, HttpEntityString)]]
       .mapConcat {
-        case Left(value) => Seq(Left(value))
+        case Left(value)  => Seq(Left(value))
         case Right(value) =>
           try {
             createHttpReq(connectionSettings, req) match {
-              case Left(value) => Seq(Left(value))
+              case Left(value)        => Seq(Left(value))
               case Right(httpRequest) =>
                 parseHttpResponse(
                   connectionSettings,

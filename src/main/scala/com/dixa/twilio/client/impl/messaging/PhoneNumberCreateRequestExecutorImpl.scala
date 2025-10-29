@@ -57,7 +57,7 @@ private[impl] final class PhoneNumberCreateRequestExecutorImpl()(
       httpResponse: HttpResponse,
       entity: HttpEntityString
   ): Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber] = httpResponse.status match {
-    case StatusCodes.OK => parseEntityAs[MessagingPhoneNumberJsonRep](entity).map(_.toModel)
+    case StatusCodes.OK       => parseEntityAs[MessagingPhoneNumberJsonRep](entity).map(_.toModel)
     case StatusCodes.Conflict =>
       buildResultForConflictResponse(entity)
     case _ => buildResultForUnhandledResponse(req, httpReq, httpResponse, entity)

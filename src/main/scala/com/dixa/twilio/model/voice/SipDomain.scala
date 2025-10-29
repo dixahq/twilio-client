@@ -43,7 +43,7 @@ object SipDomain {
   object Sid extends SidAbstract.SidCompanionObject[Sid](List(SidAbstract.Prefix("SD")), new Sid(_))
 
   sealed abstract class AuthType extends EnumWithTwilioString.EnumEntry
-  object AuthType extends EnumWithTwilioString[AuthType] {
+  object AuthType                extends EnumWithTwilioString[AuthType] {
     override def values: IndexedSeq[AuthType] = findValues
 
     case object IpAcl          extends AuthType

@@ -157,10 +157,10 @@ final class ResponseMiscTest extends AnyWordSpec {
       }
 
       "support appending multiple verbs from an Seq to Response" in {
-        val sayVerb: TwimlElement.Verb   = SayVerb.build(_.withText("aa").build())
-        val pauseVerb: TwimlElement.Verb = PauseVerb.build(_.build())
-        val hangupVerb                   = HangupVerb.build(_.build())
-        val verbSeq                      = List(sayVerb, pauseVerb, hangupVerb)
+        val sayVerb: TwimlElement.Verb           = SayVerb.build(_.withText("aa").build())
+        val pauseVerb: TwimlElement.Verb         = PauseVerb.build(_.build())
+        val hangupVerb                           = HangupVerb.build(_.build())
+        val verbSeq                              = List(sayVerb, pauseVerb, hangupVerb)
         val result: Response.UnverifiedFromModel = Response.build { responseBuilder =>
           responseBuilder
             .addDial(_.withPhoneNumber(PhoneNumberE164("+4522334455").get).build())

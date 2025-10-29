@@ -12,11 +12,11 @@ final class ResponseSayTest extends AnyWordSpec {
       "Be able to construct a response with a simple Say directive in a typesafe manner," +
         " even when text includes reserved xml chars" in {
 
-          val textToSay = """Twilio can you pronounce these reserved XML chars: "'<>&"""
+          val textToSay        = """Twilio can you pronounce these reserved XML chars: "'<>&"""
           val textToSayEscaped =
             "Twilio can you pronounce these reserved XML chars: &quot;&apos;&lt;&gt;&amp;"
 
-          val voice = Voice.`woman-EnGB`
+          val voice                     = Voice.`woman-EnGB`
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addSay { sayBuilder =>
@@ -29,12 +29,12 @@ final class ResponseSayTest extends AnyWordSpec {
               .buildVerified()
           }
 
-          val xmlCompact = result.xmlCompact
+          val xmlCompact         = result.xmlCompact
           val expectedXmlCompact =
             s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-GB" voice="woman" loop="5">$textToSayEscaped</Say></Response>"""
           assert(xmlCompact == expectedXmlCompact)
 
-          val xmlPretty = result.xmlPretty
+          val xmlPretty         = result.xmlPretty
           val expectedXmlPretty =
             s"""<?xml version="1.0" encoding="UTF-8"?>
                |<Response>
@@ -60,12 +60,12 @@ final class ResponseSayTest extends AnyWordSpec {
             .buildVerified()
         }
 
-        val xmlCompact = result.xmlCompact
+        val xmlCompact         = result.xmlCompact
         val expectedXmlCompact =
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-US" voice="Polly.Joanna-Neural" loop="5">$textToSay</Say></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
-        val xmlPretty = result.xmlPretty
+        val xmlPretty         = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
@@ -91,12 +91,12 @@ final class ResponseSayTest extends AnyWordSpec {
             .buildVerified()
         }
 
-        val xmlCompact = result.xmlCompact
+        val xmlCompact         = result.xmlCompact
         val expectedXmlCompact =
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Say language="lt-LT" voice="Google.lt-LT-Standard-A" loop="5">$textToSay</Say></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
-        val xmlPretty = result.xmlPretty
+        val xmlPretty         = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>

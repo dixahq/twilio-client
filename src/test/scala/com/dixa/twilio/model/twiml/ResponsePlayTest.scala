@@ -11,7 +11,7 @@ final class ResponsePlayTest extends AnyWordSpec {
       "Be able to construct a response with a simple Play directive in a typesafe manner," +
         " that plays a sound file from a URL" in {
 
-          val urlAsString = "https://www.dixa.com"
+          val urlAsString               = "https://www.dixa.com"
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addPlay { playBuilder =>
@@ -20,12 +20,12 @@ final class ResponsePlayTest extends AnyWordSpec {
               .buildVerified()
           }
 
-          val xmlCompact = result.xmlCompact
+          val xmlCompact         = result.xmlCompact
           val expectedXmlCompact =
             s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play>$urlAsString</Play></Response>"""
           assert(xmlCompact == expectedXmlCompact)
 
-          val xmlPretty = result.xmlPretty
+          val xmlPretty         = result.xmlPretty
           val expectedXmlPretty =
             s"""<?xml version="1.0" encoding="UTF-8"?>
                |<Response>
@@ -45,12 +45,12 @@ final class ResponsePlayTest extends AnyWordSpec {
             .buildVerified()
         }
 
-        val xmlCompact = result.xmlCompact
+        val xmlCompact         = result.xmlCompact
         val expectedXmlCompact =
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="1w*"></Play></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
-        val xmlPretty = result.xmlPretty
+        val xmlPretty         = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
@@ -72,12 +72,12 @@ final class ResponsePlayTest extends AnyWordSpec {
             .buildVerified()
         }
 
-        val xmlCompact = result.xmlCompact
+        val xmlCompact         = result.xmlCompact
         val expectedXmlCompact =
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234" loop="88">https://www.dixa.com</Play></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
-        val xmlPretty = result.xmlPretty
+        val xmlPretty         = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>

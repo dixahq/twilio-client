@@ -244,7 +244,7 @@ object Conference {
   }
 
   sealed abstract class Record(override val toString: String) extends EnumWithTwilioString.EnumEntry
-  object Record extends EnumWithTwilioString[Record] {
+  object Record                                               extends EnumWithTwilioString[Record] {
     override def values: scala.collection.immutable.IndexedSeq[Record] = findValues
 
     case object DoNotRecord     extends Record("do-not-record")
@@ -252,7 +252,7 @@ object Conference {
   }
 
   sealed abstract class Trim(override val toString: String) extends EnumWithTwilioString.EnumEntry
-  object Trim extends EnumWithTwilioString[Trim] {
+  object Trim                                               extends EnumWithTwilioString[Trim] {
     override def values: scala.collection.immutable.IndexedSeq[Trim] = findValues
 
     case object TrimSilence extends Trim("trim-silence")

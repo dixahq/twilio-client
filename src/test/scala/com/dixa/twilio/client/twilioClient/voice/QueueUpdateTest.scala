@@ -136,7 +136,7 @@ final class QueueUpdateTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val queueSid     = Queue.Sid.unsafe("QUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = QueueUpdateRequestExecutor.QueueUpdateRequest.build(
+    val request      = QueueUpdateRequestExecutor.QueueUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withSid(queueSid)
         .withMaxSize(Queue.MaxSize(5000))

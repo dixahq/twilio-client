@@ -52,7 +52,7 @@ object SipIpAddress {
   }
 
   sealed abstract class CidrPrefixLength extends EnumWithTwilioString.EnumEntry
-  object CidrPrefixLength extends EnumWithTwilioString[CidrPrefixLength] {
+  object CidrPrefixLength                extends EnumWithTwilioString[CidrPrefixLength] {
     override def values: IndexedSeq[CidrPrefixLength] = findValues
 
     case object `0`  extends CidrPrefixLength

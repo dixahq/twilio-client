@@ -180,7 +180,7 @@ final class CallUpdateUrlTest extends TwilioClientTest {
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val request = CallUpdateRequestExecutor.CallUpdateRequest.build(
+    val request      = CallUpdateRequestExecutor.CallUpdateRequest.build(
       _.withAccountSid(connSettings.accountSid)
         .withCallSid(callSid)
         .withUrl(CallbackUrl.VoiceUrl("http://demo.twilio.com/docs/voice.xml"))
