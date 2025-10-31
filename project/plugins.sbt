@@ -16,6 +16,6 @@ libraryDependencySchemes ++= Seq(
 addSbtPlugin("com.dixa" % "sbt-dixa-release" % "7.0.4")
 
 // External plugins
-addSbtPlugin("org.scalameta"    % "sbt-scalafmt"         % "2.5.5")
+addSbtPlugin("org.scalameta"    % "sbt-scalafmt"         % "2.5.6")
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 addDependencyTreePlugin
