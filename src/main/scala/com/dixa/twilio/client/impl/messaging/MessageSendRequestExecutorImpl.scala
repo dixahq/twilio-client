@@ -40,14 +40,14 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: MessageSendRequest
   ): Either[MessageSendException, HttpRequest] = {
-    val reqEntity = FormData(
-      Map(
-        "From"           -> req.from.asString,
-        "To"             -> req.to.toMessageRecipient,
-        "Body"           -> req.body.toString,
-        "StatusCallback" -> req.statusCallback.toString
-      )
-    ).toEntity
+    val baseFields = Seq(
+      "From"           -> req.from.asString,
+      "To"             -> req.to.toMessageRecipient,
+      "Body"           -> req.body.toString,
+      "StatusCallback" -> req.statusCallback.toString
+    )
+    val mediaFields = req.mediaUrls.map(url => "MediaUrl" -> url.toString)
+    val reqEntity   = FormData(baseFields ++ mediaFields: _*).toEntity
 
     createHttpRequestFor(s"/2010-04-01/Accounts/${req.accountSid}/Messages.json", connSettings)
       .map(_.withEntity(reqEntity))

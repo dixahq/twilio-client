@@ -27,7 +27,8 @@ object MessageSendRequestExecutor {
       from: MessageSender,
       to: MessageRecipient,
       body: MessageBody,
-      statusCallback: MessageStatusCallback
+      statusCallback: MessageStatusCallback,
+      mediaUrls: Seq[MediaResourceUrl] = Seq.empty
   )
 
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages
