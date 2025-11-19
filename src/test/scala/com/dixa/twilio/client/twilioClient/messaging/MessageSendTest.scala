@@ -87,7 +87,8 @@ final class MessageSendTest extends TwilioClientTest {
           )
         )
 
-        val requestWithMedia = messageSendRequest.copy(mediaUrls = Seq(MediaResourceUrl(mediaUrl1.toString)))
+        val requestWithMedia =
+          messageSendRequest.copy(mediaUrls = Seq(MediaResourceUrl(mediaUrl1.toString)))
 
         val resultFut: Future[
           Either[MessageSendException, MessageResource]
