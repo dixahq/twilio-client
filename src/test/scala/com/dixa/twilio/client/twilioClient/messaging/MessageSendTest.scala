@@ -22,6 +22,162 @@ final class MessageSendTest extends TwilioClientTest {
 
   classOf[MessageSendRequestExecutor].getSimpleName when {
     "asked to send an sms" should {
+      "successfully send an mms with a single media url" in {
+        val f = new Fixture
+        import f._
+
+        val mediaUrl1 = new URL("https://example.com/media/abc.jpg")
+
+        val messageSendTwilioSuccessResponse =
+          s"""{
+             |  "account_sid": "${accountSid}",
+             |  "api_version": "2010-04-01",
+             |  "body": "${messageBody}",
+             |  "date_created": null,
+             |  "date_sent": null,
+             |  "date_updated": null,
+             |  "direction": "outbound-api",
+             |  "error_code": null,
+             |  "error_message": null,
+             |  "from": "${from}",
+             |  "messaging_service_sid": null,
+             |  "num_media": "1",
+             |  "num_segments": "1",
+             |  "price": null,
+             |  "price_unit": null,
+             |  "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+             |  "status": "sent",
+             |  "subresource_uris": {
+             |    "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+             |  },
+             |  "to": "${to}",
+             |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+             |}""".stripMargin
+
+        val encMedia1 = URLEncoder.encode(mediaUrl1.toString, StandardCharsets.UTF_8.toString)
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .withRequestBody(WireMock.containing(s"MediaUrl=${encMedia1}"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(messageSendTwilioSuccessResponse)
+            )
+        )
+
+        val expected = Right(
+          MessageResource(
+            accountSid = accountSid,
+            body = MessageBody(messageBody),
+            dateCreated = None,
+            dateSent = None,
+            dateUpdated = None,
+            direction = MessageDirection.withName("OutboundApi"),
+            from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+            messagingServiceSid = None,
+            numMedia = 1,
+            numSegments = MessageNumSegments(1),
+            price = None,
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            status = MessageStatus.withName("Sent"),
+            to = PhoneNumberE164.unsafe(to),
+            error = None
+          )
+        )
+
+        val requestWithMedia =
+          messageSendRequest.copy(mediaUrls = Seq(MediaResourceUrl(mediaUrl1.toString)))
+
+        val resultFut: Future[
+          Either[MessageSendException, MessageResource]
+        ] =
+          instance.run(connSettings, requestWithMedia)
+        resultFut.map(result => assert(result === expected))
+      }
+
+      "successfully send an mms with multiple media urls" in {
+        val f = new Fixture
+        import f._
+
+        val mediaUrl1 = new URL("https://example.com/media/abc.jpg")
+        val mediaUrl2 = new URL("https://example.com/media/def.png")
+
+        val messageSendTwilioSuccessResponse =
+          s"""{
+             |  "account_sid": "${accountSid}",
+             |  "api_version": "2010-04-01",
+             |  "body": "${messageBody}",
+             |  "date_created": null,
+             |  "date_sent": null,
+             |  "date_updated": null,
+             |  "direction": "outbound-api",
+             |  "error_code": null,
+             |  "error_message": null,
+             |  "from": "${from}",
+             |  "messaging_service_sid": null,
+             |  "num_media": "2",
+             |  "num_segments": "1",
+             |  "price": null,
+             |  "price_unit": null,
+             |  "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+             |  "status": "sent",
+             |  "subresource_uris": {
+             |    "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+             |  },
+             |  "to": "${to}",
+             |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+             |}""".stripMargin
+
+        val encMedia1 = URLEncoder.encode(mediaUrl1.toString, StandardCharsets.UTF_8.toString)
+        val encMedia2 = URLEncoder.encode(mediaUrl2.toString, StandardCharsets.UTF_8.toString)
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .withRequestBody(WireMock.containing(s"MediaUrl=${encMedia1}"))
+            .withRequestBody(WireMock.containing(s"MediaUrl=${encMedia2}"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(messageSendTwilioSuccessResponse)
+            )
+        )
+
+        val expected = Right(
+          MessageResource(
+            accountSid = accountSid,
+            body = MessageBody(messageBody),
+            dateCreated = None,
+            dateSent = None,
+            dateUpdated = None,
+            direction = MessageDirection.withName("OutboundApi"),
+            from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+            messagingServiceSid = None,
+            numMedia = 2,
+            numSegments = MessageNumSegments(1),
+            price = None,
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            status = MessageStatus.withName("Sent"),
+            to = PhoneNumberE164.unsafe(to),
+            error = None
+          )
+        )
+
+        val requestWithMedia = messageSendRequest.copy(
+          mediaUrls = Seq(
+            MediaResourceUrl(mediaUrl1.toString),
+            MediaResourceUrl(mediaUrl2.toString)
+          )
+        )
+
+        val resultFut: Future[
+          Either[MessageSendException, MessageResource]
+        ] =
+          instance.run(connSettings, requestWithMedia)
+        resultFut.map(result => assert(result === expected))
+      }
       "successfully authenticate with Twilio and send an sms" in {
         val f = new Fixture
         import f._
