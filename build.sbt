@@ -69,7 +69,7 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "4.4.0",
+        "com.lihaoyi" %% "upickle" % "4.4.1",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
@@ -79,7 +79,7 @@ lazy val `twilio-client` = project
 
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
-        "org.scalamock" %% "scalamock"        % "7.5.0"  % Test,
+        "org.scalamock" %% "scalamock"        % "7.5.1"  % Test,
         "org.wiremock"   % "wiremock-jetty12" % "3.13.1" % Test,
       ),
       dependencyOverrides ++= Seq(
