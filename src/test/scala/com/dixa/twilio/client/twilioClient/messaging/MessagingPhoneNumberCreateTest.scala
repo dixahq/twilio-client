@@ -141,7 +141,7 @@ final class MessagingPhoneNumberCreateTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[PhoneNumberCreateException, TwilioMessagingPhoneNumber]
-        ] = instance.run(connSettings, createRequest)
+        ]            = instance.run(connSettings, createRequest)
         val expected =
           Left(PhoneNumberCreateException.Api(ApiException.AuthenticationException()))
         resultFut.map(res => assert(res === expected))

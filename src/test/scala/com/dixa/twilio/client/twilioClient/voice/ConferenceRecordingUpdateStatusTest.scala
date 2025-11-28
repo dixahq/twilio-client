@@ -190,7 +190,7 @@ final class ConferenceRecordingUpdateStatusTest extends TwilioClientTest {
             ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateException,
             Recording
           ]
-        ] = instance.run(connSettings, pausedRequest)
+        ]            = instance.run(connSettings, pausedRequest)
         val expected =
           Left(
             ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateException.Api(

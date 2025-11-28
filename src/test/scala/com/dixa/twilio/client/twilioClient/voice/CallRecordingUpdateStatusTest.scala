@@ -208,7 +208,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[CallRecordingUpdateRequestExecutor.CallRecordingUpdateException, Recording]
-        ] = instance.run(connSettings, stopRequest)
+        ]            = instance.run(connSettings, stopRequest)
         val expected =
           Left(
             CallRecordingUpdateRequestExecutor.CallRecordingUpdateException.Api(
