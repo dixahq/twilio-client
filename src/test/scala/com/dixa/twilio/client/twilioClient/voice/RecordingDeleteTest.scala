@@ -90,7 +90,7 @@ final class RecordingDeleteTest extends TwilioClientTest {
             RecordingDeleteRequestExecutor.RecordingDeleteRequestException,
             Unit
           ]
-        ] = instance.run(connSettings, req)
+        ]            = instance.run(connSettings, req)
         val expected =
           Left(
             RecordingDeleteRequestExecutor.RecordingDeleteRequestException.Api(

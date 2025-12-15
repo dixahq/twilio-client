@@ -108,7 +108,7 @@ final class CallRecordingCreateTest extends TwilioClientTest {
             CallRecordingCreateRequestExecutor.CallRecordingCreateException,
             Recording
           ]
-        ] = instance.run(connSettings, req)
+        ]            = instance.run(connSettings, req)
         val expected =
           Left(
             CallRecordingCreateRequestExecutor.CallRecordingCreateException.Api(

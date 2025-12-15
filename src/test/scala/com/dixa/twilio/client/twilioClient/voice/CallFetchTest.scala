@@ -110,7 +110,7 @@ final class CallFetchTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[CallFetchException, Call]
-        ] = instance.run(connSettings, request)
+        ]            = instance.run(connSettings, request)
         val expected =
           Left(CallFetchException.Api(ApiException.AuthenticationException()))
         resultFut.map(res => assert(res === expected))

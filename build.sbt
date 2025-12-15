@@ -12,14 +12,14 @@ import sbtrelease.ReleasePlugin.autoImport.{
 }
 import sbtrelease.ReleaseStateTransformations.{runClean, tagRelease}
 
-val scala2_13           = "2.13.17"
+val scala2_13           = "2.13.18"
 val releasesRepository  = "Dixa repo" at "https://repo.dixa.io/content/repositories/releases/"
 val snapshotsRepository =
   "Dixa snapshots repo" at "https://repo.dixa.io/content/repositories/snapshots/"
 val confluentHttpsRepo = "confluent.io" at "https://packages.confluent.io/maven/"
 
 val Version = new AnyRef {
-  val Pekko     = "1.2.1"
+  val Pekko     = "1.3.0"
   val PekkoHttp = "1.3.0"
 }
 
@@ -75,15 +75,15 @@ lazy val `twilio-client` = project
         "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
-        "com.beachape" %% "enumeratum" % "1.9.0",
+        "com.beachape" %% "enumeratum" % "1.9.1",
 
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
-        "org.scalamock" %% "scalamock"        % "7.5.1"  % Test,
-        "org.wiremock"   % "wiremock-jetty12" % "3.13.1" % Test,
+        "org.scalamock" %% "scalamock"        % "7.5.2"  % Test,
+        "org.wiremock"   % "wiremock-jetty12" % "3.13.2" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io"  % "commons-io" % "2.20.0" % Test,
+        "commons-io"  % "commons-io" % "2.21.0" % Test,
         "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
         // Vulnerability from wiremock
         "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.29" % Test // scala-steward:off

@@ -90,7 +90,7 @@ final class QueueFetchTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[QueueFetchException, Queue]
-        ] = instance.run(connSettings, request)
+        ]            = instance.run(connSettings, request)
         val expected =
           Left(QueueFetchException.Api(ApiException.AuthenticationException()))
         resultFut.map(res => assert(res === expected))

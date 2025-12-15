@@ -127,7 +127,7 @@ final class RecordingFetchTest extends TwilioClientTest {
             RecordingFetchRequestExecutor.RecordingFetchException,
             Recording
           ]
-        ] = instance.run(connSettings, req)
+        ]            = instance.run(connSettings, req)
         val expected =
           Left(
             RecordingFetchRequestExecutor.RecordingFetchException.Api(

@@ -261,7 +261,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
 
         val resultFut: Future[
           Either[ConferenceParticipantUpdateException, Conference.Participant]
-        ] = instance.run(connSettings, request)
+        ]            = instance.run(connSettings, request)
         val expected =
           Left(ConferenceParticipantUpdateException.Api(ApiException.AuthenticationException()))
         resultFut.map(res => assert(res === expected))
