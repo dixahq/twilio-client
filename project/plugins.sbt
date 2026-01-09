@@ -13,7 +13,7 @@ libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
 )
 // Internal plugins
-addSbtPlugin("com.dixa" % "sbt-dixa-release" % "8.0.0")
+addSbtPlugin("com.dixa" % "sbt-dixa-release" % "8.1.2")
 
 // External plugins
 addSbtPlugin("org.scalameta"    % "sbt-scalafmt"         % "2.5.6")
