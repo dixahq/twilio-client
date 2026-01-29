@@ -62,6 +62,10 @@ trait TwilioClientMessaging {
   /** Deletes a channel sender for a specific channel
     */
   def channelsSendersDelete: ChannelsSendersDeleteRequestExecutor
+
+  /** Lists channel senders, optionally filtered by sender_id
+    */
+  def channelsSendersList: ChannelsSendersListRequestExecutor
 }
 
 object TwilioClientMessaging {

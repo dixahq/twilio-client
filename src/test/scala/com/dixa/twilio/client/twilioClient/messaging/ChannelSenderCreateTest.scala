@@ -201,6 +201,72 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
         resultFut.map { result => assert(result === expected) }
       }
 
+      "fail when receiving a 500 internal server error from Twilio" should {
+        "map to TwilioInternalError with parsed error details" in {
+          val f = new Fixture
+          import f._
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
+              .willReturn(
+                aResponse()
+                  .withStatus(500)
+                  .withHeader("Content-Type", "application/json")
+                  .withBody(twilioInternalServerErrorResponse)
+              )
+          )
+
+          val expected = Left(
+            ChannelSenderException.TwilioInternalError(
+              errorCode = Some(20500L),
+              errorMessage = Some("An internal server error has occurred"),
+              moreInfo = Some("https://www.twilio.com/docs/errors/20500"),
+              rawResponse = twilioInternalServerErrorResponse
+            )
+          )
+
+          val resultFut: Future[
+            Either[ChannelSenderException, ChannelSender]
+          ] =
+            instance.run(connSettings, createRequest)
+          resultFut.map { result => assert(result === expected) }
+        }
+
+        "map to TwilioInternalError with empty fields when response cannot be parsed" in {
+          val f = new Fixture
+          import f._
+
+          val unparsableResponse = "Internal Server Error"
+
+          wireMockServer.stubFor(
+            wireMockBuilderExpectedTwilioRequest
+              .withRequestBody(equalToJson(createChannelWhatsappSenderTwilioRequest))
+              .willReturn(
+                aResponse()
+                  .withStatus(500)
+                  .withHeader("Content-Type", "text/plain")
+                  .withBody(unparsableResponse)
+              )
+          )
+
+          val expected = Left(
+            ChannelSenderException.TwilioInternalError(
+              errorCode = None,
+              errorMessage = None,
+              moreInfo = None,
+              rawResponse = unparsableResponse
+            )
+          )
+
+          val resultFut: Future[
+            Either[ChannelSenderException, ChannelSender]
+          ] =
+            instance.run(connSettings, createRequest)
+          resultFut.map { result => assert(result === expected) }
+        }
+      }
+
       "fail when receiving a conflict response with error code from Twilio" should {
         "map to exception when receiving code 63100 'sender_id provided already exists'" in {
           val f = new Fixture
@@ -412,5 +478,12 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       |"message":"Could not extend credit line to the waba_id provided",
       |"more_info":"https://www.twilio.com/docs/errors/63103",
       |"status":409}""".stripMargin
+
+  private def twilioInternalServerErrorResponse =
+    """{
+      |"code":20500,
+      |"message":"An internal server error has occurred",
+      |"more_info":"https://www.twilio.com/docs/errors/20500",
+      |"status":500}""".stripMargin
 
 }
