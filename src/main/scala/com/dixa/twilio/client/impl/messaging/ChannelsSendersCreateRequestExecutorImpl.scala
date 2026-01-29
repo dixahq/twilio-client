@@ -6,7 +6,8 @@ import com.dixa.twilio.client.impl.{
   ApiVersion,
   DefaultApiErrorEntityJsonRep,
   HttpEntityString,
-  TwilioClientPickler
+  TwilioClientPickler,
+  TwilioInternalErrorJsonRep
 }
 import com.dixa.twilio.client.messaging.{
   ChannelSenderException,
@@ -119,6 +120,27 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
                 )
               case _ => Left(Api(Conflict(Some(entity.toString))))
             }
+        }
+      case StatusCodes.InternalServerError =>
+        entity.parse[TwilioInternalErrorJsonRep]() match {
+          case Left(_) =>
+            Left(
+              ChannelSenderException.TwilioInternalError(
+                errorCode = None,
+                errorMessage = None,
+                moreInfo = None,
+                rawResponse = entity.toString
+              )
+            )
+          case Right(errorRep) =>
+            Left(
+              ChannelSenderException.TwilioInternalError(
+                errorCode = errorRep.code,
+                errorMessage = errorRep.message,
+                moreInfo = errorRep.more_info,
+                rawResponse = entity.toString
+              )
+            )
         }
       case StatusCodes.OK | StatusCodes.NoContent | StatusCodes.Accepted => parseBody(entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
