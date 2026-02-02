@@ -60,4 +60,14 @@ object ChannelSenderException {
 
     def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
   }
+
+  final case class TwilioInternalError(
+      errorCode: Option[Long],
+      errorMessage: Option[String],
+      moreInfo: Option[String],
+      rawResponse: String
+  ) extends RuntimeException(
+        s"Twilio internal error (${errorCode.getOrElse("unknown")}): ${errorMessage.getOrElse("unknown")} - ${moreInfo.getOrElse("")}"
+      )
+      with ChannelSenderException
 }
