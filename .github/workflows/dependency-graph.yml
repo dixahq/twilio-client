@@ -13,7 +13,7 @@ env:
 jobs:
   update-graph:
     name: Update Dependency Graph
-    runs-on: backend-jvm
+    runs-on: backend-jvm-ss
     steps:
       - uses: actions/checkout@v3
       - uses: scalacenter/sbt-dependency-submission@v2
