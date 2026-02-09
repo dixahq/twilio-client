@@ -59,8 +59,38 @@ private[client] class IpAccessControlListMappingCreateRequestExecutorImpl()(
             request.ipAccessControlListSid
           )
         )
+      case StatusCodes.BadRequest => buildResultForBadRequestResponse(request, entity)
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
+  }
+
+  private def buildResultForBadRequestResponse(
+      req: IpAccessControlListMappingCreateRequest,
+      entity: HttpEntityString
+  ): Either[IpAccessControlListMappingCreateException, IpAccessControlListMapping] = {
+    parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+      .map(e => IpAccessControlListMappingCreateException.Unspecified(None, Some(e)))
+      .flatMap { decoded =>
+        decoded.code match {
+          case 21231L =>
+            Left(
+              IpAccessControlListMappingCreateException.IpAccessControlListMappingAlreadyExists(
+                req.domainSid,
+                req.ipAccessControlListSid
+              )
+            )
+          case other =>
+            Left(
+              IpAccessControlListMappingCreateException.Unspecified(
+                Some(
+                  s"Got status ${decoded.status} from Twilio, but we do not know what code: " +
+                    s"$other represent. Full error entity from Twilio: $entity"
+                ),
+                None
+              )
+            )
+        }
+      }
   }
 
   override protected def mapApiException(
