@@ -148,6 +148,14 @@ object IpAccessControlListMappingCreateRequestExecutor {
         with IpAccessControlListMappingCreateException
         with ApiExceptionWrapper
 
+    final case class IpAccessControlListMappingAlreadyExists(
+        domainSid: SipDomain.Sid,
+        ipAccessControlListSid: IpAccessControlList.Sid
+    ) extends RuntimeException(
+          s"IpAccessControlListMapping between $domainSid and $ipAccessControlListSid already exists"
+        )
+        with IpAccessControlListMappingCreateException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
