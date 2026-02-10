@@ -2,6 +2,7 @@ package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
+import com.dixa.twilio.model.{PublicEdgeLocation, Region}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class TwilioConnectionSettingsTest extends AnyWordSpec {
@@ -27,28 +28,44 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
     "ask to build a hostname for a subdomain" should {
 
       "work with the Api sub domain" in {
-        val instance = createInstance("twilio.com")
+        val instance = createInstance(
+          "twilio.com",
+          region = Region.Us1,
+          edgeLocation = PublicEdgeLocation.Ashburn
+        )
         val result   = instance.hostNameFor(ApiSubDomain.Api)
-        val expected = "api.twilio.com"
+        val expected = "api.ashburn.us1.twilio.com"
         assert(result === expected)
       }
 
       "work with the Messagin sub domain" in {
-        val instance = createInstance("twilio.com")
+        val instance = createInstance(
+          "twilio.com",
+          region = Region.Ireland1,
+          edgeLocation = PublicEdgeLocation.Frankfurt
+        )
         val result   = instance.hostNameFor(ApiSubDomain.Messaging)
-        val expected = "messaging.twilio.com"
+        val expected = "messaging.frankfurt.ie1.twilio.com"
         assert(result === expected)
       }
 
       "Not append any subdomain, if the base host name is localhost" in {
-        val instance = createInstance("localhost")
+        val instance = createInstance(
+          "localhost",
+          region = Region.Australia1,
+          edgeLocation = PublicEdgeLocation.Tokyo
+        )
         val result   = instance.hostNameFor(ApiSubDomain.Api)
         val expected = "localhost"
         assert(result === expected)
       }
 
       "Not append any subdomain, if the base host name is 127.0.0.1" in {
-        val instance = createInstance("127.0.0.1")
+        val instance = createInstance(
+          "127.0.0.1",
+          region = Region.Australia1,
+          edgeLocation = PublicEdgeLocation.Dublin
+        )
         val result   = instance.hostNameFor(ApiSubDomain.Api)
         val expected = "127.0.0.1"
         assert(result === expected)
@@ -56,10 +73,16 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
     }
   }
 
-  private def createInstance(baseHost: String): TwilioConnectionSettings = {
+  private def createInstance(
+      baseHost: String,
+      region: Region,
+      edgeLocation: PublicEdgeLocation
+  ): TwilioConnectionSettings = {
     val connSettings = TwilioTestConstants.connSettings(4353)
-    connSettings.copy(endpoint =
-      TwilioEndpoint(baseHostName = baseHost, port = connSettings.endpoint.port)
+    connSettings.copy(
+      endpoint = TwilioEndpoint(baseHostName = baseHost, port = connSettings.endpoint.port),
+      region = region,
+      publicEdgeLocation = edgeLocation
     )
   }
 }
