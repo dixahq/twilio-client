@@ -6,6 +6,7 @@ import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchReques
 import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client._
+import com.dixa.twilio.model.{PublicEdgeLocation, Region}
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
@@ -165,6 +166,8 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
         val connSettings = TwilioConnectionSettings(
           twilioEndpoint,
+          Region.Us1,
+          PublicEdgeLocation.Ashburn,
           TwilioConnectionSettings.Protocol.Https,
           accountSid,
           accountToken,

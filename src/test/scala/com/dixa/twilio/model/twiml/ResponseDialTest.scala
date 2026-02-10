@@ -32,7 +32,7 @@ final class ResponseDialTest extends AnyWordSpec {
                     .withWaitUrlEmpty()
                     .withMaxParticipants(Conference.MaxParticipants.unsafe(233))
                     .withRecordFromStart()
-                    .withRegion(Region.Jp1)
+                    .withRegion(Region.Australia1)
                     .withTrim(Conference.Trim.DoNotTrim)
                     .withCoach(Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1"))
                     .withStatusCallback(CallbackUrl("http://localhost/status"))
@@ -59,7 +59,7 @@ final class ResponseDialTest extends AnyWordSpec {
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
              |  <Dial>
-             |    <Conference muted="true" beep="false" startConferenceOnEnter="false" endConferenceOnExit="true" participantLabel="customLabel" jitterBufferSize="medium" waitUrl="" maxParticipants="233" record="record-from-start" region="jp1" trim="do-not-trim" coach="CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" statusCallbackEvent="start end" statusCallback="http://localhost/status" statusCallbackMethod="POST" recordingStatusCallback="http://localhost/recording" recordingStatusCallbackMethod="GET" recordingStatusCallbackEvent="completed absent">$conferenceFriendlyName</Conference>
+             |    <Conference muted="true" beep="false" startConferenceOnEnter="false" endConferenceOnExit="true" participantLabel="customLabel" jitterBufferSize="medium" waitUrl="" maxParticipants="233" record="record-from-start" region="au1" trim="do-not-trim" coach="CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" statusCallbackEvent="start end" statusCallback="http://localhost/status" statusCallbackMethod="POST" recordingStatusCallback="http://localhost/recording" recordingStatusCallbackMethod="GET" recordingStatusCallbackEvent="completed absent">$conferenceFriendlyName</Conference>
              |  </Dial>
              |</Response>""".stripMargin
 
@@ -67,7 +67,7 @@ final class ResponseDialTest extends AnyWordSpec {
         
         // format: off
         val expectedCompactXml =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Conference muted="true" beep="false" startConferenceOnEnter="false" endConferenceOnExit="true" participantLabel="customLabel" jitterBufferSize="medium" waitUrl="" maxParticipants="233" record="record-from-start" region="jp1" trim="do-not-trim" coach="CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" statusCallbackEvent="start end" statusCallback="http://localhost/status" statusCallbackMethod="POST" recordingStatusCallback="http://localhost/recording" recordingStatusCallbackMethod="GET" recordingStatusCallbackEvent="completed absent">$conferenceFriendlyName</Conference></Dial></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Conference muted="true" beep="false" startConferenceOnEnter="false" endConferenceOnExit="true" participantLabel="customLabel" jitterBufferSize="medium" waitUrl="" maxParticipants="233" record="record-from-start" region="au1" trim="do-not-trim" coach="CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1" statusCallbackEvent="start end" statusCallback="http://localhost/status" statusCallbackMethod="POST" recordingStatusCallback="http://localhost/recording" recordingStatusCallbackMethod="GET" recordingStatusCallbackEvent="completed absent">$conferenceFriendlyName</Conference></Dial></Response>"""
         // format: on
         assert(result.xmlCompact == expectedCompactXml)
       }
