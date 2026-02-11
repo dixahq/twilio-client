@@ -1,6 +1,7 @@
 package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
+import com.dixa.twilio.model.{PublicEdgeLocation, Region}
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.dixa.twilio.model.voice.Trunk
 
@@ -21,6 +22,8 @@ object TwilioTestConstants {
 
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
     TwilioEndpoint(baseHostName = "localhost", port = port),
+    region = Region.Us1,
+    publicEdgeLocation = PublicEdgeLocation.Ashburn,
     protocol = TwilioConnectionSettings.Protocol.Http,
     accountSid = accountSid,
     authToken = authToken,

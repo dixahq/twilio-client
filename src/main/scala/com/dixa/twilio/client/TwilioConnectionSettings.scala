@@ -3,6 +3,7 @@ package com.dixa.twilio.client
 import com.dixa.twilio.client
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
+import com.dixa.twilio.model.{PublicEdgeLocation, Region}
 import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import enumeratum.{Enum, EnumEntry}
 
@@ -13,25 +14,42 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *
   * @param endpoint
   *   The base host name and port to connect to without the sup domain part. For production this
-  *   would be `twilio.com:443` and then request would end up being made against the respective sub
-  *   domains like `api.twilio.com` and `messaging.twilio.com` depending on the request. The
-  *   Exception is localhost or 127.0.0.1, if that is set, then no subdomain will be added, no
-  *   matter what the request is. Should be "twilio.com" for the production Twilio API.
+  *   would be `twilio.com:443,` and then request would end up being made against the respective
+  *   subdomains with the region and edge location mixed in like `api.dublin.ie1.twilio.com` and
+  *   `messaging.ashburn.us1.twilio.com` depending on the request. The Exception is localhost or
+  *   127.0.0.1, if that is set, then no subdomain will be added, no matter what the request is.
+  *   Should be "twilio.com" for the production Twilio API.
+  * @param region
+  *   The region to connect to.
+  * @param publicEdgeLocation
+  *   The public edge location to connect through. It's generally recommended to pick the one that
+  *   is closest to where your request originates from so that you reach the Twilio network as early
+  *   as possible. From reading the Twilio documentation, you could think that this param should be
+  *   optional, because some older documentation claims that Twilio will then pick the optimal edge
+  *   location for you, based on your network geo position. But after introducing real regions, the
+  *   FQDN requires both an edge location and a region. Only the US1 region will work without it,
+  *   because it is the default region. But according to their own documentation, if the default is
+  *   used, then it's the us1 region, and always ashburn as the edge location. So in reality it's
+  *   not optional, it only has a default on the US region due to backward compatability. The
+  *   documentation that states this can be found here:
+  *   https://www.twilio.com/docs/global-infrastructure/create-an-outbound-call-via-rest-api-in-a-non-us-twilio-region#the-twilio-apis-fqdn-format
   * @param protocol
   *   Protocol to use for connecting to Twilio. Should be Https for production Twilio API.
   * @param accountSid
   *   The account sid to connect as.
   * @param authToken
-  *   The auth token for the supplied account sid.
+  *   The auth token for the supplied account SID.
   * @param parallelFactor
-  *   Some request support doing some of the work in parallel, this value will in such cases be used
-  *   for that. Note that not all request support running in parellel, and in the onces that do,
-  *   only some part of it may. So this is more of a guideline to the library, rather than a law.
+  *   Some request supports doing some work in parallel. This value will in such cases be used for
+  *   that. Note that not all requests support running in parallel, and in the once that does, only
+  *   some part of it may. So this is more of a guideline to the library, rather than a law.
   * @param timeouts
   *   Timeouts to use in the clients.
   */
 final case class TwilioConnectionSettings(
     endpoint: TwilioEndpoint,
+    region: Region,
+    publicEdgeLocation: PublicEdgeLocation,
     protocol: client.TwilioConnectionSettings.Protocol,
     accountSid: TwilioAccount.Sid,
     authToken: AuthToken,
@@ -39,21 +57,41 @@ final case class TwilioConnectionSettings(
     timeouts: TwilioConnectionSettings.Timeouts
 ) {
 
-  /** Return the hostname for a specific API sub domain.
+  // Tiny optimization. Precalculate if it's localhost, so that we don't have to do it on every call to hostNameFor.
+  private val isLocalHost =
+    endpoint.baseHostName == "localhost" || endpoint.baseHostName == "127.0.0.1"
+
+  // Tiny optimization, but pregenerate the possible hostnames so that we don't have to generate a new string on every call to hostNameFor.
+  private val accountHost   = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  private val apiHost       = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  private val messagingHost = s"${ApiSubDomain.Messaging}.$baseHostNameWithRegionAndEdge"
+  private val previewHost   = s"${ApiSubDomain.Preview}.$baseHostNameWithRegionAndEdge"
+
+  private def baseHostNameWithRegionAndEdge =
+    s"${publicEdgeLocation.edgeId}.${region.twilioString}.${endpoint.baseHostName}"
+
+  /** Return the hostname for a specific API subdomain.
     *
-    * Twilio is using different sub domains, for different parts of there API, so the
-    * TwilioConnectionSetting is only setting what base hostname to connect against, and it then up
-    * to each individual request, to specify what sub domain they should use, and use this method
-    * for constructing the full hostname.
+    * Twilio is using different subdomains, for different parts of their API, so the
+    * TwilioConnectionSetting is only setting what base hostname to connect against, and it is then
+    * up to each request to specify what subdomain they should use and use this method for
+    * constructing the full hostname.
     *
     * If the base hostname is localhost or 127.0.0.1, then this method will just return that without
     * changing it. This is to make it possible to stub request in unit test with a tool like
     * Wiremock, where the request should just go to localhost without a subdomain appended.
     */
   private[client] def hostNameFor(subDomain: ApiSubDomain): String = {
-    if (endpoint.baseHostName == "localhost" || endpoint.baseHostName == "127.0.0.1")
-      endpoint.baseHostName
-    else s"$subDomain.${endpoint.baseHostName}"
+    if (isLocalHost) endpoint.baseHostName
+    else {
+      subDomain match {
+        case ApiSubDomain.Accounts  => accountHost
+        case ApiSubDomain.Api       => apiHost
+        case ApiSubDomain.Messaging => messagingHost
+        case ApiSubDomain.Preview   => previewHost
+      }
+    }
+
   }
 
 }
