@@ -151,6 +151,9 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
     val msg =
       s"No support for handling response to $request, due to status code ${httpResponse.status} " +
         s"after firing $httpRequest. Full entity of response is: $entity"
-    Left(createUnspecifiedException(Some(msg), None))
+    httpResponse.status match {
+      case StatusCodes.NotFound => Left(mapApiException(ApiException.NotFound(msg)))
+      case _                    => Left(createUnspecifiedException(Some(msg), None))
+    }
   }
 }
