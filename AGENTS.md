@@ -93,8 +93,10 @@ JSON is handled by **upickle** with a custom pickler:
 
 ## Implementing New Requests
 
-See [doc/client-implementation-doc.md](doc/client-implementation-doc.md)
-for a detailed guide covering:
+You **MUST** read
+[doc/client-implementation-doc.md](doc/client-implementation-doc.md)
+before implementing any new request executors. It is the authoritative
+guide covering:
 
 - The `RequestExecutor` hierarchy (`SingleRequestExecutor` vs
   `MultipleResponseRequestExecutor`)
