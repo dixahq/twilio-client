@@ -51,6 +51,9 @@ So if you are in doubt how to implement something, try reading these comments an
 an existing implementation, and you should be going strong.
 Remember that all new stuff should be documented just as well as the existing code.
 
+For a detailed guide on the client architecture and how to implement new
+requests, see [Client Implementation Guide](doc/client-implementation-doc.md).
+
 ## Versioning
 
 This library uses semantic versioning.
