@@ -132,64 +132,219 @@ Pagination style is determined by the `ApiSubDomain`:
 ### Package structure
 
 - The **public trait** goes in the appropriate sub-client package (e.g. `com.dixa.twilio.client.voice`).
-- The **implementation class** goes in the corresponding `impl` package (e.g. `com.dixa.twilio.client.impl.voice`), marked `private[impl]`.
+- The **implementation class** goes in the corresponding `impl` package
+  (e.g. `com.dixa.twilio.client.impl.voice`). `private[impl]` is the
+  least strict visibility allowed, but it is recommended to make it as
+  strict as possible (e.g. `private[voice]` or `private[client]`).
 
 ### Step 1: Define the request type, exception ADT, and executor trait
 
-Create a file in the sub-client package (e.g. `voice/CallCreateRequestExecutor.scala`):
+Create a file in the sub-client package
+(e.g. `voice/SipIpAddressDeleteRequestExecutor.scala`). The file must
+follow this structure:
+
+```
+XRequestExecutor (trait)
+└── companion object
+    ├── XRequest (sealed trait)
+    ├── XRequestImpl (private case class)
+    ├── XRequest companion object
+    │   ├── PhantomTypes (object)
+    │   │   └── sealed traits for builder constraints
+    │   ├── type RequestRequiredAttributes = ...
+    │   ├── type BuilderStartState = ...
+    │   ├── Builder (final class)
+    │   └── def build(fun: ...) = ...
+    ├── XException (sealed trait)
+    └── XException companion object
+        ├── Api (wraps ApiException)
+        ├── request-specific error cases
+        └── Unspecified (catch-all)
+```
+
+Full example:
 
 ```scala
 package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.FUnit
+import com.dixa.twilio.model.iam.TwilioAccount
+import com.dixa.twilio.model.voice.{IpAccessControlList, SipIpAddress}
 
-trait CallCreateRequestExecutor
+/** Delete an IpAddress resource.
+  *
+  * @see
+  *   https://www.twilio.com/docs/voice/sip/api/sip-ipaddress-resource#delete-a-sip-ipaddress-resource
+  */
+trait SipIpAddressDeleteRequestExecutor
     extends SingleRequestExecutor[
-      CallCreateRequestExecutor.CallCreateRequest,
-      CallCreateRequestExecutor.CallCreateException,
-      CallResource
+      SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest,
+      SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteException,
+      FUnit
     ] {
-  override protected final type ApiExceptionWrapper = CallCreateException.Api
-  override protected final type UnspecifiedException = CallCreateException.Unspecified
+
+  import SipIpAddressDeleteRequestExecutor._
+
+  override final protected type ApiExceptionWrapper =
+    SipIpAddressDeleteException.Api
+
+  override final protected type UnspecifiedException =
+    SipIpAddressDeleteException.Unspecified
 }
 
-object CallCreateRequestExecutor {
+object SipIpAddressDeleteRequestExecutor {
 
-  // Request type — always use the builder pattern (see "Builder Pattern" section below).
-  // Some older requests use a plain case class without a builder for legacy reasons.
-  sealed trait CallCreateRequest { ... }
-
-  private final case class CallCreateRequestImpl(...) extends CallCreateRequest
-
-  object CallCreateRequest {
-    // Builder with phantom types — see "Builder Pattern" section below
+  sealed trait SipIpAddressDeleteRequest {
+    def accountSid: TwilioAccount.Sid
+    def ipAccessControlListSid: IpAccessControlList.Sid
+    def sid: SipIpAddress.Sid
   }
 
-  // Exception ADT — must always contain Api and Unspecified variants
-  sealed trait CallCreateException extends RuntimeException
-  object CallCreateException {
+  private final case class SipIpAddressDeleteRequestImpl(
+      accountSid: TwilioAccount.Sid,
+      ipAccessControlListSid: IpAccessControlList.Sid,
+      sid: SipIpAddress.Sid
+  ) extends SipIpAddressDeleteRequest
+
+  object SipIpAddressDeleteRequest {
+
+    // Phantom types are always nested in a PhantomTypes object
+    object PhantomTypes {
+      sealed trait RequestAttribute
+      sealed trait RequestAccountSidAttribute
+          extends RequestAttribute
+      sealed trait RequestIpAccessControlListSidAttribute
+          extends RequestAttribute
+      sealed trait RequestSidAttribute
+          extends RequestAttribute
+    }
+
+    // Type aliases live in the XRequest companion object
+    type RequestRequiredAttributes = PhantomTypes.RequestAttribute
+      with PhantomTypes.RequestAccountSidAttribute
+      with PhantomTypes.RequestIpAccessControlListSidAttribute
+      with PhantomTypes.RequestSidAttribute
+
+    type BuilderStartState =
+      Builder[PhantomTypes.RequestAttribute]
+
+    final class Builder[
+        Attributes <: PhantomTypes.RequestAttribute
+    ] private[SipIpAddressDeleteRequest] (
+        accountSid: Option[TwilioAccount.Sid],
+        ipAccessControlListSid: Option[IpAccessControlList.Sid],
+        sid: Option[SipIpAddress.Sid]
+    ) {
+
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[
+        Attributes with PhantomTypes.RequestAccountSidAttribute
+      ] =
+        new Builder(Some(accountSid), ipAccessControlListSid, sid)
+
+      def withIpAccessControlListSid(
+          ipAccessControlListSid: IpAccessControlList.Sid
+      ): Builder[
+        Attributes
+          with PhantomTypes.RequestIpAccessControlListSidAttribute
+      ] =
+        new Builder(
+          accountSid,
+          Some(ipAccessControlListSid),
+          sid
+        )
+
+      def withSid(
+          sid: SipIpAddress.Sid
+      ): Builder[
+        Attributes with PhantomTypes.RequestSidAttribute
+      ] =
+        new Builder(accountSid, ipAccessControlListSid, Some(sid))
+
+      def build()(
+          implicit
+          ev: Attributes =:= RequestRequiredAttributes
+      ): SipIpAddressDeleteRequest =
+        SipIpAddressDeleteRequestImpl(
+          accountSid.get,
+          ipAccessControlListSid.get,
+          sid.get
+        )
+    }
+
+    def build(
+        fun: BuilderStartState => SipIpAddressDeleteRequest
+    ): SipIpAddressDeleteRequest =
+      fun(new BuilderStartState(None, None, None))
+
+  }
+
+  // Exception ADT
+  sealed trait SipIpAddressDeleteException extends RuntimeException
+  object SipIpAddressDeleteException {
     final case class Api(cause: ApiException)
         extends RuntimeException(cause)
-        with CallCreateException
+        with SipIpAddressDeleteException
         with ApiExceptionWrapper
 
-    // Add request-specific error cases here, e.g.:
-    // final case class NumberNotVerified() extends ... with CallCreateException
+    // Request-specific error case
+    final case class SipIpAddressNotFound(
+        accountSid: TwilioAccount.Sid,
+        ipAccessControlListSid: IpAccessControlList.Sid,
+        sid: SipIpAddress.Sid
+    ) extends RuntimeException(
+          s"SipIpAddress with sid $sid was not found in " +
+            s"IpAccessControlList $ipAccessControlListSid " +
+            s"of account: $accountSid"
+        )
+        with SipIpAddressDeleteException
 
-    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
-        extends RuntimeException(msg.getOrElse("Unspecified error"), cause.orNull)
-        with CallCreateException
+    final case class Unspecified(
+        msg: Option[String],
+        cause: Option[Throwable]
+    ) extends RuntimeException(
+          msg.getOrElse(
+            "Unspecified error happened trying to " +
+              "delete SIP IP address"
+          ),
+          cause.orNull
+        )
+        with SipIpAddressDeleteException
+    object Unspecified {
+      def apply(msg: String) =
+        new Unspecified(Some(msg), None)
+      def apply(cause: Throwable) =
+        new Unspecified(
+          Option(cause.getMessage),
+          Some(cause)
+        )
+    }
   }
 }
 ```
 
+**Key structural rules:**
+
+- Phantom types always go in a `PhantomTypes` object nested inside
+  the `XRequest` companion object.
+- `RequestRequiredAttributes` and `BuilderStartState` type aliases
+  go in the `XRequest` companion object (not inside `PhantomTypes`).
+- The `Builder` class and the `build` factory method also go in the
+  `XRequest` companion object.
+- The `Builder` constructor is `private[XRequest]`.
+
 **Exception ADT rules:**
 
 1. Must be a `sealed trait` extending `RuntimeException`.
-2. Must contain an `Api` case that wraps `ApiException` and mixes in `RequestExecutor.ApiExceptionWrapper`.
-3. Must contain an `Unspecified` case with `msg: Option[String]` and `cause: Option[Throwable]`.
-4. May contain additional request-specific error cases mapped from Twilio error codes.
+2. Must contain an `Api` case that wraps `ApiException` and mixes in
+   `RequestExecutor.ApiExceptionWrapper`.
+3. Must contain an `Unspecified` case with `msg: Option[String]` and
+   `cause: Option[Throwable]`.
+4. May contain additional request-specific error cases mapped from
+   Twilio error codes.
 
 ### Step 2: Implement the executor
 
@@ -207,7 +362,7 @@ import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 import scala.concurrent.ExecutionContext
 
-private[impl] final class CallCreateRequestExecutorImpl()(
+private[client] final class CallCreateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
@@ -275,10 +430,10 @@ without any constraint should use the builder pattern for consistency.
 ### Builder construction pattern
 
 The `Builder` constructor is always private, and builders are only
-exposed through a `builder` method that takes a function:
+exposed through a `build` method that takes a function:
 
 ```scala
-def builder(
+def build(
     fun: BuilderStartState => RecordingReadRequest
 ): RecordingReadRequest =
   fun(new Builder(None, None))
@@ -290,7 +445,7 @@ This design serves three purposes:
    arbitrary type state. They always start from `BuilderStartState`
    with all attributes unset.
 2. **Ergonomics:** the caller never needs to construct the builder
-   themselves. They simply write `builder(_.withX(...).build())` and
+   themselves. They simply write `build(_.withX(...).build())` and
    use their IDE's autocompletion on the builder parameter to discover
    all available methods.
 
@@ -311,59 +466,136 @@ with no cross-field constraints (e.g. "field A requires field B" or
 
 **How it works:**
 
-1. Define a base `sealed trait RequestAttribute` and one sub-trait per required field.
-2. Define `RequestRequiredAttributes` as the intersection of all required traits.
-3. The `Builder` has a single type parameter `Attributes <: RequestAttribute`.
-4. Required `with*` methods return `Builder[Attributes with ThatAttribute]`, narrowing the type.
-5. Optional `with*` methods return `Builder[Attributes]` (type unchanged).
+1. Define phantom traits inside a `PhantomTypes` object: a base
+   `sealed trait RequestAttribute` and one sub-trait per required
+   field.
+2. Define `RequestRequiredAttributes` as the intersection of all
+   required phantom traits (in the `XRequest` companion, not inside
+   `PhantomTypes`).
+3. The `Builder` has a single type parameter
+   `Attributes <: PhantomTypes.RequestAttribute`.
+4. Required `with*` methods return
+   `Builder[Attributes with PhantomTypes.ThatAttribute]`, narrowing
+   the type.
+5. Optional `with*` methods return `Builder[Attributes]` (type
+   unchanged).
 6. `build()` requires `Attributes =:= RequestRequiredAttributes`.
 
-**Example** (from `RecordingReadRequestExecutor`):
+**Example** (based on `RecordingReadRequestExecutor`):
 
 ```scala
-object RecordingReadRequest {
+trait RecordingReadRequestExecutor
+    extends MultipleResponseRequestExecutor[
+      RecordingReadRequestExecutor.RecordingReadRequest,
+      RecordingReadRequestExecutor.RecordingReadException,
+      Recording
+    ] {
 
-  sealed trait RequestAttribute
-  sealed trait RequestAccountSidAttribute extends RequestAttribute
+  import RecordingReadRequestExecutor._
 
-  type RequestRequiredAttributes = RequestAttribute with RequestAccountSidAttribute
-  type BuilderStartState = Builder[RequestAttribute]
+  override final protected type ApiExceptionWrapper =
+    RecordingReadException.Api
 
-  final class Builder[Attributes <: RequestAttribute] private[RecordingReadRequest](
-      accountSid: Option[TwilioAccount.Sid],
-      callSid: Option[Call.Sid]
-  ) {
-    // Required — narrows the phantom type
-    def withAccountSid(
-        accountSid: TwilioAccount.Sid
-    ): Builder[Attributes with RequestAccountSidAttribute] =
-      new Builder(Some(accountSid), callSid)
+  override final protected type UnspecifiedException =
+    RecordingReadException.Unspecified
+}
 
-    // Optional — type stays the same
-    def withCallSid(callSid: Call.Sid): Builder[Attributes] =
-      new Builder(accountSid, Some(callSid))
+object RecordingReadRequestExecutor {
 
-    // Only compiles when all required attributes are present
-    def build()(implicit ev: Attributes =:= RequestRequiredAttributes): RecordingReadRequest =
-      RecordingReadRequestImpl(accountSid.get, callSid)
+  sealed trait RecordingReadRequest {
+    def accountSid: TwilioAccount.Sid
+    def callSid: Option[Call.Sid]
   }
 
-  def builder(fun: BuilderStartState => RecordingReadRequest): RecordingReadRequest =
-    fun(new Builder(None, None))
+  private final case class RecordingReadRequestImpl(
+      accountSid: TwilioAccount.Sid,
+      callSid: Option[Call.Sid]
+  ) extends RecordingReadRequest
+
+  object RecordingReadRequest {
+
+    object PhantomTypes {
+      sealed trait RequestAttribute
+      sealed trait RequestAccountSidAttribute
+          extends RequestAttribute
+    }
+
+    type RequestRequiredAttributes =
+      PhantomTypes.RequestAttribute
+        with PhantomTypes.RequestAccountSidAttribute
+
+    type BuilderStartState =
+      Builder[PhantomTypes.RequestAttribute]
+
+    final class Builder[
+        Attributes <: PhantomTypes.RequestAttribute
+    ] private[RecordingReadRequest](
+        accountSid: Option[TwilioAccount.Sid],
+        callSid: Option[Call.Sid]
+    ) {
+      // Required — narrows the phantom type
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[
+        Attributes
+          with PhantomTypes.RequestAccountSidAttribute
+      ] =
+        new Builder(Some(accountSid), callSid)
+
+      // Optional — type stays the same
+      def withCallSid(
+          callSid: Call.Sid
+      ): Builder[Attributes] =
+        new Builder(accountSid, Some(callSid))
+
+      // Only compiles when all required attributes are present
+      def build()(
+          implicit
+          ev: Attributes =:= RequestRequiredAttributes
+      ): RecordingReadRequest =
+        RecordingReadRequestImpl(accountSid.get, callSid)
+    }
+
+    def build(
+        fun: BuilderStartState => RecordingReadRequest
+    ): RecordingReadRequest =
+      fun(new Builder(None, None))
+  }
+
+  sealed trait RecordingReadException extends RuntimeException
+  object RecordingReadException {
+    final case class Api(cause: ApiException)
+        extends RuntimeException(cause)
+        with RecordingReadException
+        with ApiExceptionWrapper
+
+    final case class Unspecified(
+        msg: Option[String],
+        cause: Option[Throwable]
+    ) extends RuntimeException(
+          msg.getOrElse(
+            "Unspecified error happened trying to " +
+              "read recordings"
+          ),
+          cause.orNull
+        )
+        with RecordingReadException
+  }
 }
 ```
 
 Usage:
 
 ```scala
-RecordingReadRequest.builder { b =>
+RecordingReadRequest.build { b =>
   b.withAccountSid(accountSid)       // required
    .withCallSid(callSid)             // optional
    .build()
 }
 ```
 
-Trying to call `.build()` without `.withAccountSid(...)` will result in a compile error.
+Trying to call `.build()` without `.withAccountSid(...)` will
+result in a compile error.
 
 ### Strategy 2: Multiple Individual Type Parameters
 
@@ -385,16 +617,21 @@ These constraints cannot be expressed with a single intersection type.
 
 **How it works:**
 
-1. Define a sealed trait pair per constraint: `SomeConstraintSet`,
+1. Define all phantom trait pairs inside a `PhantomTypes` object
+   in the `XRequest` companion: `SomeConstraintSet`,
    `SomeConstraintSetTrue extends SomeConstraintSet`,
    `SomeConstraintSetFalse extends SomeConstraintSet`.
-2. The `Builder` has one type parameter per constraint, all starting at `False`.
-3. A `with*` method flips the relevant type parameter(s) to `True` in its return type.
-4. A `with*` method can also require evidence that another parameter is
-   in a specific state (e.g. `withMethod` requires
-   `UrlAndMethod =:= HasUrlForMethodSetTrue`), enforcing that a
-   prerequisite field was set first.
-5. A `with*` method can require evidence that a mutually exclusive parameter is `False`, preventing two conflicting fields from being set.
+2. The `Builder` has one type parameter per constraint, all
+   starting at `PhantomTypes.*False`.
+3. A `with*` method flips the relevant type parameter(s) to
+   `PhantomTypes.*True` in its return type.
+4. A `with*` method can also require evidence that another
+   parameter is in a specific state (e.g. `withMethod` requires
+   `UrlAndMethod =:= PhantomTypes.HasUrlForMethodSetTrue`),
+   enforcing that a prerequisite field was set first.
+5. A `with*` method can require evidence that a mutually exclusive
+   parameter is `*False`, preventing two conflicting fields from
+   being set.
 6. `build()` requires `=:=` evidence for each required constraint.
 
 **Example** (simplified from `CallCreateRequestExecutor`):
@@ -402,43 +639,57 @@ These constraints cannot be expressed with a single intersection type.
 ```scala
 object CallCreateRequest {
 
-  // Simple required fields
-  sealed trait AccountSidAttributeSet
-  sealed trait AccountSidAttributeSetTrue extends AccountSidAttributeSet
-  sealed trait AccountSidAttributeSetFalse extends AccountSidAttributeSet
+  object PhantomTypes {
+    // Simple required fields
+    sealed trait AccountSidAttributeSet
+    sealed trait AccountSidAttributeSetTrue
+        extends AccountSidAttributeSet
+    sealed trait AccountSidAttributeSetFalse
+        extends AccountSidAttributeSet
 
-  sealed trait ToCallerIdAttributeSet
-  sealed trait ToCallerIdAttributeSetTrue extends ToCallerIdAttributeSet
-  sealed trait ToCallerIdAttributeSetFalse extends ToCallerIdAttributeSet
+    sealed trait ToCallerIdAttributeSet
+    sealed trait ToCallerIdAttributeSetTrue
+        extends ToCallerIdAttributeSet
+    sealed trait ToCallerIdAttributeSetFalse
+        extends ToCallerIdAttributeSet
 
-  sealed trait FromCallerIdAttributeSet
-  sealed trait FromCallerIdAttributeSetTrue extends FromCallerIdAttributeSet
-  sealed trait FromCallerIdAttributeSetFalse extends FromCallerIdAttributeSet
+    sealed trait FromCallerIdAttributeSet
+    sealed trait FromCallerIdAttributeSetTrue
+        extends FromCallerIdAttributeSet
+    sealed trait FromCallerIdAttributeSetFalse
+        extends FromCallerIdAttributeSet
 
-  // "One of" constraint — at least one of url/twiml/applicationSid must be set
-  sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSet
-  sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue
-      extends OneOfUrlOrTwimlOrApplicationSidAttributeSet
-  sealed trait OneOfUrlOrTwimlOrApplicationSidAttributeSetFalse
-      extends OneOfUrlOrTwimlOrApplicationSidAttributeSet
+    // "One of" — at least one of url/twiml/applicationSid
+    sealed trait OneOfUrlOrTwimlOrAppSidAttributeSet
+    sealed trait OneOfUrlOrTwimlOrAppSidAttributeSetTrue
+        extends OneOfUrlOrTwimlOrAppSidAttributeSet
+    sealed trait OneOfUrlOrTwimlOrAppSidAttributeSetFalse
+        extends OneOfUrlOrTwimlOrAppSidAttributeSet
 
-  // Mutual exclusion — only one of url/twiml/applicationSid may be set
-  sealed trait HasUrlOrTwimlOrApplicationSidSet
-  sealed trait HasUrlOrTwimlOrApplicationSidTrue extends HasUrlOrTwimlOrApplicationSidSet
-  sealed trait HasUrlOrTwimlOrApplicationSidFalse extends HasUrlOrTwimlOrApplicationSidSet
+    // Mutual exclusion — only one may be set
+    sealed trait HasUrlOrTwimlOrAppSidSet
+    sealed trait HasUrlOrTwimlOrAppSidTrue
+        extends HasUrlOrTwimlOrAppSidSet
+    sealed trait HasUrlOrTwimlOrAppSidFalse
+        extends HasUrlOrTwimlOrAppSidSet
 
-  // Conditional requirement — method requires url to be set first
-  sealed trait HasUrlForMethodSet
-  sealed trait HasUrlForMethodSetTrue extends HasUrlForMethodSet
-  sealed trait HasUrlForMethodSetFalse extends HasUrlForMethodSet
+    // Conditional — method requires url
+    sealed trait HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetTrue
+        extends HasUrlForMethodSet
+    sealed trait HasUrlForMethodSetFalse
+        extends HasUrlForMethodSet
+  }
+
+  import PhantomTypes._
 
   type BuilderStartState = Builder[
     AccountSidAttributeSetFalse,
     ToCallerIdAttributeSetFalse,
     FromCallerIdAttributeSetFalse,
-    OneOfUrlOrTwimlOrApplicationSidAttributeSetFalse,
+    OneOfUrlOrTwimlOrAppSidAttributeSetFalse,
     HasUrlForMethodSetFalse,
-    HasUrlOrTwimlOrApplicationSidFalse,
+    HasUrlOrTwimlOrAppSidFalse,
     // ... more parameters
   ]
 
@@ -446,41 +697,57 @@ object CallCreateRequest {
       AccountSidSet <: AccountSidAttributeSet,
       ToCallerIdSet <: ToCallerIdAttributeSet,
       FromCallerIdSet <: FromCallerIdAttributeSet,
-      OneOfUrlOrTwimlOrApplicationSidSet <: OneOfUrlOrTwimlOrApplicationSidAttributeSet,
+      OneOfUrlOrTwimlOrAppSidSet
+          <: OneOfUrlOrTwimlOrAppSidAttributeSet,
       UrlAndMethod <: HasUrlForMethodSet,
-      UrlOrTwimlOrApplicationSid <: HasUrlOrTwimlOrApplicationSidSet,
+      UrlOrTwimlOrAppSid <: HasUrlOrTwimlOrAppSidSet,
       // ... more parameters
   ] private[CallCreateRequest] (...) {
 
     // Simple required field
-    def withAccountSid(accountSid: TwilioAccount.Sid): Builder[
-      AccountSidAttributeSetTrue,  // flipped to True
-      ToCallerIdSet, FromCallerIdSet, OneOfUrlOrTwimlOrApplicationSidSet,
-      UrlAndMethod, UrlOrTwimlOrApplicationSid, ...
+    def withAccountSid(
+        accountSid: TwilioAccount.Sid
+    ): Builder[
+      AccountSidAttributeSetTrue, // flipped to True
+      ToCallerIdSet,
+      FromCallerIdSet,
+      OneOfUrlOrTwimlOrAppSidSet,
+      UrlAndMethod,
+      UrlOrTwimlOrAppSid,
+      ...
     ] = ...
 
-    // Mutually exclusive field — requires that no other option was set yet
+    // Mutually exclusive field — requires no other option set
     def withUrl(url: CallbackUrl.VoiceUrl)(
-        implicit ev: UrlOrTwimlOrApplicationSid =:= HasUrlOrTwimlOrApplicationSidFalse
+        implicit ev: UrlOrTwimlOrAppSid
+          =:= HasUrlOrTwimlOrAppSidFalse
     ): Builder[
-      AccountSidSet, ToCallerIdSet, FromCallerIdSet,
-      OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue,  // satisfies the "one of" requirement
-      HasUrlForMethodSetTrue,                            // unlocks withMethod
-      HasUrlOrTwimlOrApplicationSidTrue,                 // prevents withTwiml/withApplicationSid
+      AccountSidSet,
+      ToCallerIdSet,
+      FromCallerIdSet,
+      OneOfUrlOrTwimlOrAppSidAttributeSetTrue,
+      HasUrlForMethodSetTrue,
+      HasUrlOrTwimlOrAppSidTrue,
       ...
     ] = ...
 
     // Conditional field — requires url to have been set
     def withMethod(method: HttpMethod)(
-        implicit ev: UrlAndMethod =:= HasUrlForMethodSetTrue
+        implicit ev: UrlAndMethod
+          =:= HasUrlForMethodSetTrue
     ): Builder[...] = ...
 
     // build requires all mandatory constraints to be True
     def build()(
-        implicit ev: AccountSidSet =:= AccountSidAttributeSetTrue,
-        ev2: ToCallerIdSet =:= ToCallerIdAttributeSetTrue,
-        ev3: FromCallerIdSet =:= FromCallerIdAttributeSetTrue,
-        ev4: OneOfUrlOrTwimlOrApplicationSidSet =:= OneOfUrlOrTwimlOrApplicationSidAttributeSetTrue
+        implicit
+        ev: AccountSidSet
+          =:= AccountSidAttributeSetTrue,
+        ev2: ToCallerIdSet
+          =:= ToCallerIdAttributeSetTrue,
+        ev3: FromCallerIdSet
+          =:= FromCallerIdAttributeSetTrue,
+        ev4: OneOfUrlOrTwimlOrAppSidSet
+          =:= OneOfUrlOrTwimlOrAppSidAttributeSetTrue
     ): CallCreateRequest = ...
   }
 }
