@@ -132,7 +132,10 @@ Pagination style is determined by the `ApiSubDomain`:
 ### Package structure
 
 - The **public trait** goes in the appropriate sub-client package (e.g. `com.dixa.twilio.client.voice`).
-- The **implementation class** goes in the corresponding `impl` package (e.g. `com.dixa.twilio.client.impl.voice`), marked `private[impl]`.
+- The **implementation class** goes in the corresponding `impl` package
+  (e.g. `com.dixa.twilio.client.impl.voice`). `private[impl]` is the
+  least strict visibility allowed, but it is recommended to make it as
+  strict as possible (e.g. `private[voice]` or `private[client]`).
 
 ### Step 1: Define the request type, exception ADT, and executor trait
 
@@ -207,7 +210,7 @@ import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 import scala.concurrent.ExecutionContext
 
-private[impl] final class CallCreateRequestExecutorImpl()(
+private[client] final class CallCreateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
@@ -275,10 +278,10 @@ without any constraint should use the builder pattern for consistency.
 ### Builder construction pattern
 
 The `Builder` constructor is always private, and builders are only
-exposed through a `builder` method that takes a function:
+exposed through a `build` method that takes a function:
 
 ```scala
-def builder(
+def build(
     fun: BuilderStartState => RecordingReadRequest
 ): RecordingReadRequest =
   fun(new Builder(None, None))
@@ -290,7 +293,7 @@ This design serves three purposes:
    arbitrary type state. They always start from `BuilderStartState`
    with all attributes unset.
 2. **Ergonomics:** the caller never needs to construct the builder
-   themselves. They simply write `builder(_.withX(...).build())` and
+   themselves. They simply write `build(_.withX(...).build())` and
    use their IDE's autocompletion on the builder parameter to discover
    all available methods.
 
@@ -348,7 +351,7 @@ object RecordingReadRequest {
       RecordingReadRequestImpl(accountSid.get, callSid)
   }
 
-  def builder(fun: BuilderStartState => RecordingReadRequest): RecordingReadRequest =
+  def build(fun: BuilderStartState => RecordingReadRequest): RecordingReadRequest =
     fun(new Builder(None, None))
 }
 ```
@@ -356,7 +359,7 @@ object RecordingReadRequest {
 Usage:
 
 ```scala
-RecordingReadRequest.builder { b =>
+RecordingReadRequest.build { b =>
   b.withAccountSid(accountSid)       // required
    .withCallSid(callSid)             // optional
    .build()
