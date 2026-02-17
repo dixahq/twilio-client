@@ -70,6 +70,18 @@ trait TwilioClientVoice {
   /** See [[SipIpAddressCreateRequestExecutor]] */
   def sipIpAddressCreate: SipIpAddressCreateRequestExecutor
 
+  /** See [[SipIpAddressFetchRequestExecutor]] */
+  def sipIpAddressFetch: SipIpAddressFetchRequestExecutor
+
+  /** See [[SipIpAddressReadRequestExecutor]] */
+  def sipIpAddressRead: SipIpAddressReadRequestExecutor
+
+  /** See [[SipIpAddressUpdateRequestExecutor]] */
+  def sipIpAddressUpdate: SipIpAddressUpdateRequestExecutor
+
+  /** See [[SipIpAddressDeleteRequestExecutor]] */
+  def sipIpAddressDelete: SipIpAddressDeleteRequestExecutor
+
   /** See [[IpAccessControlListMappingCreateRequestExecutor]] */
   def ipAccessControlListMappingCreate: IpAccessControlListMappingCreateRequestExecutor
 }
