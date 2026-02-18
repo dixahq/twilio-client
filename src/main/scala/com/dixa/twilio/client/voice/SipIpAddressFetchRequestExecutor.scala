@@ -1,11 +1,10 @@
 package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.{ApiException, SingleRequestExecutor, TwilioConnectionSettings}
+import com.dixa.twilio.client.voice.SipIpAddressFetchRequestExecutor.SipIpAddressFetchRequest.BuilderStartState
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{IpAccessControlList, SipIpAddress}
-
-import scala.concurrent.Future
 
 /** Fetch a single IpAddress resource.
   *
@@ -16,7 +15,8 @@ trait SipIpAddressFetchRequestExecutor
     extends SingleRequestExecutor[
       SipIpAddressFetchRequestExecutor.SipIpAddressFetchRequest,
       SipIpAddressFetchRequestExecutor.SipIpAddressFetchException,
-      SipIpAddress
+      SipIpAddress,
+      SipIpAddressFetchRequestExecutor.SipIpAddressFetchRequest.BuilderStartState
     ] {
 
   import SipIpAddressFetchRequestExecutor._
@@ -25,11 +25,8 @@ trait SipIpAddressFetchRequestExecutor
 
   override final protected type UnspecifiedException = SipIpAddressFetchException.Unspecified
 
-  def unsafeRun(
-      connSettings: TwilioConnectionSettings,
-      builderFun: SipIpAddressFetchRequest.BuilderFunction
-  ): Future[SipIpAddress] =
-    unsafeRun(connSettings, SipIpAddressFetchRequest.build(builderFun))
+  override final protected def createBuilderStartState(): BuilderStartState =
+    new SipIpAddressFetchRequest.BuilderStartState(None, None, None)
 }
 
 object SipIpAddressFetchRequestExecutor {
@@ -62,11 +59,9 @@ object SipIpAddressFetchRequestExecutor {
 
     type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
 
-    type BuilderFunction = BuilderStartState => SipIpAddressFetchRequest
-
     final class Builder[
         Attributes <: PhantomTypes.RequestAttribute
-    ] private[SipIpAddressFetchRequest] (
+    ] private[SipIpAddressFetchRequestExecutor] (
         accountSid: Option[TwilioAccount.Sid],
         ipAccessControlListSid: Option[IpAccessControlList.Sid],
         sid: Option[SipIpAddress.Sid]
@@ -98,7 +93,7 @@ object SipIpAddressFetchRequestExecutor {
     }
 
     def build(
-        fun: SipIpAddressFetchRequest.BuilderFunction
+        fun: BuilderStartState => SipIpAddressFetchRequest
     ): SipIpAddressFetchRequest =
       fun(new BuilderStartState(None, None, None))
 
