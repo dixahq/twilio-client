@@ -1,9 +1,11 @@
 package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{IpAccessControlList, SipIpAddress}
+
+import scala.concurrent.Future
 
 /** Fetch a single IpAddress resource.
   *
@@ -22,6 +24,12 @@ trait SipIpAddressFetchRequestExecutor
   override final protected type ApiExceptionWrapper = SipIpAddressFetchException.Api
 
   override final protected type UnspecifiedException = SipIpAddressFetchException.Unspecified
+
+  def unsafeRun(
+      connSettings: TwilioConnectionSettings,
+      builderFun: SipIpAddressFetchRequest.BuilderFunction
+  ): Future[SipIpAddress] =
+    unsafeRun(connSettings, SipIpAddressFetchRequest.build(builderFun))
 }
 
 object SipIpAddressFetchRequestExecutor {
@@ -53,6 +61,8 @@ object SipIpAddressFetchRequestExecutor {
       with PhantomTypes.RequestSidAttribute
 
     type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
+
+    type BuilderFunction = BuilderStartState => SipIpAddressFetchRequest
 
     final class Builder[
         Attributes <: PhantomTypes.RequestAttribute
@@ -88,7 +98,7 @@ object SipIpAddressFetchRequestExecutor {
     }
 
     def build(
-        fun: BuilderStartState => SipIpAddressFetchRequest
+        fun: SipIpAddressFetchRequest.BuilderFunction
     ): SipIpAddressFetchRequest =
       fun(new BuilderStartState(None, None, None))
 
