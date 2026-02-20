@@ -35,6 +35,10 @@ import com.dixa.twilio.client.voice.{
   SipDomainCreateRequestExecutor,
   SipDomainReadRequestExecutor,
   SipIpAddressCreateRequestExecutor,
+  SipIpAddressDeleteRequestExecutor,
+  SipIpAddressFetchRequestExecutor,
+  SipIpAddressReadRequestExecutor,
+  SipIpAddressUpdateRequestExecutor,
   TwilioClientVoice
 }
 
@@ -117,6 +121,18 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override val sipIpAddressCreate: SipIpAddressCreateRequestExecutor =
     new SipIpAddressCreateRequestExecutorImpl()
+
+  override val sipIpAddressFetch: SipIpAddressFetchRequestExecutor =
+    new SipIpAddressFetchRequestExecutorImpl()
+
+  override val sipIpAddressRead: SipIpAddressReadRequestExecutor =
+    new SipIpAddressReadRequestExecutorImpl()
+
+  override val sipIpAddressUpdate: SipIpAddressUpdateRequestExecutor =
+    new SipIpAddressUpdateRequestExecutorImpl()
+
+  override val sipIpAddressDelete: SipIpAddressDeleteRequestExecutor =
+    new SipIpAddressDeleteRequestExecutorImpl()
 
   override val ipAccessControlListMappingCreate: IpAccessControlListMappingCreateRequestExecutor =
     new IpAccessControlListMappingCreateRequestExecutorImpl()
