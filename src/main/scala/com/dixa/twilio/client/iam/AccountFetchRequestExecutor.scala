@@ -13,7 +13,8 @@ trait AccountFetchRequestExecutor
     extends SingleRequestExecutor[
       AccountFetchRequestExecutor.AccountFetchRequest,
       AccountFetchRequestExecutor.AccountFetchException,
-      TwilioAccount
+      TwilioAccount,
+      AccountFetchRequestExecutor.AccountFetchRequest.Builder
     ] {
 
   import AccountFetchRequestExecutor._
@@ -21,11 +22,29 @@ trait AccountFetchRequestExecutor
   override final protected type ApiExceptionWrapper = AccountFetchException.Api
 
   override final protected type UnspecifiedException = AccountFetchException.UnspecifiedError
+
+  override final protected def createBuilderStartState(): AccountFetchRequest.Builder =
+    AccountFetchRequest.Builder.empty
 }
 
 object AccountFetchRequestExecutor {
 
   final case class AccountFetchRequest(accountSid: TwilioAccount.Sid)
+  object AccountFetchRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[iam] (accountSid: Option[TwilioAccount.Sid]) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder = new Builder(Some(accountSid))
+      def build(): AccountFetchRequest = AccountFetchRequest(accountSid.get)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None)
+    }
+
+    def build(fun: BuilderStartState => AccountFetchRequest): AccountFetchRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait AccountFetchException extends RuntimeException
   object AccountFetchException {

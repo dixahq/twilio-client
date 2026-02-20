@@ -8,7 +8,8 @@ trait AuthTokenSecondaryDeleteRequestExecutor
     extends SingleRequestExecutor[
       AuthTokenSecondaryDeleteRequestExecutor.AuthTokenSecondaryDeleteRequest,
       AuthTokenSecondaryDeleteRequestExecutor.AuthTokenSecondaryDeleteException,
-      Done
+      Done,
+      AuthTokenSecondaryDeleteRequestExecutor.AuthTokenSecondaryDeleteRequest.Builder
     ] {
 
   import AuthTokenSecondaryDeleteRequestExecutor._
@@ -17,11 +18,29 @@ trait AuthTokenSecondaryDeleteRequestExecutor
 
   override final protected type UnspecifiedException =
     AuthTokenSecondaryDeleteException.UnspecifiedError
+
+  override final protected def createBuilderStartState(): AuthTokenSecondaryDeleteRequest.Builder =
+    AuthTokenSecondaryDeleteRequest.Builder.empty
 }
 
 object AuthTokenSecondaryDeleteRequestExecutor {
 
   final case class AuthTokenSecondaryDeleteRequest()
+  object AuthTokenSecondaryDeleteRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[iam] () {
+      def build(): AuthTokenSecondaryDeleteRequest = AuthTokenSecondaryDeleteRequest()
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState()
+    }
+
+    def build(
+        fun: BuilderStartState => AuthTokenSecondaryDeleteRequest
+    ): AuthTokenSecondaryDeleteRequest = fun(Builder.empty)
+  }
 
   sealed trait AuthTokenSecondaryDeleteException extends RuntimeException
   object AuthTokenSecondaryDeleteException {

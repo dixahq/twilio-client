@@ -8,7 +8,8 @@ trait AuthTokenSecondaryCreateRequestExecutor
     extends SingleRequestExecutor[
       AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateRequest,
       AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateException,
-      AuthToken.AuthTokenAndMetaData[AuthToken.Secondary]
+      AuthToken.AuthTokenAndMetaData[AuthToken.Secondary],
+      AuthTokenSecondaryCreateRequestExecutor.AuthTokenSecondaryCreateRequest.Builder
     ] {
 
   import AuthTokenSecondaryCreateRequestExecutor._
@@ -17,11 +18,29 @@ trait AuthTokenSecondaryCreateRequestExecutor
 
   override final protected type UnspecifiedException =
     AuthTokenSecondaryCreateException.UnspecifiedError
+
+  override final protected def createBuilderStartState(): AuthTokenSecondaryCreateRequest.Builder =
+    AuthTokenSecondaryCreateRequest.Builder.empty
 }
 
 object AuthTokenSecondaryCreateRequestExecutor {
 
   final case class AuthTokenSecondaryCreateRequest()
+  object AuthTokenSecondaryCreateRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[iam] () {
+      def build(): AuthTokenSecondaryCreateRequest = AuthTokenSecondaryCreateRequest()
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState()
+    }
+
+    def build(
+        fun: BuilderStartState => AuthTokenSecondaryCreateRequest
+    ): AuthTokenSecondaryCreateRequest = fun(Builder.empty)
+  }
 
   sealed trait AuthTokenSecondaryCreateException extends RuntimeException
   object AuthTokenSecondaryCreateException {

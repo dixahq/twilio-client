@@ -65,7 +65,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
             )
         )
 
-        val req = CallReadRequestExecutor.CallReadRequest.builder(
+        val req = CallReadRequestExecutor.CallReadRequest.build(
           _.withAccountSid(connSettings.accountSid)
             .withTo(PhoneNumberE164.unsafe("+13051416799"))
             .withFrom(PhoneNumberE164.unsafe("+13051913581"))
@@ -107,7 +107,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
             )
         )
 
-        val req = CallReadRequestExecutor.CallReadRequest.builder(
+        val req = CallReadRequestExecutor.CallReadRequest.build(
           _.withAccountSid(connSettings.accountSid)
             .withTo(PhoneNumberE164.unsafe("+13051416799"))
             .withFrom(PhoneNumberE164.unsafe("+13051913581"))

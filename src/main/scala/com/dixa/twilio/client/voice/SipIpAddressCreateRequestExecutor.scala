@@ -16,7 +16,8 @@ trait SipIpAddressCreateRequestExecutor
     extends SingleRequestExecutor[
       SipIpAddressCreateRequestExecutor.SipIpAddressCreateRequest,
       SipIpAddressCreateRequestExecutor.SipIpAddressCreateException,
-      SipIpAddress
+      SipIpAddress,
+      SipIpAddressCreateRequestExecutor.SipIpAddressCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -24,6 +25,10 @@ trait SipIpAddressCreateRequestExecutor
 
   override protected type UnspecifiedException =
     SipIpAddressCreateRequestExecutor.SipIpAddressCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipIpAddressCreateRequestExecutor.SipIpAddressCreateRequest.BuilderStartState =
+    SipIpAddressCreateRequestExecutor.SipIpAddressCreateRequest.Builder.empty
 }
 
 object SipIpAddressCreateRequestExecutor {

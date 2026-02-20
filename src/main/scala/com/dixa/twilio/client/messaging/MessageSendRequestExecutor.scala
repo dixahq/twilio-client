@@ -12,12 +12,17 @@ trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
       MessageSendRequestExecutor.MessageSendRequest,
       MessageSendRequestExecutor.MessageSendException,
-      MessageResource
+      MessageResource,
+      MessageSendRequestExecutor.MessageSendRequest.Builder
     ] {
 
   override protected final type ApiExceptionWrapper = MessageSendException.Api
 
   override protected final type UnspecifiedException = MessageSendException.Unspecified
+
+  override protected final def createBuilderStartState()
+      : MessageSendRequestExecutor.MessageSendRequest.Builder =
+    MessageSendRequestExecutor.MessageSendRequest.Builder.empty
 }
 
 object MessageSendRequestExecutor {
@@ -30,6 +35,54 @@ object MessageSendRequestExecutor {
       statusCallback: MessageStatusCallback,
       mediaUrls: Seq[MediaResourceUrl] = Seq.empty
   )
+  object MessageSendRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] (
+        accountSid: Option[TwilioAccount.Sid],
+        from: Option[MessageSender],
+        to: Option[MessageRecipient],
+        body: Option[MessageBody],
+        statusCallback: Option[MessageStatusCallback],
+        mediaUrls: Seq[MediaResourceUrl]
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), from, to, body, statusCallback, mediaUrls)
+      def withFrom(from: MessageSender): Builder =
+        new Builder(accountSid, Some(from), to, body, statusCallback, mediaUrls)
+      def withTo(to: MessageRecipient): Builder =
+        new Builder(accountSid, from, Some(to), body, statusCallback, mediaUrls)
+      def withBody(body: MessageBody): Builder =
+        new Builder(accountSid, from, to, Some(body), statusCallback, mediaUrls)
+      def withStatusCallback(statusCallback: MessageStatusCallback): Builder =
+        new Builder(accountSid, from, to, body, Some(statusCallback), mediaUrls)
+      def withMediaUrls(mediaUrls: Seq[MediaResourceUrl]): Builder =
+        new Builder(accountSid, from, to, body, statusCallback, mediaUrls)
+      def build(): MessageSendRequest =
+        MessageSendRequest(
+          accountSid.get,
+          from.get,
+          to.get,
+          body.get,
+          statusCallback.get,
+          mediaUrls
+        )
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(
+        None,
+        None,
+        None,
+        None,
+        None,
+        Seq.empty
+      )
+    }
+
+    def build(fun: BuilderStartState => MessageSendRequest): MessageSendRequest =
+      fun(Builder.empty)
+  }
 
   // Most common Bad Request errors: https://support.twilio.com/hc/en-us/articles/223181868-Troubleshooting-Undelivered-Twilio-SMS-Messages
   sealed trait MessageSendException extends RuntimeException

@@ -9,12 +9,17 @@ trait ChannelsSendersVerificationRequestExecutor
     extends SingleRequestExecutor[
       ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest,
       ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationException,
-      Unit
+      Unit,
+      ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest.Builder
     ] {
 
   override protected type ApiExceptionWrapper = ChannelSenderVerificationException.Api
 
   override protected type UnspecifiedException = ChannelSenderVerificationException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest.Builder =
+    ChannelsSendersVerificationRequestExecutor.ChannelSenderVerificationRequest.Builder.empty
 }
 
 object ChannelsSendersVerificationRequestExecutor {
@@ -23,6 +28,31 @@ object ChannelsSendersVerificationRequestExecutor {
       senderSid: ChannelSender.Sid,
       verificationCode: ChannelSender.VerificationCodeConfiguration
   )
+  object ChannelSenderVerificationRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] (
+        senderSid: Option[ChannelSender.Sid],
+        verificationCode: Option[ChannelSender.VerificationCodeConfiguration]
+    ) {
+      def withSenderSid(senderSid: ChannelSender.Sid): Builder =
+        new Builder(Some(senderSid), verificationCode)
+      def withVerificationCode(
+          verificationCode: ChannelSender.VerificationCodeConfiguration
+      ): Builder =
+        new Builder(senderSid, Some(verificationCode))
+      def build(): ChannelSenderVerificationRequest =
+        ChannelSenderVerificationRequest(senderSid.get, verificationCode.get)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None)
+    }
+
+    def build(
+        fun: BuilderStartState => ChannelSenderVerificationRequest
+    ): ChannelSenderVerificationRequest = fun(Builder.empty)
+  }
 
   sealed trait ChannelSenderVerificationException extends RuntimeException
   object ChannelSenderVerificationException {

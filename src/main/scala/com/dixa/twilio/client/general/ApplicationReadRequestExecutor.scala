@@ -14,7 +14,8 @@ trait ApplicationReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       ApplicationReadRequestExecutor.ApplicationReadRequest,
       ApplicationReadRequestExecutor.ApplicationReadException,
-      Application
+      Application,
+      ApplicationReadRequestExecutor.ApplicationReadRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -22,6 +23,10 @@ trait ApplicationReadRequestExecutor
 
   override protected type UnspecifiedException =
     ApplicationReadRequestExecutor.ApplicationReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ApplicationReadRequestExecutor.ApplicationReadRequest.BuilderStartState =
+    ApplicationReadRequestExecutor.ApplicationReadRequest.Builder.empty
 }
 
 object ApplicationReadRequestExecutor {

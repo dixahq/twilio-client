@@ -9,7 +9,8 @@ trait AccountCreateRequestExecutor
     extends SingleRequestExecutor[
       AccountCreateRequestExecutor.AccountCreateRequest,
       AccountCreateRequestExecutor.AccountCreateException,
-      TwilioAccount
+      TwilioAccount,
+      AccountCreateRequestExecutor.AccountCreateRequest.Builder
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -17,6 +18,10 @@ trait AccountCreateRequestExecutor
 
   override protected type UnspecifiedException =
     AccountCreateRequestExecutor.AccountCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : AccountCreateRequestExecutor.AccountCreateRequest.Builder =
+    AccountCreateRequestExecutor.AccountCreateRequest.Builder.empty
 }
 
 object AccountCreateRequestExecutor {

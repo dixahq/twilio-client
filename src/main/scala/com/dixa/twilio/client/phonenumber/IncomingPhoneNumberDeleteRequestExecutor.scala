@@ -19,7 +19,8 @@ trait IncomingPhoneNumberDeleteRequestExecutor
     extends SingleRequestExecutor[
       IncomingPhoneNumberDeleteRequestExecutor.IncomingPhoneNumberDeleteRequest,
       IncomingPhoneNumberDeleteRequestExecutor.IncomingPhoneNumberDeleteException,
-      Done
+      Done,
+      IncomingPhoneNumberDeleteRequestExecutor.IncomingPhoneNumberDeleteRequest.Builder
     ] {
 
   import IncomingPhoneNumberDeleteRequestExecutor._
@@ -29,6 +30,9 @@ trait IncomingPhoneNumberDeleteRequestExecutor
   override protected final type UnspecifiedException =
     IncomingPhoneNumberDeleteException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : IncomingPhoneNumberDeleteRequestExecutor.IncomingPhoneNumberDeleteRequest.Builder =
+    IncomingPhoneNumberDeleteRequestExecutor.IncomingPhoneNumberDeleteRequest.Builder.empty
 }
 
 object IncomingPhoneNumberDeleteRequestExecutor {
@@ -42,6 +46,29 @@ object IncomingPhoneNumberDeleteRequestExecutor {
       accountSid: TwilioAccount.Sid,
       phoneNumberId: TwilioPhoneNumber.Sid
   )
+  object IncomingPhoneNumberDeleteRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[phonenumber] (
+        accountSid: Option[TwilioAccount.Sid],
+        phoneNumberId: Option[TwilioPhoneNumber.Sid]
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), phoneNumberId)
+      def withPhoneNumberId(phoneNumberId: TwilioPhoneNumber.Sid): Builder =
+        new Builder(accountSid, Some(phoneNumberId))
+      def build(): IncomingPhoneNumberDeleteRequest =
+        IncomingPhoneNumberDeleteRequest(accountSid.get, phoneNumberId.get)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None)
+    }
+
+    def build(
+        fun: BuilderStartState => IncomingPhoneNumberDeleteRequest
+    ): IncomingPhoneNumberDeleteRequest = fun(Builder.empty)
+  }
 
   sealed trait IncomingPhoneNumberDeleteException extends RuntimeException
   object IncomingPhoneNumberDeleteException {

@@ -26,7 +26,7 @@ trait SipIpAddressFetchRequestExecutor
   override final protected type UnspecifiedException = SipIpAddressFetchException.Unspecified
 
   override final protected def createBuilderStartState(): BuilderStartState =
-    new SipIpAddressFetchRequest.BuilderStartState(None, None, None)
+    SipIpAddressFetchRequest.Builder.empty
 }
 
 object SipIpAddressFetchRequestExecutor {
@@ -92,10 +92,14 @@ object SipIpAddressFetchRequestExecutor {
         )
     }
 
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None, None)
+    }
+
     def build(
         fun: BuilderStartState => SipIpAddressFetchRequest
     ): SipIpAddressFetchRequest =
-      fun(new BuilderStartState(None, None, None))
+      fun(Builder.empty)
 
   }
 

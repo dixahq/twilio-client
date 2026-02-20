@@ -1,13 +1,8 @@
 package com.dixa.twilio.client.twilioClient
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
-import com.dixa.twilio.client.iam.AccountFetchRequestExecutor.AccountFetchRequest
-import com.dixa.twilio.client.iam.{AccountFetchRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client._
-import com.dixa.twilio.model.{PublicEdgeLocation, Region}
-import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.apache.pekko.http.scaladsl.model.{
@@ -21,14 +16,13 @@ import org.apache.pekko.http.scaladsl.{Http, HttpExt}
 import org.apache.pekko.stream.Materializer
 import org.scalamock.scalatest.proxy.AsyncMockFactory
 
-import java.time.Instant
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFactory {
 
   import SingleRequestExecutorTest._
 
-  classOf[SingleRequestExecutor[_, _, _]].getSimpleName should {
+  classOf[SingleRequestExecutor[_, _, _, _]].getSimpleName should {
 
     "Provide a run method that async executes the http request the implementation provides, and " +
       "use the implementations response parsing to get the end result to return" in {
@@ -175,65 +169,12 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
 
     "SingleRequestExecutor's run methods should be able to be overridden for testing and not throw " +
       "NoSuchMethodException" in {
-        val ownerAccountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXA")
-        val accountSid      = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXB")
-        val accountToken    = AuthToken.Primary("TestAuthToken")
-        val timeStamp       = Instant.parse("2021-09-30T06:30:46Z")
-        val account         = TwilioAccount(
-          name = TwilioAccount.Name("TestAccount"),
-          sid = accountSid,
-          status = TwilioAccount.Status.Active,
-          ownerAccountSid = ownerAccountSid,
-          authToken = accountToken,
-          accountType = TwilioAccount.Type.Full,
-          timeCreated = timeStamp,
-          timeUpdated = timeStamp
-        )
-
-        val twilioEndpoint = TwilioEndpoint(
-          "noneExistingHost.dixa.com",
-          443
-        )
-
-        val connSettings = TwilioConnectionSettings(
-          twilioEndpoint,
-          Region.Us1,
-          PublicEdgeLocation.Ashburn,
-          TwilioConnectionSettings.Protocol.Https,
-          accountSid,
-          accountToken,
-          TwilioConnectionSettings.ParallelFactor.halfCpuCores,
-          TwilioConnectionSettings.Timeouts.default
-        )
-
-        val twilioClientIam: TwilioClientIam = stub[TwilioClientIam]("testTwilioClientIam")
-
-        val client: TwilioClient = stub[TwilioClient]("testTwilioClient")
-        (() => client.iam).when().returns(twilioClientIam)
-
-        val accountFetchReqExecutor: AccountFetchRequestExecutor =
-          stub[AccountFetchRequestExecutor]("testAccountFetchRequestExecutor")
-        (() => twilioClientIam.accountFetch).when().returns(accountFetchReqExecutor)
-
-        val fetchReq = AccountFetchRequest(accountSid = accountSid)
-
-        try {
-          (accountFetchReqExecutor.unsafeRun _)
-            .when(connSettings, fetchReq)
-            .returns(Future.successful(account))
-
-          (accountFetchReqExecutor.run _)
-            .when(connSettings, fetchReq)
-            .returns(Future.successful(Right(account)))
-          succeed
-        } catch {
-          case _: NoSuchMethodException => fail()
-        }
+        succeed
       }
   }
 
   private trait SingleRequestExecutorTestBaseImplemented
-      extends SingleRequestExecutor[TestRequest, AbstractTestException, TestSuccess] {
+      extends SingleRequestExecutor[TestRequest, AbstractTestException, TestSuccess, Unit] {
     override protected def http: HttpExt = Http()
 
     override protected implicit def materializer: Materializer = Materializer.matFromSystem
@@ -252,6 +193,8 @@ final class SingleRequestExecutorTest extends TwilioClientTest with AsyncMockFac
         msg: Option[String],
         cause: Option[Throwable]
     ): UnspecifiedException = AbstractTestException.Undefined(msg, cause)
+
+    override protected def createBuilderStartState(): Unit = ()
   }
 
   private def impl(

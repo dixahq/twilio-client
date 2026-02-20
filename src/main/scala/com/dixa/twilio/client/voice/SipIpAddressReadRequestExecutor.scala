@@ -14,7 +14,8 @@ trait SipIpAddressReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       SipIpAddressReadRequestExecutor.SipIpAddressReadRequest,
       SipIpAddressReadRequestExecutor.SipIpAddressReadException,
-      SipIpAddress
+      SipIpAddress,
+      SipIpAddressReadRequestExecutor.SipIpAddressReadRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -22,6 +23,10 @@ trait SipIpAddressReadRequestExecutor
 
   override protected type UnspecifiedException =
     SipIpAddressReadRequestExecutor.SipIpAddressReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipIpAddressReadRequestExecutor.SipIpAddressReadRequest.BuilderStartState =
+    SipIpAddressReadRequestExecutor.SipIpAddressReadRequest.Builder.empty
 }
 
 object SipIpAddressReadRequestExecutor {
@@ -76,8 +81,11 @@ object SipIpAddressReadRequestExecutor {
     def build(
         fun: BuilderStartState => SipIpAddressReadRequest
     ): SipIpAddressReadRequest =
-      fun(new BuilderStartState(None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None)
+    }
   }
 
   sealed trait SipIpAddressReadException extends RuntimeException

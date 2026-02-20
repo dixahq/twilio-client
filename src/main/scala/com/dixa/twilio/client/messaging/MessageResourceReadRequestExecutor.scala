@@ -12,12 +12,17 @@ trait MessageResourceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       MessageResourceReadRequestExecutor.MessageResourceReadRequest,
       MessageResourceReadRequestExecutor.MessageResourceReadException,
-      MessageResource
+      MessageResource,
+      MessageResourceReadRequestExecutor.MessageResourceReadRequest.Builder
     ] {
 
   override protected type ApiExceptionWrapper = MessageResourceReadException.Api
 
   override protected type UnspecifiedException = MessageResourceReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : MessageResourceReadRequestExecutor.MessageResourceReadRequest.Builder =
+    MessageResourceReadRequestExecutor.MessageResourceReadRequest.Builder.empty
 }
 
 object MessageResourceReadRequestExecutor {
@@ -26,6 +31,30 @@ object MessageResourceReadRequestExecutor {
       accountSid: TwilioAccount.Sid,
       filter: MessageResourcesReadRequestFilter = MessageResourcesReadRequestFilter()
   )
+  object MessageResourceReadRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] (
+        accountSid: Option[TwilioAccount.Sid],
+        filter: MessageResourcesReadRequestFilter
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), filter)
+      def withFilter(filter: MessageResourcesReadRequestFilter): Builder =
+        new Builder(accountSid, filter)
+      def build(): MessageResourceReadRequest = MessageResourceReadRequest(accountSid.get, filter)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(
+        None,
+        MessageResourcesReadRequestFilter()
+      )
+    }
+
+    def build(fun: BuilderStartState => MessageResourceReadRequest): MessageResourceReadRequest =
+      fun(Builder.empty)
+  }
 
   final case class MessageResourcesReadRequestFilter(
       to: Option[MessageRecipient] = None,

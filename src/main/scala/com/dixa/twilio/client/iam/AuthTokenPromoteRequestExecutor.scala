@@ -8,7 +8,8 @@ trait AuthTokenPromoteRequestExecutor
     extends SingleRequestExecutor[
       AuthTokenPromoteRequestExecutor.AuthTokenPromoteRequest,
       AuthTokenPromoteRequestExecutor.AuthTokenPromoteException,
-      AuthToken.AuthTokenAndMetaData[AuthToken.Primary]
+      AuthToken.AuthTokenAndMetaData[AuthToken.Primary],
+      AuthTokenPromoteRequestExecutor.AuthTokenPromoteRequest.Builder
     ] {
 
   import AuthTokenPromoteRequestExecutor._
@@ -17,11 +18,28 @@ trait AuthTokenPromoteRequestExecutor
 
   override final protected type UnspecifiedException =
     AuthTokenPromoteException.UnspecifiedError
+
+  override final protected def createBuilderStartState(): AuthTokenPromoteRequest.Builder =
+    AuthTokenPromoteRequest.Builder.empty
 }
 
 object AuthTokenPromoteRequestExecutor {
 
   final case class AuthTokenPromoteRequest()
+  object AuthTokenPromoteRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[iam] () {
+      def build(): AuthTokenPromoteRequest = AuthTokenPromoteRequest()
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState()
+    }
+
+    def build(fun: BuilderStartState => AuthTokenPromoteRequest): AuthTokenPromoteRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait AuthTokenPromoteException extends RuntimeException
   object AuthTokenPromoteException {

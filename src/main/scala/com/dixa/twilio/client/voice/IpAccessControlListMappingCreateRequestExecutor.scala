@@ -18,7 +18,8 @@ trait IpAccessControlListMappingCreateRequestExecutor
     extends SingleRequestExecutor[
       IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest,
       IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateException,
-      IpAccessControlListMapping
+      IpAccessControlListMapping,
+      IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -26,6 +27,10 @@ trait IpAccessControlListMappingCreateRequestExecutor
 
   override protected type UnspecifiedException =
     IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest.BuilderStartState =
+    IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest.Builder.empty
 }
 
 object IpAccessControlListMappingCreateRequestExecutor {

@@ -11,7 +11,8 @@ trait ApplicationCreateRequestExecutor
     extends SingleRequestExecutor[
       ApplicationCreateRequestExecutor.ApplicationCreateRequest,
       ApplicationCreateRequestExecutor.ApplicationCreateException,
-      Application
+      Application,
+      ApplicationCreateRequestExecutor.ApplicationCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -19,6 +20,10 @@ trait ApplicationCreateRequestExecutor
 
   override protected type UnspecifiedException =
     ApplicationCreateRequestExecutor.ApplicationCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ApplicationCreateRequestExecutor.ApplicationCreateRequest.BuilderStartState =
+    ApplicationCreateRequestExecutor.ApplicationCreateRequest.Builder.empty
 }
 
 object ApplicationCreateRequestExecutor {
@@ -88,7 +93,7 @@ object ApplicationCreateRequestExecutor {
         StatusCallbackSet <: PhantomTypes.StatusCallbackSet,
         SmsUrlSet <: PhantomTypes.SmsUrlSet,
         SmsFallbackUrlSet <: PhantomTypes.SmsFallbackUrlSet
-    ] private[ApplicationCreateRequest] (
+    ] private[ApplicationCreateRequestExecutor] (
         accountSid: Option[TwilioAccount.Sid],
         voiceUrl: Option[CallbackUrl.VoiceUrl],
         voiceMethod: Option[HttpMethod],

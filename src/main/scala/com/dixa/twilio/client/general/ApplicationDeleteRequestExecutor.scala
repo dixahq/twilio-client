@@ -10,7 +10,8 @@ trait ApplicationDeleteRequestExecutor
     extends SingleRequestExecutor[
       ApplicationDeleteRequestExecutor.ApplicationDeleteRequest,
       ApplicationDeleteRequestExecutor.ApplicationDeleteException,
-      FUnit
+      FUnit,
+      ApplicationDeleteRequestExecutor.ApplicationDeleteRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -18,6 +19,10 @@ trait ApplicationDeleteRequestExecutor
 
   override protected type UnspecifiedException =
     ApplicationDeleteRequestExecutor.ApplicationDeleteException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ApplicationDeleteRequestExecutor.ApplicationDeleteRequest.BuilderStartState =
+    ApplicationDeleteRequestExecutor.ApplicationDeleteRequest.Builder.empty
 }
 
 object ApplicationDeleteRequestExecutor {

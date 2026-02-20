@@ -25,7 +25,7 @@ final class MultipleResponseRequestExecutorTest
 
   import MultipleResponseRequestExecutorTest._
 
-  classOf[MultipleResponseRequestExecutor[_, _, _]].getSimpleName should {
+  classOf[MultipleResponseRequestExecutor[_, _, _, _]].getSimpleName should {
 
     "Provide a source method that executes the initial http request the implementation provides, " +
       "and use the implementations response parsing to get the end result " +
@@ -258,7 +258,12 @@ final class MultipleResponseRequestExecutorTest
   }
 
   private trait MultipleResponseRequestExecutorTestBaseImplemented
-      extends MultipleResponseRequestExecutor[TestRequest, AbstractTestException, TestSuccess] {
+      extends MultipleResponseRequestExecutor[
+        TestRequest,
+        AbstractTestException,
+        TestSuccess,
+        Unit
+      ] {
     override protected def http: HttpExt = Http()
 
     override protected implicit def materializer: Materializer = Materializer.matFromSystem
@@ -277,6 +282,8 @@ final class MultipleResponseRequestExecutorTest
         msg: Option[String],
         cause: Option[Throwable]
     ): UnspecifiedException = AbstractTestException.Undefined(msg, cause)
+
+    override protected def createBuilderStartState(): Unit = ()
   }
 }
 

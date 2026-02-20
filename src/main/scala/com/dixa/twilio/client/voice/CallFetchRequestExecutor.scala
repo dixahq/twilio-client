@@ -9,7 +9,8 @@ trait CallFetchRequestExecutor
     extends SingleRequestExecutor[
       CallFetchRequestExecutor.CallFetchRequest,
       CallFetchRequestExecutor.CallFetchException,
-      Call
+      Call,
+      CallFetchRequestExecutor.CallFetchRequest.BuilderStartState
     ] {
 
   import CallFetchRequestExecutor._
@@ -17,6 +18,10 @@ trait CallFetchRequestExecutor
   override final protected type ApiExceptionWrapper = CallFetchException.Api
 
   override final protected type UnspecifiedException = CallFetchException.Unspecified
+
+  override protected def createBuilderStartState()
+      : CallFetchRequestExecutor.CallFetchRequest.BuilderStartState =
+    CallFetchRequestExecutor.CallFetchRequest.Builder.empty
 }
 
 object CallFetchRequestExecutor {
@@ -67,8 +72,11 @@ object CallFetchRequestExecutor {
     }
 
     def build(fun: BuilderStartState => CallFetchRequest): CallFetchRequest =
-      fun(new BuilderStartState(None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None)
+    }
   }
 
   sealed trait CallFetchException extends RuntimeException

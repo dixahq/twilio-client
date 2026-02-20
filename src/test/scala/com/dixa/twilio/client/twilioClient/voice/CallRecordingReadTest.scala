@@ -61,7 +61,7 @@ final class CallRecordingReadTest extends TwilioClientTest with Matchers {
             )
         )
 
-        val req = CallRecordingReadRequestExecutor.CallRecordingReadRequest.builder(
+        val req = CallRecordingReadRequestExecutor.CallRecordingReadRequest.build(
           _.withAccountSid(connSettings.accountSid)
             .withCallSid(callSid1)
             .build()
@@ -103,7 +103,7 @@ final class CallRecordingReadTest extends TwilioClientTest with Matchers {
             )
         )
 
-        val req = CallRecordingReadRequestExecutor.CallRecordingReadRequest.builder(
+        val req = CallRecordingReadRequestExecutor.CallRecordingReadRequest.build(
           _.withAccountSid(connSettings.accountSid)
             .withCallSid(callSid1)
             .build()

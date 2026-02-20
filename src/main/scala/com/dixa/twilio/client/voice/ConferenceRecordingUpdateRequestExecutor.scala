@@ -9,7 +9,8 @@ trait ConferenceRecordingUpdateRequestExecutor
     extends SingleRequestExecutor[
       ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateRequest,
       ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateException,
-      Recording
+      Recording,
+      ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateRequest.BuilderStartState
     ] {
 
   import ConferenceRecordingUpdateRequestExecutor._
@@ -18,6 +19,10 @@ trait ConferenceRecordingUpdateRequestExecutor
 
   override final protected type UnspecifiedException =
     ConferenceRecordingUpdateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateRequest.BuilderStartState =
+    ConferenceRecordingUpdateRequestExecutor.ConferenceRecordingUpdateRequest.Builder.empty
 }
 
 object ConferenceRecordingUpdateRequestExecutor {
@@ -103,8 +108,11 @@ object ConferenceRecordingUpdateRequestExecutor {
     def build(
         fun: BuilderStartState => ConferenceRecordingUpdateRequest
     ): ConferenceRecordingUpdateRequest =
-      fun(new BuilderStartState(None, None, None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None, None, None)
+    }
   }
 
   sealed trait ConferenceRecordingUpdateException extends RuntimeException
