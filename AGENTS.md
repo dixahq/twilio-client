@@ -9,21 +9,10 @@ codebase. Read this before making changes.
 - Scala version: **2.13.18**
 - Java target: **17** (`-release 17`)
 - Compile: `sbt compile`
+- Fix formatting: `sbt scalafmtSbt scalafmtAll`
 - Test: `sbt "+test"`
 - The compiler runs with `-Xfatal-warnings`, so all warnings are
   errors.
-
-## Code Formatting
-
-Scalafmt is enforced. Tests will not compile if code is not formatted
-correctly. Run `sbt scalafmtAll` to format, or `sbt scalafmtCheckAll`
-to check. Key settings:
-
-- Max column width: **100**
-- Indent: **2 spaces**
-- Import sorting is enabled via `rewrite.rules = [SortImports]`
-
-See `.scalafmt.conf` for full configuration.
 
 ## Project Structure
 
