@@ -10,12 +10,17 @@ trait PhoneNumberCreateRequestExecutor
     extends SingleRequestExecutor[
       PhoneNumberCreateRequestExecutor.PhoneNumberCreateRequest,
       PhoneNumberCreateRequestExecutor.PhoneNumberCreateException,
-      TwilioMessagingPhoneNumber
+      TwilioMessagingPhoneNumber,
+      PhoneNumberCreateRequestExecutor.PhoneNumberCreateRequest.Builder
     ] {
 
   override protected final type ApiExceptionWrapper = PhoneNumberCreateException.Api
 
   override protected final type UnspecifiedException = PhoneNumberCreateException.Unspecified
+
+  override protected final def createBuilderStartState()
+      : PhoneNumberCreateRequestExecutor.PhoneNumberCreateRequest.Builder =
+    PhoneNumberCreateRequestExecutor.PhoneNumberCreateRequest.Builder.empty
 }
 
 object PhoneNumberCreateRequestExecutor {
@@ -24,6 +29,28 @@ object PhoneNumberCreateRequestExecutor {
       serviceSid: TwilioMessagingService.Sid,
       phoneNumberSid: TwilioPhoneNumber.Sid
   )
+  object PhoneNumberCreateRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] (
+        serviceSid: Option[TwilioMessagingService.Sid],
+        phoneNumberSid: Option[TwilioPhoneNumber.Sid]
+    ) {
+      def withServiceSid(serviceSid: TwilioMessagingService.Sid): Builder =
+        new Builder(Some(serviceSid), phoneNumberSid)
+      def withPhoneNumberSid(phoneNumberSid: TwilioPhoneNumber.Sid): Builder =
+        new Builder(serviceSid, Some(phoneNumberSid))
+      def build(): PhoneNumberCreateRequest =
+        PhoneNumberCreateRequest(serviceSid.get, phoneNumberSid.get)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None)
+    }
+
+    def build(fun: BuilderStartState => PhoneNumberCreateRequest): PhoneNumberCreateRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait PhoneNumberCreateException extends RuntimeException
   object PhoneNumberCreateException {

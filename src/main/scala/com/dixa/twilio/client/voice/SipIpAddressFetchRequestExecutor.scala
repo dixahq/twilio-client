@@ -1,6 +1,7 @@
 package com.dixa.twilio.client.voice
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
+import com.dixa.twilio.client.voice.SipIpAddressFetchRequestExecutor.SipIpAddressFetchRequest.BuilderStartState
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.voice.{IpAccessControlList, SipIpAddress}
@@ -14,7 +15,8 @@ trait SipIpAddressFetchRequestExecutor
     extends SingleRequestExecutor[
       SipIpAddressFetchRequestExecutor.SipIpAddressFetchRequest,
       SipIpAddressFetchRequestExecutor.SipIpAddressFetchException,
-      SipIpAddress
+      SipIpAddress,
+      SipIpAddressFetchRequestExecutor.SipIpAddressFetchRequest.BuilderStartState
     ] {
 
   import SipIpAddressFetchRequestExecutor._
@@ -22,6 +24,9 @@ trait SipIpAddressFetchRequestExecutor
   override final protected type ApiExceptionWrapper = SipIpAddressFetchException.Api
 
   override final protected type UnspecifiedException = SipIpAddressFetchException.Unspecified
+
+  override final protected def createBuilderStartState(): BuilderStartState =
+    SipIpAddressFetchRequest.Builder.empty
 }
 
 object SipIpAddressFetchRequestExecutor {
@@ -56,7 +61,7 @@ object SipIpAddressFetchRequestExecutor {
 
     final class Builder[
         Attributes <: PhantomTypes.RequestAttribute
-    ] private[SipIpAddressFetchRequest] (
+    ] private[SipIpAddressFetchRequestExecutor] (
         accountSid: Option[TwilioAccount.Sid],
         ipAccessControlListSid: Option[IpAccessControlList.Sid],
         sid: Option[SipIpAddress.Sid]
@@ -87,10 +92,14 @@ object SipIpAddressFetchRequestExecutor {
         )
     }
 
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None, None)
+    }
+
     def build(
         fun: BuilderStartState => SipIpAddressFetchRequest
     ): SipIpAddressFetchRequest =
-      fun(new BuilderStartState(None, None, None))
+      fun(Builder.empty)
 
   }
 

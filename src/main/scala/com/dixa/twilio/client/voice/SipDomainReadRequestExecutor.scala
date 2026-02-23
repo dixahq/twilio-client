@@ -14,7 +14,8 @@ trait SipDomainReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       SipDomainReadRequestExecutor.SipDomainReadRequest,
       SipDomainReadRequestExecutor.SipDomainReadException,
-      SipDomain
+      SipDomain,
+      SipDomainReadRequestExecutor.SipDomainReadRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -22,6 +23,10 @@ trait SipDomainReadRequestExecutor
 
   override protected type UnspecifiedException =
     SipDomainReadRequestExecutor.SipDomainReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipDomainReadRequestExecutor.SipDomainReadRequest.BuilderStartState =
+    SipDomainReadRequestExecutor.SipDomainReadRequest.Builder.empty
 }
 
 object SipDomainReadRequestExecutor {

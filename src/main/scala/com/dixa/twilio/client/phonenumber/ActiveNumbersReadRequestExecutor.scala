@@ -9,18 +9,39 @@ trait ActiveNumbersReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest,
       ActiveNumbersReadRequestExecutor.ActiveNumbersReadException,
-      TwilioActivePhoneNumber
+      TwilioActivePhoneNumber,
+      ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest.Builder
     ] {
   override protected final type ApiExceptionWrapper = ActiveNumbersReadException.Api
 
   override protected final type UnspecifiedException = ActiveNumbersReadException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest.Builder =
+    ActiveNumbersReadRequestExecutor.ActiveNumbersReadRequest.Builder.empty
 }
 
 object ActiveNumbersReadRequestExecutor {
   final case class ActiveNumbersReadRequest(
       phoneNumberSid: Option[TwilioPhoneNumber.Sid]
   )
+  object ActiveNumbersReadRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[phonenumber] (phoneNumberSid: Option[TwilioPhoneNumber.Sid]) {
+      def withPhoneNumberSid(phoneNumberSid: TwilioPhoneNumber.Sid): Builder =
+        new Builder(Some(phoneNumberSid))
+      def build(): ActiveNumbersReadRequest = ActiveNumbersReadRequest(phoneNumberSid)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None)
+    }
+
+    def build(
+        fun: BuilderStartState => ActiveNumbersReadRequest
+    ): ActiveNumbersReadRequest = fun(Builder.empty)
+  }
 
   sealed trait ActiveNumbersReadException extends RuntimeException
   object ActiveNumbersReadException {

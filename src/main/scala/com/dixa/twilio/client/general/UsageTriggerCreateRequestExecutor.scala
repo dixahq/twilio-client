@@ -11,7 +11,8 @@ trait UsageTriggerCreateRequestExecutor
     extends SingleRequestExecutor[
       UsageTriggerCreateRequestExecutor.UsageTriggerCreateRequest,
       UsageTriggerCreateRequestExecutor.UsageTriggerCreateException,
-      UsageTrigger
+      UsageTrigger,
+      UsageTriggerCreateRequestExecutor.UsageTriggerCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -19,6 +20,10 @@ trait UsageTriggerCreateRequestExecutor
 
   override protected type UnspecifiedException =
     UsageTriggerCreateRequestExecutor.UsageTriggerCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : UsageTriggerCreateRequestExecutor.UsageTriggerCreateRequest.BuilderStartState =
+    UsageTriggerCreateRequestExecutor.UsageTriggerCreateRequest.Builder.empty
 }
 
 object UsageTriggerCreateRequestExecutor {
@@ -69,7 +74,7 @@ object UsageTriggerCreateRequestExecutor {
         CallbackUrlSet <: PhantomTypes.CallbackUrlSet,
         TriggerValueSet <: PhantomTypes.TriggerValueSet,
         UsageCategorySet <: PhantomTypes.UsageCategorySet
-    ] private[UsageTriggerCreateRequest] (
+    ] private[UsageTriggerCreateRequestExecutor] (
         accountSid: Option[TwilioAccount.Sid],
         callbackUrl: Option[CallbackUrl.UsageTriggerUrl],
         triggerValue: Option[UsageTrigger.TriggerValue],

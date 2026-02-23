@@ -10,12 +10,17 @@ trait ChannelsSendersListRequestExecutor
     extends SingleRequestExecutor[
       ChannelsSendersListRequestExecutor.ChannelSendersListRequest,
       ChannelSenderException,
-      ChannelsSendersListRequestExecutor.ChannelSendersListResponse
+      ChannelsSendersListRequestExecutor.ChannelSendersListResponse,
+      ChannelsSendersListRequestExecutor.ChannelSendersListRequest.Builder
     ] {
 
   override protected type ApiExceptionWrapper = ChannelSenderException.Api
 
   override protected type UnspecifiedException = ChannelSenderException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ChannelsSendersListRequestExecutor.ChannelSendersListRequest.Builder =
+    ChannelsSendersListRequestExecutor.ChannelSendersListRequest.Builder.empty
 }
 
 object ChannelsSendersListRequestExecutor {
@@ -30,6 +35,24 @@ object ChannelsSendersListRequestExecutor {
       channel: Channel = Channel.Whatsapp,
       pageSize: Option[Int] = None
   )
+  object ChannelSendersListRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] (channel: Option[Channel], pageSize: Option[Int]) {
+      def withChannel(channel: Channel): Builder = new Builder(Some(channel), pageSize)
+      def withPageSize(pageSize: Int): Builder   = new Builder(channel, Some(pageSize))
+      def build(): ChannelSendersListRequest     =
+        ChannelSendersListRequest(channel.getOrElse(Channel.Whatsapp), pageSize)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None)
+    }
+
+    def build(
+        fun: BuilderStartState => ChannelSendersListRequest
+    ): ChannelSendersListRequest = fun(Builder.empty)
+  }
 
   final case class ChannelSendersListResponse(
       senders: List[ChannelSender]

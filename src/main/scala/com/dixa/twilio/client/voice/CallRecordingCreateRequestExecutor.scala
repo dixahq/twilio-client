@@ -11,7 +11,8 @@ trait CallRecordingCreateRequestExecutor
     extends SingleRequestExecutor[
       CallRecordingCreateRequestExecutor.CallRecordingCreateRequest,
       CallRecordingCreateRequestExecutor.CallRecordingCreateException,
-      Recording
+      Recording,
+      CallRecordingCreateRequestExecutor.CallRecordingCreateRequest.BuilderStartState
     ] {
 
   import CallRecordingCreateRequestExecutor._
@@ -20,6 +21,9 @@ trait CallRecordingCreateRequestExecutor
 
   override final protected type UnspecifiedException = CallRecordingCreateException.Unspecified
 
+  override protected def createBuilderStartState()
+      : CallRecordingCreateRequestExecutor.CallRecordingCreateRequest.BuilderStartState =
+    CallRecordingCreateRequestExecutor.CallRecordingCreateRequest.Builder.empty
 }
 
 object CallRecordingCreateRequestExecutor {
@@ -256,7 +260,10 @@ object CallRecordingCreateRequestExecutor {
     }
 
     def build(fun: BuilderStartState => CallRecordingCreateRequest): CallRecordingCreateRequest =
-      fun(
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState =
         new BuilderStartState(
           None,
           None,
@@ -267,7 +274,7 @@ object CallRecordingCreateRequestExecutor {
           None,
           None
         )
-      )
+    }
   }
 
   sealed trait CallRecordingCreateException extends RuntimeException

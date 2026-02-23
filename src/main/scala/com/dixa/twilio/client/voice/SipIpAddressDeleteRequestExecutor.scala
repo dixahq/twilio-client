@@ -15,7 +15,8 @@ trait SipIpAddressDeleteRequestExecutor
     extends SingleRequestExecutor[
       SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest,
       SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteException,
-      FUnit
+      FUnit,
+      SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest.BuilderStartState
     ] {
 
   import SipIpAddressDeleteRequestExecutor._
@@ -23,6 +24,10 @@ trait SipIpAddressDeleteRequestExecutor
   override final protected type ApiExceptionWrapper = SipIpAddressDeleteException.Api
 
   override final protected type UnspecifiedException = SipIpAddressDeleteException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest.BuilderStartState =
+    SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest.Builder.empty
 }
 
 object SipIpAddressDeleteRequestExecutor {
@@ -91,8 +96,11 @@ object SipIpAddressDeleteRequestExecutor {
     def build(
         fun: BuilderStartState => SipIpAddressDeleteRequest
     ): SipIpAddressDeleteRequest =
-      fun(new BuilderStartState(None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None)
+    }
   }
 
   sealed trait SipIpAddressDeleteException extends RuntimeException

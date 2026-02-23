@@ -10,7 +10,8 @@ trait UsageTriggerDeleteRequestExecutor
     extends SingleRequestExecutor[
       UsageTriggerDeleteRequestExecutor.UsageTriggerDeleteRequest,
       UsageTriggerDeleteRequestExecutor.UsageTriggerDeleteException,
-      Done
+      Done,
+      UsageTriggerDeleteRequestExecutor.UsageTriggerDeleteRequest.BuilderStartState
     ] {
 
   import UsageTriggerDeleteRequestExecutor._
@@ -19,6 +20,10 @@ trait UsageTriggerDeleteRequestExecutor
 
   override final protected type UnspecifiedException =
     UsageTriggerDeleteException.UnspecifiedError
+
+  override final protected def createBuilderStartState()
+      : UsageTriggerDeleteRequestExecutor.UsageTriggerDeleteRequest.BuilderStartState =
+    UsageTriggerDeleteRequestExecutor.UsageTriggerDeleteRequest.Builder.empty
 }
 
 object UsageTriggerDeleteRequestExecutor {
@@ -44,7 +49,7 @@ object UsageTriggerDeleteRequestExecutor {
 
     type BuilderStartState = Builder[RequestAttribute]
 
-    final class Builder[Attributes <: RequestAttribute] private[UsageTriggerDeleteRequest] (
+    final class Builder[Attributes <: RequestAttribute] private[UsageTriggerDeleteRequestExecutor] (
         accountSid: Option[TwilioAccount.Sid],
         usageTriggerSid: Option[UsageTrigger.Sid]
     ) {
@@ -72,8 +77,12 @@ object UsageTriggerDeleteRequestExecutor {
         )
     }
 
-    def builder(fun: BuilderStartState => UsageTriggerDeleteRequest): UsageTriggerDeleteRequest =
-      fun(new BuilderStartState(None, None))
+    def build(fun: BuilderStartState => UsageTriggerDeleteRequest): UsageTriggerDeleteRequest =
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None)
+    }
   }
 
   sealed trait UsageTriggerDeleteException extends RuntimeException

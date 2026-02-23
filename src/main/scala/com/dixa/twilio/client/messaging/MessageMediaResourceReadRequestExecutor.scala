@@ -9,18 +9,38 @@ trait MessageMediaResourceReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest,
       MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadException,
-      MediaResourceReference
+      MediaResourceReference,
+      MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.Builder
     ] {
   override protected final type ApiExceptionWrapper = MessageMediaResourceReadException.Api
 
   override protected final type UnspecifiedException = MessageMediaResourceReadException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.Builder =
+    MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.Builder.empty
 }
 
 object MessageMediaResourceReadRequestExecutor {
   final case class MessageMediaResourceReadRequest(
       messageSid: Message.Sid
   )
+  object MessageMediaResourceReadRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] (messageSid: Option[Message.Sid]) {
+      def withMessageSid(messageSid: Message.Sid): Builder = new Builder(Some(messageSid))
+      def build(): MessageMediaResourceReadRequest = MessageMediaResourceReadRequest(messageSid.get)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None)
+    }
+
+    def build(
+        fun: BuilderStartState => MessageMediaResourceReadRequest
+    ): MessageMediaResourceReadRequest = fun(Builder.empty)
+  }
 
   sealed trait MessageMediaResourceReadException extends RuntimeException
   object MessageMediaResourceReadException {

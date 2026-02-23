@@ -18,7 +18,8 @@ trait CallCreateRequestExecutor
     extends SingleRequestExecutor[
       CallCreateRequestExecutor.CallCreateRequest,
       CallCreateRequestExecutor.CallCreateException,
-      Call.Sid
+      Call.Sid,
+      CallCreateRequestExecutor.CallCreateRequest.BuilderStartState
     ] {
 
   import CallCreateRequestExecutor._
@@ -27,6 +28,9 @@ trait CallCreateRequestExecutor
 
   override final protected type UnspecifiedException = CallCreateException.Unspecified
 
+  override protected def createBuilderStartState()
+      : CallCreateRequestExecutor.CallCreateRequest.BuilderStartState =
+    CallCreateRequestExecutor.CallCreateRequest.Builder.empty
 }
 
 object CallCreateRequestExecutor {
@@ -2625,7 +2629,10 @@ object CallCreateRequestExecutor {
     }
 
     def build(fun: BuilderStartState => CallCreateRequest): CallCreateRequest =
-      fun(
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState =
         new BuilderStartState(
           None,
           None,
@@ -2664,7 +2671,7 @@ object CallCreateRequestExecutor {
           None,
           None
         )
-      )
+    }
   }
 
   sealed trait CallCreateException extends RuntimeException

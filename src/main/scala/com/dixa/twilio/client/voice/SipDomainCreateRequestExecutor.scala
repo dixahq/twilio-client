@@ -12,7 +12,8 @@ trait SipDomainCreateRequestExecutor
     extends SingleRequestExecutor[
       SipDomainCreateRequestExecutor.SipDomainCreateRequest,
       SipDomainCreateRequestExecutor.SipDomainCreateException,
-      SipDomain
+      SipDomain,
+      SipDomainCreateRequestExecutor.SipDomainCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -20,6 +21,10 @@ trait SipDomainCreateRequestExecutor
 
   override protected type UnspecifiedException =
     SipDomainCreateRequestExecutor.SipDomainCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipDomainCreateRequestExecutor.SipDomainCreateRequest.BuilderStartState =
+    SipDomainCreateRequestExecutor.SipDomainCreateRequest.Builder.empty
 }
 
 object SipDomainCreateRequestExecutor {

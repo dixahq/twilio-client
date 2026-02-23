@@ -45,7 +45,7 @@ import scala.util.Failure
   * @tparam Success
   *   The type of a successfully response.
   */
-trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
+trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success, BuilderStartState]
     extends RequestExecutor[Req, Err] {
 
   /** Run the request, with typesafe error handling
@@ -92,6 +92,12 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
       .via { parseHttpEntityFlow(connSettings, req) }
   }
 
+  def source(
+      connSettings: TwilioConnectionSettings,
+      requestBuilderFun: BuilderStartState => Req
+  ): Source[Either[Err, Success], NotUsed] =
+    source(connSettings, requestBuilderFun(createBuilderStartState()))
+
   /** Run the request, returning failed Source on errors.
     *
     * All the Error ADT used in the safe versions, are also exception, so a request would always be
@@ -109,6 +115,14 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success]
       case Left(value)  => throw value
       case Right(value) => value
     }
+
+  def unsafeSource(
+      connSettings: TwilioConnectionSettings,
+      requestBuilderFun: BuilderStartState => Req
+  ): Source[Success, NotUsed] =
+    unsafeSource(connSettings, requestBuilderFun(createBuilderStartState()))
+
+  protected def createBuilderStartState(): BuilderStartState
 
   /** Parse the response of the http request.
     *

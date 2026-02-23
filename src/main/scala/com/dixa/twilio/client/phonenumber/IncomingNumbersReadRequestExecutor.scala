@@ -9,18 +9,40 @@ trait IncomingNumbersReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest,
       IncomingNumbersReadRequestExecutor.IncomingNumbersReadException,
-      TwilioIncomingPhoneNumber
+      TwilioIncomingPhoneNumber,
+      IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.Builder
     ] {
   override protected final type ApiExceptionWrapper = IncomingNumbersReadException.Api
 
   override protected final type UnspecifiedException = IncomingNumbersReadException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.Builder =
+    IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.Builder.empty
 }
 
 object IncomingNumbersReadRequestExecutor {
   final case class IncomingNumbersReadRequest(
       filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   )
+  object IncomingNumbersReadRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[phonenumber] (
+        filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
+    ) {
+      def withFilter(filter: TwilioIncomingPhoneNumber.PhoneNumberFilter): Builder =
+        new Builder(Some(filter))
+      def build(): IncomingNumbersReadRequest = IncomingNumbersReadRequest(filter)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None)
+    }
+
+    def build(fun: BuilderStartState => IncomingNumbersReadRequest): IncomingNumbersReadRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait IncomingNumbersReadException extends RuntimeException
   object IncomingNumbersReadException {

@@ -10,7 +10,8 @@ trait ConferenceRecordingReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       ConferenceRecordingReadRequestExecutor.ConferenceRecordingReadRequest,
       ConferenceRecordingReadRequestExecutor.ConferenceRecordingReadException,
-      Recording
+      Recording,
+      ConferenceRecordingReadRequestExecutor.ConferenceRecordingReadRequest.BuilderStartState
     ] {
 
   import ConferenceRecordingReadRequestExecutor._
@@ -18,6 +19,10 @@ trait ConferenceRecordingReadRequestExecutor
   override final protected type ApiExceptionWrapper = ConferenceRecordingReadException.Api
 
   override final protected type UnspecifiedException = ConferenceRecordingReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ConferenceRecordingReadRequestExecutor.ConferenceRecordingReadRequest.BuilderStartState =
+    ConferenceRecordingReadRequestExecutor.ConferenceRecordingReadRequest.Builder.empty
 }
 
 object ConferenceRecordingReadRequestExecutor {
@@ -117,10 +122,14 @@ object ConferenceRecordingReadRequestExecutor {
         )
     }
 
-    def builder(
+    def build(
         fun: BuilderStartState => ConferenceRecordingReadRequest
     ): ConferenceRecordingReadRequest =
-      fun(new BuilderStartState(None, None, None, None, None))
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None, None, None)
+    }
   }
 
   sealed trait ConferenceRecordingReadException extends RuntimeException

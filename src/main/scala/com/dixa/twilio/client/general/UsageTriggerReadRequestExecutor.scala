@@ -9,7 +9,8 @@ trait UsageTriggerReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       UsageTriggerReadRequestExecutor.UsageTriggerReadRequest,
       UsageTriggerReadRequestExecutor.UsageTriggerReadException,
-      UsageTrigger
+      UsageTrigger,
+      UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.BuilderStartState
     ] {
 
   import UsageTriggerReadRequestExecutor._
@@ -17,6 +18,10 @@ trait UsageTriggerReadRequestExecutor
   override final protected type ApiExceptionWrapper = UsageTriggerReadException.Api
 
   override final protected type UnspecifiedException = UsageTriggerReadException.Unspecified
+
+  override final protected def createBuilderStartState()
+      : UsageTriggerReadRequest.BuilderStartState =
+    UsageTriggerReadRequest.Builder.empty
 }
 
 object UsageTriggerReadRequestExecutor {
@@ -43,7 +48,7 @@ object UsageTriggerReadRequestExecutor {
 
     type BuilderStartState = Builder[RequestAttribute]
 
-    final class Builder[Attributes <: RequestAttribute] private[UsageTriggerReadRequest] (
+    final class Builder[Attributes <: RequestAttribute] private[UsageTriggerReadRequestExecutor] (
         accountSid: Option[TwilioAccount.Sid],
         recurring: Option[UsageTrigger.Recurring],
         triggerBy: Option[UsageTrigger.TriggerBy],
@@ -94,8 +99,12 @@ object UsageTriggerReadRequestExecutor {
         )
     }
 
-    def builder(fun: BuilderStartState => UsageTriggerReadRequest): UsageTriggerReadRequest =
-      fun(new BuilderStartState(None, None, None, None))
+    def build(fun: BuilderStartState => UsageTriggerReadRequest): UsageTriggerReadRequest =
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None, None)
+    }
   }
 
   sealed trait UsageTriggerReadException extends RuntimeException

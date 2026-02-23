@@ -14,7 +14,8 @@ trait SipIpAddressUpdateRequestExecutor
     extends SingleRequestExecutor[
       SipIpAddressUpdateRequestExecutor.SipIpAddressUpdateRequest,
       SipIpAddressUpdateRequestExecutor.SipIpAddressUpdateException,
-      SipIpAddress
+      SipIpAddress,
+      SipIpAddressUpdateRequestExecutor.SipIpAddressUpdateRequest.BuilderStartState
     ] {
 
   import SipIpAddressUpdateRequestExecutor._
@@ -22,6 +23,10 @@ trait SipIpAddressUpdateRequestExecutor
   override final protected type ApiExceptionWrapper = SipIpAddressUpdateException.Api
 
   override final protected type UnspecifiedException = SipIpAddressUpdateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipIpAddressUpdateRequestExecutor.SipIpAddressUpdateRequest.BuilderStartState =
+    SipIpAddressUpdateRequestExecutor.SipIpAddressUpdateRequest.Builder.empty
 }
 
 object SipIpAddressUpdateRequestExecutor {
@@ -159,8 +164,11 @@ object SipIpAddressUpdateRequestExecutor {
     def build(
         fun: BuilderStartState => SipIpAddressUpdateRequest
     ): SipIpAddressUpdateRequest =
-      fun(new BuilderStartState(None, None, None, None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None, None, None, None)
+    }
   }
 
   sealed trait SipIpAddressUpdateException extends RuntimeException

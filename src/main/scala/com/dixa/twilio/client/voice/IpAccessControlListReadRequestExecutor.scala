@@ -14,7 +14,8 @@ trait IpAccessControlListReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       IpAccessControlListReadRequestExecutor.IpAccessControlListReadRequest,
       IpAccessControlListReadRequestExecutor.IpAccessControlListReadException,
-      IpAccessControlList
+      IpAccessControlList,
+      IpAccessControlListReadRequestExecutor.IpAccessControlListReadRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -22,6 +23,10 @@ trait IpAccessControlListReadRequestExecutor
 
   override protected type UnspecifiedException =
     IpAccessControlListReadRequestExecutor.IpAccessControlListReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : IpAccessControlListReadRequestExecutor.IpAccessControlListReadRequest.BuilderStartState =
+    IpAccessControlListReadRequestExecutor.IpAccessControlListReadRequest.Builder.empty
 }
 
 object IpAccessControlListReadRequestExecutor {

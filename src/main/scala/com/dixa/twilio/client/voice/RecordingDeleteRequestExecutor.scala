@@ -9,7 +9,8 @@ trait RecordingDeleteRequestExecutor
     extends SingleRequestExecutor[
       RecordingDeleteRequestExecutor.RecordingDeleteRequest,
       RecordingDeleteRequestExecutor.RecordingDeleteRequestException,
-      Unit
+      Unit,
+      RecordingDeleteRequestExecutor.RecordingDeleteRequest.BuilderStartState
     ] {
 
   import RecordingDeleteRequestExecutor._
@@ -17,6 +18,10 @@ trait RecordingDeleteRequestExecutor
   override final protected type ApiExceptionWrapper = RecordingDeleteRequestException.Api
 
   override final protected type UnspecifiedException = RecordingDeleteRequestException.Unspecified
+
+  override protected def createBuilderStartState()
+      : RecordingDeleteRequestExecutor.RecordingDeleteRequest.BuilderStartState =
+    RecordingDeleteRequestExecutor.RecordingDeleteRequest.Builder.empty
 }
 
 object RecordingDeleteRequestExecutor {
@@ -67,8 +72,11 @@ object RecordingDeleteRequestExecutor {
     }
 
     def build(fun: BuilderStartState => RecordingDeleteRequest): RecordingDeleteRequest =
-      fun(new BuilderStartState(None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None)
+    }
   }
 
   sealed trait RecordingDeleteRequestException extends RuntimeException

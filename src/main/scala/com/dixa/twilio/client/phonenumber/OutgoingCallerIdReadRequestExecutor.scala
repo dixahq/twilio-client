@@ -10,12 +10,16 @@ trait OutgoingCallerIdReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequest,
       OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadException,
-      OutgoingCallerId
+      OutgoingCallerId,
+      OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequest.Builder
     ] {
   override protected final type ApiExceptionWrapper = OutgoingCallerIdReadException.Api
 
   override protected final type UnspecifiedException = OutgoingCallerIdReadException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequest.Builder =
+    OutgoingCallerIdReadRequestExecutor.OutgoingCallerIdReadRequest.Builder.empty
 }
 
 object OutgoingCallerIdReadRequestExecutor {
@@ -23,6 +27,31 @@ object OutgoingCallerIdReadRequestExecutor {
       accountSid: TwilioAccount.Sid,
       filter: OutgoingCallerIdReadRequestFilter = OutgoingCallerIdReadRequestFilter()
   )
+  object OutgoingCallerIdReadRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[phonenumber] (
+        accountSid: Option[TwilioAccount.Sid],
+        filter: OutgoingCallerIdReadRequestFilter
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), filter)
+      def withFilter(filter: OutgoingCallerIdReadRequestFilter): Builder =
+        new Builder(accountSid, filter)
+      def build(): OutgoingCallerIdReadRequest =
+        OutgoingCallerIdReadRequest(accountSid.get, filter)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(
+        None,
+        OutgoingCallerIdReadRequestFilter()
+      )
+    }
+
+    def build(fun: BuilderStartState => OutgoingCallerIdReadRequest): OutgoingCallerIdReadRequest =
+      fun(Builder.empty)
+  }
 
   final case class OutgoingCallerIdReadRequestFilter(
       phoneNumber: Option[PhoneNumberE164] = None,

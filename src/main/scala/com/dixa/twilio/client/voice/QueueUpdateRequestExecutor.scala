@@ -9,7 +9,8 @@ trait QueueUpdateRequestExecutor
     extends SingleRequestExecutor[
       QueueUpdateRequestExecutor.QueueUpdateRequest,
       QueueUpdateRequestExecutor.QueueUpdateException,
-      Queue
+      Queue,
+      QueueUpdateRequestExecutor.QueueUpdateRequest.BuilderStartState
     ] {
 
   import QueueUpdateRequestExecutor._
@@ -17,6 +18,10 @@ trait QueueUpdateRequestExecutor
   override final protected type ApiExceptionWrapper = QueueUpdateException.Api
 
   override final protected type UnspecifiedException = QueueUpdateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : QueueUpdateRequestExecutor.QueueUpdateRequest.BuilderStartState =
+    QueueUpdateRequestExecutor.QueueUpdateRequest.Builder.empty
 }
 
 object QueueUpdateRequestExecutor {
@@ -85,8 +90,11 @@ object QueueUpdateRequestExecutor {
     }
 
     def build(fun: BuilderStartState => QueueUpdateRequest): QueueUpdateRequest =
-      fun(new BuilderStartState(None, None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None, None)
+    }
   }
 
   sealed trait QueueUpdateException extends RuntimeException

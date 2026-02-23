@@ -11,7 +11,8 @@ trait CallReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       CallReadRequestExecutor.CallReadRequest,
       CallReadRequestExecutor.CallReadException,
-      Call
+      Call,
+      CallReadRequestExecutor.CallReadRequest.BuilderStartState
     ] {
 
   import CallReadRequestExecutor._
@@ -19,6 +20,10 @@ trait CallReadRequestExecutor
   override final protected type ApiExceptionWrapper = CallReadException.Api
 
   override final protected type UnspecifiedException = CallReadException.Unspecified
+
+  override protected def createBuilderStartState()
+      : CallReadRequestExecutor.CallReadRequest.BuilderStartState =
+    CallReadRequestExecutor.CallReadRequest.Builder.empty
 }
 
 object CallReadRequestExecutor {
@@ -201,8 +206,13 @@ object CallReadRequestExecutor {
         )
     }
 
-    def builder(fun: BuilderStartState => CallReadRequest): CallReadRequest =
-      fun(new BuilderStartState(None, None, None, None, None, None, None, None, None))
+    def build(fun: BuilderStartState => CallReadRequest): CallReadRequest =
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState =
+        new BuilderStartState(None, None, None, None, None, None, None, None, None)
+    }
   }
 
   sealed trait CallReadException extends RuntimeException

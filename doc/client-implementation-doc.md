@@ -69,16 +69,20 @@ There are two extensions of `RequestExecutor`, described below.
 
 ### SingleRequestExecutor
 
-`SingleRequestExecutor[Req, Err, Success]` is for requests that return a single response (create, fetch, update, delete).
+`SingleRequestExecutor[Req, Err, Success, BuilderStartState]` is for requests that return a single response (create, fetch, update, delete).
 
-It provides two run methods:
+It provides four run methods:
 
 - `run(connSettings, req): Future[Either[Err, Success]]` — type-safe error handling via `Either`.
+- `run(connSettings, builderFun: BuilderStartState => Req): Future[Either[Err, Success]]` — build and run inline.
 - `unsafeRun(connSettings, req): Future[Success]` — throws the error as an exception on failure.
+- `unsafeRun(connSettings, builderFun: BuilderStartState => Req): Future[Success]` — build and run inline (unsafe).
 
 Implementors must additionally provide:
 
 ```scala
+protected def createBuilderStartState(): BuilderStartState
+
 protected def parseHttpResponse(
     request: Req,
     httpRequest: HttpRequest,
@@ -93,18 +97,20 @@ request-specific status codes and error codes.
 
 ### MultipleResponseRequestExecutor
 
-`MultipleResponseRequestExecutor[Req, Err, Success]` is for requests that
-return paginated lists. It automatically handles pagination using a Pekko
-Streams `GraphDSL` loop that fetches subsequent pages until exhausted.
+`MultipleResponseRequestExecutor[Req, Err, Success, BuilderStartState]` is for requests that return paginated lists. It automatically handles pagination using a Pekko Streams `GraphDSL` loop that fetches subsequent pages until exhausted.
 
-It provides two run methods:
+It provides four run methods:
 
 - `source(connSettings, req): Source[Either[Err, Success], NotUsed]` — type-safe error handling.
+- `source(connSettings, builderFun: BuilderStartState => Req): Source[Either[Err, Success], NotUsed]` — build and run inline.
 - `unsafeSource(connSettings, req): Source[Success, NotUsed]` — throws on error.
+- `unsafeSource(connSettings, builderFun: BuilderStartState => Req): Source[Success, NotUsed]` — build and run inline (unsafe).
 
 Implementors must additionally provide:
 
 ```scala
+protected def createBuilderStartState(): BuilderStartState
+
 protected def parseHttpResponse(
     connectionSettings: TwilioConnectionSettings,
     request: Req,
@@ -154,6 +160,8 @@ XRequestExecutor (trait)
     │   ├── type RequestRequiredAttributes = ...
     │   ├── type BuilderStartState = ...
     │   ├── Builder (final class)
+    │   │   └── object Builder (companion)
+    │   │       └── val/def empty = ...
     │   └── def build(fun: ...) = ...
     ├── XException (sealed trait)
     └── XException companion object
@@ -182,7 +190,8 @@ trait SipIpAddressDeleteRequestExecutor
     extends SingleRequestExecutor[
       SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest,
       SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteException,
-      FUnit
+      FUnit,
+      SipIpAddressDeleteRequestExecutor.SipIpAddressDeleteRequest.BuilderStartState
     ] {
 
   import SipIpAddressDeleteRequestExecutor._
@@ -192,6 +201,9 @@ trait SipIpAddressDeleteRequestExecutor
 
   override final protected type UnspecifiedException =
     SipIpAddressDeleteException.Unspecified
+
+  override protected def createBuilderStartState(): SipIpAddressDeleteRequest.BuilderStartState =
+    SipIpAddressDeleteRequest.Builder.empty
 }
 
 object SipIpAddressDeleteRequestExecutor {
@@ -278,8 +290,12 @@ object SipIpAddressDeleteRequestExecutor {
     def build(
         fun: BuilderStartState => SipIpAddressDeleteRequest
     ): SipIpAddressDeleteRequest =
-      fun(new BuilderStartState(None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState =
+        new BuilderStartState(None, None, None)
+    }
   }
 
   // Exception ADT
@@ -417,37 +433,25 @@ Add a method to the sub-client trait and instantiate it in the impl.
 
 ## Type-Safe Builder Pattern
 
-All requests should use the **phantom type builder pattern** to enforce as
-many of Twilio's API rules as possible at compile time. This includes not
-only required parameters, but also constraints between parameters — such as
-mutual exclusion (only one of several fields may be set), conditional
-dependencies (a parameter is only valid if another parameter has been set),
-and any other rules documented by Twilio for the endpoint. The goal is to
-make invalid requests unrepresentable. Some older requests use a plain case
-class without a builder for legacy reasons. But going forward, even simple request
-without any constraint should use the builder pattern for consistency.
+All requests should use the **phantom type builder pattern** to enforce as many of Twilio's API rules as possible at compile time. This includes not only required parameters, but also constraints between parameters — such as mutual exclusion (only one of several fields may be set), conditional dependencies (a parameter is only valid if another parameter has been set), and any other rules documented by Twilio for the endpoint. The goal is to make invalid requests unrepresentable. Even simple requests without any constraints should use the builder pattern for consistency and to support the inline run methods. Legacy case classes should be kept for compatibility but should also have a builder added.
 
 ### Builder construction pattern
 
-The `Builder` constructor is always private, and builders are only
-exposed through a `build` method that takes a function:
+The `Builder` constructor is always private, and builders are only exposed through a `Builder.empty` factory and a `build` method that takes a function:
 
 ```scala
 def build(
     fun: BuilderStartState => RecordingReadRequest
 ): RecordingReadRequest =
-  fun(new Builder(None, None))
+  fun(Builder.empty)
 ```
 
 This design serves three purposes:
 
-1. **Type safety:** prevents users from constructing a `Builder` in an
-   arbitrary type state. They always start from `BuilderStartState`
-   with all attributes unset.
-2. **Ergonomics:** the caller never needs to construct the builder
-   themselves. They simply write `build(_.withX(...).build())` and
-   use their IDE's autocompletion on the builder parameter to discover
-   all available methods.
+1. **Type safety:** prevents users from constructing a `Builder` in an arbitrary type state. They always start from `BuilderStartState` (via `Builder.empty`) with all attributes unset.
+2. **Ergonomics:** the caller never needs to construct the builder themselves. They simply write `build(_.withX(...).build())` and use their IDE's autocompletion on the builder parameter to discover all available methods.
+3. **Consistency:** the `createBuilderStartState` method in the executor can simply call `XRequest.Builder.empty`.
+4. **More ergonomics** The consistency allow for the RequestExecutor base trait, to provide run methods that inline the builder, so you can just do `twilioClient.product.endpoint.unsafeRun(connSettings, _withX().build)`.
 
 ### Builder strategies
 
@@ -559,7 +563,11 @@ object RecordingReadRequestExecutor {
     def build(
         fun: BuilderStartState => RecordingReadRequest
     ): RecordingReadRequest =
-      fun(new Builder(None, None))
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState = new Builder(None, None)
+    }
   }
 
   sealed trait RecordingReadException extends RuntimeException
