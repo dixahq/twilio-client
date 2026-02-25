@@ -66,6 +66,10 @@ trait TwilioClientMessaging {
   /** Lists channel senders, optionally filtered by sender_id
     */
   def channelsSendersList: ChannelsSendersListRequestExecutor
+
+  /** Sends a WhatsApp typing indicator
+    */
+  def typingIndicatorSend: TypingIndicatorSendRequestExecutor
 }
 
 object TwilioClientMessaging {
