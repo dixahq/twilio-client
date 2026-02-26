@@ -364,6 +364,20 @@ object SipDomainCreateRequestExecutor {
         with SipDomainCreateException
         with ApiExceptionWrapper
 
+    /** Returned when Twilio rejects the request due to an invalid domain name (error codes 21231 or
+      * 21232).
+      *
+      * @see
+      *   https://www.twilio.com/docs/api/errors/21231
+      * @see
+      *   https://www.twilio.com/docs/api/errors/21232
+      */
+    final case class InvalidDomainName(domainName: SipDomain.DomainName)
+        extends RuntimeException(
+          s"Cannot create SIP domain. Domain name is invalid: '$domainName'"
+        )
+        with SipDomainCreateException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
