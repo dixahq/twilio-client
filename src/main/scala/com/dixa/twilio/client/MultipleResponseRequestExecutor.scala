@@ -92,7 +92,14 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success, Bui
       .via { parseHttpEntityFlow(connSettings, req) }
   }
 
-  def source(
+  /** Build and run the request inline, with typesafe error handling.
+    *
+    * This lets you inline the request building, so you can call it like:
+    * `client.endpointX.buildAndSource(connectionSettings, _.withY.withZ.build())`.
+    *
+    * Besides the inline request building, it works just as [[source]].
+    */
+  def buildAndSource(
       connSettings: TwilioConnectionSettings,
       requestBuilderFun: BuilderStartState => Req
   ): Source[Either[Err, Success], NotUsed] =
@@ -116,7 +123,14 @@ trait MultipleResponseRequestExecutor[Req, Err <: RuntimeException, Success, Bui
       case Right(value) => value
     }
 
-  def unsafeSource(
+  /** Build and run the request inline, returning a failed Source on errors.
+    *
+    * This lets you inline the request building, so you can call it like:
+    * `client.endpointX.buildAndUnsafeSource(connectionSettings, _.withY.withZ.build())`.
+    *
+    * Besides the inline request building, it works just as [[unsafeSource]].
+    */
+  def buildAndUnsafeSource(
       connSettings: TwilioConnectionSettings,
       requestBuilderFun: BuilderStartState => Req
   ): Source[Success, NotUsed] =
