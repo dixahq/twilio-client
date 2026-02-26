@@ -3,7 +3,7 @@ package com.dixa.twilio.client.impl.voice
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.impl._
+import com.dixa.twilio.client.impl.{DefaultApiErrorEntityJsonRep, _}
 import com.dixa.twilio.client.voice.SipDomainCreateRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.voice.SipDomain
@@ -63,6 +63,12 @@ private[client] class SipDomainCreateRequestExecutorImpl()(
     httpResponse.status match {
       case StatusCodes.Created | StatusCodes.OK =>
         parseEntityAs[SipDomainJsonRep](entity).map(j => j.toModelUnsafe)
+      case StatusCodes.BadRequest =>
+        parseEntityAs[DefaultApiErrorEntityJsonRep](entity) match {
+          case Right(err) if err.code == 21232L =>
+            Left(SipDomainCreateException.InvalidDomainName(request.domainName))
+          case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
+        }
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
