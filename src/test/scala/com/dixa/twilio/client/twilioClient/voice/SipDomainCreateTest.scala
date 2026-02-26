@@ -60,6 +60,46 @@ final class SipDomainCreateTest extends TwilioClientTest {
         }
       }
 
+      "return InvalidDomainName when Twilio responds with error code 21231" in {
+        val domainName = SipDomain.DomainName.unsafe("ie1.ankr-test..sip.twilio.com")
+        val request    = SipDomainCreateRequestExecutor.SipDomainCreateRequest.build(
+          _.withAccountSid(CommonFixtures.accountSid1)
+            .withDomainName(domainName)
+            .withVoiceUrl(CallbackUrl.VoiceUrl("http://unit.test/voice/url"))
+            .withVoiceFallbackUrl(CallbackUrl.VoiceFallbackUrl("http://unit.test/voice/fallback"))
+            .withVoiceStatusCallbackUrl(
+              CallbackUrl.VoiceStatusCallbackUrl("http://unit.test/voice/status")
+            )
+            .build()
+        )
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(
+              WireMock.urlPathEqualTo(
+                s"/2010-04-01/Accounts/${CommonFixtures.accountSid1}/SIP/Domains.json"
+              )
+            )
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioError21231)
+            )
+        )
+
+        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: SipDomainCreateRequestExecutor =
+          TwilioClient.defaultImpl().voice.sipDomainCreate
+        instance.run(connSettings, request).map { result =>
+          assert(
+            result === Left(
+              SipDomainCreateRequestExecutor.SipDomainCreateException.InvalidDomainName(domainName)
+            )
+          )
+        }
+      }
+
       "ask twilio to create it, and return the SipDomain it gets back from Twilio" in {
 
         val request = SipDomainCreateRequestExecutor.SipDomainCreateRequest.build(
@@ -169,6 +209,14 @@ final class SipDomainCreateTest extends TwilioClientTest {
       }
     }
   }
+
+  private def twilioError21231 =
+    """{
+      |  "code": 21231,
+      |  "message": "Invalid Domain Name",
+      |  "more_info": "https://www.twilio.com/docs/errors/21231",
+      |  "status": 400
+      |}""".stripMargin
 
   private def twilioError21232 =
     """{

@@ -65,7 +65,7 @@ private[client] class SipDomainCreateRequestExecutorImpl()(
         parseEntityAs[SipDomainJsonRep](entity).map(j => j.toModelUnsafe)
       case StatusCodes.BadRequest =>
         parseEntityAs[DefaultApiErrorEntityJsonRep](entity) match {
-          case Right(err) if err.code == 21232L =>
+          case Right(err) if err.code == 21231L || err.code == 21232L =>
             Left(SipDomainCreateException.InvalidDomainName(request.domainName))
           case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
         }

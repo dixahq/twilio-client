@@ -364,8 +364,11 @@ object SipDomainCreateRequestExecutor {
         with SipDomainCreateException
         with ApiExceptionWrapper
 
-    /** Returned when Twilio rejects the request with error code: 21232: Invalid Domain.
+    /** Returned when Twilio rejects the request due to an invalid domain name (error codes 21231 or
+      * 21232).
       *
+      * @see
+      *   https://www.twilio.com/docs/api/errors/21231
       * @see
       *   https://www.twilio.com/docs/api/errors/21232
       */
