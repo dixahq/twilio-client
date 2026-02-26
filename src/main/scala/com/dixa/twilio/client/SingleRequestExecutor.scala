@@ -63,11 +63,11 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success, BuilderStartS
   /** Build and Run the request inline, with typesafe error handling
     *
     * This lets you inline the request building, so you can call it like:
-    * `client.endpointX.run(connectionSettings, _.withY.withZ.build())`.
+    * `client.endpointX.buildAndRun(connectionSettings, _.withY.withZ.build())`.
     *
-    * Besides the inline request building, it works just as the other run method.
+    * Besides the inline request building, it works just as [[run]].
     */
-  def run(
+  def buildAndRun(
       connSettings: TwilioConnectionSettings,
       requestBuilderFun: BuilderStartState => Req
   ): Future[Either[Err, Success]] = run(connSettings, requestBuilderFun(createBuilderStartState()))
@@ -87,11 +87,11 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success, BuilderStartS
   /** Build and Run the request inline, returning failed Future on errors.
     *
     * This lets you inline the request building, so you can call it like:
-    * `client.endpointX.unsafeRun(connectionSettings, _.withY.withZ.build())`.
+    * `client.endpointX.buildAndUnsafeRun(connectionSettings, _.withY.withZ.build())`.
     *
-    * Besides the inline request building, it works just as the other unsafeRun method.
+    * Besides the inline request building, it works just as [[unsafeRun]].
     */
-  def unsafeRun(
+  def buildAndUnsafeRun(
       connSettings: TwilioConnectionSettings,
       requestBuilderFun: BuilderStartState => Req
   ): Future[Success] =
