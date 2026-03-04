@@ -62,8 +62,10 @@ final case class TwilioConnectionSettings(
     endpoint.baseHostName == "localhost" || endpoint.baseHostName == "127.0.0.1"
 
   // Tiny optimization, but pregenerate the possible hostnames so that we don't have to generate a new string on every call to hostNameFor.
-  private val accountHost   = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
-  private val apiHost       = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  private val accountHost = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  private val apiHost     = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  // The IAM v1 API (iam.twilio.com) uses only the region in the hostname, not the edge location.
+  private val iamHost       = s"${ApiSubDomain.Iam}.${region.twilioString}.${endpoint.baseHostName}"
   private val messagingHost = s"${ApiSubDomain.Messaging}.$baseHostNameWithRegionAndEdge"
   private val previewHost   = s"${ApiSubDomain.Preview}.$baseHostNameWithRegionAndEdge"
 
@@ -87,6 +89,7 @@ final case class TwilioConnectionSettings(
       subDomain match {
         case ApiSubDomain.Accounts  => accountHost
         case ApiSubDomain.Api       => apiHost
+        case ApiSubDomain.Iam       => iamHost
         case ApiSubDomain.Messaging => messagingHost
         case ApiSubDomain.Preview   => previewHost
       }

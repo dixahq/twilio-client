@@ -49,6 +49,17 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
         assert(result === expected)
       }
 
+      "work with the Iam sub domain, using only region (no edge location)" in {
+        val instance = createInstance(
+          "twilio.com",
+          region = Region.Ireland1,
+          edgeLocation = PublicEdgeLocation.Dublin
+        )
+        val result   = instance.hostNameFor(ApiSubDomain.Iam)
+        val expected = "iam.ie1.twilio.com"
+        assert(result === expected)
+      }
+
       "Not append any subdomain, if the base host name is localhost" in {
         val instance = createInstance(
           "localhost",
