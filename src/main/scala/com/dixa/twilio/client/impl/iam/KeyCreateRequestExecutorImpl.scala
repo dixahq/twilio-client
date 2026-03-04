@@ -46,11 +46,17 @@ private[client] class KeyCreateRequestExecutorImpl()(
       cause: Option[Throwable]
   ): KeyCreateException.Unspecified = KeyCreateException.Unspecified(msg, cause)
 
-  private case class KeyCreateJsonRep(sid: String, secret: String, friendly_name: String) {
+  private case class KeyCreateJsonRep(
+      sid: String,
+      secret: String,
+      friendly_name: String,
+      flags: Option[Set[String]] = None
+  ) {
     def toModel: ApiKey = ApiKey(
       sid = ApiKey.Sid(sid),
       secret = ApiKey.Secret(secret),
-      friendlyName = ApiKey.FriendlyName(friendly_name)
+      friendlyName = ApiKey.FriendlyName(friendly_name),
+      flags = flags.getOrElse(Set.empty).flatMap(ApiKey.Flag.fromTwilioString)
     )
   }
 
