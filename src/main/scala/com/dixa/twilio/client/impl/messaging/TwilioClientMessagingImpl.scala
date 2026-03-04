@@ -7,6 +7,7 @@ import com.dixa.twilio.client.messaging.{
   ChannelsSendersCreateRequestExecutor,
   ChannelsSendersDeleteRequestExecutor,
   ChannelsSendersFetchRequestExecutor,
+  ChannelsSendersListRequestExecutor,
   ChannelsSendersVerificationRequestExecutor,
   MessageMediaResourceReadRequestExecutor,
   MessageResourceReadRequestExecutor,
@@ -14,7 +15,8 @@ import com.dixa.twilio.client.messaging.{
   PhoneNumberCreateRequestExecutor,
   PhoneNumberDeleteRequestExecutor,
   ServicesReadRequestExecutor,
-  TwilioClientMessaging
+  TwilioClientMessaging,
+  TypingIndicatorSendRequestExecutor
 }
 import com.dixa.twilio.model.messaging.TwilioMessagingService
 
@@ -60,4 +62,10 @@ private[client] final class TwilioClientMessagingImpl(
 
   override val channelsSendersDelete: ChannelsSendersDeleteRequestExecutor =
     new ChannelsSendersDeleteRequestExecutorImpl()
+
+  override val channelsSendersList: ChannelsSendersListRequestExecutor =
+    new ChannelsSendersListRequestExecutorImpl()
+
+  override val typingIndicatorSend: TypingIndicatorSendRequestExecutor =
+    new TypingIndicatorSendRequestExecutorImpl()
 }

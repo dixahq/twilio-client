@@ -18,7 +18,7 @@ import scala.concurrent.Future
   * @tparam Success
   *   The type of a successfully response.
   */
-trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
+trait SingleRequestExecutor[Req, Err <: RuntimeException, Success, BuilderStartState]
     extends RequestExecutor[Req, Err] {
 
   /** Run the request, with typesafe error handling
@@ -60,6 +60,18 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
       )
     }
 
+  /** Build and Run the request inline, with typesafe error handling
+    *
+    * This lets you inline the request building, so you can call it like:
+    * `client.endpointX.buildAndRun(connectionSettings, _.withY.withZ.build())`.
+    *
+    * Besides the inline request building, it works just as [[run]].
+    */
+  def buildAndRun(
+      connSettings: TwilioConnectionSettings,
+      requestBuilderFun: BuilderStartState => Req
+  ): Future[Either[Err, Success]] = run(connSettings, requestBuilderFun(createBuilderStartState()))
+
   /** Run the request, returning failed Future on errors.
     *
     * All the Error ADT used in the safe versions, are also exception, so a request would always be
@@ -71,6 +83,21 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
     */
   def unsafeRun(connSettings: TwilioConnectionSettings, req: Req): Future[Success] =
     run(connSettings, req).map(_.fold(e => throw e, res => res))
+
+  /** Build and Run the request inline, returning failed Future on errors.
+    *
+    * This lets you inline the request building, so you can call it like:
+    * `client.endpointX.buildAndUnsafeRun(connectionSettings, _.withY.withZ.build())`.
+    *
+    * Besides the inline request building, it works just as [[unsafeRun]].
+    */
+  def buildAndUnsafeRun(
+      connSettings: TwilioConnectionSettings,
+      requestBuilderFun: BuilderStartState => Req
+  ): Future[Success] =
+    unsafeRun(connSettings, requestBuilderFun(createBuilderStartState()))
+
+  protected def createBuilderStartState(): BuilderStartState
 
   /** Parse the response of the http request.
     *
@@ -151,6 +178,9 @@ trait SingleRequestExecutor[Req, Err <: RuntimeException, Success]
     val msg =
       s"No support for handling response to $request, due to status code ${httpResponse.status} " +
         s"after firing $httpRequest. Full entity of response is: $entity"
-    Left(createUnspecifiedException(Some(msg), None))
+    httpResponse.status match {
+      case StatusCodes.NotFound => Left(mapApiException(ApiException.NotFound(msg)))
+      case _                    => Left(createUnspecifiedException(Some(msg), None))
+    }
   }
 }

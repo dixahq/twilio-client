@@ -11,12 +11,16 @@ trait OutgoingCallerIdDeleteRequestExecutor
     extends SingleRequestExecutor[
       OutgoingCallerIdDeleteRequestExecutor.OutgoingCallerIdDeleteRequest,
       OutgoingCallerIdDeleteRequestExecutor.OutgoingCallerIdDeleteException,
-      Done
+      Done,
+      OutgoingCallerIdDeleteRequestExecutor.OutgoingCallerIdDeleteRequest.Builder
     ] {
   override protected final type ApiExceptionWrapper = OutgoingCallerIdDeleteException.Api
 
   override protected final type UnspecifiedException = OutgoingCallerIdDeleteException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : OutgoingCallerIdDeleteRequestExecutor.OutgoingCallerIdDeleteRequest.Builder =
+    OutgoingCallerIdDeleteRequestExecutor.OutgoingCallerIdDeleteRequest.Builder.empty
 }
 
 object OutgoingCallerIdDeleteRequestExecutor {
@@ -24,6 +28,29 @@ object OutgoingCallerIdDeleteRequestExecutor {
       accountSid: TwilioAccount.Sid,
       outGoingCallerId: OutgoingCallerId.Sid
   )
+  object OutgoingCallerIdDeleteRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[phonenumber] (
+        accountSid: Option[TwilioAccount.Sid],
+        outGoingCallerId: Option[OutgoingCallerId.Sid]
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), outGoingCallerId)
+      def withOutgoingCallerId(outGoingCallerId: OutgoingCallerId.Sid): Builder =
+        new Builder(accountSid, Some(outGoingCallerId))
+      def build(): OutgoingCallerIdDeleteRequest =
+        OutgoingCallerIdDeleteRequest(accountSid.get, outGoingCallerId.get)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None)
+    }
+
+    def build(
+        fun: BuilderStartState => OutgoingCallerIdDeleteRequest
+    ): OutgoingCallerIdDeleteRequest = fun(Builder.empty)
+  }
 
   sealed trait OutgoingCallerIdDeleteException extends RuntimeException
   object OutgoingCallerIdDeleteException {

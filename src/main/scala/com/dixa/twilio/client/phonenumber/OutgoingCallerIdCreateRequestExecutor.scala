@@ -16,7 +16,8 @@ trait OutgoingCallerIdCreateRequestExecutor
     extends SingleRequestExecutor[
       OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest,
       OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateException,
-      OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse
+      OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateResponse,
+      OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest.BuilderStartState
     ] {
 
   import OutgoingCallerIdCreateRequestExecutor._
@@ -25,6 +26,9 @@ trait OutgoingCallerIdCreateRequestExecutor
 
   override final protected type UnspecifiedException = OutgoingCallerIdCreateException.Unspecified
 
+  override protected def createBuilderStartState()
+      : OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest.BuilderStartState =
+    OutgoingCallerIdCreateRequestExecutor.OutgoingCallerIdCreateRequest.Builder.empty
 }
 
 object OutgoingCallerIdCreateRequestExecutor {
@@ -316,7 +320,10 @@ object OutgoingCallerIdCreateRequestExecutor {
     def build(
         fun: BuilderStartState => OutgoingCallerIdCreateRequest
     ): OutgoingCallerIdCreateRequest =
-      fun(
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState =
         new BuilderStartState(
           None,
           None,
@@ -326,7 +333,7 @@ object OutgoingCallerIdCreateRequestExecutor {
           None,
           None
         )
-      )
+    }
   }
 
   sealed trait OutgoingCallerIdCreateException extends RuntimeException

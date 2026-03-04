@@ -14,12 +14,17 @@ trait ReadAllAccountsRequestExecutor
     extends MultipleResponseRequestExecutor[
       ReadAllAccountsRequestExecutor.ReadAllAccountsRequest,
       ReadAllAccountsRequestExecutor.ReadAllAccountsException,
-      TwilioAccount
+      TwilioAccount,
+      ReadAllAccountsRequestExecutor.ReadAllAccountsRequest.Builder
     ] {
 
   override protected final type ApiExceptionWrapper = ReadAllAccountsException.Api
 
   override protected final type UnspecifiedException = ReadAllAccountsException.Unspecified
+
+  override protected final def createBuilderStartState()
+      : ReadAllAccountsRequestExecutor.ReadAllAccountsRequest.Builder =
+    ReadAllAccountsRequestExecutor.ReadAllAccountsRequest.Builder.empty
 }
 
 object ReadAllAccountsRequestExecutor {
@@ -37,6 +42,27 @@ object ReadAllAccountsRequestExecutor {
       status: Option[TwilioAccount.Status] = None,
       name: Option[TwilioAccount.Name] = None
   )
+  object ReadAllAccountsRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[iam] (
+        status: Option[TwilioAccount.Status],
+        name: Option[TwilioAccount.Name]
+    ) {
+      def withStatus(status: TwilioAccount.Status): Builder =
+        new Builder(Some(status), name)
+      def withName(name: TwilioAccount.Name): Builder =
+        new Builder(status, Some(name))
+      def build(): ReadAllAccountsRequest = ReadAllAccountsRequest(status, name)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None)
+    }
+
+    def build(fun: BuilderStartState => ReadAllAccountsRequest): ReadAllAccountsRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait ReadAllAccountsException extends RuntimeException
   object ReadAllAccountsException {

@@ -10,7 +10,8 @@ trait ConferenceParticipantDeleteRequestExecutor
     extends SingleRequestExecutor[
       ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest,
       ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteException,
-      FUnit
+      FUnit,
+      ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest.BuilderStartState
     ] {
 
   import ConferenceParticipantDeleteRequestExecutor._
@@ -19,6 +20,10 @@ trait ConferenceParticipantDeleteRequestExecutor
 
   override final protected type UnspecifiedException =
     ConferenceParticipantDeleteException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest.BuilderStartState =
+    ConferenceParticipantDeleteRequestExecutor.ConferenceParticipantDeleteRequest.Builder.empty
 }
 
 object ConferenceParticipantDeleteRequestExecutor {
@@ -87,8 +92,11 @@ object ConferenceParticipantDeleteRequestExecutor {
     def build(
         fun: BuilderStartState => ConferenceParticipantDeleteRequest
     ): ConferenceParticipantDeleteRequest =
-      fun(new BuilderStartState(None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None)
+    }
   }
 
   sealed trait ConferenceParticipantDeleteException extends RuntimeException

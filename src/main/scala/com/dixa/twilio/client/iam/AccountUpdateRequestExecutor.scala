@@ -13,7 +13,8 @@ trait AccountUpdateRequestExecutor
     extends SingleRequestExecutor[
       AccountUpdateRequestExecutor.AccountUpdateRequest,
       AccountUpdateRequestExecutor.AccountUpdateException,
-      TwilioAccount
+      TwilioAccount,
+      AccountUpdateRequestExecutor.AccountUpdateRequest.Builder
     ] {
 
   import AccountUpdateRequestExecutor._
@@ -21,6 +22,9 @@ trait AccountUpdateRequestExecutor
   override final protected type ApiExceptionWrapper = AccountUpdateException.Api
 
   override final protected type UnspecifiedException = AccountUpdateException.UnspecifiedError
+
+  override final protected def createBuilderStartState(): AccountUpdateRequest.Builder =
+    AccountUpdateRequest.Builder.empty
 }
 
 object AccountUpdateRequestExecutor {
@@ -35,6 +39,30 @@ object AccountUpdateRequestExecutor {
       friendlyName: Option[TwilioAccount.Name],
       status: Option[TwilioAccount.Status]
   )
+  object AccountUpdateRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[iam] (
+        accountSid: Option[TwilioAccount.Sid],
+        friendlyName: Option[TwilioAccount.Name],
+        status: Option[TwilioAccount.Status]
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), friendlyName, status)
+      def withFriendlyName(friendlyName: TwilioAccount.Name): Builder =
+        new Builder(accountSid, Some(friendlyName), status)
+      def withStatus(status: TwilioAccount.Status): Builder =
+        new Builder(accountSid, friendlyName, Some(status))
+      def build(): AccountUpdateRequest = AccountUpdateRequest(accountSid.get, friendlyName, status)
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState(None, None, None)
+    }
+
+    def build(fun: BuilderStartState => AccountUpdateRequest): AccountUpdateRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait AccountUpdateException extends RuntimeException
   object AccountUpdateException {

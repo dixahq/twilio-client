@@ -13,7 +13,8 @@ trait CallUpdateRequestExecutor
     extends SingleRequestExecutor[
       CallUpdateRequestExecutor.CallUpdateRequest,
       CallUpdateRequestExecutor.CallUpdateException,
-      Call
+      Call,
+      CallUpdateRequestExecutor.CallUpdateRequest.BuilderStartState
     ] {
 
   import CallUpdateRequestExecutor._
@@ -21,6 +22,10 @@ trait CallUpdateRequestExecutor
   override final protected type ApiExceptionWrapper = CallUpdateException.Api
 
   override final protected type UnspecifiedException = CallUpdateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : CallUpdateRequestExecutor.CallUpdateRequest.BuilderStartState =
+    CallUpdateRequestExecutor.CallUpdateRequest.Builder.empty
 }
 
 object CallUpdateRequestExecutor {
@@ -424,8 +429,12 @@ object CallUpdateRequestExecutor {
     }
 
     def build(fun: BuilderStartState => CallUpdateRequest): CallUpdateRequest =
-      fun(new BuilderStartState(None, None, None, None, None, None, None, None, None, None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState =
+        new BuilderStartState(None, None, None, None, None, None, None, None, None, None, None)
+    }
   }
 
   sealed trait CallUpdateException extends RuntimeException

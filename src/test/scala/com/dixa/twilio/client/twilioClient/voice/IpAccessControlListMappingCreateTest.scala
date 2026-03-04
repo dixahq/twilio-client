@@ -74,6 +74,51 @@ final class IpAccessControlListMappingCreateTest extends TwilioClientTest {
           assert(succResult === expected)
         }
       }
+
+      "return IpAccessControlListMappingAlreadyExists if Twilio returns 400 with code 21231" in {
+        val domainSid = SipDomain.Sid.unsafe("SDXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        val ipAclSid  = IpAccessControlList.Sid.unsafe("ALXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
+        val request =
+          IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest
+            .build(
+              _.withAccountSid(CommonFixtures.accountSid1)
+                .withDomainSid(domainSid)
+                .withIpAccessControlListSid(ipAclSid)
+                .build()
+            )
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(
+              WireMock.urlPathEqualTo(
+                s"/2010-04-01/Accounts/${CommonFixtures.accountSid1}/SIP/Domains/$domainSid/Auth/Calls/IpAccessControlListMappings.json"
+              )
+            )
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                  s"""{"code":21231,"message":"$ipAclSid already associated with $domainSid","more_info":"https://www.twilio.com/docs/errors/21231","status":400}"""
+                )
+            )
+        )
+
+        val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: IpAccessControlListMappingCreateRequestExecutor =
+          TwilioClient.defaultImpl().voice.ipAccessControlListMappingCreate
+        val resultFut = instance.run(connSettings, request)
+
+        resultFut.map { result =>
+          assert(
+            result == Left(
+              IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateException
+                .IpAccessControlListMappingAlreadyExists(domainSid, ipAclSid)
+            )
+          )
+        }
+      }
     }
   }
 

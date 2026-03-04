@@ -2,8 +2,22 @@ package com.dixa.twilio.model
 
 import scala.collection.immutable
 
+/** Represents a public edge location in Twilio's network. An edge location is a physical location
+  * where Twilio's infrastructure is deployed, and can be used as an entry point for connections,
+  * from where they will be routed to the [[Region]] data center via Twilio internal network.
+  */
 sealed abstract class PublicEdgeLocation(
     val edgeId: String,
+
+    /** Will be set in case this edge location had a legacy region id, from when edge locations were
+      * called regions.
+      *
+      * Before Twilio introduced the current region and edge location setup, they called what is
+      * edge locations today for regions, and the current regions did not exists at all.. The old
+      * regions were represented by a code like au1, br1, etc. These are deprecated as today and are
+      * planned to be removed in the future. In this library we call them legacyRegionId, and is
+      * represented as this optional field on a PublicEdgeLocation.
+      */
     val legacyRegionId: Option[PublicEdgeLocation.LegacyRegion]
 ) extends EnumWithTwilioString.EnumEntry {
 

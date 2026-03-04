@@ -14,7 +14,8 @@ trait TokenCreateRequestExecutor
     extends SingleRequestExecutor[
       TokenCreateRequestExecutor.TokenCreateRequest,
       TokenCreateRequestExecutor.TokenCreateException,
-      Token
+      Token,
+      TokenCreateRequestExecutor.TokenCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -22,6 +23,10 @@ trait TokenCreateRequestExecutor
 
   override protected type UnspecifiedException =
     TokenCreateRequestExecutor.TokenCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : TokenCreateRequestExecutor.TokenCreateRequest.BuilderStartState =
+    TokenCreateRequestExecutor.TokenCreateRequest.Builder.empty
 }
 
 object TokenCreateRequestExecutor {

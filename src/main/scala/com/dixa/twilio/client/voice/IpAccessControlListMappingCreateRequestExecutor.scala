@@ -18,7 +18,8 @@ trait IpAccessControlListMappingCreateRequestExecutor
     extends SingleRequestExecutor[
       IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest,
       IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateException,
-      IpAccessControlListMapping
+      IpAccessControlListMapping,
+      IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -26,6 +27,10 @@ trait IpAccessControlListMappingCreateRequestExecutor
 
   override protected type UnspecifiedException =
     IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest.BuilderStartState =
+    IpAccessControlListMappingCreateRequestExecutor.IpAccessControlListMappingCreateRequest.Builder.empty
 }
 
 object IpAccessControlListMappingCreateRequestExecutor {
@@ -147,6 +152,14 @@ object IpAccessControlListMappingCreateRequestExecutor {
         extends RuntimeException(cause)
         with IpAccessControlListMappingCreateException
         with ApiExceptionWrapper
+
+    final case class IpAccessControlListMappingAlreadyExists(
+        domainSid: SipDomain.Sid,
+        ipAccessControlListSid: IpAccessControlList.Sid
+    ) extends RuntimeException(
+          s"IpAccessControlListMapping between $domainSid and $ipAccessControlListSid already exists"
+        )
+        with IpAccessControlListMappingCreateException
 
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(

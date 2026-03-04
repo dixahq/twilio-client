@@ -11,7 +11,8 @@ trait ConferenceUpdateRequestExecutor
     extends SingleRequestExecutor[
       ConferenceUpdateRequestExecutor.ConferenceUpdateRequest,
       ConferenceUpdateRequestExecutor.ConferenceUpdateException,
-      Conference
+      Conference,
+      ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.BuilderStartState
     ] {
 
   import ConferenceUpdateRequestExecutor._
@@ -19,6 +20,10 @@ trait ConferenceUpdateRequestExecutor
   override final protected type ApiExceptionWrapper = ConferenceUpdateException.Api
 
   override final protected type UnspecifiedException = ConferenceUpdateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.BuilderStartState =
+    ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.Builder.empty
 }
 
 object ConferenceUpdateRequestExecutor {
@@ -101,8 +106,12 @@ object ConferenceUpdateRequestExecutor {
         )
     }
 
-    def builder(fun: BuilderStartState => ConferenceUpdateRequest): ConferenceUpdateRequest =
-      fun(new BuilderStartState(None, None, None, None, None))
+    def build(fun: BuilderStartState => ConferenceUpdateRequest): ConferenceUpdateRequest =
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None, None, None, None)
+    }
   }
 
   sealed trait ConferenceUpdateException extends RuntimeException

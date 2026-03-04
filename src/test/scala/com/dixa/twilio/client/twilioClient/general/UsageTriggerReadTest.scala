@@ -107,7 +107,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
             )
         )
 
-        val req = UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.builder(
+        val req = UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.build(
           _.withAccountSid(connSettings.accountSid)
             .withTriggerBy(UsageTrigger.TriggerBy.Count)
             .withUsageCategory(UsageTrigger.UsageCategory.Calls)
@@ -151,7 +151,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
             )
         )
 
-        val req = UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.builder(
+        val req = UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.build(
           _.withAccountSid(connSettings.accountSid)
             .withTriggerBy(UsageTrigger.TriggerBy.Count)
             .withUsageCategory(UsageTrigger.UsageCategory.Calls)

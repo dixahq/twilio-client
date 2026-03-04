@@ -9,7 +9,8 @@ trait QueueFetchRequestExecutor
     extends SingleRequestExecutor[
       QueueFetchRequestExecutor.QueueFetchRequest,
       QueueFetchRequestExecutor.QueueFetchException,
-      Queue
+      Queue,
+      QueueFetchRequestExecutor.QueueFetchRequest.BuilderStartState
     ] {
 
   import QueueFetchRequestExecutor._
@@ -17,6 +18,10 @@ trait QueueFetchRequestExecutor
   override final protected type ApiExceptionWrapper = QueueFetchException.Api
 
   override final protected type UnspecifiedException = QueueFetchException.Unspecified
+
+  override protected def createBuilderStartState()
+      : QueueFetchRequestExecutor.QueueFetchRequest.BuilderStartState =
+    QueueFetchRequestExecutor.QueueFetchRequest.Builder.empty
 }
 
 object QueueFetchRequestExecutor {
@@ -67,8 +72,11 @@ object QueueFetchRequestExecutor {
     }
 
     def build(fun: BuilderStartState => QueueFetchRequest): QueueFetchRequest =
-      fun(new BuilderStartState(None, None))
+      fun(Builder.empty)
 
+    object Builder {
+      def empty: BuilderStartState = new BuilderStartState(None, None)
+    }
   }
 
   sealed trait QueueFetchException extends RuntimeException

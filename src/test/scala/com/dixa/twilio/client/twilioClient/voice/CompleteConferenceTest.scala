@@ -86,7 +86,7 @@ final class CompleteConferenceTest extends TwilioClientTest {
 
         val connSettings                = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientVoice = TwilioClient.defaultImpl().voice
-        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.builder { builder =>
+        val req = ConferenceUpdateRequestExecutor.ConferenceUpdateRequest.build { builder =>
           builder
             .withAccountSid(account1Sid)
             .withConferenceSid(conference1.sid)

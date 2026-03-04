@@ -9,7 +9,8 @@ trait RecordingFetchRequestExecutor
     extends SingleRequestExecutor[
       RecordingFetchRequestExecutor.RecordingFetchRequest,
       RecordingFetchRequestExecutor.RecordingFetchException,
-      Recording
+      Recording,
+      RecordingFetchRequestExecutor.RecordingFetchRequest.BuilderStartState
     ] {
 
   import RecordingFetchRequestExecutor._
@@ -18,6 +19,9 @@ trait RecordingFetchRequestExecutor
 
   override final protected type UnspecifiedException = RecordingFetchException.Unspecified
 
+  override protected def createBuilderStartState()
+      : RecordingFetchRequestExecutor.RecordingFetchRequest.BuilderStartState =
+    RecordingFetchRequestExecutor.RecordingFetchRequest.Builder.empty
 }
 
 object RecordingFetchRequestExecutor {
@@ -111,13 +115,16 @@ object RecordingFetchRequestExecutor {
     }
 
     def build(fun: BuilderStartState => RecordingFetchRequest): RecordingFetchRequest =
-      fun(
+      fun(Builder.empty)
+
+    object Builder {
+      def empty: BuilderStartState =
         new BuilderStartState(
           None,
           None,
           None
         )
-      )
+    }
   }
 
   sealed trait RecordingFetchException extends RuntimeException

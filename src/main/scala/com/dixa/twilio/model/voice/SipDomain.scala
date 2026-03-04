@@ -54,7 +54,30 @@ object SipDomain {
 
   final case class DomainName private (override val toString: String)
       extends ConstrainedString
-      with TwilioStringValue
+      with TwilioStringValue {
+
+    /** Returns the SIP URI for this domain reached via the given Twilio edge location.
+      *
+      * For example, a domain `org-example.sip.twilio.com` with edge location
+      * [[PublicEdgeLocation.Dublin]] becomes `org-example.sip.dublin.twilio.com`.
+      *
+      * @see
+      *   https://www.twilio.com/docs/global-infrastructure/localized-uris/sip-uris
+      */
+    def withEdgeLocation(edge: PublicEdgeLocation): String = {
+      val prefix = toString.dropRight(".sip.twilio.com".length)
+      s"$prefix.sip.${edge.edgeId}.twilio.com"
+    }
+
+    /** Returns a map of all Twilio edge locations to their corresponding SIP URIs for this domain.
+      *
+      * @see
+      *   [[withEdgeLocation]]
+      */
+    def allEdgeLocationUris: Map[PublicEdgeLocation, String] =
+      PublicEdgeLocation.values.map(edge => edge -> withEdgeLocation(edge)).toMap
+  }
+
   object DomainName extends ConstrainedString.ConstrainedStringCompanionObject[DomainName] {
     override protected def constructInstance(wrapped: String): DomainName = new DomainName(wrapped)
 

@@ -9,16 +9,34 @@ trait ServicesReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       ServicesReadRequestExecutor.ServicesReadRequest,
       ServicesReadRequestExecutor.ServicesReadException,
-      TwilioMessagingService
+      TwilioMessagingService,
+      ServicesReadRequestExecutor.ServicesReadRequest.Builder
     ] {
   override protected final type ApiExceptionWrapper = ServicesReadException.Api
 
   override protected final type UnspecifiedException = ServicesReadException.Unspecified
 
+  override protected final def createBuilderStartState()
+      : ServicesReadRequestExecutor.ServicesReadRequest.Builder =
+    ServicesReadRequestExecutor.ServicesReadRequest.Builder.empty
 }
 
 object ServicesReadRequestExecutor {
   final case class ServicesReadRequest()
+  object ServicesReadRequest {
+    type BuilderStartState = Builder
+
+    final class Builder private[messaging] () {
+      def build(): ServicesReadRequest = ServicesReadRequest()
+    }
+
+    object Builder {
+      val empty: BuilderStartState = new BuilderStartState()
+    }
+
+    def build(fun: BuilderStartState => ServicesReadRequest): ServicesReadRequest =
+      fun(Builder.empty)
+  }
 
   sealed trait ServicesReadException extends RuntimeException
   object ServicesReadException {

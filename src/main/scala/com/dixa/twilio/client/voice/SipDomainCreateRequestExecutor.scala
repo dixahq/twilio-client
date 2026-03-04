@@ -12,7 +12,8 @@ trait SipDomainCreateRequestExecutor
     extends SingleRequestExecutor[
       SipDomainCreateRequestExecutor.SipDomainCreateRequest,
       SipDomainCreateRequestExecutor.SipDomainCreateException,
-      SipDomain
+      SipDomain,
+      SipDomainCreateRequestExecutor.SipDomainCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -20,6 +21,10 @@ trait SipDomainCreateRequestExecutor
 
   override protected type UnspecifiedException =
     SipDomainCreateRequestExecutor.SipDomainCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : SipDomainCreateRequestExecutor.SipDomainCreateRequest.BuilderStartState =
+    SipDomainCreateRequestExecutor.SipDomainCreateRequest.Builder.empty
 }
 
 object SipDomainCreateRequestExecutor {
@@ -358,6 +363,20 @@ object SipDomainCreateRequestExecutor {
         extends RuntimeException(cause)
         with SipDomainCreateException
         with ApiExceptionWrapper
+
+    /** Returned when Twilio rejects the request due to an invalid domain name (error codes 21231 or
+      * 21232).
+      *
+      * @see
+      *   https://www.twilio.com/docs/api/errors/21231
+      * @see
+      *   https://www.twilio.com/docs/api/errors/21232
+      */
+    final case class InvalidDomainName(domainName: SipDomain.DomainName)
+        extends RuntimeException(
+          s"Cannot create SIP domain. Domain name is invalid: '$domainName'"
+        )
+        with SipDomainCreateException
 
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(

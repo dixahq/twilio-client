@@ -29,33 +29,34 @@ The newest version of the Twilio SDK (version 8.x at time of writing), has many 
    subsequent calls, will use the credentials. This is really problematic for us, as we perform a
    lot of concurrent calls on different sub-accounts, using different credentials. This would force
    us to use locking to ensure that a call uses the expected credentials.
-3. It's hard to now when the SDK actually performs blocking calls, and this can be a problem in
+3. It's hard to know when the SDK actually performs blocking calls, and this can be a problem in
    async applications.
 
-Beside the clear disadvantages in the Twilio SDK, doing our own client, also allows us to add in
-some extra sugar. For example by hiding paging logic behind reactive streams using Akka-streams.
+Besides the clear disadvantages in the Twilio SDK, doing our own client also allows us to add in
+some extra sugar. For example, by hiding paging logic behind reactive streams using Akka-streams.
 
 # How
 
 The library is using akka-http and akka-streams for communication with Twilio. Akka-http is
 an implementation detail, but akka-stream is part of the public API, as it has plenty of
-endpoint returning result as a Source.
+endpoint returning results as a Source.
 
 # Developing
 
 ## Documentation
 
-The code should be pretty good documented with scaladoc explaining most classes purpose.
-Each package also has a package-object with scaladoc, describing what each package represent.
-So if you are in doubt how to implement something, try reading these comments, and look at
+The code should be pretty well-documented with scaladoc explaining most classes' purpose.
+Each package also has a package-object with scaladoc, describing what each package represents.
+So if you are in doubt how to implement something, try reading these comments and look at
 an existing implementation, and you should be going strong.
-Remember that all new stuff, should be documented just as well as the existing code.
+Remember that all new stuff should be documented just as well as the existing code.
+
+For a detailed guide on the client architecture and how to implement new
+requests, see [Client Implementation Guide](doc/client-implementation-doc.md).
 
 ## Versioning
 
-This library has still not reached version 1, so until then, it is allowed to do breaking. But
-once we reach a state we are happy with, we should release version 1, and use semantic versioning
-going forward.
+This library uses semantic versioning.
 
 ## Publishing new version
 
