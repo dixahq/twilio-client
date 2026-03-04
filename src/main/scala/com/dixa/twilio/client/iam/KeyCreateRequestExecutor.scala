@@ -3,7 +3,7 @@ package com.dixa.twilio.client.iam
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.iam.KeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.TwilioStringValue
+import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
 
 /** Create a new Twilio Standard or Restricted API key for a given account.
@@ -90,11 +90,14 @@ object KeyCreateRequestExecutor {
     * @see
     *   https://www.twilio.com/docs/iam/api-keys/restricted-api-keys
     */
-  sealed abstract class KeyType(override val twilioString: String) extends TwilioStringValue
+  sealed abstract class KeyType(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
 
-  object KeyType {
+  object KeyType extends EnumWithTwilioString[KeyType] {
     case object Standard   extends KeyType("standard")
     case object Restricted extends KeyType("restricted")
+
+    override val values: IndexedSeq[KeyType] = findValues
   }
 
   sealed trait KeyCreateException extends RuntimeException
