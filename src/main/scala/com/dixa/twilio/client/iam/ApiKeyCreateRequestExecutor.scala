@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.iam
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.iam.KeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
+import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy, TwilioAccount}
@@ -11,7 +11,7 @@ import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy, TwilioAccount}
   * @see
   *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
   */
-trait KeyCreateRequestExecutor
+trait ApiKeyCreateRequestExecutor
     extends SingleRequestExecutor[
       KeyCreateRequest,
       KeyCreateException,
@@ -26,19 +26,19 @@ trait KeyCreateRequestExecutor
     KeyCreateRequest.Builder.empty
 }
 
-object KeyCreateRequestExecutor {
+object ApiKeyCreateRequestExecutor {
 
   sealed trait KeyCreateRequest {
     def accountSid: TwilioAccount.Sid
     def friendlyName: Option[ApiKey.FriendlyName]
-    def keyType: Option[KeyCreateRequestExecutor.KeyType]
+    def keyType: Option[ApiKeyCreateRequestExecutor.KeyType]
     def policy: Option[Set[ApiKeyPolicy]]
   }
 
   private final case class KeyCreateRequestImpl(
       accountSid: TwilioAccount.Sid,
       friendlyName: Option[ApiKey.FriendlyName],
-      keyType: Option[KeyCreateRequestExecutor.KeyType],
+      keyType: Option[ApiKeyCreateRequestExecutor.KeyType],
       policy: Option[Set[ApiKeyPolicy]]
   ) extends KeyCreateRequest
 
@@ -110,7 +110,7 @@ object KeyCreateRequestExecutor {
     ] private[KeyCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         friendlyName: Option[ApiKey.FriendlyName],
-        keyType: Option[KeyCreateRequestExecutor.KeyType],
+        keyType: Option[ApiKeyCreateRequestExecutor.KeyType],
         policy: Option[Set[ApiKeyPolicy]]
     ) {
 

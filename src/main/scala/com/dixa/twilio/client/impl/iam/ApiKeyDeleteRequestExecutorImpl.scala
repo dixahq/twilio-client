@@ -3,19 +3,19 @@ package com.dixa.twilio.client.impl.iam
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.iam.KeyDeleteRequestExecutor
-import com.dixa.twilio.client.iam.KeyDeleteRequestExecutor.{KeyDeleteException, KeyDeleteRequest}
+import com.dixa.twilio.client.iam.ApiKeyDeleteRequestExecutor
+import com.dixa.twilio.client.iam.ApiKeyDeleteRequestExecutor.{KeyDeleteException, KeyDeleteRequest}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.FUnit
 
 import scala.concurrent.ExecutionContext
 
-private[client] class KeyDeleteRequestExecutorImpl()(
+private[client] class ApiKeyDeleteRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends KeyDeleteRequestExecutor {
+) extends ApiKeyDeleteRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Iam
 

@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.iam
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.iam.KeyDeleteRequestExecutor.{KeyDeleteException, KeyDeleteRequest}
+import com.dixa.twilio.client.iam.ApiKeyDeleteRequestExecutor.{KeyDeleteException, KeyDeleteRequest}
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.FUnit
 import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
@@ -11,7 +11,7 @@ import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
   * @see
   *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
   */
-trait KeyDeleteRequestExecutor
+trait ApiKeyDeleteRequestExecutor
     extends SingleRequestExecutor[
       KeyDeleteRequest,
       KeyDeleteException,
@@ -26,7 +26,7 @@ trait KeyDeleteRequestExecutor
     KeyDeleteRequest.Builder.empty
 }
 
-object KeyDeleteRequestExecutor {
+object ApiKeyDeleteRequestExecutor {
 
   sealed trait KeyDeleteRequest {
     def accountSid: TwilioAccount.Sid

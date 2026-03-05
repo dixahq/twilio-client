@@ -3,8 +3,8 @@ package com.dixa.twilio.client.impl.iam
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.iam.KeyCreateRequestExecutor
-import com.dixa.twilio.client.iam.KeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
+import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor
+import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -14,11 +14,11 @@ import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy}
 import java.time.Instant
 import scala.concurrent.ExecutionContext
 
-private[client] class KeyCreateRequestExecutorImpl()(
+private[client] class ApiKeyCreateRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends KeyCreateRequestExecutor {
+) extends ApiKeyCreateRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Iam
 

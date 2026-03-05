@@ -2,7 +2,7 @@ package com.dixa.twilio.client.twilioClient.iam
 
 import org.apache.pekko.NotUsed
 import org.apache.pekko.stream.scaladsl.{Keep, Sink, Source}
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor
+import com.dixa.twilio.client.iam.ApiKeyReadRequestExecutor
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
@@ -11,11 +11,11 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class KeyReadTest extends TwilioClientTest {
-  "KeyReadRequestExecutor" should {
+final class ApiKeyReadTest extends TwilioClientTest {
+  "ApiKeyReadRequestExecutor" should {
     "parse keys correctly, returning ApiKey without secret" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-      val request    = KeyReadRequestExecutor.KeyReadRequest.build(
+      val request    = ApiKeyReadRequestExecutor.KeyReadRequest.build(
         _.withAccountSid(accountSid)
           .build()
       )
@@ -50,13 +50,14 @@ final class KeyReadTest extends TwilioClientTest {
           )
       )
 
-      val connSettings                     = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyReadRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyRead
+      val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+      val instance: ApiKeyReadRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyRead
 
-      val resultSource: Source[Either[KeyReadRequestExecutor.KeyReadException, ApiKey], NotUsed] =
+      val resultSource
+          : Source[Either[ApiKeyReadRequestExecutor.KeyReadException, ApiKey], NotUsed] =
         instance.source(connSettings, request)
 
-      val resultFut: Future[Seq[Either[KeyReadRequestExecutor.KeyReadException, ApiKey]]] =
+      val resultFut: Future[Seq[Either[ApiKeyReadRequestExecutor.KeyReadException, ApiKey]]] =
         resultSource.toMat(Sink.seq)(Keep.right).run()
 
       resultFut.map { results =>

@@ -1,19 +1,19 @@
 package com.dixa.twilio.client.iam
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
+import com.dixa.twilio.client.iam.ApiKeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
 
 /** List API keys for a given account.
   *
   * Returns all keys for the account. The secret is not included in list responses — use
-  * [[KeyCreateRequestExecutor]] to obtain a new key including its secret.
+  * [[ApiKeyCreateRequestExecutor]] to obtain a new key including its secret.
   *
   * @see
   *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
   */
-trait KeyReadRequestExecutor
+trait ApiKeyReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       KeyReadRequest,
       KeyReadException,
@@ -28,7 +28,7 @@ trait KeyReadRequestExecutor
     KeyReadRequest.Builder.empty
 }
 
-object KeyReadRequestExecutor {
+object ApiKeyReadRequestExecutor {
 
   sealed trait KeyReadRequest {
     def accountSid: TwilioAccount.Sid

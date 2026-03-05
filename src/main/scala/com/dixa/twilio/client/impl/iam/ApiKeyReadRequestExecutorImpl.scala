@@ -1,7 +1,7 @@
 package com.dixa.twilio.client.impl.iam
 
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
+import com.dixa.twilio.client.iam.ApiKeyReadRequestExecutor
+import com.dixa.twilio.client.iam.ApiKeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -14,11 +14,11 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 import scala.concurrent.ExecutionContext
 
-private[client] class KeyReadRequestExecutorImpl()(
+private[client] class ApiKeyReadRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
-) extends KeyReadRequestExecutor {
+) extends ApiKeyReadRequestExecutor {
 
   override protected def subDomain: ApiSubDomain = ApiSubDomain.Iam
 

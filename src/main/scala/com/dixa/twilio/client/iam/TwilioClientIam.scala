@@ -70,7 +70,7 @@ trait TwilioClientIam {
     * @see
     *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
     */
-  def apiKeyCreate: KeyCreateRequestExecutor
+  def apiKeyCreate: ApiKeyCreateRequestExecutor
 
   /** List all Twilio API keys for a given account.
     *
@@ -79,12 +79,12 @@ trait TwilioClientIam {
     * @see
     *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
     */
-  def apiKeyRead: KeyReadRequestExecutor
+  def apiKeyRead: ApiKeyReadRequestExecutor
 
   /** Delete a Twilio API key.
     *
     * @see
     *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
     */
-  def apiKeyDelete: KeyDeleteRequestExecutor
+  def apiKeyDelete: ApiKeyDeleteRequestExecutor
 }

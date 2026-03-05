@@ -1,6 +1,6 @@
 package com.dixa.twilio.client.twilioClient.iam
 
-import com.dixa.twilio.client.iam.KeyCreateRequestExecutor
+import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy, TwilioAccount}
@@ -9,14 +9,14 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class KeyCreateTest extends TwilioClientTest {
+final class ApiKeyCreateTest extends TwilioClientTest {
 
   private val friendlyName = ApiKey.FriendlyName("Test Key")
 
-  "KeyCreateRequestExecutor" should {
+  "ApiKeyCreateRequestExecutor" should {
     "parse flags correctly, skipping unknown values and handling empty/null/missing cases" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+      val request    = ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
           .withFriendlyName(friendlyName)
           .withTypeStandard()
@@ -45,9 +45,9 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
+      val instance: ApiKeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
-      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+      val resultFut: Future[Either[ApiKeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
 
       resultFut.map { result =>
@@ -74,7 +74,7 @@ final class KeyCreateTest extends TwilioClientTest {
 
     "parse policy_allow correctly" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+      val request    = ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
           .withTypeRestricted()
           .withPolicy(Set(ApiKeyPolicy.ConferencesRead))
@@ -103,9 +103,9 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
+      val instance: ApiKeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
-      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+      val resultFut: Future[Either[ApiKeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
 
       resultFut.map { result =>
@@ -120,7 +120,7 @@ final class KeyCreateTest extends TwilioClientTest {
 
     "handle missing flags by returning an empty set" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+      val request    = ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
           .withTypeStandard()
           .build()
@@ -147,9 +147,9 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
+      val instance: ApiKeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
-      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+      val resultFut: Future[Either[ApiKeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
 
       resultFut.map { result =>
@@ -160,7 +160,7 @@ final class KeyCreateTest extends TwilioClientTest {
 
     "handle null flags by returning an empty set" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+      val request    = ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
           .withTypeStandard()
           .build()
@@ -188,9 +188,9 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
+      val instance: ApiKeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
-      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+      val resultFut: Future[Either[ApiKeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
 
       resultFut.map { result =>
@@ -201,7 +201,7 @@ final class KeyCreateTest extends TwilioClientTest {
 
     "send Policy as JSON when using withRestrictedType and withPolicy" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+      val request    = ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
           .withTypeRestricted()
           .withPolicy(Set(ApiKeyPolicy.ConferencesRead))
@@ -236,9 +236,9 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
+      val instance: ApiKeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
-      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+      val resultFut: Future[Either[ApiKeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
 
       resultFut.map { result =>
@@ -252,7 +252,7 @@ final class KeyCreateTest extends TwilioClientTest {
     }
 
     "dont allow to build the request, if no key type is specified" in {
-      assertDoesNotCompile("""KeyCreateRequestExecutor.KeyCreateRequest.build(
+      assertDoesNotCompile("""ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
                              |        _.withAccountSid(TwilioTestConstants.accountSid)
                              |          .withFriendlyName(friendlyName)
                              |          .build()
@@ -262,7 +262,7 @@ final class KeyCreateTest extends TwilioClientTest {
     }
 
     "dont allow a policy to be set, if the key type is standard" in {
-      assertDoesNotCompile("""KeyCreateRequestExecutor.KeyCreateRequest.build(
+      assertDoesNotCompile("""ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
                              |        _.withAccountSid(TwilioTestConstants.accountSid)
                              |          .withFriendlyName(friendlyName)
                              |          .withTypeStandard()
@@ -274,7 +274,7 @@ final class KeyCreateTest extends TwilioClientTest {
     }
 
     "dont allow to build  request if type is restricted but no policy is set" in {
-      assertDoesNotCompile("""KeyCreateRequestExecutor.KeyCreateRequest.build(
+      assertDoesNotCompile("""ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
                              |        _.withAccountSid(TwilioTestConstants.accountSid)
                              |          .withFriendlyName(friendlyName)
                              |          .withTypeRestricted()
@@ -285,14 +285,14 @@ final class KeyCreateTest extends TwilioClientTest {
     }
 
     "Dont mind in what order you specify the policy and the restricted type" in {
-      KeyCreateRequestExecutor.KeyCreateRequest.build(
+      ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(TwilioTestConstants.accountSid)
           .withFriendlyName(friendlyName)
           .withPolicy(Set(ApiKeyPolicy.IamApiKeysList))
           .withTypeRestricted()
           .build()
       )
-      KeyCreateRequestExecutor.KeyCreateRequest.build(
+      ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(TwilioTestConstants.accountSid)
           .withFriendlyName(friendlyName)
           .withTypeRestricted()
