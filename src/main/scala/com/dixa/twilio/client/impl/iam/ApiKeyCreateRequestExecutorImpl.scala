@@ -1,15 +1,15 @@
 package com.dixa.twilio.client.impl.iam
 
-import org.apache.pekko.http.scaladsl.HttpExt
-import org.apache.pekko.http.scaladsl.model._
-import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor
 import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.iam.ApiKey.HasSecret
 import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy}
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
@@ -33,10 +33,16 @@ private[client] class ApiKeyCreateRequestExecutorImpl()(
       s"""{"allow":[$allowList]}"""
     }
 
+    // The KeyType attribute is only allowed if it's restricted. If you want to create a standard key, then you must omit the KeyType attribute.
+    val keyTypeParamValue = req.standardKey match {
+      case true  => None
+      case false => Some("restricted")
+    }
+
     val params = QueryParamBuilder.empty
       .withParam("AccountSid", req.accountSid.toString)
       .withOptionalParam("FriendlyName", req.friendlyName)
-      .withOptionalParam("KeyType", req.keyType)
+      .withOptionalStringParam("KeyType", keyTypeParamValue)
 
     val finalParams = policyJson.fold(params)(p => params.withParam("Policy", p))
 

@@ -3,7 +3,6 @@ package com.dixa.twilio.client.iam
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.iam.ApiKeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.EnumWithTwilioString
 import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy, TwilioAccount}
 
 /** Create a new Twilio Standard or Restricted API key for a given account.
@@ -31,14 +30,14 @@ object ApiKeyCreateRequestExecutor {
   sealed trait KeyCreateRequest {
     def accountSid: TwilioAccount.Sid
     def friendlyName: Option[ApiKey.FriendlyName]
-    def keyType: Option[ApiKeyCreateRequestExecutor.KeyType]
+    def standardKey: Boolean
     def policy: Option[Set[ApiKeyPolicy]]
   }
 
   private final case class KeyCreateRequestImpl(
       accountSid: TwilioAccount.Sid,
       friendlyName: Option[ApiKey.FriendlyName],
-      keyType: Option[ApiKeyCreateRequestExecutor.KeyType],
+      standardKey: Boolean,
       policy: Option[Set[ApiKeyPolicy]]
   ) extends KeyCreateRequest
 
@@ -110,65 +109,55 @@ object ApiKeyCreateRequestExecutor {
     ] private[KeyCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         friendlyName: Option[ApiKey.FriendlyName],
-        keyType: Option[ApiKeyCreateRequestExecutor.KeyType],
+        standardKey: Boolean,
         policy: Option[Set[ApiKeyPolicy]]
     ) {
 
       def withAccountSid(
           accountSid: TwilioAccount.Sid
       ): Builder[AccountSidSetTrue, KT, PS, DP, PR] =
-        new Builder(Some(accountSid), friendlyName, keyType, policy)
+        new Builder(Some(accountSid), friendlyName, standardKey, policy)
 
       def withFriendlyName(
           friendlyName: ApiKey.FriendlyName
       ): Builder[AS, KT, PS, DP, PR] =
-        new Builder(accountSid, Some(friendlyName), keyType, policy)
+        new Builder(accountSid, Some(friendlyName), standardKey, policy)
 
+      /** Create a standard key
+        *
+        * Only Standard keys can be used to generate Access Tokens for client-side SDKs such as the
+        * Twilio Voice JS SDK. Restricted keys cannot be used for Access Token generation.
+        *
+        * @see
+        *   https://www.twilio.com/docs/iam/api-keys/restricted-api-keys
+        */
       def withTypeStandard()(
           implicit ev: PS =:= PolicySetFalse
       ): Builder[AS, KeyTypeSetTrue, PS, DisallowPolicyTrue, PR] =
-        new Builder(accountSid, friendlyName, Some(KeyType.Standard), policy)
+        new Builder(accountSid, friendlyName, true, policy)
 
       def withTypeRestricted(): Builder[AS, KeyTypeSetTrue, PS, DP, PolicyRequiredTrue] =
-        new Builder(accountSid, friendlyName, Some(KeyType.Restricted), policy)
+        new Builder(accountSid, friendlyName, false, policy)
 
       def withPolicy(policy: Set[ApiKeyPolicy])(
           implicit ev: DP =:= DisallowPolicyFalse
       ): Builder[AS, KT, PolicySetTrue, DP, PR] =
-        new Builder(accountSid, friendlyName, keyType, Some(policy))
+        new Builder(accountSid, friendlyName, standardKey, Some(policy))
 
       def build()(
           implicit evAccount: AS =:= AccountSidSetTrue,
           evKeyType: KT =:= KeyTypeSetTrue,
           evValidPolicyCombo: ValidPolicyCombinations[PR, PS]
       ): KeyCreateRequest =
-        KeyCreateRequestImpl(accountSid.get, friendlyName, keyType, policy)
+        KeyCreateRequestImpl(accountSid.get, friendlyName, standardKey, policy)
     }
 
     def build(fun: BuilderStartState => KeyCreateRequest): KeyCreateRequest =
       fun(Builder.empty)
 
     object Builder {
-      def empty: BuilderStartState = new Builder(None, None, None, None)
+      def empty: BuilderStartState = new Builder(None, None, true, None)
     }
-  }
-
-  /** The type of Twilio API key to create.
-    *
-    * Only Standard keys can be used to generate Access Tokens for client-side SDKs such as the
-    * Twilio Voice JS SDK. Restricted keys cannot be used for Access Token generation.
-    *
-    * @see
-    *   https://www.twilio.com/docs/iam/api-keys/restricted-api-keys
-    */
-  sealed abstract class KeyType(override val twilioString: String)
-      extends EnumWithTwilioString.EnumEntry
-
-  object KeyType extends EnumWithTwilioString[KeyType] {
-    case object Standard   extends KeyType("standard")
-    case object Restricted extends KeyType("restricted")
-
-    override val values: IndexedSeq[KeyType] = findValues
   }
 
   sealed trait KeyCreateException extends RuntimeException
