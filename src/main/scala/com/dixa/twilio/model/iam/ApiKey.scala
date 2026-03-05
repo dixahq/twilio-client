@@ -2374,6 +2374,28 @@ object ApiKey {
     /** Access to usage details on console */
     case object BillingUsageRead extends PolicyAllow("/twilio/billing/usage/read")
 
+    /** Events is a platform feature that provides comprehensive event-logging and change-tracking
+      * for Twilio resources. The Events REST resource provides an API to retrieve event-log.
+      */
+    case object MonitorEventsList extends PolicyAllow("/twilio/monitor/events/list")
+
+    /** Events is a platform feature that provides comprehensive event-logging and change-tracking
+      * for Twilio resources. The Events REST resource provides an API to retrieve event-log.
+      */
+    case object MonitorEventsRead extends PolicyAllow("/twilio/monitor/events/read")
+
+    /** An Alert resource instance represents a single log entry for an error or warning when Twilio
+      * makes a webhook request to your server, or when your application makes a request to the REST
+      * API.
+      */
+    case object MonitorAlertsList extends PolicyAllow("/twilio/monitor/alerts/list")
+
+    /** An Alert resource instance represents a single log entry for an error or warning when Twilio
+      * makes a webhook request to your server, or when your application makes a request to the REST
+      * API.
+      */
+    case object MonitorAlertsRead extends PolicyAllow("/twilio/monitor/alerts/read")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
