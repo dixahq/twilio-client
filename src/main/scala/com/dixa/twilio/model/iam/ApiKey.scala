@@ -1587,6 +1587,376 @@ object ApiKey {
     case object MessagingWhatsappSendersDelete
         extends PolicyAllow("/twilio/messaging/whatsapp-senders/delete")
 
+    /** Real time statistics for a Task Queue. */
+    case object TaskRouterWorkspacesTaskQueueRealTimeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queue.real-time-statistics/list")
+
+    /** TaskRouter logs Events for each state change in the Workspace for the purpose of historical
+      * reporting and auditing; it keeps that data for 30 days.
+      */
+    case object TaskRouterWorkspacesEventsRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.events/read")
+
+    /** TaskRouter logs Events for each state change in the Workspace for the purpose of historical
+      * reporting and auditing; it keeps that data for 30 days.
+      */
+    case object TaskRouterWorkspacesEventsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.events/list")
+
+    /** Cumulative statistics of your Task Queue over a certain time period. Cumulative statistics
+      * allow you to analyze data from the past 30 days.
+      */
+    case object TaskRouterWorkspacesTaskQueuesCumulativeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues.cumulative-statistics/list")
+
+    /** Real time statistics for a Workspace. */
+    case object TaskRouterWorkspacesRealTimeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.real-time-statistics/list")
+
+    /** Real time statistics for multiple Task Queues. */
+    case object TaskRouterWorkspacesTaskQueueBulkRealTimeStatisticsList
+        extends PolicyAllow(
+          "/twilio/taskrouter/workspaces.task-queue.bulk-real-time-statistics/list"
+        )
+
+    /** Statistics for a Workspace. */
+    case object TaskRouterWorkspacesStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.statistics/list")
+
+    /** Cumulative statistics for your Workspace over a certain time period. Cumulative statistics
+      * allow you to analyze data from the past 30 days.
+      */
+    case object TaskRouterWorkspacesCumulativeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.cumulative-statistics/list")
+
+    /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
+      * escalate in priority or move across queues over time.
+      */
+    case object TaskRouterWorkspacesWorkflowsAll
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/*")
+
+    /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
+      * escalate in priority or move across queues over time.
+      */
+    case object TaskRouterWorkspacesWorkflowsRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/read")
+
+    /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
+      * escalate in priority or move across queues over time.
+      */
+    case object TaskRouterWorkspacesWorkflowsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/list")
+
+    /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
+      * escalate in priority or move across queues over time.
+      */
+    case object TaskRouterWorkspacesWorkflowsCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/create")
+
+    /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
+      * escalate in priority or move across queues over time.
+      */
+    case object TaskRouterWorkspacesWorkflowsUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/update")
+
+    /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
+      * escalate in priority or move across queues over time.
+      */
+    case object TaskRouterWorkspacesWorkflowsDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/delete")
+
+    /** TaskRouter creates a Reservation subresource whenever a Task is reserved for a Worker.
+      * TaskRouter will provide the details of this Reservation Instance subresource in the
+      * Assignment Callback HTTP request it makes to your application server.
+      */
+    case object TaskRouterWorkspacesTasksReservationsRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks.reservations/read")
+
+    /** TaskRouter creates a Reservation subresource whenever a Task is reserved for a Worker.
+      * TaskRouter will provide the details of this Reservation Instance subresource in the
+      * Assignment Callback HTTP request it makes to your application server.
+      */
+    case object TaskRouterWorkspacesTasksReservationsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks.reservations/list")
+
+    /** TaskRouter creates a Reservation subresource whenever a Task is reserved for a Worker.
+      * TaskRouter will provide the details of this Reservation Instance subresource in the
+      * Assignment Callback HTTP request it makes to your application server.
+      */
+    case object TaskRouterWorkspacesTasksReservationsUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks.reservations/update")
+
+    /** Real time statistics for a Workflow. */
+    case object TaskRouterWorkspacesWorkflowsRealTimeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows.real-time-statistics/list")
+
+    /** Worker Reservations represent the current and past reservations for a Worker. Current
+      * Reservations can be accepted using the Reservation instance resource.
+      */
+    case object TaskRouterWorkspacesWorkersReservationsRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.reservations/read")
+
+    /** Worker Reservations represent the current and past reservations for a Worker. Current
+      * Reservations can be accepted using the Reservation instance resource.
+      */
+    case object TaskRouterWorkspacesWorkersReservationsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.reservations/list")
+
+    /** Worker Reservations represent the current and past reservations for a Worker. Current
+      * Reservations can be accepted using the Reservation instance resource.
+      */
+    case object TaskRouterWorkspacesWorkersReservationsUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.reservations/update")
+
+    /** Statistics for Workers. */
+    case object TaskRouterWorkspacesWorkersStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.statistics/list")
+
+    /** Workers represent an entity that is able to perform tasks, such as an agent working in a
+      * call center, or a salesperson handling leads.
+      */
+    case object TaskRouterWorkspacesWorkersAll
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/*")
+
+    /** Workers represent an entity that is able to perform tasks, such as an agent working in a
+      * call center, or a salesperson handling leads.
+      */
+    case object TaskRouterWorkspacesWorkersRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/read")
+
+    /** Workers represent an entity that is able to perform tasks, such as an agent working in a
+      * call center, or a salesperson handling leads.
+      */
+    case object TaskRouterWorkspacesWorkersList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/list")
+
+    /** Workers represent an entity that is able to perform tasks, such as an agent working in a
+      * call center, or a salesperson handling leads.
+      */
+    case object TaskRouterWorkspacesWorkersCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/create")
+
+    /** Workers represent an entity that is able to perform tasks, such as an agent working in a
+      * call center, or a salesperson handling leads.
+      */
+    case object TaskRouterWorkspacesWorkersUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/update")
+
+    /** Workers represent an entity that is able to perform tasks, such as an agent working in a
+      * call center, or a salesperson handling leads.
+      */
+    case object TaskRouterWorkspacesWorkersDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/delete")
+
+    /** Statistics of all the queues in a workspace. */
+    case object TaskRouterWorkspacesTaskQueuesStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues.statistics/list")
+
+    /** A Task represents a single item of work waiting to be processed. */
+    case object TaskRouterWorkspacesTasksAll
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/*")
+
+    /** A Task represents a single item of work waiting to be processed. */
+    case object TaskRouterWorkspacesTasksRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/read")
+
+    /** A Task represents a single item of work waiting to be processed. */
+    case object TaskRouterWorkspacesTasksList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/list")
+
+    /** A Task represents a single item of work waiting to be processed. */
+    case object TaskRouterWorkspacesTasksCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/create")
+
+    /** A Task represents a single item of work waiting to be processed. */
+    case object TaskRouterWorkspacesTasksUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/update")
+
+    /** A Task represents a single item of work waiting to be processed. */
+    case object TaskRouterWorkspacesTasksDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/delete")
+
+    /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
+      * those Tasks.
+      */
+    case object TaskRouterWorkspacesTaskQueuesAll
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/*")
+
+    /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
+      * those Tasks.
+      */
+    case object TaskRouterWorkspacesTaskQueuesRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/read")
+
+    /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
+      * those Tasks.
+      */
+    case object TaskRouterWorkspacesTaskQueuesList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/list")
+
+    /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
+      * those Tasks.
+      */
+    case object TaskRouterWorkspacesTaskQueuesCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/create")
+
+    /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
+      * those Tasks.
+      */
+    case object TaskRouterWorkspacesTaskQueuesUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/update")
+
+    /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
+      * those Tasks.
+      */
+    case object TaskRouterWorkspacesTaskQueuesDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/delete")
+
+    /** Statistics for a Workflow. */
+    case object TaskRouterWorkspacesWorkflowsStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows.statistics/list")
+
+    /** Cumulative statistics for your Workflow over a certain time period. Cumulative statistics
+      * allow you to analyze data from the past 30 days.
+      */
+    case object TaskRouterWorkspacesWorkflowsCumulativeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows.cumulative-statistics/list")
+
+    /** Cumulative statistics for your Workers over a certain time period. Cumulative statistics
+      * allow you to analyze Worker data from the past 30 days.
+      */
+    case object TaskRouterWorkspacesWorkersCumulativeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.cumulative-statistics/list")
+
+    /** Instance statistics of your Task Queue. */
+    case object TaskRouterWorkspacesTaskQueuesInstanceStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues.instance-statistics/list")
+
+    /** Real time statistics for Workers. */
+    case object TaskRouterWorkspacesWorkersRealTimeStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.real-time-statistics/list")
+
+    /** Task Channels provide a mechanism to separate tasks of different types. You can specify
+      * different concurrent capacity for tasks of each type.
+      */
+    case object TaskRouterWorkspacesTaskChannelsAll
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/*")
+
+    /** Task Channels provide a mechanism to separate tasks of different types. You can specify
+      * different concurrent capacity for tasks of each type.
+      */
+    case object TaskRouterWorkspacesTaskChannelsRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/read")
+
+    /** Task Channels provide a mechanism to separate tasks of different types. You can specify
+      * different concurrent capacity for tasks of each type.
+      */
+    case object TaskRouterWorkspacesTaskChannelsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/list")
+
+    /** Task Channels provide a mechanism to separate tasks of different types. You can specify
+      * different concurrent capacity for tasks of each type.
+      */
+    case object TaskRouterWorkspacesTaskChannelsCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/create")
+
+    /** Task Channels provide a mechanism to separate tasks of different types. You can specify
+      * different concurrent capacity for tasks of each type.
+      */
+    case object TaskRouterWorkspacesTaskChannelsUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/update")
+
+    /** Task Channels provide a mechanism to separate tasks of different types. You can specify
+      * different concurrent capacity for tasks of each type.
+      */
+    case object TaskRouterWorkspacesTaskChannelsDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/delete")
+
+    /** Statistics for a specific Worker. */
+    case object TaskRouterWorkspacesWorkersInstanceStatisticsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.instance-statistics/list")
+
+    /** Worker Channels show the Worker's capacity for handling multiple concurrent Tasks. */
+    case object TaskRouterWorkspacesWorkersChannelsRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.channels/read")
+
+    /** Worker Channels show the Worker's capacity for handling multiple concurrent Tasks. */
+    case object TaskRouterWorkspacesWorkersChannelsList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.channels/list")
+
+    /** Worker Channels show the Worker's capacity for handling multiple concurrent Tasks. */
+    case object TaskRouterWorkspacesWorkersChannelsUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.channels/update")
+
+    /** Activities describe the current status of your Workers, which determines whether they are
+      * eligible to receive task assignments. Workers are always set to a single Activity.
+      */
+    case object TaskRouterWorkspacesActivitiesAll
+        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/*")
+
+    /** Activities describe the current status of your Workers, which determines whether they are
+      * eligible to receive task assignments. Workers are always set to a single Activity.
+      */
+    case object TaskRouterWorkspacesActivitiesRead
+        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/read")
+
+    /** Activities describe the current status of your Workers, which determines whether they are
+      * eligible to receive task assignments. Workers are always set to a single Activity.
+      */
+    case object TaskRouterWorkspacesActivitiesList
+        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/list")
+
+    /** Activities describe the current status of your Workers, which determines whether they are
+      * eligible to receive task assignments. Workers are always set to a single Activity.
+      */
+    case object TaskRouterWorkspacesActivitiesCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/create")
+
+    /** Activities describe the current status of your Workers, which determines whether they are
+      * eligible to receive task assignments. Workers are always set to a single Activity.
+      */
+    case object TaskRouterWorkspacesActivitiesUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/update")
+
+    /** Activities describe the current status of your Workers, which determines whether they are
+      * eligible to receive task assignments. Workers are always set to a single Activity.
+      */
+    case object TaskRouterWorkspacesActivitiesDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/delete")
+
+    /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
+      * Activities.
+      */
+    case object TaskRouterWorkspacesAll extends PolicyAllow("/twilio/taskrouter/workspaces/*")
+
+    /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
+      * Activities.
+      */
+    case object TaskRouterWorkspacesRead extends PolicyAllow("/twilio/taskrouter/workspaces/read")
+
+    /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
+      * Activities.
+      */
+    case object TaskRouterWorkspacesList extends PolicyAllow("/twilio/taskrouter/workspaces/list")
+
+    /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
+      * Activities.
+      */
+    case object TaskRouterWorkspacesCreate
+        extends PolicyAllow("/twilio/taskrouter/workspaces/create")
+
+    /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
+      * Activities.
+      */
+    case object TaskRouterWorkspacesUpdate
+        extends PolicyAllow("/twilio/taskrouter/workspaces/update")
+
+    /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
+      * Activities.
+      */
+    case object TaskRouterWorkspacesDelete
+        extends PolicyAllow("/twilio/taskrouter/workspaces/delete")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
