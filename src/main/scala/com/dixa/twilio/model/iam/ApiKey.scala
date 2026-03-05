@@ -2126,6 +2126,251 @@ object ApiKey {
       */
     case object StudioTestUsersUpdate extends PolicyAllow("/twilio/studio/test-users/update")
 
+    /** Informs which type of document you create and what the values are to then create a new
+      * Supporting Document with the correct type and values.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsTypesRead
+        extends PolicyAllow(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents-types/read"
+        )
+
+    /** Informs which type of document you create and what the values are to then create a new
+      * Supporting Document with the correct type and values.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsTypesList
+        extends PolicyAllow(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents-types/list"
+        )
+
+    /** A Supporting Document is a container that holds metadata of a legal document to fulfill
+      * Regulations.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsAll
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.supporting-documents/*")
+
+    /** A Supporting Document is a container that holds metadata of a legal document to fulfill
+      * Regulations.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.supporting-documents/read")
+
+    /** A Supporting Document is a container that holds metadata of a legal document to fulfill
+      * Regulations.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.supporting-documents/list")
+
+    /** A Supporting Document is a container that holds metadata of a legal document to fulfill
+      * Regulations.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsCreate
+        extends PolicyAllow(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents/create"
+        )
+
+    /** A Supporting Document is a container that holds metadata of a legal document to fulfill
+      * Regulations.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsUpdate
+        extends PolicyAllow(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents/update"
+        )
+
+    /** A Supporting Document is a container that holds metadata of a legal document to fulfill
+      * Regulations.
+      */
+    case object PhoneNumbersRegulatoryComplianceSupportingDocumentsDelete
+        extends PolicyAllow(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents/delete"
+        )
+
+    /** Bundle is a container that references the required Regulatory Compliance information set
+      * forth by the regulating telecom body of the end-user.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesAll
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/*")
+
+    /** Bundle is a container that references the required Regulatory Compliance information set
+      * forth by the regulating telecom body of the end-user.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/read")
+
+    /** Bundle is a container that references the required Regulatory Compliance information set
+      * forth by the regulating telecom body of the end-user.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/list")
+
+    /** Bundle is a container that references the required Regulatory Compliance information set
+      * forth by the regulating telecom body of the end-user.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesCreate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/create")
+
+    /** Bundle is a container that references the required Regulatory Compliance information set
+      * forth by the regulating telecom body of the end-user.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesUpdate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/update")
+
+    /** Bundle is a container that references the required Regulatory Compliance information set
+      * forth by the regulating telecom body of the end-user.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesDelete
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/delete")
+
+    /** End-User is the entity that answers the phone call or receives the message of a phone
+      * number. An entity can be either an individual or a business.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersAll
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/*")
+
+    /** End-User is the entity that answers the phone call or receives the message of a phone
+      * number. An entity can be either an individual or a business.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/read")
+
+    /** End-User is the entity that answers the phone call or receives the message of a phone
+      * number. An entity can be either an individual or a business.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/list")
+
+    /** End-User is the entity that answers the phone call or receives the message of a phone
+      * number. An entity can be either an individual or a business.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersCreate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/create")
+
+    /** End-User is the entity that answers the phone call or receives the message of a phone
+      * number. An entity can be either an individual or a business.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersUpdate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/update")
+
+    /** End-User is the entity that answers the phone call or receives the message of a phone
+      * number. An entity can be either an individual or a business.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersDelete
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/delete")
+
+    /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
+    case object PhoneNumbersRegulatoryComplianceItemAssignmentsRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/read")
+
+    /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
+    case object PhoneNumbersRegulatoryComplianceItemAssignmentsList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/list")
+
+    /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
+    case object PhoneNumbersRegulatoryComplianceItemAssignmentsCreate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/create")
+
+    /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
+    case object PhoneNumbersRegulatoryComplianceItemAssignmentsDelete
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/delete")
+
+    /** Replace Items allows you to update compliance info when Regulations change while
+      * provisioning new Phone Numbers.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundlesReplaceItemsUpdate
+        extends PolicyAllow(
+          "/twilio/phone-numbers/regulatory-compliance.bundles.replace-items/update"
+        )
+
+    /** Bundle Copy allows you to update compliance information when Regulations change while
+      * keeping Phone Number provisioning habits.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundleCopiesList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundle-copies/list")
+
+    /** Bundle Copy allows you to update compliance information when Regulations change while
+      * keeping Phone Number provisioning habits.
+      */
+    case object PhoneNumbersRegulatoryComplianceBundleCopiesCreate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundle-copies/create")
+
+    /** Informs which type of end-user you can create and what the values are to then create a new
+      * End-User resource.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersTypesRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users-types/read")
+
+    /** Informs which type of end-user you can create and what the values are to then create a new
+      * End-User resource.
+      */
+    case object PhoneNumbersRegulatoryComplianceEndUsersTypesList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users-types/list")
+
+    /** Evaluations allows developers to understand what failed and why when a Regulatory Bundle is
+      * submitted to be evaluated against a Regulation.
+      */
+    case object PhoneNumbersRegulatoryComplianceEvaluationsRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.evaluations/read")
+
+    /** Evaluations allows developers to understand what failed and why when a Regulatory Bundle is
+      * submitted to be evaluated against a Regulation.
+      */
+    case object PhoneNumbersRegulatoryComplianceEvaluationsList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.evaluations/list")
+
+    /** Evaluations allows developers to understand what failed and why when a Regulatory Bundle is
+      * submitted to be evaluated against a Regulation.
+      */
+    case object PhoneNumbersRegulatoryComplianceEvaluationsCreate
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.evaluations/create")
+
+    /** Allows you to view and understand Regulations. Regulations are requirements based on
+      * End-Users and Supporting Documents set by each country's government.
+      */
+    case object PhoneNumbersRegulatoryComplianceRegulationsRead
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.regulations/read")
+
+    /** Allows you to view and understand Regulations. Regulations are requirements based on
+      * End-Users and Supporting Documents set by each country's government.
+      */
+    case object PhoneNumbersRegulatoryComplianceRegulationsList
+        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.regulations/list")
+
+    /** Lets search for local, toll-free and mobile phone numbers that are available to purchase.
+      */
+    case object PhoneNumbersAvailableNumbersList
+        extends PolicyAllow("/twilio/phone-numbers/available-numbers/list")
+
+    /** RBAC permissions for Twilio Address APIs required by TrustHub. */
+    case object PhoneNumbersAddressServiceRead
+        extends PolicyAllow("/twilio/phone-numbers/address-service/read")
+
+    /** RBAC permissions for Twilio Address APIs required by TrustHub. */
+    case object PhoneNumbersAddressServiceCreate
+        extends PolicyAllow("/twilio/phone-numbers/address-service/create")
+
+    /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
+    case object PhoneNumbersActiveNumbersAll
+        extends PolicyAllow("/twilio/phone-numbers/active-numbers/*")
+
+    /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
+    case object PhoneNumbersActiveNumbersRead
+        extends PolicyAllow("/twilio/phone-numbers/active-numbers/read")
+
+    /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
+    case object PhoneNumbersActiveNumbersList
+        extends PolicyAllow("/twilio/phone-numbers/active-numbers/list")
+
+    /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
+    case object PhoneNumbersActiveNumbersCreate
+        extends PolicyAllow("/twilio/phone-numbers/active-numbers/create")
+
+    /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
+    case object PhoneNumbersActiveNumbersUpdate
+        extends PolicyAllow("/twilio/phone-numbers/active-numbers/update")
+
+    /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
+    case object PhoneNumbersActiveNumbersDelete
+        extends PolicyAllow("/twilio/phone-numbers/active-numbers/delete")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }

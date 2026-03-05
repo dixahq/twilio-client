@@ -90,5 +90,33 @@ final class ApiKeyTest extends AnyWordSpec {
         ApiKey.PolicyAllow.fromTwilioString("/twilio/studio/executions.steps.context/read")
       assert(policy === Some(ApiKey.PolicyAllow.StudioExecutionsStepsContextRead))
     }
+
+    "correctly parse PhoneNumbersRegulatoryComplianceSupportingDocumentsAll policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents/*"
+        )
+      assert(
+        policy === Some(ApiKey.PolicyAllow.PhoneNumbersRegulatoryComplianceSupportingDocumentsAll)
+      )
+    }
+
+    "correctly parse PhoneNumbersRegulatoryComplianceBundlesReplaceItemsUpdate policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString(
+          "/twilio/phone-numbers/regulatory-compliance.bundles.replace-items/update"
+        )
+      assert(
+        policy === Some(
+          ApiKey.PolicyAllow.PhoneNumbersRegulatoryComplianceBundlesReplaceItemsUpdate
+        )
+      )
+    }
+
+    "correctly parse PhoneNumbersActiveNumbersAll policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString("/twilio/phone-numbers/active-numbers/*")
+      assert(policy === Some(ApiKey.PolicyAllow.PhoneNumbersActiveNumbersAll))
+    }
   }
 }
