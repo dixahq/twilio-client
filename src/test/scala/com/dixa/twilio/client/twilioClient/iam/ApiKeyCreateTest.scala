@@ -251,6 +251,48 @@ final class ApiKeyCreateTest extends TwilioClientTest {
       }
     }
 
+    "not send KeyType when using withTypeStandard" in {
+      val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      val request    = ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
+        _.withAccountSid(accountSid)
+          .withFriendlyName(friendlyName)
+          .withTypeStandard()
+          .build()
+      )
+
+      val responseBody =
+        s"""{
+           |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+           |  "secret": "your_secret_here",
+           |  "friendly_name": "Test Key",
+           |  "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |  "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000"
+           |}""".stripMargin
+
+      wireMockServer.stubFor(
+        WireMock
+          .post(WireMock.urlPathEqualTo("/v1/Keys"))
+          .withRequestBody(WireMock.notMatching(".*KeyType.*"))
+          .willReturn(
+            aResponse()
+              .withStatus(201)
+              .withHeader("Content-Type", "application/json")
+              .withBody(responseBody)
+          )
+      )
+
+      val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+      val instance: ApiKeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
+
+      val resultFut: Future[Either[ApiKeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+        instance.run(connSettings, request)
+
+      resultFut.map { result =>
+        val apiKey = result.getOrElse(fail(s"Expected success, got $result"))
+        assert(apiKey.sid.value === "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      }
+    }
+
     "dont allow to build the request, if no key type is specified" in {
       assertDoesNotCompile("""ApiKeyCreateRequestExecutor.KeyCreateRequest.build(
                              |        _.withAccountSid(TwilioTestConstants.accountSid)
