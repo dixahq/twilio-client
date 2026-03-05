@@ -2042,6 +2042,90 @@ object ApiKey {
       */
     case object IamAccountsList extends PolicyAllow("/twilio/iam/accounts/list")
 
+    /** The Flow Validate endpoint will validate a Flow definition without creating a new Flow. */
+    case object StudioFlowsValidateUpdate
+        extends PolicyAllow("/twilio/studio/flows.validate/update")
+
+    /** Flows are individual workflows that you create. */
+    case object StudioFlowsAll extends PolicyAllow("/twilio/studio/flows/*")
+
+    /** Flows are individual workflows that you create. */
+    case object StudioFlowsRead extends PolicyAllow("/twilio/studio/flows/read")
+
+    /** Flows are individual workflows that you create. */
+    case object StudioFlowsList extends PolicyAllow("/twilio/studio/flows/list")
+
+    /** Flows are individual workflows that you create. */
+    case object StudioFlowsCreate extends PolicyAllow("/twilio/studio/flows/create")
+
+    /** Flows are individual workflows that you create. */
+    case object StudioFlowsUpdate extends PolicyAllow("/twilio/studio/flows/update")
+
+    /** Flows are individual workflows that you create. */
+    case object StudioFlowsDelete extends PolicyAllow("/twilio/studio/flows/delete")
+
+    /** Tracks every change made to a Flow resource. Revisions are automatically created when a Flow
+      * is created or updated.
+      */
+    case object StudioFlowsRevisionsRead extends PolicyAllow("/twilio/studio/flows.revisions/read")
+
+    /** Tracks every change made to a Flow resource. Revisions are automatically created when a Flow
+      * is created or updated.
+      */
+    case object StudioFlowsRevisionsList extends PolicyAllow("/twilio/studio/flows.revisions/list")
+
+    /** The current state of the Flow's Execution. As a flow executes, we save its state in this
+      * context.
+      */
+    case object StudioExecutionsContextRead
+        extends PolicyAllow("/twilio/studio/executions.context/read")
+
+    /** The current state of the Flow's Execution for a single step. As a flow executes, we save its
+      * state in this context.
+      */
+    case object StudioExecutionsStepsContextRead
+        extends PolicyAllow("/twilio/studio/executions.steps.context/read")
+
+    /** Represents a specific person's run through a Flow. */
+    case object StudioExecutionsAll extends PolicyAllow("/twilio/studio/executions/*")
+
+    /** Represents a specific person's run through a Flow. */
+    case object StudioExecutionsRead extends PolicyAllow("/twilio/studio/executions/read")
+
+    /** Represents a specific person's run through a Flow. */
+    case object StudioExecutionsList extends PolicyAllow("/twilio/studio/executions/list")
+
+    /** Represents a specific person's run through a Flow. */
+    case object StudioExecutionsCreate extends PolicyAllow("/twilio/studio/executions/create")
+
+    /** Represents a specific person's run through a Flow. */
+    case object StudioExecutionsUpdate extends PolicyAllow("/twilio/studio/executions/update")
+
+    /** Represents a specific person's run through a Flow. */
+    case object StudioExecutionsDelete extends PolicyAllow("/twilio/studio/executions/delete")
+
+    /** Runtime processing of a Widget, starting when that Widget is entered. Variables get set at
+      * the end of a Step.
+      */
+    case object StudioExecutionsStepsRead
+        extends PolicyAllow("/twilio/studio/executions.steps/read")
+
+    /** Runtime processing of a Widget, starting when that Widget is entered. Variables get set at
+      * the end of a Step.
+      */
+    case object StudioExecutionsStepsList
+        extends PolicyAllow("/twilio/studio/executions.steps/list")
+
+    /** Contact addresses (e.g. phone numbers, Chat identities) who can test the latest drafts of a
+      * Flow even if they aren't yet published.
+      */
+    case object StudioTestUsersRead extends PolicyAllow("/twilio/studio/test-users/read")
+
+    /** Contact addresses (e.g. phone numbers, Chat identities) who can test the latest drafts of a
+      * Flow even if they aren't yet published.
+      */
+    case object StudioTestUsersUpdate extends PolicyAllow("/twilio/studio/test-users/update")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
