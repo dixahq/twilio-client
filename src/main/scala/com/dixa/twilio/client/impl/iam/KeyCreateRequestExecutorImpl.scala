@@ -27,14 +27,22 @@ private[client] class KeyCreateRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: KeyCreateRequest
   ): Either[KeyCreateException, HttpRequest] = {
+    val policyJson = req.policy.map { p =>
+      val allowList = p.map(policy => s""""${policy.twilioString}"""").mkString(",")
+      s"""{"allow":[$allowList]}"""
+    }
+
     val params = QueryParamBuilder.empty
       .withParam("AccountSid", req.accountSid.toString)
       .withOptionalParam("FriendlyName", req.friendlyName)
       .withOptionalParam("KeyType", req.keyType)
-      .buildForPostParams
+
+    val finalParams = policyJson.fold(params)(p => params.withParam("Policy", p))
 
     createHttpRequestFor("/v1/Keys", connSettings).map(
-      _.withEntity(HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, params))
+      _.withEntity(
+        HttpEntity(ContentTypes.`application/x-www-form-urlencoded`, finalParams.buildForPostParams)
+      )
     )
   }
 

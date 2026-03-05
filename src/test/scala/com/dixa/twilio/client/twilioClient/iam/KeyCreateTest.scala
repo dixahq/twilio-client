@@ -10,12 +10,16 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import scala.concurrent.Future
 
 final class KeyCreateTest extends TwilioClientTest {
+
+  private val friendlyName = ApiKey.FriendlyName("Test Key")
+
   "KeyCreateRequestExecutor" should {
     "parse flags correctly, skipping unknown values and handling empty/null/missing cases" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
-          .withFriendlyName(ApiKey.FriendlyName("Test Key"))
+          .withFriendlyName(friendlyName)
+          .withTypeStandard()
           .build()
       )
 
@@ -70,6 +74,8 @@ final class KeyCreateTest extends TwilioClientTest {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
+          .withTypeRestricted()
+          .withPolicy(Set(ApiKeyPolicy.ConferencesRead))
           .build()
       )
 
@@ -112,6 +118,7 @@ final class KeyCreateTest extends TwilioClientTest {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
+          .withTypeStandard()
           .build()
       )
 
@@ -149,6 +156,7 @@ final class KeyCreateTest extends TwilioClientTest {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
         _.withAccountSid(accountSid)
+          .withTypeStandard()
           .build()
       )
 
@@ -214,6 +222,107 @@ final class KeyCreateTest extends TwilioClientTest {
       assert(
         keyNoSecret.toString === s"ApiKey(sid=$sid, secretOpt=None, friendlyName=$name, flagsOpt=None, policyAllowOpt=None)"
       )
+    }
+
+    "send Policy as JSON when using withRestrictedType and withPolicy" in {
+      val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+        _.withAccountSid(accountSid)
+          .withTypeRestricted()
+          .withPolicy(Set(ApiKeyPolicy.ConferencesRead))
+          .build()
+      )
+
+      val responseBody =
+        s"""{
+           |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+           |  "secret": "your_secret_here",
+           |  "friendly_name": "Restricted Key",
+           |  "policy_allow": ["/twilio/voice/conferences/read"]
+           |}""".stripMargin
+
+      wireMockServer.stubFor(
+        WireMock
+          .post(WireMock.urlPathEqualTo("/v1/Keys"))
+          .withRequestBody(WireMock.containing("KeyType=restricted"))
+          .withRequestBody(
+            WireMock.containing(
+              "Policy=%7B%22allow%22%3A%5B%22%2Ftwilio%2Fvoice%2Fconferences%2Fread%22%5D%7D"
+            )
+          )
+          .willReturn(
+            aResponse()
+              .withStatus(201)
+              .withHeader("Content-Type", "application/json")
+              .withBody(responseBody)
+          )
+      )
+
+      val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+
+      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+        instance.run(connSettings, request)
+
+      resultFut.map { result =>
+        val apiKey = result.getOrElse(fail(s"Expected success, got $result"))
+        apiKey match {
+          case withPolicy: ApiKey.HasPolicyAllow =>
+            assert(withPolicy.policyAllow === Set(ApiKeyPolicy.ConferencesRead))
+          case _ => fail("Expected ApiKey to have policyAllow")
+        }
+      }
+    }
+
+    "dont allow to build the request, if no key type is specified" in {
+      assertDoesNotCompile("""KeyCreateRequestExecutor.KeyCreateRequest.build(
+                             |        _.withAccountSid(TwilioTestConstants.accountSid)
+                             |          .withFriendlyName(friendlyName)
+                             |          .build()
+                             |      )
+                             |""".stripMargin)
+      succeed
+    }
+
+    "dont allow a policy to be set, if the key type is standard" in {
+      assertDoesNotCompile("""KeyCreateRequestExecutor.KeyCreateRequest.build(
+                             |        _.withAccountSid(TwilioTestConstants.accountSid)
+                             |          .withFriendlyName(friendlyName)
+                             |          .withTypeStandard()
+                             |          .withPolicy(Set(ApiKeyPolicy.IamApiKeysList))
+                             |          .build()
+                             |      )
+                             |""".stripMargin)
+      succeed
+    }
+
+    "dont allow to build  request if type is restricted but no policy is set" in {
+      assertDoesNotCompile("""KeyCreateRequestExecutor.KeyCreateRequest.build(
+                             |        _.withAccountSid(TwilioTestConstants.accountSid)
+                             |          .withFriendlyName(friendlyName)
+                             |          .withTypeRestricted()
+                             |          .build()
+                             |      )
+                             |""".stripMargin)
+      succeed
+    }
+
+    "Dont mind in what order you specify the policy and the restricted type" in {
+      KeyCreateRequestExecutor.KeyCreateRequest.build(
+        _.withAccountSid(TwilioTestConstants.accountSid)
+          .withFriendlyName(friendlyName)
+          .withPolicy(Set(ApiKeyPolicy.IamApiKeysList))
+          .withTypeRestricted()
+          .build()
+      )
+      KeyCreateRequestExecutor.KeyCreateRequest.build(
+        _.withAccountSid(TwilioTestConstants.accountSid)
+          .withFriendlyName(friendlyName)
+          .withTypeRestricted()
+          .withPolicy(Set(ApiKeyPolicy.IamApiKeysList))
+          .build()
+      )
+      succeed
     }
   }
 }

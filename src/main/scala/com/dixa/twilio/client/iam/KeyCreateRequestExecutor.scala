@@ -4,7 +4,7 @@ import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.iam.KeyCreateRequestExecutor.{KeyCreateException, KeyCreateRequest}
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.EnumWithTwilioString
-import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
+import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy, TwilioAccount}
 
 /** Create a new Twilio Standard or Restricted API key for a given account.
   *
@@ -32,53 +32,124 @@ object KeyCreateRequestExecutor {
     def accountSid: TwilioAccount.Sid
     def friendlyName: Option[ApiKey.FriendlyName]
     def keyType: Option[KeyCreateRequestExecutor.KeyType]
+    def policy: Option[Set[ApiKeyPolicy]]
   }
 
   private final case class KeyCreateRequestImpl(
       accountSid: TwilioAccount.Sid,
       friendlyName: Option[ApiKey.FriendlyName],
-      keyType: Option[KeyCreateRequestExecutor.KeyType]
+      keyType: Option[KeyCreateRequestExecutor.KeyType],
+      policy: Option[Set[ApiKeyPolicy]]
   ) extends KeyCreateRequest
 
   object KeyCreateRequest {
 
     object PhantomTypes {
-      sealed trait RequestAttribute
-      sealed trait RequestAccountSidAttribute extends RequestAttribute
+      sealed trait AccountSidSet
+      sealed trait AccountSidSetTrue  extends AccountSidSet
+      sealed trait AccountSidSetFalse extends AccountSidSet
+
+      sealed trait KeyTypeSet
+      sealed trait KeyTypeSetTrue  extends KeyTypeSet
+      sealed trait KeyTypeSetFalse extends KeyTypeSet
+
+      sealed trait PolicySet
+      sealed trait PolicySetTrue  extends PolicySet
+      sealed trait PolicySetFalse extends PolicySet
+
+      sealed trait DisallowPolicy
+      sealed trait DisallowPolicyTrue  extends DisallowPolicy
+      sealed trait DisallowPolicyFalse extends DisallowPolicy
+
+      sealed trait PolicyRequired      extends PolicySet
+      sealed trait PolicyRequiredTrue  extends PolicyRequired
+      sealed trait PolicyRequiredFalse extends PolicyRequired
+
+      sealed trait ValidPolicyCombinations[
+          PR <: PhantomTypes.PolicyRequired,
+          PS <: PhantomTypes.PolicySet
+      ]
+      object ValidPolicyCombinations {
+        // Case 1: Standard Key (Policy not required, Policy not set)
+        implicit val standard: ValidPolicyCombinations[
+          PhantomTypes.PolicyRequiredFalse,
+          PhantomTypes.PolicySetFalse
+        ] =
+          new ValidPolicyCombinations[
+            PhantomTypes.PolicyRequiredFalse,
+            PhantomTypes.PolicySetFalse
+          ] {}
+
+        // Case 2: Restricted Key (Policy required, Policy IS set)
+        implicit val restricted
+            : ValidPolicyCombinations[PhantomTypes.PolicyRequiredTrue, PhantomTypes.PolicySetTrue] =
+          new ValidPolicyCombinations[
+            PhantomTypes.PolicyRequiredTrue,
+            PhantomTypes.PolicySetTrue
+          ] {}
+      }
     }
 
-    type RequestRequiredAttributes =
-      PhantomTypes.RequestAttribute with PhantomTypes.RequestAccountSidAttribute
+    import PhantomTypes._
 
-    type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
+    type BuilderStartState =
+      Builder[
+        AccountSidSetFalse,
+        KeyTypeSetFalse,
+        PolicySetFalse,
+        DisallowPolicyFalse,
+        PolicyRequiredFalse
+      ]
 
-    final class Builder[Attributes <: PhantomTypes.RequestAttribute] private[KeyCreateRequest] (
+    final class Builder[
+        AS <: PhantomTypes.AccountSidSet,
+        KT <: PhantomTypes.KeyTypeSet,
+        PS <: PhantomTypes.PolicySet,
+        DP <: PhantomTypes.DisallowPolicy,
+        PR <: PhantomTypes.PolicyRequired
+    ] private[KeyCreateRequest] (
         accountSid: Option[TwilioAccount.Sid],
         friendlyName: Option[ApiKey.FriendlyName],
-        keyType: Option[KeyCreateRequestExecutor.KeyType]
+        keyType: Option[KeyCreateRequestExecutor.KeyType],
+        policy: Option[Set[ApiKeyPolicy]]
     ) {
+
       def withAccountSid(
           accountSid: TwilioAccount.Sid
-      ): Builder[Attributes with PhantomTypes.RequestAccountSidAttribute] =
-        new Builder(Some(accountSid), friendlyName, keyType)
+      ): Builder[AccountSidSetTrue, KT, PS, DP, PR] =
+        new Builder(Some(accountSid), friendlyName, keyType, policy)
 
-      def withFriendlyName(friendlyName: ApiKey.FriendlyName): Builder[Attributes] =
-        new Builder(accountSid, Some(friendlyName), keyType)
+      def withFriendlyName(
+          friendlyName: ApiKey.FriendlyName
+      ): Builder[AS, KT, PS, DP, PR] =
+        new Builder(accountSid, Some(friendlyName), keyType, policy)
 
-      def withKeyType(keyType: KeyCreateRequestExecutor.KeyType): Builder[Attributes] =
-        new Builder(accountSid, friendlyName, Some(keyType))
+      def withTypeStandard()(
+          implicit ev: PS =:= PolicySetFalse
+      ): Builder[AS, KeyTypeSetTrue, PS, DisallowPolicyTrue, PR] =
+        new Builder(accountSid, friendlyName, Some(KeyType.Standard), policy)
+
+      def withTypeRestricted(): Builder[AS, KeyTypeSetTrue, PS, DP, PolicyRequiredTrue] =
+        new Builder(accountSid, friendlyName, Some(KeyType.Restricted), policy)
+
+      def withPolicy(policy: Set[ApiKeyPolicy])(
+          implicit ev: DP =:= DisallowPolicyFalse
+      ): Builder[AS, KT, PolicySetTrue, DP, PR] =
+        new Builder(accountSid, friendlyName, keyType, Some(policy))
 
       def build()(
-          implicit ev: Attributes =:= RequestRequiredAttributes
+          implicit evAccount: AS =:= AccountSidSetTrue,
+          evKeyType: KT =:= KeyTypeSetTrue,
+          evValidPolicyCombo: ValidPolicyCombinations[PR, PS]
       ): KeyCreateRequest =
-        KeyCreateRequestImpl(accountSid.get, friendlyName, keyType)
+        KeyCreateRequestImpl(accountSid.get, friendlyName, keyType, policy)
     }
 
     def build(fun: BuilderStartState => KeyCreateRequest): KeyCreateRequest =
       fun(Builder.empty)
 
     object Builder {
-      def empty: BuilderStartState = new BuilderStartState(None, None, None)
+      def empty: BuilderStartState = new Builder(None, None, None, None)
     }
   }
 
