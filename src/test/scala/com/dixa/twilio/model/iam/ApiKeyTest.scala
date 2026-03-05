@@ -143,5 +143,21 @@ final class ApiKeyTest extends AnyWordSpec {
       val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/monitor/alerts/read")
       assert(policy === Some(ApiKey.PolicyAllow.MonitorAlertsRead))
     }
+
+    "correctly parse EventStreamsSchemaRead policy" in {
+      val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/event-streams/schema/read")
+      assert(policy === Some(ApiKey.PolicyAllow.EventStreamsSchemaRead))
+    }
+
+    "correctly parse EventStreamsSubscriptionSubscribedEventAll policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString("/twilio/event-streams/subscription.subscribed-event/*")
+      assert(policy === Some(ApiKey.PolicyAllow.EventStreamsSubscriptionSubscribedEventAll))
+    }
+
+    "correctly parse EventStreamsSinkTestCreate policy" in {
+      val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/event-streams/sink.test/create")
+      assert(policy === Some(ApiKey.PolicyAllow.EventStreamsSinkTestCreate))
+    }
   }
 }

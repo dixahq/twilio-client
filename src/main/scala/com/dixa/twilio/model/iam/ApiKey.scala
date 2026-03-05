@@ -2396,6 +2396,95 @@ object ApiKey {
       */
     case object MonitorAlertsRead extends PolicyAllow("/twilio/monitor/alerts/read")
 
+    /** A versioned schema that all events of the same event type follow. */
+    case object EventStreamsSchemaRead extends PolicyAllow("/twilio/event-streams/schema/read")
+
+    /** The versions of an event schema, each with its corresponding JSON schema. */
+    case object EventStreamsSchemaVersionRead
+        extends PolicyAllow("/twilio/event-streams/schema.version/read")
+
+    /** The versions of an event schema, each with its corresponding JSON schema. */
+    case object EventStreamsSchemaVersionList
+        extends PolicyAllow("/twilio/event-streams/schema.version/list")
+
+    /** Each of the event types a subscription is composed of. */
+    case object EventStreamsSubscriptionSubscribedEventAll
+        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/*")
+
+    /** Each of the event types a subscription is composed of. */
+    case object EventStreamsSubscriptionSubscribedEventRead
+        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/read")
+
+    /** Each of the event types a subscription is composed of. */
+    case object EventStreamsSubscriptionSubscribedEventList
+        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/list")
+
+    /** Each of the event types a subscription is composed of. */
+    case object EventStreamsSubscriptionSubscribedEventCreate
+        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/create")
+
+    /** Each of the event types a subscription is composed of. */
+    case object EventStreamsSubscriptionSubscribedEventUpdate
+        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/update")
+
+    /** Each of the event types a subscription is composed of. */
+    case object EventStreamsSubscriptionSubscribedEventDelete
+        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/delete")
+
+    /** Subset of event types to be sent to a sink. */
+    case object EventStreamsSubscriptionAll
+        extends PolicyAllow("/twilio/event-streams/subscription/*")
+
+    /** Subset of event types to be sent to a sink. */
+    case object EventStreamsSubscriptionRead
+        extends PolicyAllow("/twilio/event-streams/subscription/read")
+
+    /** Subset of event types to be sent to a sink. */
+    case object EventStreamsSubscriptionList
+        extends PolicyAllow("/twilio/event-streams/subscription/list")
+
+    /** Subset of event types to be sent to a sink. */
+    case object EventStreamsSubscriptionCreate
+        extends PolicyAllow("/twilio/event-streams/subscription/create")
+
+    /** Subset of event types to be sent to a sink. */
+    case object EventStreamsSubscriptionUpdate
+        extends PolicyAllow("/twilio/event-streams/subscription/update")
+
+    /** Subset of event types to be sent to a sink. */
+    case object EventStreamsSubscriptionDelete
+        extends PolicyAllow("/twilio/event-streams/subscription/delete")
+
+    /** Sample events sent to a sink for testing and troubleshooting purposes. */
+    case object EventStreamsSinkTestCreate
+        extends PolicyAllow("/twilio/event-streams/sink.test/create")
+
+    /** Destination capable of receiving a stream of events. */
+    case object EventStreamsSinkAll extends PolicyAllow("/twilio/event-streams/sink/*")
+
+    /** Destination capable of receiving a stream of events. */
+    case object EventStreamsSinkRead extends PolicyAllow("/twilio/event-streams/sink/read")
+
+    /** Destination capable of receiving a stream of events. */
+    case object EventStreamsSinkList extends PolicyAllow("/twilio/event-streams/sink/list")
+
+    /** Destination capable of receiving a stream of events. */
+    case object EventStreamsSinkCreate extends PolicyAllow("/twilio/event-streams/sink/create")
+
+    /** Destination capable of receiving a stream of events. */
+    case object EventStreamsSinkUpdate extends PolicyAllow("/twilio/event-streams/sink/update")
+
+    /** Destination capable of receiving a stream of events. */
+    case object EventStreamsSinkDelete extends PolicyAllow("/twilio/event-streams/sink/delete")
+
+    /** A kind of event described by a schema which can be subscribed to. */
+    case object EventStreamsEventTypeRead
+        extends PolicyAllow("/twilio/event-streams/event-type/read")
+
+    /** A kind of event described by a schema which can be subscribed to. */
+    case object EventStreamsEventTypeList
+        extends PolicyAllow("/twilio/event-streams/event-type/list")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
