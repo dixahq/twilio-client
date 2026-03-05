@@ -66,6 +66,48 @@ final class KeyCreateTest extends TwilioClientTest {
       }
     }
 
+    "parse policy_allow correctly" in {
+      val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+      val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
+        _.withAccountSid(accountSid)
+          .build()
+      )
+
+      val responseBody =
+        s"""{
+           |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+           |  "secret": "your_secret_here",
+           |  "friendly_name": "Test Key",
+           |  "policy_allow": ["test", "unknown_policy"]
+           |}""".stripMargin
+
+      wireMockServer.stubFor(
+        WireMock
+          .post(WireMock.urlPathEqualTo("/v1/Keys"))
+          .willReturn(
+            aResponse()
+              .withStatus(201)
+              .withHeader("Content-Type", "application/json")
+              .withBody(responseBody)
+          )
+      )
+
+      val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+
+      val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
+        instance.run(connSettings, request)
+
+      resultFut.map { result =>
+        val apiKey = result.getOrElse(fail(s"Expected success, got $result"))
+        apiKey match {
+          case withPolicy: ApiKey.HasPolicyAllow =>
+            assert(withPolicy.policyAllow === Set(ApiKey.PolicyAllow.Test))
+          case _ => fail("Expected ApiKey to have policyAllow")
+        }
+      }
+    }
+
     "handle missing flags by returning an empty set" in {
       val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
       val request    = KeyCreateRequestExecutor.KeyCreateRequest.build(
@@ -155,13 +197,13 @@ final class KeyCreateTest extends TwilioClientTest {
       assert(key1 === key2)
       assert(key1.hashCode() === key2.hashCode())
       assert(
-        key1.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=None)"
+        key1.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=None, policyAllowOpt=None)"
       )
 
       assert(key3 === key4)
       assert(key3.hashCode() === key4.hashCode())
       assert(
-        key3.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=Some($flags))"
+        key3.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=Some($flags), policyAllowOpt=None)"
       )
 
       assert(key1 !== key3)
@@ -170,7 +212,7 @@ final class KeyCreateTest extends TwilioClientTest {
       val keyNoSecret = ApiKey(sid, name)
       assert(keyNoSecret.secretOpt === None)
       assert(
-        keyNoSecret.toString === s"ApiKey(sid=$sid, secretOpt=None, friendlyName=$name, flagsOpt=None)"
+        keyNoSecret.toString === s"ApiKey(sid=$sid, secretOpt=None, friendlyName=$name, flagsOpt=None, policyAllowOpt=None)"
       )
     }
   }

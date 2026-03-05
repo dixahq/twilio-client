@@ -33,5 +33,41 @@ final class ApiKeyTest extends AnyWordSpec {
       assert(key.flags === flags)
       assert(key.secret === secret)
     }
+
+    "preserve HasFlags and HasSecret traits when calling withPolicyAllow" in {
+      val sid                             = ApiKey.Sid("SK123")
+      val name                            = ApiKey.FriendlyName("name")
+      val secret                          = ApiKey.Secret("secret")
+      val flags: Set[ApiKey.Flag]         = Set(ApiKey.Flag.Restricted)
+      val policy: Set[ApiKey.PolicyAllow] = Set(ApiKey.PolicyAllow.Test)
+
+      val key: ApiKey with ApiKey.HasFlags with ApiKey.HasSecret with ApiKey.HasPolicyAllow =
+        ApiKey(sid, name)
+          .withFlags(flags)
+          .withSecret(secret)
+          .withPolicyAllow(policy)
+
+      assert(key.flags === flags)
+      assert(key.secret === secret)
+      assert(key.policyAllow === policy)
+    }
+
+    "preserve HasPolicyAllow trait when calling withFlags and withSecret" in {
+      val sid                             = ApiKey.Sid("SK123")
+      val name                            = ApiKey.FriendlyName("name")
+      val secret                          = ApiKey.Secret("secret")
+      val flags: Set[ApiKey.Flag]         = Set(ApiKey.Flag.Restricted)
+      val policy: Set[ApiKey.PolicyAllow] = Set(ApiKey.PolicyAllow.Test)
+
+      val key: ApiKey with ApiKey.HasPolicyAllow with ApiKey.HasFlags with ApiKey.HasSecret =
+        ApiKey(sid, name)
+          .withPolicyAllow(policy)
+          .withFlags(flags)
+          .withSecret(secret)
+
+      assert(key.flags === flags)
+      assert(key.secret === secret)
+      assert(key.policyAllow === policy)
+    }
   }
 }

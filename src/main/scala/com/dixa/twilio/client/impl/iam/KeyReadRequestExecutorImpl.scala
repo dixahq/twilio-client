@@ -42,11 +42,32 @@ private[client] class KeyReadRequestExecutorImpl()(
       cause: Option[Throwable]
   ): KeyReadException.Unspecified = KeyReadException.Unspecified(msg, cause)
 
-  private case class KeyJsonRep(sid: String, friendly_name: String) {
-    def toModel: ApiKey = ApiKey(
-      sid = ApiKey.Sid(sid),
-      friendlyName = ApiKey.FriendlyName(friendly_name)
-    )
+  private case class KeyJsonRep(
+      sid: String,
+      friendly_name: String,
+      flags: Option[Set[String]] = None,
+      policy_allow: Option[Set[String]] = None
+  ) {
+    def toModel: ApiKey = {
+      val base = ApiKey(
+        sid = ApiKey.Sid(sid),
+        friendlyName = ApiKey.FriendlyName(friendly_name)
+      )
+
+      val withFlags = flags match {
+        case Some(fStrings) =>
+          base.withFlags(fStrings.flatMap(ApiKey.Flag.fromTwilioString))
+        case None =>
+          base
+      }
+
+      policy_allow match {
+        case Some(pStrings) =>
+          withFlags.withPolicyAllow(pStrings.flatMap(ApiKey.PolicyAllow.fromTwilioString))
+        case None =>
+          withFlags
+      }
+    }
   }
 
   private case class KeyListJsonRep(keys: List[KeyJsonRep])

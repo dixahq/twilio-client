@@ -12,24 +12,27 @@ sealed trait ApiKey {
   def secretOpt: Option[ApiKey.Secret]
   def friendlyName: ApiKey.FriendlyName
   def flagsOpt: Option[Set[ApiKey.Flag]]
+  def policyAllowOpt: Option[Set[ApiKey.PolicyAllow]]
 
   def withFlags(flags: Set[ApiKey.Flag]): ApiKey with ApiKey.HasFlags
   def withSecret(secret: ApiKey.Secret): ApiKey with ApiKey.HasSecret
+  def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with ApiKey.HasPolicyAllow
 
   override def equals(obj: Any): Boolean = obj match {
     case other: ApiKey =>
       sid == other.sid &&
       secretOpt == other.secretOpt &&
       friendlyName == other.friendlyName &&
-      flagsOpt == other.flagsOpt
+      flagsOpt == other.flagsOpt &&
+      policyAllowOpt == other.policyAllowOpt
     case _ => false
   }
 
   override def hashCode(): Int =
-    (sid, secretOpt, friendlyName, flagsOpt).hashCode()
+    (sid, secretOpt, friendlyName, flagsOpt, policyAllowOpt).hashCode()
 
   override def toString: String =
-    s"ApiKey(sid=$sid, secretOpt=$secretOpt, friendlyName=$friendlyName, flagsOpt=$flagsOpt)"
+    s"ApiKey(sid=$sid, secretOpt=$secretOpt, friendlyName=$friendlyName, flagsOpt=$flagsOpt, policyAllowOpt=$policyAllowOpt)"
 }
 
 object ApiKey {
@@ -37,27 +40,72 @@ object ApiKey {
   sealed trait HasFlags { self: ApiKey =>
     def flags: Set[ApiKey.Flag]
     def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags
-    def withSecret(secret: ApiKey.Secret): ApiKey with HasFlags with HasSecret
+    def withSecret(secret: ApiKey.Secret): ApiKey with HasFlagsAndSecret
+    def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasFlagsAndPolicyAllow
   }
 
   sealed trait HasSecret { self: ApiKey =>
     def secret: ApiKey.Secret
     def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret
-    def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags with HasSecret
+    def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret
+    def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasSecretAndPolicyAllow
+  }
+
+  sealed trait HasPolicyAllow { self: ApiKey =>
+    def policyAllow: Set[ApiKey.PolicyAllow]
+    def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasPolicyAllow
+    def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow
+    def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow
+  }
+
+  sealed trait HasFlagsAndSecret extends HasFlags with HasSecret { self: ApiKey =>
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasFlagsAndSecret
+    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasAll
+  }
+
+  sealed trait HasFlagsAndPolicyAllow extends HasFlags with HasPolicyAllow { self: ApiKey =>
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasFlagsAndPolicyAllow
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasAll
+  }
+
+  sealed trait HasSecretAndPolicyAllow extends HasSecret with HasPolicyAllow { self: ApiKey =>
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasSecretAndPolicyAllow
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasAll
+  }
+
+  sealed trait HasAll
+      extends HasFlagsAndSecret
+      with HasFlagsAndPolicyAllow
+      with HasSecretAndPolicyAllow {
+    self: ApiKey =>
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasAll
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasAll
+    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasAll
   }
 
   private final class ApiKeyBase(
       val sid: ApiKey.Sid,
       val friendlyName: ApiKey.FriendlyName
   ) extends ApiKey {
-    override val secretOpt: Option[ApiKey.Secret]   = None
-    override val flagsOpt: Option[Set[ApiKey.Flag]] = None
+    override val secretOpt: Option[ApiKey.Secret]                = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags =
       new ApiKeyWithFlags(sid, friendlyName, flags)
 
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret =
       new ApiKeyWithSecret(sid, friendlyName, secret)
+
+    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasPolicyAllow =
+      new ApiKeyWithPolicyAllow(sid, friendlyName, policyAllow)
   }
 
   private final class ApiKeyWithSecret(
@@ -66,14 +114,20 @@ object ApiKey {
       val secret: ApiKey.Secret
   ) extends ApiKey
       with HasSecret {
-    override val secretOpt: Option[ApiKey.Secret]   = Some(secret)
-    override val flagsOpt: Option[Set[ApiKey.Flag]] = None
+    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
 
-    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags with HasSecret =
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret =
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
 
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret =
       new ApiKeyWithSecret(sid, friendlyName, secret)
+
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasSecretAndPolicyAllow =
+      new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
   }
 
   private final class ApiKeyWithFlags(
@@ -82,14 +136,40 @@ object ApiKey {
       val flags: Set[ApiKey.Flag]
   ) extends ApiKey
       with HasFlags {
-    override val secretOpt: Option[ApiKey.Secret]   = None
-    override val flagsOpt: Option[Set[ApiKey.Flag]] = Some(flags)
+    override val secretOpt: Option[ApiKey.Secret]                = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags =
       new ApiKeyWithFlags(sid, friendlyName, flags)
 
-    override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret with HasFlags =
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasFlagsAndSecret =
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
+
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasFlagsAndPolicyAllow =
+      new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
+  }
+
+  private final class ApiKeyWithPolicyAllow(
+      val sid: ApiKey.Sid,
+      val friendlyName: ApiKey.FriendlyName,
+      val policyAllow: Set[ApiKey.PolicyAllow]
+  ) extends ApiKey
+      with HasPolicyAllow {
+    override val secretOpt: Option[ApiKey.Secret]                = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow =
+      new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
+
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow =
+      new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
+
+    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasPolicyAllow =
+      new ApiKeyWithPolicyAllow(sid, friendlyName, policyAllow)
   }
 
   private final class ApiKeyWithSecretAndFlags(
@@ -98,16 +178,99 @@ object ApiKey {
       val secret: ApiKey.Secret,
       val flags: Set[ApiKey.Flag]
   ) extends ApiKey
-      with HasSecret
-      with HasFlags {
-    override val secretOpt: Option[ApiKey.Secret]   = Some(secret)
-    override val flagsOpt: Option[Set[ApiKey.Flag]] = Some(flags)
+      with HasFlagsAndSecret {
+    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
 
-    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags with HasSecret =
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret =
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
 
-    override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret with HasFlags =
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasFlagsAndSecret =
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
+
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasAll =
+      new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
+  }
+
+  private final class ApiKeyWithSecretAndPolicyAllow(
+      val sid: ApiKey.Sid,
+      val friendlyName: ApiKey.FriendlyName,
+      val secret: ApiKey.Secret,
+      val policyAllow: Set[ApiKey.PolicyAllow]
+  ) extends ApiKey
+      with HasSecretAndPolicyAllow {
+    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+
+    override def withFlags(
+        flags: Set[ApiKey.Flag]
+    ): ApiKey with HasAll =
+      new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
+
+    override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow =
+      new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
+
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasSecretAndPolicyAllow =
+      new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
+  }
+
+  private final class ApiKeyWithFlagsAndPolicyAllow(
+      val sid: ApiKey.Sid,
+      val friendlyName: ApiKey.FriendlyName,
+      val flags: Set[ApiKey.Flag],
+      val policyAllow: Set[ApiKey.PolicyAllow]
+  ) extends ApiKey
+      with HasFlagsAndPolicyAllow {
+    override val secretOpt: Option[ApiKey.Secret]                = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+
+    override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow =
+      new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
+
+    override def withSecret(
+        secret: ApiKey.Secret
+    ): ApiKey with HasAll =
+      new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
+
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasFlagsAndPolicyAllow =
+      new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
+  }
+
+  private final class ApiKeyWithSecretAndFlagsAndPolicyAllow(
+      val sid: ApiKey.Sid,
+      val friendlyName: ApiKey.FriendlyName,
+      val secret: ApiKey.Secret,
+      val flags: Set[ApiKey.Flag],
+      val policyAllow: Set[ApiKey.PolicyAllow]
+  ) extends ApiKey
+      with HasAll {
+    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+
+    override def withFlags(
+        flags: Set[ApiKey.Flag]
+    ): ApiKey with HasAll =
+      new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
+
+    override def withSecret(
+        secret: ApiKey.Secret
+    ): ApiKey with HasAll =
+      new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
+
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.PolicyAllow]
+    ): ApiKey with HasAll =
+      new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
   }
 
   /** Factory method to create an [[ApiKey]] with only the base attributes. */
@@ -126,7 +289,7 @@ object ApiKey {
     * Only available at creation time — [[toString]] always redacts the value to prevent accidental
     * logging.
     */
-  final case class Secret(val value: String) {
+  final case class Secret(value: String) {
 
     /** Always returns a redacted representation to prevent accidental logging of the secret. */
     override val toString: String = "ApiKey.Secret(***)"
@@ -147,5 +310,15 @@ object ApiKey {
     case object ManageKeys     extends Flag("manage_keys")
 
     override val values: IndexedSeq[Flag] = findValues
+  }
+
+  /** A policy allowed by the API key. */
+  sealed abstract class PolicyAllow(override val twilioString: String)
+      extends EnumWithTwilioString.EnumEntry
+
+  object PolicyAllow extends EnumWithTwilioString[PolicyAllow] {
+    case object Test extends PolicyAllow("test")
+
+    override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }

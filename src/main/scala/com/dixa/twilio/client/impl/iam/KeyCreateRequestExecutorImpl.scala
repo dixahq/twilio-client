@@ -50,7 +50,8 @@ private[client] class KeyCreateRequestExecutorImpl()(
       sid: String,
       secret: String,
       friendly_name: String,
-      flags: Option[Set[String]] = None
+      flags: Option[Set[String]] = None,
+      policy_allow: Option[Set[String]] = None
   ) {
     def toModel: ApiKey = {
       val base = ApiKey(
@@ -58,11 +59,18 @@ private[client] class KeyCreateRequestExecutorImpl()(
         friendlyName = ApiKey.FriendlyName(friendly_name)
       ).withSecret(ApiKey.Secret(secret))
 
-      flags match {
+      val withFlags = flags match {
         case Some(fStrings) =>
           base.withFlags(fStrings.flatMap(ApiKey.Flag.fromTwilioString))
         case None =>
           base
+      }
+
+      policy_allow match {
+        case Some(pStrings) =>
+          withFlags.withPolicyAllow(pStrings.flatMap(ApiKey.PolicyAllow.fromTwilioString))
+        case None =>
+          withFlags
       }
     }
   }
