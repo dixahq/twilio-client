@@ -36,10 +36,14 @@ object ApiKey {
 
   sealed trait HasFlags { self: ApiKey =>
     def flags: Set[ApiKey.Flag]
+    def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags
+    def withSecret(secret: ApiKey.Secret): ApiKey with HasFlags with HasSecret
   }
 
   sealed trait HasSecret { self: ApiKey =>
     def secret: ApiKey.Secret
+    def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret
+    def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags with HasSecret
   }
 
   private final class ApiKeyBase(

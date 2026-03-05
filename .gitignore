@@ -154,3 +154,5 @@ project/plugins/project/
 .idea/*
 .bsp/*
 *.orig
+# Junie often pipe command output to output.txt, and sometimes forget to delete it again.
+/.output.txt
