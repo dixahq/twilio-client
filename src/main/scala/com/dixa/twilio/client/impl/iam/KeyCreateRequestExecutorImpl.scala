@@ -8,6 +8,7 @@ import com.dixa.twilio.client.iam.KeyCreateRequestExecutor.{KeyCreateException, 
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.iam.ApiKey.HasSecret
 import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy}
 
 import scala.concurrent.ExecutionContext
@@ -53,7 +54,7 @@ private[client] class KeyCreateRequestExecutorImpl()(
       flags: Option[Set[String]] = None,
       policy_allow: Option[Set[String]] = None
   ) {
-    def toModel: ApiKey = {
+    def toModel: ApiKey with ApiKey.HasSecret = {
       val base = ApiKey(
         sid = ApiKey.Sid(sid),
         friendlyName = ApiKey.FriendlyName(friendly_name)
@@ -83,7 +84,7 @@ private[client] class KeyCreateRequestExecutorImpl()(
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[KeyCreateException, ApiKey] =
+  ): Either[KeyCreateException, ApiKey with HasSecret] =
     httpResponse.status match {
       case StatusCodes.Created =>
         parseEntityAs[KeyCreateJsonRep](entity).map(_.toModel)

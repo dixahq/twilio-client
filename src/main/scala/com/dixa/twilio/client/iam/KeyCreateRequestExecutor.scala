@@ -15,7 +15,7 @@ trait KeyCreateRequestExecutor
     extends SingleRequestExecutor[
       KeyCreateRequest,
       KeyCreateException,
-      ApiKey,
+      ApiKey with ApiKey.HasSecret,
       KeyCreateRequest.BuilderStartState
     ] {
 
