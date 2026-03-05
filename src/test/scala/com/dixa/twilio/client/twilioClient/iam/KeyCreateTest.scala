@@ -28,6 +28,8 @@ final class KeyCreateTest extends TwilioClientTest {
            |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
            |  "secret": "your_secret_here",
            |  "friendly_name": "Test Key",
+           |  "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |  "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000",
            |  "flags": ["restricted", "completely_unknown_value_from_twilio", "rest_api"]
            |}""".stripMargin
 
@@ -84,6 +86,8 @@ final class KeyCreateTest extends TwilioClientTest {
            |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
            |  "secret": "your_secret_here",
            |  "friendly_name": "Test Key",
+           |  "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |  "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000",
            |  "policy_allow": ["/twilio/voice/conferences/read", "unknown_policy"]
            |}""".stripMargin
 
@@ -126,7 +130,9 @@ final class KeyCreateTest extends TwilioClientTest {
         s"""{
            |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
            |  "secret": "your_secret_here",
-           |  "friendly_name": "Test Key"
+           |  "friendly_name": "Test Key",
+           |  "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |  "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000"
            |}""".stripMargin
 
       wireMockServer.stubFor(
@@ -165,6 +171,8 @@ final class KeyCreateTest extends TwilioClientTest {
            |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
            |  "secret": "your_secret_here",
            |  "friendly_name": "Test Key",
+           |  "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |  "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000",
            |  "flags": null
            |}""".stripMargin
 
@@ -196,31 +204,33 @@ final class KeyCreateTest extends TwilioClientTest {
       val secret                  = ApiKey.Secret("secret")
       val name                    = ApiKey.FriendlyName("name")
       val flags: Set[ApiKey.Flag] = Set(ApiKey.Flag.Restricted)
+      val dateCreated             = java.time.Instant.parse("2023-01-01T00:00:00Z")
+      val dateUpdated             = java.time.Instant.parse("2023-01-01T00:01:00Z")
 
-      val key1 = ApiKey(sid, name).withSecret(secret)
-      val key2 = ApiKey(sid, name).withSecret(secret)
-      val key3 = ApiKey(sid, name).withSecret(secret).withFlags(flags)
-      val key4 = ApiKey(sid, name).withSecret(secret).withFlags(flags)
+      val key1 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret)
+      val key2 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret)
+      val key3 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret).withFlags(flags)
+      val key4 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret).withFlags(flags)
 
       assert(key1 === key2)
       assert(key1.hashCode() === key2.hashCode())
       assert(
-        key1.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=None, policyAllowOpt=None)"
+        key1.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=None, policyAllowOpt=None, dateCreated=$dateCreated, dateUpdated=$dateUpdated)"
       )
 
       assert(key3 === key4)
       assert(key3.hashCode() === key4.hashCode())
       assert(
-        key3.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=Some($flags), policyAllowOpt=None)"
+        key3.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=Some($flags), policyAllowOpt=None, dateCreated=$dateCreated, dateUpdated=$dateUpdated)"
       )
 
       assert(key1 !== key3)
       assert(key1.hashCode() !== key3.hashCode())
 
-      val keyNoSecret = ApiKey(sid, name)
+      val keyNoSecret = ApiKey(sid, name, dateCreated, dateUpdated)
       assert(keyNoSecret.secretOpt === None)
       assert(
-        keyNoSecret.toString === s"ApiKey(sid=$sid, secretOpt=None, friendlyName=$name, flagsOpt=None, policyAllowOpt=None)"
+        keyNoSecret.toString === s"ApiKey(sid=$sid, secretOpt=None, friendlyName=$name, flagsOpt=None, policyAllowOpt=None, dateCreated=$dateCreated, dateUpdated=$dateUpdated)"
       )
     }
 
@@ -238,6 +248,8 @@ final class KeyCreateTest extends TwilioClientTest {
            |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
            |  "secret": "your_secret_here",
            |  "friendly_name": "Restricted Key",
+           |  "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |  "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000",
            |  "policy_allow": ["/twilio/voice/conferences/read"]
            |}""".stripMargin
 

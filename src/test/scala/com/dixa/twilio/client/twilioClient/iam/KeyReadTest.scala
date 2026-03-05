@@ -25,11 +25,15 @@ final class KeyReadTest extends TwilioClientTest {
            |  "keys": [
            |    {
            |      "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
-           |      "friendly_name": "Test Key 1"
+           |      "friendly_name": "Test Key 1",
+           |      "date_created": "Thu, 24 Aug 2023 14:00:00 +0000",
+           |      "date_updated": "Thu, 24 Aug 2023 14:00:00 +0000"
            |    },
            |    {
            |      "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2",
-           |      "friendly_name": "Test Key 2"
+           |      "friendly_name": "Test Key 2",
+           |      "date_created": "Thu, 24 Aug 2023 14:00:01 +0000",
+           |      "date_updated": "Thu, 24 Aug 2023 14:00:01 +0000"
            |    }
            |  ]
            |}""".stripMargin

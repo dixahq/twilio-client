@@ -10,6 +10,7 @@ import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 
+import java.time.Instant
 import scala.concurrent.ExecutionContext
 
 private[client] class KeyReadRequestExecutorImpl()(
@@ -45,13 +46,19 @@ private[client] class KeyReadRequestExecutorImpl()(
   private case class KeyJsonRep(
       sid: String,
       friendly_name: String,
+      date_created: String,
+      date_updated: String,
       flags: Option[Set[String]] = None,
       policy_allow: Option[Set[String]] = None
   ) {
     def toModel: ApiKey = {
       val base = ApiKey(
         sid = ApiKey.Sid(sid),
-        friendlyName = ApiKey.FriendlyName(friendly_name)
+        friendlyName = ApiKey.FriendlyName(friendly_name),
+        dateCreated =
+          Instant.from(java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME.parse(date_created)),
+        dateUpdated =
+          Instant.from(java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME.parse(date_updated))
       )
 
       val withFlags = flags match {

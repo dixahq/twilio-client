@@ -3,6 +3,9 @@ package com.dixa.twilio.model.iam
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ApiKeyTest extends AnyWordSpec {
+  private val dateCreated = java.time.Instant.EPOCH.plusSeconds(234526438)
+  private val dateUpdated = dateCreated.plusSeconds(60)
+
   "ApiKey" should {
     "preserve HasFlags trait when calling withSecret" in {
       val sid                     = ApiKey.Sid("SK123")
@@ -11,12 +14,14 @@ final class ApiKeyTest extends AnyWordSpec {
       val flags: Set[ApiKey.Flag] = Set(ApiKey.Flag.Restricted)
 
       val key: ApiKey with ApiKey.HasFlags with ApiKey.HasSecret =
-        ApiKey(sid, name)
+        ApiKey(sid, name, dateCreated, dateUpdated)
           .withFlags(flags)
           .withSecret(secret)
 
       assert(key.flags === flags)
       assert(key.secret === secret)
+      assert(key.dateCreated === dateCreated)
+      assert(key.dateUpdated === dateUpdated)
     }
 
     "preserve HasSecret trait when calling withFlags" in {
@@ -26,12 +31,14 @@ final class ApiKeyTest extends AnyWordSpec {
       val flags: Set[ApiKey.Flag] = Set(ApiKey.Flag.Restricted)
 
       val key: ApiKey with ApiKey.HasSecret with ApiKey.HasFlags =
-        ApiKey(sid, name)
+        ApiKey(sid, name, dateCreated, dateUpdated)
           .withSecret(secret)
           .withFlags(flags)
 
       assert(key.flags === flags)
       assert(key.secret === secret)
+      assert(key.dateCreated === dateCreated)
+      assert(key.dateUpdated === dateUpdated)
     }
 
     "preserve HasFlags and HasSecret traits when calling withPolicyAllow" in {
@@ -42,7 +49,7 @@ final class ApiKeyTest extends AnyWordSpec {
       val policy: Set[ApiKeyPolicy] = Set(ApiKeyPolicy.ConferencesRead)
 
       val key: ApiKey with ApiKey.HasFlags with ApiKey.HasSecret with ApiKey.HasPolicyAllow =
-        ApiKey(sid, name)
+        ApiKey(sid, name, dateCreated, dateUpdated)
           .withFlags(flags)
           .withSecret(secret)
           .withPolicyAllow(policy)
@@ -50,6 +57,8 @@ final class ApiKeyTest extends AnyWordSpec {
       assert(key.flags === flags)
       assert(key.secret === secret)
       assert(key.policyAllow === policy)
+      assert(key.dateCreated === dateCreated)
+      assert(key.dateUpdated === dateUpdated)
     }
 
     "preserve HasPolicyAllow trait when calling withFlags and withSecret" in {
@@ -60,7 +69,7 @@ final class ApiKeyTest extends AnyWordSpec {
       val policy: Set[ApiKeyPolicy] = Set(ApiKeyPolicy.ConferencesRead)
 
       val key: ApiKey with ApiKey.HasPolicyAllow with ApiKey.HasFlags with ApiKey.HasSecret =
-        ApiKey(sid, name)
+        ApiKey(sid, name, dateCreated, dateUpdated)
           .withPolicyAllow(policy)
           .withFlags(flags)
           .withSecret(secret)
@@ -68,6 +77,8 @@ final class ApiKeyTest extends AnyWordSpec {
       assert(key.flags === flags)
       assert(key.secret === secret)
       assert(key.policyAllow === policy)
+      assert(key.dateCreated === dateCreated)
+      assert(key.dateUpdated === dateUpdated)
     }
   }
 }
