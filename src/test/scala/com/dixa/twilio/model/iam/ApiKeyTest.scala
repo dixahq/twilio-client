@@ -175,5 +175,25 @@ final class ApiKeyTest extends AnyWordSpec {
       val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/microvisor/device-cert/create")
       assert(policy === Some(ApiKey.PolicyAllow.MicrovisorDeviceCertCreate))
     }
+
+    "correctly parse VideoRecordingsRecordingSettingsRead policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString("/twilio/video/recordings.recording-settings/read")
+      assert(policy === Some(ApiKey.PolicyAllow.VideoRecordingsRecordingSettingsRead))
+    }
+
+    "correctly parse VideoRoomsParticipantsPublishedTracksList policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString(
+          "/twilio/video/rooms.participants.published-tracks/list"
+        )
+      assert(policy === Some(ApiKey.PolicyAllow.VideoRoomsParticipantsPublishedTracksList))
+    }
+
+    "correctly parse VideoCompositionsCompositionHooksAll policy" in {
+      val policy =
+        ApiKey.PolicyAllow.fromTwilioString("/twilio/video/compositions.composition-hooks/*")
+      assert(policy === Some(ApiKey.PolicyAllow.VideoCompositionsCompositionHooksAll))
+    }
   }
 }

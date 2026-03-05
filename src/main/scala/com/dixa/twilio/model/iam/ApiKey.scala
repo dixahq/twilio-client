@@ -2504,6 +2504,173 @@ object ApiKey {
     case object MicrovisorDeviceCertCreate
         extends PolicyAllow("/twilio/microvisor/device-cert/create")
 
+    /** Recording settings allows Twilio to store your recordings encrypted. */
+    case object VideoRecordingsRecordingSettingsRead
+        extends PolicyAllow("/twilio/video/recordings.recording-settings/read")
+
+    /** Recording settings allows Twilio to store your recordings encrypted. */
+    case object VideoRecordingsRecordingSettingsUpdate
+        extends PolicyAllow("/twilio/video/recordings.recording-settings/update")
+
+    /** Captured recordings are single-track, single-media and stored in a single file format. */
+    case object VideoRecordingsRead extends PolicyAllow("/twilio/video/recordings/read")
+
+    /** Captured recordings are single-track, single-media and stored in a single file format. */
+    case object VideoRecordingsList extends PolicyAllow("/twilio/video/recordings/list")
+
+    /** Captured recordings are single-track, single-media and stored in a single file format. */
+    case object VideoRecordingsDelete extends PolicyAllow("/twilio/video/recordings/delete")
+
+    /** Anonymize room participant identity. */
+    case object VideoRoomsParticipantsAnonymizeUpdate
+        extends PolicyAllow("/twilio/video/rooms.participants.anonymize/update")
+
+    /** Recording rules that are enforced in a given Room. */
+    case object VideoRoomsRecordingRulesList
+        extends PolicyAllow("/twilio/video/rooms.recording-rules/list")
+
+    /** Recording rules that are enforced in a given Room. */
+    case object VideoRoomsRecordingRulesUpdate
+        extends PolicyAllow("/twilio/video/rooms.recording-rules/update")
+
+    /** Represents media shared in a Video Room by a Participant, including audio, video, and screen
+      * share content.
+      */
+    case object VideoRoomsParticipantsPublishedTracksRead
+        extends PolicyAllow("/twilio/video/rooms.participants.published-tracks/read")
+
+    /** Represents media shared in a Video Room by a Participant, including audio, video, and screen
+      * share content.
+      */
+    case object VideoRoomsParticipantsPublishedTracksList
+        extends PolicyAllow("/twilio/video/rooms.participants.published-tracks/list")
+
+    /** Represents participants currently connected to a given Room. */
+    case object VideoRoomsParticipantsRead
+        extends PolicyAllow("/twilio/video/rooms.participants/read")
+
+    /** Represents participants currently connected to a given Room. */
+    case object VideoRoomsParticipantsList
+        extends PolicyAllow("/twilio/video/rooms.participants/list")
+
+    /** Represents participants currently connected to a given Room. */
+    case object VideoRoomsParticipantsUpdate
+        extends PolicyAllow("/twilio/video/rooms.participants/update")
+
+    /** Represents the subscribe rules that are enforced on a given Participant. */
+    case object VideoRoomsParticipantsSubscribeRulesList
+        extends PolicyAllow("/twilio/video/rooms.participants.subscribe-rules/list")
+
+    /** Represents the subscribe rules that are enforced on a given Participant. */
+    case object VideoRoomsParticipantsSubscribeRulesUpdate
+        extends PolicyAllow("/twilio/video/rooms.participants.subscribe-rules/update")
+
+    /** Represents a Participant's Track Subscription, managing which media streams participants
+      * receive.
+      */
+    case object VideoRoomsParticipantsSubscribedTracksRead
+        extends PolicyAllow("/twilio/video/rooms.participants.subscribed-tracks/read")
+
+    /** Represents a Participant's Track Subscription, managing which media streams participants
+      * receive.
+      */
+    case object VideoRoomsParticipantsSubscribedTracksList
+        extends PolicyAllow("/twilio/video/rooms.participants.subscribed-tracks/list")
+
+    /** Single-track, single-media room recordings. */
+    case object VideoRoomsRecordingsRead extends PolicyAllow("/twilio/video/rooms.recordings/read")
+
+    /** Single-track, single-media room recordings. */
+    case object VideoRoomsRecordingsList extends PolicyAllow("/twilio/video/rooms.recordings/list")
+
+    /** Multi-party communications session where participants share real-time audio and video
+      * tracks.
+      */
+    case object VideoRoomsRead extends PolicyAllow("/twilio/video/rooms/read")
+
+    /** Multi-party communications session where participants share real-time audio and video
+      * tracks.
+      */
+    case object VideoRoomsList extends PolicyAllow("/twilio/video/rooms/list")
+
+    /** Multi-party communications session where participants share real-time audio and video
+      * tracks.
+      */
+    case object VideoRoomsCreate extends PolicyAllow("/twilio/video/rooms/create")
+
+    /** Multi-party communications session where participants share real-time audio and video
+      * tracks.
+      */
+    case object VideoRoomsUpdate extends PolicyAllow("/twilio/video/rooms/update")
+
+    /** Transcriptions in video rooms. */
+    case object VideoRoomsTranscriptionsRead
+        extends PolicyAllow("/twilio/video/rooms.transcriptions/read")
+
+    /** Transcriptions in video rooms. */
+    case object VideoRoomsTranscriptionsList
+        extends PolicyAllow("/twilio/video/rooms.transcriptions/list")
+
+    /** Transcriptions in video rooms. */
+    case object VideoRoomsTranscriptionsCreate
+        extends PolicyAllow("/twilio/video/rooms.transcriptions/create")
+
+    /** Transcriptions in video rooms. */
+    case object VideoRoomsTranscriptionsUpdate
+        extends PolicyAllow("/twilio/video/rooms.transcriptions/update")
+
+    /** Media file created as a result of applying a set of media processing operations onto a
+      * number of source Recordings.
+      */
+    case object VideoCompositionsRead extends PolicyAllow("/twilio/video/compositions/read")
+
+    /** Media file created as a result of applying a set of media processing operations onto a
+      * number of source Recordings.
+      */
+    case object VideoCompositionsList extends PolicyAllow("/twilio/video/compositions/list")
+
+    /** Media file created as a result of applying a set of media processing operations onto a
+      * number of source Recordings.
+      */
+    case object VideoCompositionsCreate extends PolicyAllow("/twilio/video/compositions/create")
+
+    /** Media file created as a result of applying a set of media processing operations onto a
+      * number of source Recordings.
+      */
+    case object VideoCompositionsDelete extends PolicyAllow("/twilio/video/compositions/delete")
+
+    /** Composition settings for account. */
+    case object VideoCompositionsCompositionSettingsRead
+        extends PolicyAllow("/twilio/video/compositions.composition-settings/read")
+
+    /** Composition settings for account. */
+    case object VideoCompositionsCompositionSettingsUpdate
+        extends PolicyAllow("/twilio/video/compositions.composition-settings/update")
+
+    /** Recording composition hooks. */
+    case object VideoCompositionsCompositionHooksRead
+        extends PolicyAllow("/twilio/video/compositions.composition-hooks/read")
+
+    /** Recording composition hooks. */
+    case object VideoCompositionsCompositionHooksList
+        extends PolicyAllow("/twilio/video/compositions.composition-hooks/list")
+
+    /** Recording composition hooks. */
+    case object VideoCompositionsCompositionHooksCreate
+        extends PolicyAllow("/twilio/video/compositions.composition-hooks/create")
+
+    /** Recording composition hooks. */
+    case object VideoCompositionsCompositionHooksUpdate
+        extends PolicyAllow("/twilio/video/compositions.composition-hooks/update")
+
+    /** Recording composition hooks. */
+    case object VideoCompositionsCompositionHooksDelete
+        extends PolicyAllow("/twilio/video/compositions.composition-hooks/delete")
+
+    /** Recording composition hooks. */
+    case object VideoCompositionsCompositionHooksAll
+        extends PolicyAllow("/twilio/video/compositions.composition-hooks/*")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
