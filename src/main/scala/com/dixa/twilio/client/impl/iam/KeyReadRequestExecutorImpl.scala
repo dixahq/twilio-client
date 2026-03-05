@@ -5,12 +5,13 @@ import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{KeyReadException, KeyR
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy}
+import com.dixa.twilio.model.iam.ApiKey
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
+import java.time.format.DateTimeFormatter
 import scala.concurrent.ExecutionContext
 
 private[client] class KeyReadRequestExecutorImpl()(
@@ -43,37 +44,34 @@ private[client] class KeyReadRequestExecutorImpl()(
       cause: Option[Throwable]
   ): KeyReadException.Unspecified = KeyReadException.Unspecified(msg, cause)
 
+  private def TimeFormatter = DateTimeFormatter.RFC_1123_DATE_TIME
+
+  // There are always flags but no policies on read operation. Eg something like:
+  //  {
+  //    "date_created": "Wed, 04 Mar 2026 10:23:47 +0000",
+  //    "date_updated": "Wed, 04 Mar 2026 10:23:47 +0000",
+  //    "flags": [ "restricted",  "rest_api", "signing" ],
+  //    "friendly_name": "Tmp restricted test key",
+  //    "sid": "SK289dbe6204dba5182886ac31d93ffeef"
+  //  }
   private case class KeyJsonRep(
       sid: String,
       friendly_name: String,
       date_created: String,
       date_updated: String,
+      // Should be there, but keep the option just in case twilio decide to return null instead of an empty array if key has no flags. I don't think that is a valid key, but better safe than sorry :D
       flags: Option[Set[String]] = None,
-      policy_allow: Option[Set[String]] = None
   ) {
-    def toModel: ApiKey = {
-      val base = ApiKey(
+    def toModel: ApiKey with ApiKey.HasFlags = {
+      val flagsNoneOptional = flags.getOrElse(Set.empty)
+      val flagsModel        =
+        flagsNoneOptional.map(ApiKey.Flag.fromTwilioString).collect { case Some(flag) => flag }
+      ApiKey(
         sid = ApiKey.Sid(sid),
         friendlyName = ApiKey.FriendlyName(friendly_name),
-        dateCreated =
-          Instant.from(java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME.parse(date_created)),
-        dateUpdated =
-          Instant.from(java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME.parse(date_updated))
-      )
-
-      val withFlags = flags match {
-        case Some(fStrings) =>
-          base.withFlags(fStrings.flatMap(ApiKey.Flag.fromTwilioString))
-        case None =>
-          base
-      }
-
-      policy_allow match {
-        case Some(pStrings) =>
-          withFlags.withPolicyAllow(pStrings.flatMap(ApiKeyPolicy.fromTwilioString))
-        case None =>
-          withFlags
-      }
+        dateCreated = Instant.from(TimeFormatter.parse(date_created)),
+        dateUpdated = Instant.from(TimeFormatter.parse(date_updated))
+      ).withFlags(flagsModel)
     }
   }
 
@@ -88,7 +86,7 @@ private[client] class KeyReadRequestExecutorImpl()(
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
-  ): List[Either[KeyReadException, ApiKey]] =
+  ): List[Either[KeyReadException, ApiKey with ApiKey.HasFlags]] =
     responseEntity.parse[KeyListJsonRep]() match {
       case Left(ex) =>
         List(Left(KeyReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))

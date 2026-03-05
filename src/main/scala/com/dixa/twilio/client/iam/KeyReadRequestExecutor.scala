@@ -17,7 +17,7 @@ trait KeyReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       KeyReadRequest,
       KeyReadException,
-      ApiKey,
+      ApiKey with ApiKey.HasFlags,
       KeyReadRequest.BuilderStartState
     ] {
 
