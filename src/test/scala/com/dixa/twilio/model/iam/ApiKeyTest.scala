@@ -170,5 +170,10 @@ final class ApiKeyTest extends AnyWordSpec {
       val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/flex/scv-certificate/create")
       assert(policy === Some(ApiKey.PolicyAllow.FlexScvCertificateCreate))
     }
+
+    "correctly parse MicrovisorDeviceCertCreate policy" in {
+      val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/microvisor/device-cert/create")
+      assert(policy === Some(ApiKey.PolicyAllow.MicrovisorDeviceCertCreate))
+    }
   }
 }

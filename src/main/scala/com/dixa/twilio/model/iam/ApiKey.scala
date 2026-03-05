@@ -2498,6 +2498,12 @@ object ApiKey {
       */
     case object FlexScvCertificateCreate extends PolicyAllow("/twilio/flex/scv-certificate/create")
 
+    /** Creates and returns a Microvisor device certificate based on a provided CSR, registers the
+      * associated device with the calling account
+      */
+    case object MicrovisorDeviceCertCreate
+        extends PolicyAllow("/twilio/microvisor/device-cert/create")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
