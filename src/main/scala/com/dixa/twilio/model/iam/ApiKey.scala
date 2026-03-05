@@ -1962,6 +1962,86 @@ object ApiKey {
       */
     case object LookupPhoneNumbersRead extends PolicyAllow("/twilio/lookup/phone-numbers/read")
 
+    /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
+      * client credentials grant type of OAuth 2.0.
+      */
+    case object IamAccountOauthAppsAll extends PolicyAllow("/twilio/iam/account-oauth-apps/*")
+
+    /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
+      * client credentials grant type of OAuth 2.0.
+      */
+    case object IamAccountOauthAppsRead extends PolicyAllow("/twilio/iam/account-oauth-apps/read")
+
+    /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
+      * client credentials grant type of OAuth 2.0.
+      */
+    case object IamAccountOauthAppsList extends PolicyAllow("/twilio/iam/account-oauth-apps/list")
+
+    /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
+      * client credentials grant type of OAuth 2.0.
+      */
+    case object IamAccountOauthAppsCreate
+        extends PolicyAllow("/twilio/iam/account-oauth-apps/create")
+
+    /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
+      * client credentials grant type of OAuth 2.0.
+      */
+    case object IamAccountOauthAppsUpdate
+        extends PolicyAllow("/twilio/iam/account-oauth-apps/update")
+
+    /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
+      * client credentials grant type of OAuth 2.0.
+      */
+    case object IamAccountOauthAppsDelete
+        extends PolicyAllow("/twilio/iam/account-oauth-apps/delete")
+
+    /** API keys are unique credentials used to authenticate and authorize requests to an API,
+      * enabling controlled access to its resources and operations.
+      */
+    case object IamApiKeysAll extends PolicyAllow("/twilio/iam/api-keys/*")
+
+    /** API keys are unique credentials used to authenticate and authorize requests to an API,
+      * enabling controlled access to its resources and operations.
+      */
+    case object IamApiKeysRead extends PolicyAllow("/twilio/iam/api-keys/read")
+
+    /** API keys are unique credentials used to authenticate and authorize requests to an API,
+      * enabling controlled access to its resources and operations.
+      */
+    case object IamApiKeysList extends PolicyAllow("/twilio/iam/api-keys/list")
+
+    /** API keys are unique credentials used to authenticate and authorize requests to an API,
+      * enabling controlled access to its resources and operations.
+      */
+    case object IamApiKeysCreate extends PolicyAllow("/twilio/iam/api-keys/create")
+
+    /** API keys are unique credentials used to authenticate and authorize requests to an API,
+      * enabling controlled access to its resources and operations.
+      */
+    case object IamApiKeysUpdate extends PolicyAllow("/twilio/iam/api-keys/update")
+
+    /** API keys are unique credentials used to authenticate and authorize requests to an API,
+      * enabling controlled access to its resources and operations.
+      */
+    case object IamApiKeysDelete extends PolicyAllow("/twilio/iam/api-keys/delete")
+
+    /** A public key is a cryptographic code that anyone can use to encrypt data or verify a digital
+      * signature, but only the matching private key can decrypt or create the signature.
+      */
+    case object IamPublicKeysList extends PolicyAllow("/twilio/iam/public-keys/list")
+
+    /** Represents Twilio Accounts. When customers first sign up with Twilio, they have just one
+      * main account and they can create more accounts and subaccounts for segmenting phone numbers
+      * and usage data for their customers and controlling access to data.
+      */
+    case object IamAccountsRead extends PolicyAllow("/twilio/iam/accounts/read")
+
+    /** Represents Twilio Accounts. When customers first sign up with Twilio, they have just one
+      * main account and they can create more accounts and subaccounts for segmenting phone numbers
+      * and usage data for their customers and controlling access to data.
+      */
+    case object IamAccountsList extends PolicyAllow("/twilio/iam/accounts/list")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
