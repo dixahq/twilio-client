@@ -45,9 +45,9 @@ private[impl] final class TwilioClientIamImpl()(
   override val authTokenPromote: AuthTokenPromoteRequestExecutor =
     new AuthTokenPromoteRequestExecutorImpl()
 
-  override val keyCreate: KeyCreateRequestExecutor = new KeyCreateRequestExecutorImpl()
+  override val apiKeyCreate: KeyCreateRequestExecutor = new KeyCreateRequestExecutorImpl()
 
-  override val keyRead: KeyReadRequestExecutor = new KeyReadRequestExecutorImpl()
+  override val apiKeyRead: KeyReadRequestExecutor = new KeyReadRequestExecutorImpl()
 
-  override val keyDelete: KeyDeleteRequestExecutor = new KeyDeleteRequestExecutorImpl()
+  override val apiKeyDelete: KeyDeleteRequestExecutor = new KeyDeleteRequestExecutorImpl()
 }

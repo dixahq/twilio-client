@@ -51,7 +51,7 @@ final class KeyReadTest extends TwilioClientTest {
       )
 
       val connSettings                     = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyReadRequestExecutor = TwilioClient.defaultImpl().iam.keyRead
+      val instance: KeyReadRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyRead
 
       val resultSource: Source[Either[KeyReadRequestExecutor.KeyReadException, ApiKey], NotUsed] =
         instance.source(connSettings, request)

@@ -45,7 +45,7 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
       val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
@@ -103,7 +103,7 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
       val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
@@ -147,7 +147,7 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
       val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
@@ -188,7 +188,7 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
       val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
@@ -236,7 +236,7 @@ final class KeyCreateTest extends TwilioClientTest {
       )
 
       val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
-      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.keyCreate
+      val instance: KeyCreateRequestExecutor = TwilioClient.defaultImpl().iam.apiKeyCreate
 
       val resultFut: Future[Either[KeyCreateRequestExecutor.KeyCreateException, ApiKey]] =
         instance.run(connSettings, request)
