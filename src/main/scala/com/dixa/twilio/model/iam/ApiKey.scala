@@ -490,6 +490,140 @@ object ApiKey {
     case object ConferencesList      extends PolicyAllow("/twilio/voice/conferences/list")
     case object ConferencesRead      extends PolicyAllow("/twilio/voice/conferences/read")
 
+    case object OutgoingCallerIdsRead extends PolicyAllow("/twilio/voice/outgoing-caller-ids/read")
+    case object OutgoingCallerIdsList extends PolicyAllow("/twilio/voice/outgoing-caller-ids/list")
+    case object OutgoingCallerIdsCreate
+        extends PolicyAllow("/twilio/voice/outgoing-caller-ids/create")
+    case object OutgoingCallerIdsUpdate
+        extends PolicyAllow("/twilio/voice/outgoing-caller-ids/update")
+    case object OutgoingCallerIdsDelete
+        extends PolicyAllow("/twilio/voice/outgoing-caller-ids/delete")
+    case object QueuesRead   extends PolicyAllow("/twilio/voice/queues/read")
+    case object QueuesList   extends PolicyAllow("/twilio/voice/queues/list")
+    case object QueuesCreate extends PolicyAllow("/twilio/voice/queues/create")
+    case object QueuesUpdate extends PolicyAllow("/twilio/voice/queues/update")
+    case object QueuesDelete extends PolicyAllow("/twilio/voice/queues/delete")
+    case object SipTrunksOriginationUrlsRead
+        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/read")
+    case object SipTrunksOriginationUrlsList
+        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/list")
+    case object SipTrunksOriginationUrlsCreate
+        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/create")
+    case object SipTrunksOriginationUrlsUpdate
+        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/update")
+    case object SipTrunksOriginationUrlsDelete
+        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/delete")
+    case object IntelligenceOperatorCustomRead
+        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/read")
+    case object IntelligenceOperatorCustomList
+        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/list")
+    case object IntelligenceOperatorCustomCreate
+        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/create")
+    case object IntelligenceOperatorCustomUpdate
+        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/update")
+    case object IntelligenceOperatorCustomDelete
+        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/delete")
+    case object SipCredentialListsCredentialsRead
+        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/read")
+    case object SipCredentialListsCredentialsList
+        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/list")
+    case object SipCredentialListsCredentialsCreate
+        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/create")
+    case object SipCredentialListsCredentialsUpdate
+        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/update")
+    case object SipCredentialListsCredentialsDelete
+        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/delete")
+    case object SipSourceIpMappingsRead
+        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/read")
+    case object SipSourceIpMappingsList
+        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/list")
+    case object SipSourceIpMappingsCreate
+        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/create")
+    case object SipSourceIpMappingsUpdate
+        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/update")
+    case object SipSourceIpMappingsDelete
+        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/delete")
+    case object ConferencesParticipantsRead
+        extends PolicyAllow("/twilio/voice/conferences.participants/read")
+    case object ConferencesParticipantsList
+        extends PolicyAllow("/twilio/voice/conferences.participants/list")
+    case object ConferencesParticipantsCreate
+        extends PolicyAllow("/twilio/voice/conferences.participants/create")
+    case object ConferencesParticipantsUpdate
+        extends PolicyAllow("/twilio/voice/conferences.participants/update")
+    case object ConferencesParticipantsDelete
+        extends PolicyAllow("/twilio/voice/conferences.participants/delete")
+    case object SipByocTrunksRead   extends PolicyAllow("/twilio/voice/sip.byoc-trunks/read")
+    case object SipByocTrunksList   extends PolicyAllow("/twilio/voice/sip.byoc-trunks/list")
+    case object SipByocTrunksCreate extends PolicyAllow("/twilio/voice/sip.byoc-trunks/create")
+    case object SipByocTrunksUpdate extends PolicyAllow("/twilio/voice/sip.byoc-trunks/update")
+    case object SipByocTrunksDelete extends PolicyAllow("/twilio/voice/sip.byoc-trunks/delete")
+    case object CallsRead           extends PolicyAllow("/twilio/voice/calls/read")
+    case object CallsList           extends PolicyAllow("/twilio/voice/calls/list")
+    case object CallsCreate         extends PolicyAllow("/twilio/voice/calls/create")
+    case object CallsUpdate         extends PolicyAllow("/twilio/voice/calls/update")
+    case object CallsDelete         extends PolicyAllow("/twilio/voice/calls/delete")
+    case object SipConnectionPoliciesRead
+        extends PolicyAllow("/twilio/voice/sip.connection-policies/read")
+    case object SipConnectionPoliciesList
+        extends PolicyAllow("/twilio/voice/sip.connection-policies/list")
+    case object SipConnectionPoliciesCreate
+        extends PolicyAllow("/twilio/voice/sip.connection-policies/create")
+    case object SipConnectionPoliciesUpdate
+        extends PolicyAllow("/twilio/voice/sip.connection-policies/update")
+    case object SipConnectionPoliciesDelete
+        extends PolicyAllow("/twilio/voice/sip.connection-policies/delete")
+    case object SipCredentialListsRead
+        extends PolicyAllow("/twilio/voice/sip.credential-lists/read")
+    case object SipCredentialListsList
+        extends PolicyAllow("/twilio/voice/sip.credential-lists/list")
+    case object SipCredentialListsCreate
+        extends PolicyAllow("/twilio/voice/sip.credential-lists/create")
+    case object SipCredentialListsUpdate
+        extends PolicyAllow("/twilio/voice/sip.credential-lists/update")
+    case object SipCredentialListsDelete
+        extends PolicyAllow("/twilio/voice/sip.credential-lists/delete")
+    case object SipTrunksRead   extends PolicyAllow("/twilio/voice/sip.trunks/read")
+    case object SipTrunksList   extends PolicyAllow("/twilio/voice/sip.trunks/list")
+    case object SipTrunksCreate extends PolicyAllow("/twilio/voice/sip.trunks/create")
+    case object SipTrunksUpdate extends PolicyAllow("/twilio/voice/sip.trunks/update")
+    case object SipTrunksDelete extends PolicyAllow("/twilio/voice/sip.trunks/delete")
+    case object TwimlAppsRead   extends PolicyAllow("/twilio/voice/twiml.apps/read")
+    case object TwimlAppsList   extends PolicyAllow("/twilio/voice/twiml.apps/list")
+    case object TwimlAppsCreate extends PolicyAllow("/twilio/voice/twiml.apps/create")
+    case object TwimlAppsUpdate extends PolicyAllow("/twilio/voice/twiml.apps/update")
+    case object TwimlAppsDelete extends PolicyAllow("/twilio/voice/twiml.apps/delete")
+    case object IntelligenceServicesRead
+        extends PolicyAllow("/twilio/voice/intelligence.services/read")
+    case object IntelligenceServicesList
+        extends PolicyAllow("/twilio/voice/intelligence.services/list")
+    case object IntelligenceServicesCreate
+        extends PolicyAllow("/twilio/voice/intelligence.services/create")
+    case object IntelligenceServicesUpdate
+        extends PolicyAllow("/twilio/voice/intelligence.services/update")
+    case object IntelligenceServicesDelete
+        extends PolicyAllow("/twilio/voice/intelligence.services/delete")
+    case object SipDomainsRead        extends PolicyAllow("/twilio/voice/sip.domains/read")
+    case object SipDomainsList        extends PolicyAllow("/twilio/voice/sip.domains/list")
+    case object SipDomainsCreate      extends PolicyAllow("/twilio/voice/sip.domains/create")
+    case object SipDomainsUpdate      extends PolicyAllow("/twilio/voice/sip.domains/update")
+    case object SipDomainsDelete      extends PolicyAllow("/twilio/voice/sip.domains/delete")
+    case object CallsRecordingsRead   extends PolicyAllow("/twilio/voice/calls.recordings/read")
+    case object CallsRecordingsList   extends PolicyAllow("/twilio/voice/calls.recordings/list")
+    case object CallsRecordingsCreate extends PolicyAllow("/twilio/voice/calls.recordings/create")
+    case object CallsRecordingsUpdate extends PolicyAllow("/twilio/voice/calls.recordings/update")
+    case object CallsRecordingsDelete extends PolicyAllow("/twilio/voice/calls.recordings/delete")
+    case object SipIpRecordsRead      extends PolicyAllow("/twilio/voice/sip.ip-records/read")
+    case object SipIpRecordsList      extends PolicyAllow("/twilio/voice/sip.ip-records/list")
+    case object SipIpRecordsCreate    extends PolicyAllow("/twilio/voice/sip.ip-records/create")
+    case object SipIpRecordsUpdate    extends PolicyAllow("/twilio/voice/sip.ip-records/update")
+    case object SipIpRecordsDelete    extends PolicyAllow("/twilio/voice/sip.ip-records/delete")
+    case object SipIpAclsRead         extends PolicyAllow("/twilio/voice/sip.ip-acls/read")
+    case object SipIpAclsList         extends PolicyAllow("/twilio/voice/sip.ip-acls/list")
+    case object SipIpAclsCreate       extends PolicyAllow("/twilio/voice/sip.ip-acls/create")
+    case object SipIpAclsUpdate       extends PolicyAllow("/twilio/voice/sip.ip-acls/update")
+    case object SipIpAclsDelete       extends PolicyAllow("/twilio/voice/sip.ip-acls/delete")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
