@@ -312,7 +312,34 @@ object ApiKey {
     override val values: IndexedSeq[Flag] = findValues
   }
 
-  /** A policy allowed by the API key. */
+  /** A policy allowed by the API key.
+    *
+    * '''Implementation Notes'''
+    *
+    * Twilio's permission representation has some quirks. When all sub-permissions (read, write,
+    * etc.) are set for a resource like `/twilio/voice/sip.connection-policies`, the API returns a
+    * single wildcard permission: `/twilio/voice/sip.connection-policies&#47;*`.
+    *
+    * It's unclear whether such wildcards should be:
+    *   - Treated as standalone permissions
+    *   - Expanded into their constituent individual permissions
+    *
+    * Since Twilio doesn't currently provide an API for manipulating key permissions, we cannot
+    * determine how they will structure this data when such an API becomes available. Two scenarios
+    * are possible:
+    *
+    *   - '''If wildcards are supported''': They'll need to be preserved as-is
+    *   - '''If wildcards aren't supported''': Expanding them to individual policies would be
+    *     appropriate
+    *
+    * '''Current Approach'''
+    *
+    * Wildcards are modeled as distinct policy values until Twilio provides either:
+    *   - An API for permission manipulation that clarifies the expected structure
+    *   - Explicit documentation on the intended representation
+    *
+    * This approach can be reevaluated once more information is available.
+    */
   sealed abstract class PolicyAllow(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
