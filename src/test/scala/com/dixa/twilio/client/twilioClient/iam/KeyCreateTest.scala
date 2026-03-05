@@ -78,7 +78,7 @@ final class KeyCreateTest extends TwilioClientTest {
            |  "sid": "SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
            |  "secret": "your_secret_here",
            |  "friendly_name": "Test Key",
-           |  "policy_allow": ["test", "unknown_policy"]
+           |  "policy_allow": ["/twilio/voice/conferences/read", "unknown_policy"]
            |}""".stripMargin
 
       wireMockServer.stubFor(
@@ -102,7 +102,7 @@ final class KeyCreateTest extends TwilioClientTest {
         val apiKey = result.getOrElse(fail(s"Expected success, got $result"))
         apiKey match {
           case withPolicy: ApiKey.HasPolicyAllow =>
-            assert(withPolicy.policyAllow === Set(ApiKey.PolicyAllow.Test))
+            assert(withPolicy.policyAllow === Set(ApiKey.PolicyAllow.ConferencesRead))
           case _ => fail("Expected ApiKey to have policyAllow")
         }
       }

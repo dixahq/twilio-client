@@ -39,7 +39,7 @@ final class ApiKeyTest extends AnyWordSpec {
       val name                            = ApiKey.FriendlyName("name")
       val secret                          = ApiKey.Secret("secret")
       val flags: Set[ApiKey.Flag]         = Set(ApiKey.Flag.Restricted)
-      val policy: Set[ApiKey.PolicyAllow] = Set(ApiKey.PolicyAllow.Test)
+      val policy: Set[ApiKey.PolicyAllow] = Set(ApiKey.PolicyAllow.ConferencesRead)
 
       val key: ApiKey with ApiKey.HasFlags with ApiKey.HasSecret with ApiKey.HasPolicyAllow =
         ApiKey(sid, name)
@@ -57,7 +57,7 @@ final class ApiKeyTest extends AnyWordSpec {
       val name                            = ApiKey.FriendlyName("name")
       val secret                          = ApiKey.Secret("secret")
       val flags: Set[ApiKey.Flag]         = Set(ApiKey.Flag.Restricted)
-      val policy: Set[ApiKey.PolicyAllow] = Set(ApiKey.PolicyAllow.Test)
+      val policy: Set[ApiKey.PolicyAllow] = Set(ApiKey.PolicyAllow.ConferencesRead)
 
       val key: ApiKey with ApiKey.HasPolicyAllow with ApiKey.HasFlags with ApiKey.HasSecret =
         ApiKey(sid, name)
