@@ -273,13 +273,11 @@ object ApiKey {
       new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
   }
 
-  /** Factory method to create an [[ApiKey]] with only the base attributes. */
   def apply(
       sid: ApiKey.Sid,
       friendlyName: ApiKey.FriendlyName
   ): ApiKey = new ApiKeyBase(sid, friendlyName)
 
-  /** The SID of the API key. Starts with `SK`. */
   final case class Sid(val value: String) extends TwilioStringValue {
     override val toString: String = value
   }
@@ -291,14 +289,11 @@ object ApiKey {
     */
   final case class Secret(value: String) {
 
-    /** Always returns a redacted representation to prevent accidental logging of the secret. */
     override val toString: String = "ApiKey.Secret(***)"
   }
 
-  /** A human-readable label for the API key. */
   final case class FriendlyName(override val twilioString: String) extends TwilioStringValue
 
-  /** A flag associated with the API key. */
   sealed abstract class Flag(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
@@ -344,312 +339,845 @@ object ApiKey {
       extends EnumWithTwilioString.EnumEntry
 
   object PolicyAllow extends EnumWithTwilioString[PolicyAllow] {
+
+    /** Describes the individual URI entries that make up the BYOC Origination ConnectionPolicies
+      * list.
+      */
     case object SipConnectionPoliciesTargetsAll
         extends PolicyAllow("/twilio/voice/sip.connection-policies.targets/*")
+
+    /** Annotate calls to provide subjective experience details. */
     case object InsightsCallAnnotationsUpdate
         extends PolicyAllow("/twilio/voice/insights.call.annotations/update")
+
+    /** The OperatorType resource represents the Type of a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorTypesList
         extends PolicyAllow("/twilio/voice/intelligence.operator-types/list")
+
+    /** The OperatorType resource represents the Type of a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorTypesRead
         extends PolicyAllow("/twilio/voice/intelligence.operator-types/read")
+
+    /** The Notifications subresource on any given Call. */
     case object CallsNotificationsRead extends PolicyAllow("/twilio/voice/calls.notifications/read")
-    case object TranscriptionsList     extends PolicyAllow("/twilio/voice/transcriptions/list")
+
+    /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
+      */
+    case object TranscriptionsList extends PolicyAllow("/twilio/voice/transcriptions/list")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsList
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/list")
-    case object SipIpAclMappingsRead   extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/read")
-    case object OutgoingCallerIdsAll   extends PolicyAllow("/twilio/voice/outgoing-caller-ids/*")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
+    case object SipIpAclMappingsRead extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/read")
+
+    /** Represents a single verified number that may be used as a caller ID when making outgoing
+      * calls.
+      */
+    case object OutgoingCallerIdsAll extends PolicyAllow("/twilio/voice/outgoing-caller-ids/*")
+
+    /** The Notifications subresource on any given Call. */
     case object CallsNotificationsList extends PolicyAllow("/twilio/voice/calls.notifications/list")
-    case object QueuesAll              extends PolicyAllow("/twilio/voice/queues/*")
+
+    /** Describes a call queue that contains individual calls, which are described by the queue's
+      * Member resources.
+      */
+    case object QueuesAll extends PolicyAllow("/twilio/voice/queues/*")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsRead
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/read")
+
+    /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsAll
         extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/*")
+
+    /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
+      */
     case object TranscriptionsRead extends PolicyAllow("/twilio/voice/transcriptions/read")
+
+    /** Exposes the multiple types of Payloads that may be in included in an Add-on Result. */
     case object RecordingsAddOnsPayloadList
         extends PolicyAllow("/twilio/voice/recordings.add-ons.payload/list")
+
+    /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
+      */
     case object RecordingsTranscriptionsRead
         extends PolicyAllow("/twilio/voice/recordings.transcriptions/read")
+
+    /** A Transcript resource represents a voice conversation that has automatically been converted
+      * to text through Voice Intelligence.
+      */
     case object IntelligenceTranscriptsDelete
         extends PolicyAllow("/twilio/voice/intelligence.transcripts/delete")
+
+    /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
+      */
     case object RecordingsTranscriptionsList
         extends PolicyAllow("/twilio/voice/recordings.transcriptions/list")
+
+    /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomAll
         extends PolicyAllow("/twilio/voice/intelligence.operator.custom/*")
+
+    /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsCreate
         extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/create")
+
+    /** Subresource represents the CredentialList instances associated with this domain's
+      * registration.
+      */
     case object SipDomainsAuthRegistrationsCredentialListMappingsList
         extends PolicyAllow(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/list"
         )
+
+    /** OperatorAttachment represents the link between a specific Prebuilt or Custom Operator and a
+      * specific Voice Intelligence Service.
+      */
     case object IntelligenceOperatorAttachmentDelete
         extends PolicyAllow("/twilio/voice/intelligence.operator-attachment/delete")
+
+    /** A Transcript resource represents a voice conversation that has automatically been converted
+      * to text through Voice Intelligence.
+      */
     case object IntelligenceTranscriptsRead
         extends PolicyAllow("/twilio/voice/intelligence.transcripts/read")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipTrunksAuthCallsIpAclMappingsDelete
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/delete")
+
+    /** Subresource represents the CredentialList instances associated with this domain's
+      * registration.
+      */
     case object SipDomainsAuthRegistrationsCredentialListMappingsRead
         extends PolicyAllow(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/read"
         )
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipIpAclMappingsDelete
         extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/delete")
+
+    /** A Transcript resource represents a voice conversation that has automatically been converted
+      * to text through Voice Intelligence.
+      */
     case object IntelligenceTranscriptsList
         extends PolicyAllow("/twilio/voice/intelligence.transcripts/list")
+
+    /** Exposes the multiple types of Payloads that may be in included in an Add-on Result. */
     case object RecordingsAddOnsPayloadRead
         extends PolicyAllow("/twilio/voice/recordings.add-ons.payload/read")
+
+    /** A Transcript resource represents a voice conversation that has automatically been converted
+      * to text through Voice Intelligence.
+      */
     case object IntelligenceTranscriptsCreate
         extends PolicyAllow("/twilio/voice/intelligence.transcripts/create")
+
+    /** Contain the credentials resource entry of the users who are allowed to reach your SIP
+      * Domain.
+      */
     case object SipCredentialListsCredentialsAll
         extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/*")
+
+    /** The Conference resource allows you to query and manage the state of conferences on your
+      * Twilio account.
+      */
     case object ConferencesUpdate extends PolicyAllow("/twilio/voice/conferences/update")
+
+    /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsDelete
         extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/delete")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipIpAclMappingsList extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/list")
+
+    /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesRead
         extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/read")
+
+    /** Conference summaries with events and metadata. */
     case object InsightsConferenceSummariesRead
         extends PolicyAllow("/twilio/voice/insights.conference.summaries/read")
+
+    /** A Transcript Sentence is the actual text of the recording transcription. */
     case object IntelligenceTranscriptSentencesRead
         extends PolicyAllow("/twilio/voice/intelligence.transcript-sentences/read")
+
+    /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
+      * traffic from a BYOC Carrier.
+      */
     case object SipSourceIpMappingsAll extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/*")
+
+    /** Each Conference has a Participants subresource. Participants represent the set of people
+      * currently connected to a running conference.
+      */
     case object ConferencesParticipantsAll
         extends PolicyAllow("/twilio/voice/conferences.participants/*")
+
+    /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesList
         extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/list")
+
+    /** Conference summaries with events and metadata. */
     case object InsightsConferenceSummariesList
         extends PolicyAllow("/twilio/voice/insights.conference.summaries/list")
+
+    /** Provides call progress and quality-related Voice SDK events data for a specific call. */
     case object InsightsCallEventsList
         extends PolicyAllow("/twilio/voice/insights.call.events/list")
+
+    /** Subresource of the Queue resource and represents a single call in a call queue. */
     case object QueuesMemberUpdate extends PolicyAllow("/twilio/voice/queues.member/update")
-    case object SipByocTrunksAll   extends PolicyAllow("/twilio/voice/sip.byoc-trunks/*")
-    case object RecordingsRead     extends PolicyAllow("/twilio/voice/recordings/read")
-    case object CallsAll           extends PolicyAllow("/twilio/voice/calls/*")
+
+    /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
+    case object SipByocTrunksAll extends PolicyAllow("/twilio/voice/sip.byoc-trunks/*")
+
+    /** Represents the recording associated with a voice call, conference, or SIP Trunk. */
+    case object RecordingsRead extends PolicyAllow("/twilio/voice/recordings/read")
+
+    /** An object that represents a connection between a telephone and Twilio. */
+    case object CallsAll extends PolicyAllow("/twilio/voice/calls/*")
+
+    /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
+      */
     case object RecordingsTranscriptionsDelete
         extends PolicyAllow("/twilio/voice/recordings.transcriptions/delete")
+
+    /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
+      */
     case object TranscriptionsDelete extends PolicyAllow("/twilio/voice/transcriptions/delete")
-    case object RecordingsList       extends PolicyAllow("/twilio/voice/recordings/list")
+
+    /** Represents the recording associated with a voice call, conference, or SIP Trunk. */
+    case object RecordingsList extends PolicyAllow("/twilio/voice/recordings/list")
+
+    /** OperatorAttachment represents the link between a specific Prebuilt or Custom Operator and a
+      * specific Voice Intelligence Service.
+      */
     case object IntelligenceOperatorAttachmentCreate
         extends PolicyAllow("/twilio/voice/intelligence.operator-attachment/create")
+
+    /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
+      * over a BYOC Trunk.
+      */
     case object SipConnectionPoliciesAll
         extends PolicyAllow("/twilio/voice/sip.connection-policies/*")
+
+    /** Conference participant summaries with events and metadata for individual participants. */
     case object InsightsConferenceParticipantsRead
         extends PolicyAllow("/twilio/voice/insights.conference.participants/read")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsDelete
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/delete")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipTrunksAuthCallsIpAclMappingsCreate
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/create")
+
+    /** Control Voice Insights Advanced Features and Voice Trace status for an account. */
     case object InsightsSettingsUpdate extends PolicyAllow("/twilio/voice/insights.settings/update")
-    case object SipCredentialListsAll  extends PolicyAllow("/twilio/voice/sip.credential-lists/*")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
+    case object SipCredentialListsAll extends PolicyAllow("/twilio/voice/sip.credential-lists/*")
+
+    /** Add-on results live as a subresource under the integration point that the Add-on was
+      * configured with.
+      */
     case object RecordingsAddOnsDelete
         extends PolicyAllow("/twilio/voice/recordings.add-ons/delete")
+
+    /** Subresource represents the CredentialList instances associated with this domain's
+      * registration.
+      */
     case object SipDomainsAuthRegistrationsCredentialListMappingsDelete
         extends PolicyAllow(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/delete"
         )
+
+    /** The PrebuiltOperator subresource of the Operator resource represents a Prebuilt Operator. */
     case object IntelligenceOperatorPrebuiltList
         extends PolicyAllow("/twilio/voice/intelligence.operator.prebuilt/list")
+
+    /** Subresource of the Queue resource and represents a single call in a call queue. */
     case object QueuesMemberList extends PolicyAllow("/twilio/voice/queues.member/list")
-    case object SipTrunksAll     extends PolicyAllow("/twilio/voice/sip.trunks/*")
+
+    /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
+      * communications infrastructure.
+      */
+    case object SipTrunksAll extends PolicyAllow("/twilio/voice/sip.trunks/*")
+
+    /** The Recordings subresource on any given Conference. */
     case object ConferencesRecordingsUpdate
         extends PolicyAllow("/twilio/voice/conferences.recordings/update")
-    case object TwimlAppsAll     extends PolicyAllow("/twilio/voice/twiml.apps/*")
+
+    /** Voice twiml apps. */
+    case object TwimlAppsAll extends PolicyAllow("/twilio/voice/twiml.apps/*")
+
+    /** Subresource of the Queue resource and represents a single call in a call queue. */
     case object QueuesMemberRead extends PolicyAllow("/twilio/voice/queues.member/read")
+
+    /** Annotate calls to provide subjective experience details. */
     case object InsightsCallAnnotationsRead
         extends PolicyAllow("/twilio/voice/insights.call.annotations/read")
+
+    /** Provides quality-related metrics for a specific call. */
     case object InsightsCallMetricsList
         extends PolicyAllow("/twilio/voice/insights.call.metrics/list")
+
+    /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesAll extends PolicyAllow("/twilio/voice/intelligence.services/*")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipIpAclMappingsCreate
         extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/create")
+
+    /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesUpdate
         extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/update")
+
+    /** Emergency Address associated with a Twilio number. */
     case object SipEmergencyAddressesDelete
         extends PolicyAllow("/twilio/voice/sip.emergency-addresses/delete")
+
+    /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesCreate
         extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/create")
+
+    /** The Operator resource represents a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorsRead
         extends PolicyAllow("/twilio/voice/intelligence.operators/read")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipTrunksAuthCallsIpAclMappingsList
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/list")
+
+    /** OperatorAttachment represents the link between a specific Prebuilt or Custom Operator and a
+      * specific Voice Intelligence Service.
+      */
     case object IntelligenceOperatorAttachmentList
         extends PolicyAllow("/twilio/voice/intelligence.operator-attachment/list")
+
+    /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsList
         extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/list")
+
+    /** Represents the recording associated with a voice call, conference, or SIP Trunk. */
     case object RecordingsDelete extends PolicyAllow("/twilio/voice/recordings/delete")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsCreate
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/create")
+
+    /** Add-on results live as a subresource under the integration point that the Add-on was
+      * configured with.
+      */
     case object RecordingsAddOnsRead extends PolicyAllow("/twilio/voice/recordings.add-ons/read")
+
+    /** Call Event resource. */
     case object RequestInspectorRead extends PolicyAllow("/twilio/voice/request-inspector/read")
+
+    /** Emergency Address associated with a Twilio number. */
     case object SipEmergencyAddressesCreate
         extends PolicyAllow("/twilio/voice/sip.emergency-addresses/create")
+
+    /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
     case object SipDomainsAll extends PolicyAllow("/twilio/voice/sip.domains/*")
+
+    /** The Operator resource represents a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorsList
         extends PolicyAllow("/twilio/voice/intelligence.operators/list")
+
+    /** A Transcript Media returns a signed URL for the Media (call recording) corresponding to the
+      * Transcript.
+      */
     case object IntelligenceTranscriptMediaRead
         extends PolicyAllow("/twilio/voice/intelligence.transcript-media/read")
+
+    /** Hosts the actual data returned by the Add-on. */
     case object RecordingsAddOnsPayloadDataRead
         extends PolicyAllow("/twilio/voice/recordings.add-ons.payload.data/read")
+
+    /** The Recordings subresource on any given Conference. */
     case object ConferencesRecordingsList
         extends PolicyAllow("/twilio/voice/conferences.recordings/list")
+
+    /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
+      * associated with this domain.
+      */
     case object SipTrunksAuthCallsIpAclMappingsRead
         extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/read")
+
+    /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsRead
         extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/read")
+
+    /** The PrebuiltOperator subresource of the Operator resource represents a Prebuilt Operator. */
     case object IntelligenceOperatorPrebuiltRead
         extends PolicyAllow("/twilio/voice/intelligence.operator.prebuilt/read")
+
+    /** The Recordings subresource on any given Call. */
     case object CallsRecordingsAll extends PolicyAllow("/twilio/voice/calls.recordings/*")
+
+    /** Conference participant summaries with events and metadata for individual participants. */
     case object InsightsConferenceParticipantsList
         extends PolicyAllow("/twilio/voice/insights.conference.participants/list")
+
+    /** The OperatorResults resource returns a list of operator inferences for a Transcript. */
     case object IntelligenceOperatorResultsRead
         extends PolicyAllow("/twilio/voice/intelligence.operator-results/read")
+
+    /** A call summary for calls. */
     case object InsightsCallSummariesRead
         extends PolicyAllow("/twilio/voice/insights.call.summaries/read")
-    case object SipIpRecordsAll      extends PolicyAllow("/twilio/voice/sip.ip-records/*")
+
+    /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
+      * IP Address instead of an FQDN.
+      */
+    case object SipIpRecordsAll extends PolicyAllow("/twilio/voice/sip.ip-records/*")
+
+    /** Add-on results live as a subresource under the integration point that the Add-on was
+      * configured with.
+      */
     case object RecordingsAddOnsList extends PolicyAllow("/twilio/voice/recordings.add-ons/list")
+
+    /** A call summary for calls. */
     case object InsightsCallSummariesList
         extends PolicyAllow("/twilio/voice/insights.call.summaries/list")
+
+    /** Subresource represents the CredentialList instances associated with this domain's
+      * registration.
+      */
     case object SipDomainsAuthRegistrationsCredentialListMappingsCreate
         extends PolicyAllow(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/create"
         )
-    case object InsightsSettingsRead extends PolicyAllow("/twilio/voice/insights.settings/read")
-    case object SipIpAclsAll         extends PolicyAllow("/twilio/voice/sip.ip-acls/*")
-    case object ConferencesList      extends PolicyAllow("/twilio/voice/conferences/list")
-    case object ConferencesRead      extends PolicyAllow("/twilio/voice/conferences/read")
 
+    /** Control Voice Insights Advanced Features and Voice Trace status for an account. */
+    case object InsightsSettingsRead extends PolicyAllow("/twilio/voice/insights.settings/read")
+
+    /** IpAccessControlList resources contain the Access Control List (ACL). */
+    case object SipIpAclsAll extends PolicyAllow("/twilio/voice/sip.ip-acls/*")
+
+    /** The Conference resource allows you to query and manage the state of conferences on your
+      * Twilio account.
+      */
+    case object ConferencesList extends PolicyAllow("/twilio/voice/conferences/list")
+
+    /** The Conference resource allows you to query and manage the state of conferences on your
+      * Twilio account.
+      */
+    case object ConferencesRead extends PolicyAllow("/twilio/voice/conferences/read")
+
+    /** Represents a single verified number that may be used as a caller ID when making outgoing
+      * calls.
+      */
     case object OutgoingCallerIdsRead extends PolicyAllow("/twilio/voice/outgoing-caller-ids/read")
+
+    /** Represents a single verified number that may be used as a caller ID when making outgoing
+      * calls.
+      */
     case object OutgoingCallerIdsList extends PolicyAllow("/twilio/voice/outgoing-caller-ids/list")
+
+    /** Represents a single verified number that may be used as a caller ID when making outgoing
+      * calls.
+      */
     case object OutgoingCallerIdsCreate
         extends PolicyAllow("/twilio/voice/outgoing-caller-ids/create")
+
+    /** Represents a single verified number that may be used as a caller ID when making outgoing
+      * calls.
+      */
     case object OutgoingCallerIdsUpdate
         extends PolicyAllow("/twilio/voice/outgoing-caller-ids/update")
+
+    /** Represents a single verified number that may be used as a caller ID when making outgoing
+      * calls.
+      */
     case object OutgoingCallerIdsDelete
         extends PolicyAllow("/twilio/voice/outgoing-caller-ids/delete")
-    case object QueuesRead   extends PolicyAllow("/twilio/voice/queues/read")
-    case object QueuesList   extends PolicyAllow("/twilio/voice/queues/list")
+
+    /** Describes a call queue that contains individual calls, which are described by the queue's
+      * Member resources.
+      */
+    case object QueuesRead extends PolicyAllow("/twilio/voice/queues/read")
+
+    /** Describes a call queue that contains individual calls, which are described by the queue's
+      * Member resources.
+      */
+    case object QueuesList extends PolicyAllow("/twilio/voice/queues/list")
+
+    /** Describes a call queue that contains individual calls, which are described by the queue's
+      * Member resources.
+      */
     case object QueuesCreate extends PolicyAllow("/twilio/voice/queues/create")
+
+    /** Describes a call queue that contains individual calls, which are described by the queue's
+      * Member resources.
+      */
     case object QueuesUpdate extends PolicyAllow("/twilio/voice/queues/update")
+
+    /** Describes a call queue that contains individual calls, which are described by the queue's
+      * Member resources.
+      */
     case object QueuesDelete extends PolicyAllow("/twilio/voice/queues/delete")
+
+    /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsRead
         extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/read")
+
+    /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsList
         extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/list")
+
+    /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsCreate
         extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/create")
+
+    /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsUpdate
         extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/update")
+
+    /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsDelete
         extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/delete")
+
+    /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomRead
         extends PolicyAllow("/twilio/voice/intelligence.operator.custom/read")
+
+    /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomList
         extends PolicyAllow("/twilio/voice/intelligence.operator.custom/list")
+
+    /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomCreate
         extends PolicyAllow("/twilio/voice/intelligence.operator.custom/create")
+
+    /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomUpdate
         extends PolicyAllow("/twilio/voice/intelligence.operator.custom/update")
+
+    /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomDelete
         extends PolicyAllow("/twilio/voice/intelligence.operator.custom/delete")
+
+    /** Contain the credentials resource entry of the users who are allowed to reach your SIP
+      * Domain.
+      */
     case object SipCredentialListsCredentialsRead
         extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/read")
+
+    /** Contain the credentials resource entry of the users who are allowed to reach your SIP
+      * Domain.
+      */
     case object SipCredentialListsCredentialsList
         extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/list")
+
+    /** Contain the credentials resource entry of the users who are allowed to reach your SIP
+      * Domain.
+      */
     case object SipCredentialListsCredentialsCreate
         extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/create")
+
+    /** Contain the credentials resource entry of the users who are allowed to reach your SIP
+      * Domain.
+      */
     case object SipCredentialListsCredentialsUpdate
         extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/update")
+
+    /** Contain the credentials resource entry of the users who are allowed to reach your SIP
+      * Domain.
+      */
     case object SipCredentialListsCredentialsDelete
         extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/delete")
+
+    /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
+      * traffic from a BYOC Carrier.
+      */
     case object SipSourceIpMappingsRead
         extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/read")
+
+    /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
+      * traffic from a BYOC Carrier.
+      */
     case object SipSourceIpMappingsList
         extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/list")
+
+    /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
+      * traffic from a BYOC Carrier.
+      */
     case object SipSourceIpMappingsCreate
         extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/create")
+
+    /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
+      * traffic from a BYOC Carrier.
+      */
     case object SipSourceIpMappingsUpdate
         extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/update")
+
+    /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
+      * traffic from a BYOC Carrier.
+      */
     case object SipSourceIpMappingsDelete
         extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/delete")
+
+    /** Each Conference has a Participants subresource. Participants represent the set of people
+      * currently connected to a running conference.
+      */
     case object ConferencesParticipantsRead
         extends PolicyAllow("/twilio/voice/conferences.participants/read")
+
+    /** Each Conference has a Participants subresource. Participants represent the set of people
+      * currently connected to a running conference.
+      */
     case object ConferencesParticipantsList
         extends PolicyAllow("/twilio/voice/conferences.participants/list")
+
+    /** Each Conference has a Participants subresource. Participants represent the set of people
+      * currently connected to a running conference.
+      */
     case object ConferencesParticipantsCreate
         extends PolicyAllow("/twilio/voice/conferences.participants/create")
+
+    /** Each Conference has a Participants subresource. Participants represent the set of people
+      * currently connected to a running conference.
+      */
     case object ConferencesParticipantsUpdate
         extends PolicyAllow("/twilio/voice/conferences.participants/update")
+
+    /** Each Conference has a Participants subresource. Participants represent the set of people
+      * currently connected to a running conference.
+      */
     case object ConferencesParticipantsDelete
         extends PolicyAllow("/twilio/voice/conferences.participants/delete")
-    case object SipByocTrunksRead   extends PolicyAllow("/twilio/voice/sip.byoc-trunks/read")
-    case object SipByocTrunksList   extends PolicyAllow("/twilio/voice/sip.byoc-trunks/list")
+
+    /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
+    case object SipByocTrunksRead extends PolicyAllow("/twilio/voice/sip.byoc-trunks/read")
+
+    /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
+    case object SipByocTrunksList extends PolicyAllow("/twilio/voice/sip.byoc-trunks/list")
+
+    /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
     case object SipByocTrunksCreate extends PolicyAllow("/twilio/voice/sip.byoc-trunks/create")
+
+    /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
     case object SipByocTrunksUpdate extends PolicyAllow("/twilio/voice/sip.byoc-trunks/update")
+
+    /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
     case object SipByocTrunksDelete extends PolicyAllow("/twilio/voice/sip.byoc-trunks/delete")
-    case object CallsRead           extends PolicyAllow("/twilio/voice/calls/read")
-    case object CallsList           extends PolicyAllow("/twilio/voice/calls/list")
-    case object CallsCreate         extends PolicyAllow("/twilio/voice/calls/create")
-    case object CallsUpdate         extends PolicyAllow("/twilio/voice/calls/update")
-    case object CallsDelete         extends PolicyAllow("/twilio/voice/calls/delete")
+
+    /** An object that represents a connection between a telephone and Twilio. */
+    case object CallsRead extends PolicyAllow("/twilio/voice/calls/read")
+
+    /** An object that represents a connection between a telephone and Twilio. */
+    case object CallsList extends PolicyAllow("/twilio/voice/calls/list")
+
+    /** An object that represents a connection between a telephone and Twilio. */
+    case object CallsCreate extends PolicyAllow("/twilio/voice/calls/create")
+
+    /** An object that represents a connection between a telephone and Twilio. */
+    case object CallsUpdate extends PolicyAllow("/twilio/voice/calls/update")
+
+    /** An object that represents a connection between a telephone and Twilio. */
+    case object CallsDelete extends PolicyAllow("/twilio/voice/calls/delete")
+
+    /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
+      * over a BYOC Trunk.
+      */
     case object SipConnectionPoliciesRead
         extends PolicyAllow("/twilio/voice/sip.connection-policies/read")
+
+    /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
+      * over a BYOC Trunk.
+      */
     case object SipConnectionPoliciesList
         extends PolicyAllow("/twilio/voice/sip.connection-policies/list")
+
+    /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
+      * over a BYOC Trunk.
+      */
     case object SipConnectionPoliciesCreate
         extends PolicyAllow("/twilio/voice/sip.connection-policies/create")
+
+    /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
+      * over a BYOC Trunk.
+      */
     case object SipConnectionPoliciesUpdate
         extends PolicyAllow("/twilio/voice/sip.connection-policies/update")
+
+    /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
+      * over a BYOC Trunk.
+      */
     case object SipConnectionPoliciesDelete
         extends PolicyAllow("/twilio/voice/sip.connection-policies/delete")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsRead
         extends PolicyAllow("/twilio/voice/sip.credential-lists/read")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsList
         extends PolicyAllow("/twilio/voice/sip.credential-lists/list")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsCreate
         extends PolicyAllow("/twilio/voice/sip.credential-lists/create")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsUpdate
         extends PolicyAllow("/twilio/voice/sip.credential-lists/update")
+
+    /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsDelete
         extends PolicyAllow("/twilio/voice/sip.credential-lists/delete")
-    case object SipTrunksRead   extends PolicyAllow("/twilio/voice/sip.trunks/read")
-    case object SipTrunksList   extends PolicyAllow("/twilio/voice/sip.trunks/list")
+
+    /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
+      * communications infrastructure.
+      */
+    case object SipTrunksRead extends PolicyAllow("/twilio/voice/sip.trunks/read")
+
+    /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
+      * communications infrastructure.
+      */
+    case object SipTrunksList extends PolicyAllow("/twilio/voice/sip.trunks/list")
+
+    /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
+      * communications infrastructure.
+      */
     case object SipTrunksCreate extends PolicyAllow("/twilio/voice/sip.trunks/create")
+
+    /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
+      * communications infrastructure.
+      */
     case object SipTrunksUpdate extends PolicyAllow("/twilio/voice/sip.trunks/update")
+
+    /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
+      * communications infrastructure.
+      */
     case object SipTrunksDelete extends PolicyAllow("/twilio/voice/sip.trunks/delete")
-    case object TwimlAppsRead   extends PolicyAllow("/twilio/voice/twiml.apps/read")
-    case object TwimlAppsList   extends PolicyAllow("/twilio/voice/twiml.apps/list")
+
+    /** Voice twiml apps. */
+    case object TwimlAppsRead extends PolicyAllow("/twilio/voice/twiml.apps/read")
+
+    /** Voice twiml apps. */
+    case object TwimlAppsList extends PolicyAllow("/twilio/voice/twiml.apps/list")
+
+    /** Voice twiml apps. */
     case object TwimlAppsCreate extends PolicyAllow("/twilio/voice/twiml.apps/create")
+
+    /** Voice twiml apps. */
     case object TwimlAppsUpdate extends PolicyAllow("/twilio/voice/twiml.apps/update")
+
+    /** Voice twiml apps. */
     case object TwimlAppsDelete extends PolicyAllow("/twilio/voice/twiml.apps/delete")
+
+    /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesRead
         extends PolicyAllow("/twilio/voice/intelligence.services/read")
+
+    /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesList
         extends PolicyAllow("/twilio/voice/intelligence.services/list")
+
+    /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesCreate
         extends PolicyAllow("/twilio/voice/intelligence.services/create")
+
+    /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesUpdate
         extends PolicyAllow("/twilio/voice/intelligence.services/update")
+
+    /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesDelete
         extends PolicyAllow("/twilio/voice/intelligence.services/delete")
-    case object SipDomainsRead        extends PolicyAllow("/twilio/voice/sip.domains/read")
-    case object SipDomainsList        extends PolicyAllow("/twilio/voice/sip.domains/list")
-    case object SipDomainsCreate      extends PolicyAllow("/twilio/voice/sip.domains/create")
-    case object SipDomainsUpdate      extends PolicyAllow("/twilio/voice/sip.domains/update")
-    case object SipDomainsDelete      extends PolicyAllow("/twilio/voice/sip.domains/delete")
-    case object CallsRecordingsRead   extends PolicyAllow("/twilio/voice/calls.recordings/read")
-    case object CallsRecordingsList   extends PolicyAllow("/twilio/voice/calls.recordings/list")
+
+    /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
+    case object SipDomainsRead extends PolicyAllow("/twilio/voice/sip.domains/read")
+
+    /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
+    case object SipDomainsList extends PolicyAllow("/twilio/voice/sip.domains/list")
+
+    /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
+    case object SipDomainsCreate extends PolicyAllow("/twilio/voice/sip.domains/create")
+
+    /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
+    case object SipDomainsUpdate extends PolicyAllow("/twilio/voice/sip.domains/update")
+
+    /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
+    case object SipDomainsDelete extends PolicyAllow("/twilio/voice/sip.domains/delete")
+
+    /** The Recordings subresource on any given Call. */
+    case object CallsRecordingsRead extends PolicyAllow("/twilio/voice/calls.recordings/read")
+
+    /** The Recordings subresource on any given Call. */
+    case object CallsRecordingsList extends PolicyAllow("/twilio/voice/calls.recordings/list")
+
+    /** The Recordings subresource on any given Call. */
     case object CallsRecordingsCreate extends PolicyAllow("/twilio/voice/calls.recordings/create")
+
+    /** The Recordings subresource on any given Call. */
     case object CallsRecordingsUpdate extends PolicyAllow("/twilio/voice/calls.recordings/update")
+
+    /** The Recordings subresource on any given Call. */
     case object CallsRecordingsDelete extends PolicyAllow("/twilio/voice/calls.recordings/delete")
-    case object SipIpRecordsRead      extends PolicyAllow("/twilio/voice/sip.ip-records/read")
-    case object SipIpRecordsList      extends PolicyAllow("/twilio/voice/sip.ip-records/list")
-    case object SipIpRecordsCreate    extends PolicyAllow("/twilio/voice/sip.ip-records/create")
-    case object SipIpRecordsUpdate    extends PolicyAllow("/twilio/voice/sip.ip-records/update")
-    case object SipIpRecordsDelete    extends PolicyAllow("/twilio/voice/sip.ip-records/delete")
-    case object SipIpAclsRead         extends PolicyAllow("/twilio/voice/sip.ip-acls/read")
-    case object SipIpAclsList         extends PolicyAllow("/twilio/voice/sip.ip-acls/list")
-    case object SipIpAclsCreate       extends PolicyAllow("/twilio/voice/sip.ip-acls/create")
-    case object SipIpAclsUpdate       extends PolicyAllow("/twilio/voice/sip.ip-acls/update")
-    case object SipIpAclsDelete       extends PolicyAllow("/twilio/voice/sip.ip-acls/delete")
+
+    /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
+      * IP Address instead of an FQDN.
+      */
+    case object SipIpRecordsRead extends PolicyAllow("/twilio/voice/sip.ip-records/read")
+
+    /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
+      * IP Address instead of an FQDN.
+      */
+    case object SipIpRecordsList extends PolicyAllow("/twilio/voice/sip.ip-records/list")
+
+    /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
+      * IP Address instead of an FQDN.
+      */
+    case object SipIpRecordsCreate extends PolicyAllow("/twilio/voice/sip.ip-records/create")
+
+    /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
+      * IP Address instead of an FQDN.
+      */
+    case object SipIpRecordsUpdate extends PolicyAllow("/twilio/voice/sip.ip-records/update")
+
+    /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
+      * IP Address instead of an FQDN.
+      */
+    case object SipIpRecordsDelete extends PolicyAllow("/twilio/voice/sip.ip-records/delete")
+
+    /** IpAccessControlList resources contain the Access Control List (ACL). */
+    case object SipIpAclsRead extends PolicyAllow("/twilio/voice/sip.ip-acls/read")
+
+    /** IpAccessControlList resources contain the Access Control List (ACL). */
+    case object SipIpAclsList extends PolicyAllow("/twilio/voice/sip.ip-acls/list")
+
+    /** IpAccessControlList resources contain the Access Control List (ACL). */
+    case object SipIpAclsCreate extends PolicyAllow("/twilio/voice/sip.ip-acls/create")
+
+    /** IpAccessControlList resources contain the Access Control List (ACL). */
+    case object SipIpAclsUpdate extends PolicyAllow("/twilio/voice/sip.ip-acls/update")
+
+    /** IpAccessControlList resources contain the Access Control List (ACL). */
+    case object SipIpAclsDelete extends PolicyAllow("/twilio/voice/sip.ip-acls/delete")
 
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
