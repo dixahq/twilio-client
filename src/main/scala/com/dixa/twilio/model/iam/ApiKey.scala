@@ -2485,6 +2485,19 @@ object ApiKey {
     case object EventStreamsEventTypeList
         extends PolicyAllow("/twilio/event-streams/event-type/list")
 
+    /** Generate Flex Insights Historical reports */
+    case object FlexInsightsHistoricalReportsRead
+        extends PolicyAllow("/twilio/flex/insights.historical-reports/read")
+
+    /** Generate Flex Insights Historical reports */
+    case object FlexInsightsHistoricalReportsCreate
+        extends PolicyAllow("/twilio/flex/insights.historical-reports/create")
+
+    /** Generates a self-signed OpenSSL certificate to authenticate calls to Salesforce telephony
+      * APIs
+      */
+    case object FlexScvCertificateCreate extends PolicyAllow("/twilio/flex/scv-certificate/create")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
