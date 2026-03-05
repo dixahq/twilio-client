@@ -12,11 +12,11 @@ sealed trait ApiKey {
   def secretOpt: Option[ApiKey.Secret]
   def friendlyName: ApiKey.FriendlyName
   def flagsOpt: Option[Set[ApiKey.Flag]]
-  def policyAllowOpt: Option[Set[ApiKey.PolicyAllow]]
+  def policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]]
 
   def withFlags(flags: Set[ApiKey.Flag]): ApiKey with ApiKey.HasFlags
   def withSecret(secret: ApiKey.Secret): ApiKey with ApiKey.HasSecret
-  def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with ApiKey.HasPolicyAllow
+  def withPolicyAllow(policyAllow: Set[ApiKey.ApiKeyPolicy]): ApiKey with ApiKey.HasPolicyAllow
 
   override def equals(obj: Any): Boolean = obj match {
     case other: ApiKey =>
@@ -41,19 +41,19 @@ object ApiKey {
     def flags: Set[ApiKey.Flag]
     def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags
     def withSecret(secret: ApiKey.Secret): ApiKey with HasFlagsAndSecret
-    def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasFlagsAndPolicyAllow
+    def withPolicyAllow(policyAllow: Set[ApiKey.ApiKeyPolicy]): ApiKey with HasFlagsAndPolicyAllow
   }
 
   sealed trait HasSecret { self: ApiKey =>
     def secret: ApiKey.Secret
     def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret
     def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret
-    def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasSecretAndPolicyAllow
+    def withPolicyAllow(policyAllow: Set[ApiKey.ApiKeyPolicy]): ApiKey with HasSecretAndPolicyAllow
   }
 
   sealed trait HasPolicyAllow { self: ApiKey =>
-    def policyAllow: Set[ApiKey.PolicyAllow]
-    def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasPolicyAllow
+    def policyAllow: Set[ApiKey.ApiKeyPolicy]
+    def withPolicyAllow(policyAllow: Set[ApiKey.ApiKeyPolicy]): ApiKey with HasPolicyAllow
     def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow
     def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow
   }
@@ -61,13 +61,13 @@ object ApiKey {
   sealed trait HasFlagsAndSecret extends HasFlags with HasSecret { self: ApiKey =>
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasFlagsAndSecret
-    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasAll
+    override def withPolicyAllow(policyAllow: Set[ApiKey.ApiKeyPolicy]): ApiKey with HasAll
   }
 
   sealed trait HasFlagsAndPolicyAllow extends HasFlags with HasPolicyAllow { self: ApiKey =>
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasFlagsAndPolicyAllow
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasAll
   }
@@ -75,7 +75,7 @@ object ApiKey {
   sealed trait HasSecretAndPolicyAllow extends HasSecret with HasPolicyAllow { self: ApiKey =>
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasSecretAndPolicyAllow
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasAll
   }
@@ -87,16 +87,16 @@ object ApiKey {
     self: ApiKey =>
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasAll
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasAll
-    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasAll
+    override def withPolicyAllow(policyAllow: Set[ApiKey.ApiKeyPolicy]): ApiKey with HasAll
   }
 
   private final class ApiKeyBase(
       val sid: ApiKey.Sid,
       val friendlyName: ApiKey.FriendlyName
   ) extends ApiKey {
-    override val secretOpt: Option[ApiKey.Secret]                = None
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
+    override val secretOpt: Option[ApiKey.Secret]                 = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = None
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = None
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags =
       new ApiKeyWithFlags(sid, friendlyName, flags)
@@ -104,7 +104,9 @@ object ApiKey {
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecret =
       new ApiKeyWithSecret(sid, friendlyName, secret)
 
-    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasPolicyAllow =
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
+    ): ApiKey with HasPolicyAllow =
       new ApiKeyWithPolicyAllow(sid, friendlyName, policyAllow)
   }
 
@@ -114,9 +116,9 @@ object ApiKey {
       val secret: ApiKey.Secret
   ) extends ApiKey
       with HasSecret {
-    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
+    override val secretOpt: Option[ApiKey.Secret]                 = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = None
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = None
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret =
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
@@ -125,7 +127,7 @@ object ApiKey {
       new ApiKeyWithSecret(sid, friendlyName, secret)
 
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasSecretAndPolicyAllow =
       new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
   }
@@ -136,9 +138,9 @@ object ApiKey {
       val flags: Set[ApiKey.Flag]
   ) extends ApiKey
       with HasFlags {
-    override val secretOpt: Option[ApiKey.Secret]                = None
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
+    override val secretOpt: Option[ApiKey.Secret]                 = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = None
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlags =
       new ApiKeyWithFlags(sid, friendlyName, flags)
@@ -147,7 +149,7 @@ object ApiKey {
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
 
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasFlagsAndPolicyAllow =
       new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
   }
@@ -155,12 +157,12 @@ object ApiKey {
   private final class ApiKeyWithPolicyAllow(
       val sid: ApiKey.Sid,
       val friendlyName: ApiKey.FriendlyName,
-      val policyAllow: Set[ApiKey.PolicyAllow]
+      val policyAllow: Set[ApiKey.ApiKeyPolicy]
   ) extends ApiKey
       with HasPolicyAllow {
-    override val secretOpt: Option[ApiKey.Secret]                = None
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+    override val secretOpt: Option[ApiKey.Secret]                 = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = None
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = Some(policyAllow)
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow =
       new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
@@ -168,7 +170,9 @@ object ApiKey {
     override def withSecret(secret: ApiKey.Secret): ApiKey with HasSecretAndPolicyAllow =
       new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
 
-    override def withPolicyAllow(policyAllow: Set[ApiKey.PolicyAllow]): ApiKey with HasPolicyAllow =
+    override def withPolicyAllow(
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
+    ): ApiKey with HasPolicyAllow =
       new ApiKeyWithPolicyAllow(sid, friendlyName, policyAllow)
   }
 
@@ -179,9 +183,9 @@ object ApiKey {
       val flags: Set[ApiKey.Flag]
   ) extends ApiKey
       with HasFlagsAndSecret {
-    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = None
+    override val secretOpt: Option[ApiKey.Secret]                 = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = None
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndSecret =
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
@@ -190,7 +194,7 @@ object ApiKey {
       new ApiKeyWithSecretAndFlags(sid, friendlyName, secret, flags)
 
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasAll =
       new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
   }
@@ -199,12 +203,12 @@ object ApiKey {
       val sid: ApiKey.Sid,
       val friendlyName: ApiKey.FriendlyName,
       val secret: ApiKey.Secret,
-      val policyAllow: Set[ApiKey.PolicyAllow]
+      val policyAllow: Set[ApiKey.ApiKeyPolicy]
   ) extends ApiKey
       with HasSecretAndPolicyAllow {
-    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = None
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+    override val secretOpt: Option[ApiKey.Secret]                 = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = None
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = Some(policyAllow)
 
     override def withFlags(
         flags: Set[ApiKey.Flag]
@@ -215,7 +219,7 @@ object ApiKey {
       new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
 
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasSecretAndPolicyAllow =
       new ApiKeyWithSecretAndPolicyAllow(sid, friendlyName, secret, policyAllow)
   }
@@ -224,12 +228,12 @@ object ApiKey {
       val sid: ApiKey.Sid,
       val friendlyName: ApiKey.FriendlyName,
       val flags: Set[ApiKey.Flag],
-      val policyAllow: Set[ApiKey.PolicyAllow]
+      val policyAllow: Set[ApiKey.ApiKeyPolicy]
   ) extends ApiKey
       with HasFlagsAndPolicyAllow {
-    override val secretOpt: Option[ApiKey.Secret]                = None
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+    override val secretOpt: Option[ApiKey.Secret]                 = None
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = Some(policyAllow)
 
     override def withFlags(flags: Set[ApiKey.Flag]): ApiKey with HasFlagsAndPolicyAllow =
       new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
@@ -240,7 +244,7 @@ object ApiKey {
       new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
 
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasFlagsAndPolicyAllow =
       new ApiKeyWithFlagsAndPolicyAllow(sid, friendlyName, flags, policyAllow)
   }
@@ -250,12 +254,12 @@ object ApiKey {
       val friendlyName: ApiKey.FriendlyName,
       val secret: ApiKey.Secret,
       val flags: Set[ApiKey.Flag],
-      val policyAllow: Set[ApiKey.PolicyAllow]
+      val policyAllow: Set[ApiKey.ApiKeyPolicy]
   ) extends ApiKey
       with HasAll {
-    override val secretOpt: Option[ApiKey.Secret]                = Some(secret)
-    override val flagsOpt: Option[Set[ApiKey.Flag]]              = Some(flags)
-    override val policyAllowOpt: Option[Set[ApiKey.PolicyAllow]] = Some(policyAllow)
+    override val secretOpt: Option[ApiKey.Secret]                 = Some(secret)
+    override val flagsOpt: Option[Set[ApiKey.Flag]]               = Some(flags)
+    override val policyAllowOpt: Option[Set[ApiKey.ApiKeyPolicy]] = Some(policyAllow)
 
     override def withFlags(
         flags: Set[ApiKey.Flag]
@@ -268,7 +272,7 @@ object ApiKey {
       new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
 
     override def withPolicyAllow(
-        policyAllow: Set[ApiKey.PolicyAllow]
+        policyAllow: Set[ApiKey.ApiKeyPolicy]
     ): ApiKey with HasAll =
       new ApiKeyWithSecretAndFlagsAndPolicyAllow(sid, friendlyName, secret, flags, policyAllow)
   }
@@ -335,103 +339,105 @@ object ApiKey {
     *
     * This approach can be reevaluated once more information is available.
     */
-  sealed abstract class PolicyAllow(override val twilioString: String)
+  sealed abstract class ApiKeyPolicy(override val twilioString: String)
       extends EnumWithTwilioString.EnumEntry
 
-  object PolicyAllow extends EnumWithTwilioString[PolicyAllow] {
+  object ApiKeyPolicy extends EnumWithTwilioString[ApiKeyPolicy] {
 
     /** Describes the individual URI entries that make up the BYOC Origination ConnectionPolicies
       * list.
       */
     case object SipConnectionPoliciesTargetsAll
-        extends PolicyAllow("/twilio/voice/sip.connection-policies.targets/*")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies.targets/*")
 
     /** Annotate calls to provide subjective experience details. */
     case object InsightsCallAnnotationsUpdate
-        extends PolicyAllow("/twilio/voice/insights.call.annotations/update")
+        extends ApiKeyPolicy("/twilio/voice/insights.call.annotations/update")
 
     /** The OperatorType resource represents the Type of a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorTypesList
-        extends PolicyAllow("/twilio/voice/intelligence.operator-types/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator-types/list")
 
     /** The OperatorType resource represents the Type of a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorTypesRead
-        extends PolicyAllow("/twilio/voice/intelligence.operator-types/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator-types/read")
 
     /** The Notifications subresource on any given Call. */
-    case object CallsNotificationsRead extends PolicyAllow("/twilio/voice/calls.notifications/read")
+    case object CallsNotificationsRead
+        extends ApiKeyPolicy("/twilio/voice/calls.notifications/read")
 
     /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
       */
-    case object TranscriptionsList extends PolicyAllow("/twilio/voice/transcriptions/list")
+    case object TranscriptionsList extends ApiKeyPolicy("/twilio/voice/transcriptions/list")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsList
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/list")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
-    case object SipIpAclMappingsRead extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/read")
+    case object SipIpAclMappingsRead extends ApiKeyPolicy("/twilio/voice/sip.ip-acl-mappings/read")
 
     /** Represents a single verified number that may be used as a caller ID when making outgoing
       * calls.
       */
-    case object OutgoingCallerIdsAll extends PolicyAllow("/twilio/voice/outgoing-caller-ids/*")
+    case object OutgoingCallerIdsAll extends ApiKeyPolicy("/twilio/voice/outgoing-caller-ids/*")
 
     /** The Notifications subresource on any given Call. */
-    case object CallsNotificationsList extends PolicyAllow("/twilio/voice/calls.notifications/list")
+    case object CallsNotificationsList
+        extends ApiKeyPolicy("/twilio/voice/calls.notifications/list")
 
     /** Describes a call queue that contains individual calls, which are described by the queue's
       * Member resources.
       */
-    case object QueuesAll extends PolicyAllow("/twilio/voice/queues/*")
+    case object QueuesAll extends ApiKeyPolicy("/twilio/voice/queues/*")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsRead
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/read")
 
     /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsAll
-        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/*")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.origination-urls/*")
 
     /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
       */
-    case object TranscriptionsRead extends PolicyAllow("/twilio/voice/transcriptions/read")
+    case object TranscriptionsRead extends ApiKeyPolicy("/twilio/voice/transcriptions/read")
 
     /** Exposes the multiple types of Payloads that may be in included in an Add-on Result. */
     case object RecordingsAddOnsPayloadList
-        extends PolicyAllow("/twilio/voice/recordings.add-ons.payload/list")
+        extends ApiKeyPolicy("/twilio/voice/recordings.add-ons.payload/list")
 
     /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
       */
     case object RecordingsTranscriptionsRead
-        extends PolicyAllow("/twilio/voice/recordings.transcriptions/read")
+        extends ApiKeyPolicy("/twilio/voice/recordings.transcriptions/read")
 
     /** A Transcript resource represents a voice conversation that has automatically been converted
       * to text through Voice Intelligence.
       */
     case object IntelligenceTranscriptsDelete
-        extends PolicyAllow("/twilio/voice/intelligence.transcripts/delete")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.transcripts/delete")
 
     /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
       */
     case object RecordingsTranscriptionsList
-        extends PolicyAllow("/twilio/voice/recordings.transcriptions/list")
+        extends ApiKeyPolicy("/twilio/voice/recordings.transcriptions/list")
 
     /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomAll
-        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/*")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.custom/*")
 
     /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsCreate
-        extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/create")
 
     /** Subresource represents the CredentialList instances associated with this domain's
       * registration.
       */
     case object SipDomainsAuthRegistrationsCredentialListMappingsList
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/list"
         )
 
@@ -439,25 +445,25 @@ object ApiKey {
       * specific Voice Intelligence Service.
       */
     case object IntelligenceOperatorAttachmentDelete
-        extends PolicyAllow("/twilio/voice/intelligence.operator-attachment/delete")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator-attachment/delete")
 
     /** A Transcript resource represents a voice conversation that has automatically been converted
       * to text through Voice Intelligence.
       */
     case object IntelligenceTranscriptsRead
-        extends PolicyAllow("/twilio/voice/intelligence.transcripts/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.transcripts/read")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
     case object SipTrunksAuthCallsIpAclMappingsDelete
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/delete")
 
     /** Subresource represents the CredentialList instances associated with this domain's
       * registration.
       */
     case object SipDomainsAuthRegistrationsCredentialListMappingsRead
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/read"
         )
 
@@ -465,1672 +471,1675 @@ object ApiKey {
       * associated with this domain.
       */
     case object SipIpAclMappingsDelete
-        extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.ip-acl-mappings/delete")
 
     /** A Transcript resource represents a voice conversation that has automatically been converted
       * to text through Voice Intelligence.
       */
     case object IntelligenceTranscriptsList
-        extends PolicyAllow("/twilio/voice/intelligence.transcripts/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.transcripts/list")
 
     /** Exposes the multiple types of Payloads that may be in included in an Add-on Result. */
     case object RecordingsAddOnsPayloadRead
-        extends PolicyAllow("/twilio/voice/recordings.add-ons.payload/read")
+        extends ApiKeyPolicy("/twilio/voice/recordings.add-ons.payload/read")
 
     /** A Transcript resource represents a voice conversation that has automatically been converted
       * to text through Voice Intelligence.
       */
     case object IntelligenceTranscriptsCreate
-        extends PolicyAllow("/twilio/voice/intelligence.transcripts/create")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.transcripts/create")
 
     /** Contain the credentials resource entry of the users who are allowed to reach your SIP
       * Domain.
       */
     case object SipCredentialListsCredentialsAll
-        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/*")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists.credentials/*")
 
     /** The Conference resource allows you to query and manage the state of conferences on your
       * Twilio account.
       */
-    case object ConferencesUpdate extends PolicyAllow("/twilio/voice/conferences/update")
+    case object ConferencesUpdate extends ApiKeyPolicy("/twilio/voice/conferences/update")
 
     /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsDelete
-        extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/delete")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
-    case object SipIpAclMappingsList extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/list")
+    case object SipIpAclMappingsList extends ApiKeyPolicy("/twilio/voice/sip.ip-acl-mappings/list")
 
     /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesRead
-        extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.ip-acls.ip-addresses/read")
 
     /** Conference summaries with events and metadata. */
     case object InsightsConferenceSummariesRead
-        extends PolicyAllow("/twilio/voice/insights.conference.summaries/read")
+        extends ApiKeyPolicy("/twilio/voice/insights.conference.summaries/read")
 
     /** A Transcript Sentence is the actual text of the recording transcription. */
     case object IntelligenceTranscriptSentencesRead
-        extends PolicyAllow("/twilio/voice/intelligence.transcript-sentences/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.transcript-sentences/read")
 
     /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
       * traffic from a BYOC Carrier.
       */
-    case object SipSourceIpMappingsAll extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/*")
+    case object SipSourceIpMappingsAll
+        extends ApiKeyPolicy("/twilio/voice/sip.source-ip-mappings/*")
 
     /** Each Conference has a Participants subresource. Participants represent the set of people
       * currently connected to a running conference.
       */
     case object ConferencesParticipantsAll
-        extends PolicyAllow("/twilio/voice/conferences.participants/*")
+        extends ApiKeyPolicy("/twilio/voice/conferences.participants/*")
 
     /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesList
-        extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.ip-acls.ip-addresses/list")
 
     /** Conference summaries with events and metadata. */
     case object InsightsConferenceSummariesList
-        extends PolicyAllow("/twilio/voice/insights.conference.summaries/list")
+        extends ApiKeyPolicy("/twilio/voice/insights.conference.summaries/list")
 
     /** Provides call progress and quality-related Voice SDK events data for a specific call. */
     case object InsightsCallEventsList
-        extends PolicyAllow("/twilio/voice/insights.call.events/list")
+        extends ApiKeyPolicy("/twilio/voice/insights.call.events/list")
 
     /** Subresource of the Queue resource and represents a single call in a call queue. */
-    case object QueuesMemberUpdate extends PolicyAllow("/twilio/voice/queues.member/update")
+    case object QueuesMemberUpdate extends ApiKeyPolicy("/twilio/voice/queues.member/update")
 
     /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
-    case object SipByocTrunksAll extends PolicyAllow("/twilio/voice/sip.byoc-trunks/*")
+    case object SipByocTrunksAll extends ApiKeyPolicy("/twilio/voice/sip.byoc-trunks/*")
 
     /** Represents the recording associated with a voice call, conference, or SIP Trunk. */
-    case object RecordingsRead extends PolicyAllow("/twilio/voice/recordings/read")
+    case object RecordingsRead extends ApiKeyPolicy("/twilio/voice/recordings/read")
 
     /** An object that represents a connection between a telephone and Twilio. */
-    case object CallsAll extends PolicyAllow("/twilio/voice/calls/*")
+    case object CallsAll extends ApiKeyPolicy("/twilio/voice/calls/*")
 
     /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
       */
     case object RecordingsTranscriptionsDelete
-        extends PolicyAllow("/twilio/voice/recordings.transcriptions/delete")
+        extends ApiKeyPolicy("/twilio/voice/recordings.transcriptions/delete")
 
     /** Represents the transcribed text and metadata from a transcribed recording of a voice call.
       */
-    case object TranscriptionsDelete extends PolicyAllow("/twilio/voice/transcriptions/delete")
+    case object TranscriptionsDelete extends ApiKeyPolicy("/twilio/voice/transcriptions/delete")
 
     /** Represents the recording associated with a voice call, conference, or SIP Trunk. */
-    case object RecordingsList extends PolicyAllow("/twilio/voice/recordings/list")
+    case object RecordingsList extends ApiKeyPolicy("/twilio/voice/recordings/list")
 
     /** OperatorAttachment represents the link between a specific Prebuilt or Custom Operator and a
       * specific Voice Intelligence Service.
       */
     case object IntelligenceOperatorAttachmentCreate
-        extends PolicyAllow("/twilio/voice/intelligence.operator-attachment/create")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator-attachment/create")
 
     /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
       * over a BYOC Trunk.
       */
     case object SipConnectionPoliciesAll
-        extends PolicyAllow("/twilio/voice/sip.connection-policies/*")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies/*")
 
     /** Conference participant summaries with events and metadata for individual participants. */
     case object InsightsConferenceParticipantsRead
-        extends PolicyAllow("/twilio/voice/insights.conference.participants/read")
+        extends ApiKeyPolicy("/twilio/voice/insights.conference.participants/read")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsDelete
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/delete")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
     case object SipTrunksAuthCallsIpAclMappingsCreate
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/create")
 
     /** Control Voice Insights Advanced Features and Voice Trace status for an account. */
-    case object InsightsSettingsUpdate extends PolicyAllow("/twilio/voice/insights.settings/update")
+    case object InsightsSettingsUpdate
+        extends ApiKeyPolicy("/twilio/voice/insights.settings/update")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
-    case object SipCredentialListsAll extends PolicyAllow("/twilio/voice/sip.credential-lists/*")
+    case object SipCredentialListsAll extends ApiKeyPolicy("/twilio/voice/sip.credential-lists/*")
 
     /** Add-on results live as a subresource under the integration point that the Add-on was
       * configured with.
       */
     case object RecordingsAddOnsDelete
-        extends PolicyAllow("/twilio/voice/recordings.add-ons/delete")
+        extends ApiKeyPolicy("/twilio/voice/recordings.add-ons/delete")
 
     /** Subresource represents the CredentialList instances associated with this domain's
       * registration.
       */
     case object SipDomainsAuthRegistrationsCredentialListMappingsDelete
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/delete"
         )
 
     /** The PrebuiltOperator subresource of the Operator resource represents a Prebuilt Operator. */
     case object IntelligenceOperatorPrebuiltList
-        extends PolicyAllow("/twilio/voice/intelligence.operator.prebuilt/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.prebuilt/list")
 
     /** Subresource of the Queue resource and represents a single call in a call queue. */
-    case object QueuesMemberList extends PolicyAllow("/twilio/voice/queues.member/list")
+    case object QueuesMemberList extends ApiKeyPolicy("/twilio/voice/queues.member/list")
 
     /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
       * communications infrastructure.
       */
-    case object SipTrunksAll extends PolicyAllow("/twilio/voice/sip.trunks/*")
+    case object SipTrunksAll extends ApiKeyPolicy("/twilio/voice/sip.trunks/*")
 
     /** The Recordings subresource on any given Conference. */
     case object ConferencesRecordingsUpdate
-        extends PolicyAllow("/twilio/voice/conferences.recordings/update")
+        extends ApiKeyPolicy("/twilio/voice/conferences.recordings/update")
 
     /** Voice twiml apps. */
-    case object TwimlAppsAll extends PolicyAllow("/twilio/voice/twiml.apps/*")
+    case object TwimlAppsAll extends ApiKeyPolicy("/twilio/voice/twiml.apps/*")
 
     /** Subresource of the Queue resource and represents a single call in a call queue. */
-    case object QueuesMemberRead extends PolicyAllow("/twilio/voice/queues.member/read")
+    case object QueuesMemberRead extends ApiKeyPolicy("/twilio/voice/queues.member/read")
 
     /** Annotate calls to provide subjective experience details. */
     case object InsightsCallAnnotationsRead
-        extends PolicyAllow("/twilio/voice/insights.call.annotations/read")
+        extends ApiKeyPolicy("/twilio/voice/insights.call.annotations/read")
 
     /** Provides quality-related metrics for a specific call. */
     case object InsightsCallMetricsList
-        extends PolicyAllow("/twilio/voice/insights.call.metrics/list")
+        extends ApiKeyPolicy("/twilio/voice/insights.call.metrics/list")
 
     /** A Service provides control and configuration for how Transcripts are processed. */
-    case object IntelligenceServicesAll extends PolicyAllow("/twilio/voice/intelligence.services/*")
+    case object IntelligenceServicesAll
+        extends ApiKeyPolicy("/twilio/voice/intelligence.services/*")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
     case object SipIpAclMappingsCreate
-        extends PolicyAllow("/twilio/voice/sip.ip-acl-mappings/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.ip-acl-mappings/create")
 
     /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesUpdate
-        extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/update")
+        extends ApiKeyPolicy("/twilio/voice/sip.ip-acls.ip-addresses/update")
 
     /** Emergency Address associated with a Twilio number. */
     case object SipEmergencyAddressesDelete
-        extends PolicyAllow("/twilio/voice/sip.emergency-addresses/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.emergency-addresses/delete")
 
     /** Describes the IP addresses that have access to the SIP Domain. */
     case object SipIpAclsIpAddressesCreate
-        extends PolicyAllow("/twilio/voice/sip.ip-acls.ip-addresses/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.ip-acls.ip-addresses/create")
 
     /** The Operator resource represents a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorsRead
-        extends PolicyAllow("/twilio/voice/intelligence.operators/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operators/read")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
     case object SipTrunksAuthCallsIpAclMappingsList
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/list")
 
     /** OperatorAttachment represents the link between a specific Prebuilt or Custom Operator and a
       * specific Voice Intelligence Service.
       */
     case object IntelligenceOperatorAttachmentList
-        extends PolicyAllow("/twilio/voice/intelligence.operator-attachment/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator-attachment/list")
 
     /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsList
-        extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/list")
 
     /** Represents the recording associated with a voice call, conference, or SIP Trunk. */
-    case object RecordingsDelete extends PolicyAllow("/twilio/voice/recordings/delete")
+    case object RecordingsDelete extends ApiKeyPolicy("/twilio/voice/recordings/delete")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipTrunksAuthCallsCredentialListMappingsCreate
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.credential-list-mappings/create")
 
     /** Add-on results live as a subresource under the integration point that the Add-on was
       * configured with.
       */
-    case object RecordingsAddOnsRead extends PolicyAllow("/twilio/voice/recordings.add-ons/read")
+    case object RecordingsAddOnsRead extends ApiKeyPolicy("/twilio/voice/recordings.add-ons/read")
 
     /** Call Event resource. */
-    case object RequestInspectorRead extends PolicyAllow("/twilio/voice/request-inspector/read")
+    case object RequestInspectorRead extends ApiKeyPolicy("/twilio/voice/request-inspector/read")
 
     /** Emergency Address associated with a Twilio number. */
     case object SipEmergencyAddressesCreate
-        extends PolicyAllow("/twilio/voice/sip.emergency-addresses/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.emergency-addresses/create")
 
     /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
-    case object SipDomainsAll extends PolicyAllow("/twilio/voice/sip.domains/*")
+    case object SipDomainsAll extends ApiKeyPolicy("/twilio/voice/sip.domains/*")
 
     /** The Operator resource represents a Prebuilt or Custom Operator. */
     case object IntelligenceOperatorsList
-        extends PolicyAllow("/twilio/voice/intelligence.operators/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operators/list")
 
     /** A Transcript Media returns a signed URL for the Media (call recording) corresponding to the
       * Transcript.
       */
     case object IntelligenceTranscriptMediaRead
-        extends PolicyAllow("/twilio/voice/intelligence.transcript-media/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.transcript-media/read")
 
     /** Hosts the actual data returned by the Add-on. */
     case object RecordingsAddOnsPayloadDataRead
-        extends PolicyAllow("/twilio/voice/recordings.add-ons.payload.data/read")
+        extends ApiKeyPolicy("/twilio/voice/recordings.add-ons.payload.data/read")
 
     /** The Recordings subresource on any given Conference. */
     case object ConferencesRecordingsList
-        extends PolicyAllow("/twilio/voice/conferences.recordings/list")
+        extends ApiKeyPolicy("/twilio/voice/conferences.recordings/list")
 
     /** IpAccessControlListMapping resources contain the list of IpAccessControlList resources
       * associated with this domain.
       */
     case object SipTrunksAuthCallsIpAclMappingsRead
-        extends PolicyAllow("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.auth.calls.ip-acl-mappings/read")
 
     /** Represents the CredentialList resources associated with a SIP Domain. */
     case object SipDomainsAuthCallsCredentialListMappingsRead
-        extends PolicyAllow("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.domains.auth.calls.credential-list-mappings/read")
 
     /** The PrebuiltOperator subresource of the Operator resource represents a Prebuilt Operator. */
     case object IntelligenceOperatorPrebuiltRead
-        extends PolicyAllow("/twilio/voice/intelligence.operator.prebuilt/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.prebuilt/read")
 
     /** The Recordings subresource on any given Call. */
-    case object CallsRecordingsAll extends PolicyAllow("/twilio/voice/calls.recordings/*")
+    case object CallsRecordingsAll extends ApiKeyPolicy("/twilio/voice/calls.recordings/*")
 
     /** Conference participant summaries with events and metadata for individual participants. */
     case object InsightsConferenceParticipantsList
-        extends PolicyAllow("/twilio/voice/insights.conference.participants/list")
+        extends ApiKeyPolicy("/twilio/voice/insights.conference.participants/list")
 
     /** The OperatorResults resource returns a list of operator inferences for a Transcript. */
     case object IntelligenceOperatorResultsRead
-        extends PolicyAllow("/twilio/voice/intelligence.operator-results/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator-results/read")
 
     /** A call summary for calls. */
     case object InsightsCallSummariesRead
-        extends PolicyAllow("/twilio/voice/insights.call.summaries/read")
+        extends ApiKeyPolicy("/twilio/voice/insights.call.summaries/read")
 
     /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
       * IP Address instead of an FQDN.
       */
-    case object SipIpRecordsAll extends PolicyAllow("/twilio/voice/sip.ip-records/*")
+    case object SipIpRecordsAll extends ApiKeyPolicy("/twilio/voice/sip.ip-records/*")
 
     /** Add-on results live as a subresource under the integration point that the Add-on was
       * configured with.
       */
-    case object RecordingsAddOnsList extends PolicyAllow("/twilio/voice/recordings.add-ons/list")
+    case object RecordingsAddOnsList extends ApiKeyPolicy("/twilio/voice/recordings.add-ons/list")
 
     /** A call summary for calls. */
     case object InsightsCallSummariesList
-        extends PolicyAllow("/twilio/voice/insights.call.summaries/list")
+        extends ApiKeyPolicy("/twilio/voice/insights.call.summaries/list")
 
     /** Subresource represents the CredentialList instances associated with this domain's
       * registration.
       */
     case object SipDomainsAuthRegistrationsCredentialListMappingsCreate
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/voice/sip.domains.auth.registrations.credential-list-mappings/create"
         )
 
     /** Control Voice Insights Advanced Features and Voice Trace status for an account. */
-    case object InsightsSettingsRead extends PolicyAllow("/twilio/voice/insights.settings/read")
+    case object InsightsSettingsRead extends ApiKeyPolicy("/twilio/voice/insights.settings/read")
 
     /** IpAccessControlList resources contain the Access Control List (ACL). */
-    case object SipIpAclsAll extends PolicyAllow("/twilio/voice/sip.ip-acls/*")
+    case object SipIpAclsAll extends ApiKeyPolicy("/twilio/voice/sip.ip-acls/*")
 
     /** The Conference resource allows you to query and manage the state of conferences on your
       * Twilio account.
       */
-    case object ConferencesList extends PolicyAllow("/twilio/voice/conferences/list")
+    case object ConferencesList extends ApiKeyPolicy("/twilio/voice/conferences/list")
 
     /** The Conference resource allows you to query and manage the state of conferences on your
       * Twilio account.
       */
-    case object ConferencesRead extends PolicyAllow("/twilio/voice/conferences/read")
+    case object ConferencesRead extends ApiKeyPolicy("/twilio/voice/conferences/read")
 
     /** Represents a single verified number that may be used as a caller ID when making outgoing
       * calls.
       */
-    case object OutgoingCallerIdsRead extends PolicyAllow("/twilio/voice/outgoing-caller-ids/read")
+    case object OutgoingCallerIdsRead extends ApiKeyPolicy("/twilio/voice/outgoing-caller-ids/read")
 
     /** Represents a single verified number that may be used as a caller ID when making outgoing
       * calls.
       */
-    case object OutgoingCallerIdsList extends PolicyAllow("/twilio/voice/outgoing-caller-ids/list")
+    case object OutgoingCallerIdsList extends ApiKeyPolicy("/twilio/voice/outgoing-caller-ids/list")
 
     /** Represents a single verified number that may be used as a caller ID when making outgoing
       * calls.
       */
     case object OutgoingCallerIdsCreate
-        extends PolicyAllow("/twilio/voice/outgoing-caller-ids/create")
+        extends ApiKeyPolicy("/twilio/voice/outgoing-caller-ids/create")
 
     /** Represents a single verified number that may be used as a caller ID when making outgoing
       * calls.
       */
     case object OutgoingCallerIdsUpdate
-        extends PolicyAllow("/twilio/voice/outgoing-caller-ids/update")
+        extends ApiKeyPolicy("/twilio/voice/outgoing-caller-ids/update")
 
     /** Represents a single verified number that may be used as a caller ID when making outgoing
       * calls.
       */
     case object OutgoingCallerIdsDelete
-        extends PolicyAllow("/twilio/voice/outgoing-caller-ids/delete")
+        extends ApiKeyPolicy("/twilio/voice/outgoing-caller-ids/delete")
 
     /** Describes a call queue that contains individual calls, which are described by the queue's
       * Member resources.
       */
-    case object QueuesRead extends PolicyAllow("/twilio/voice/queues/read")
+    case object QueuesRead extends ApiKeyPolicy("/twilio/voice/queues/read")
 
     /** Describes a call queue that contains individual calls, which are described by the queue's
       * Member resources.
       */
-    case object QueuesList extends PolicyAllow("/twilio/voice/queues/list")
+    case object QueuesList extends ApiKeyPolicy("/twilio/voice/queues/list")
 
     /** Describes a call queue that contains individual calls, which are described by the queue's
       * Member resources.
       */
-    case object QueuesCreate extends PolicyAllow("/twilio/voice/queues/create")
+    case object QueuesCreate extends ApiKeyPolicy("/twilio/voice/queues/create")
 
     /** Describes a call queue that contains individual calls, which are described by the queue's
       * Member resources.
       */
-    case object QueuesUpdate extends PolicyAllow("/twilio/voice/queues/update")
+    case object QueuesUpdate extends ApiKeyPolicy("/twilio/voice/queues/update")
 
     /** Describes a call queue that contains individual calls, which are described by the queue's
       * Member resources.
       */
-    case object QueuesDelete extends PolicyAllow("/twilio/voice/queues/delete")
+    case object QueuesDelete extends ApiKeyPolicy("/twilio/voice/queues/delete")
 
     /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsRead
-        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.origination-urls/read")
 
     /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsList
-        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.origination-urls/list")
 
     /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsCreate
-        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.origination-urls/create")
 
     /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsUpdate
-        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/update")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.origination-urls/update")
 
     /** The OriginationUrl Resource represents the Origination SIP URL(s) of your Trunk. */
     case object SipTrunksOriginationUrlsDelete
-        extends PolicyAllow("/twilio/voice/sip.trunks.origination-urls/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.trunks.origination-urls/delete")
 
     /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomRead
-        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.custom/read")
 
     /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomList
-        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.custom/list")
 
     /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomCreate
-        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/create")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.custom/create")
 
     /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomUpdate
-        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/update")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.custom/update")
 
     /** The CustomOperator subresource of the Operator resource represents a Custom Operator. */
     case object IntelligenceOperatorCustomDelete
-        extends PolicyAllow("/twilio/voice/intelligence.operator.custom/delete")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.operator.custom/delete")
 
     /** Contain the credentials resource entry of the users who are allowed to reach your SIP
       * Domain.
       */
     case object SipCredentialListsCredentialsRead
-        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists.credentials/read")
 
     /** Contain the credentials resource entry of the users who are allowed to reach your SIP
       * Domain.
       */
     case object SipCredentialListsCredentialsList
-        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists.credentials/list")
 
     /** Contain the credentials resource entry of the users who are allowed to reach your SIP
       * Domain.
       */
     case object SipCredentialListsCredentialsCreate
-        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists.credentials/create")
 
     /** Contain the credentials resource entry of the users who are allowed to reach your SIP
       * Domain.
       */
     case object SipCredentialListsCredentialsUpdate
-        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/update")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists.credentials/update")
 
     /** Contain the credentials resource entry of the users who are allowed to reach your SIP
       * Domain.
       */
     case object SipCredentialListsCredentialsDelete
-        extends PolicyAllow("/twilio/voice/sip.credential-lists.credentials/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists.credentials/delete")
 
     /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
       * traffic from a BYOC Carrier.
       */
     case object SipSourceIpMappingsRead
-        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.source-ip-mappings/read")
 
     /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
       * traffic from a BYOC Carrier.
       */
     case object SipSourceIpMappingsList
-        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.source-ip-mappings/list")
 
     /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
       * traffic from a BYOC Carrier.
       */
     case object SipSourceIpMappingsCreate
-        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.source-ip-mappings/create")
 
     /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
       * traffic from a BYOC Carrier.
       */
     case object SipSourceIpMappingsUpdate
-        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/update")
+        extends ApiKeyPolicy("/twilio/voice/sip.source-ip-mappings/update")
 
     /** Describes the publicly-routable Static IP addresses that can be used to receive Termination
       * traffic from a BYOC Carrier.
       */
     case object SipSourceIpMappingsDelete
-        extends PolicyAllow("/twilio/voice/sip.source-ip-mappings/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.source-ip-mappings/delete")
 
     /** Each Conference has a Participants subresource. Participants represent the set of people
       * currently connected to a running conference.
       */
     case object ConferencesParticipantsRead
-        extends PolicyAllow("/twilio/voice/conferences.participants/read")
+        extends ApiKeyPolicy("/twilio/voice/conferences.participants/read")
 
     /** Each Conference has a Participants subresource. Participants represent the set of people
       * currently connected to a running conference.
       */
     case object ConferencesParticipantsList
-        extends PolicyAllow("/twilio/voice/conferences.participants/list")
+        extends ApiKeyPolicy("/twilio/voice/conferences.participants/list")
 
     /** Each Conference has a Participants subresource. Participants represent the set of people
       * currently connected to a running conference.
       */
     case object ConferencesParticipantsCreate
-        extends PolicyAllow("/twilio/voice/conferences.participants/create")
+        extends ApiKeyPolicy("/twilio/voice/conferences.participants/create")
 
     /** Each Conference has a Participants subresource. Participants represent the set of people
       * currently connected to a running conference.
       */
     case object ConferencesParticipantsUpdate
-        extends PolicyAllow("/twilio/voice/conferences.participants/update")
+        extends ApiKeyPolicy("/twilio/voice/conferences.participants/update")
 
     /** Each Conference has a Participants subresource. Participants represent the set of people
       * currently connected to a running conference.
       */
     case object ConferencesParticipantsDelete
-        extends PolicyAllow("/twilio/voice/conferences.participants/delete")
+        extends ApiKeyPolicy("/twilio/voice/conferences.participants/delete")
 
     /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
-    case object SipByocTrunksRead extends PolicyAllow("/twilio/voice/sip.byoc-trunks/read")
+    case object SipByocTrunksRead extends ApiKeyPolicy("/twilio/voice/sip.byoc-trunks/read")
 
     /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
-    case object SipByocTrunksList extends PolicyAllow("/twilio/voice/sip.byoc-trunks/list")
+    case object SipByocTrunksList extends ApiKeyPolicy("/twilio/voice/sip.byoc-trunks/list")
 
     /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
-    case object SipByocTrunksCreate extends PolicyAllow("/twilio/voice/sip.byoc-trunks/create")
+    case object SipByocTrunksCreate extends ApiKeyPolicy("/twilio/voice/sip.byoc-trunks/create")
 
     /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
-    case object SipByocTrunksUpdate extends PolicyAllow("/twilio/voice/sip.byoc-trunks/update")
+    case object SipByocTrunksUpdate extends ApiKeyPolicy("/twilio/voice/sip.byoc-trunks/update")
 
     /** Describes a trunk that can be configured to send/receive traffic to/from a PSTN Carrier. */
-    case object SipByocTrunksDelete extends PolicyAllow("/twilio/voice/sip.byoc-trunks/delete")
+    case object SipByocTrunksDelete extends ApiKeyPolicy("/twilio/voice/sip.byoc-trunks/delete")
 
     /** An object that represents a connection between a telephone and Twilio. */
-    case object CallsRead extends PolicyAllow("/twilio/voice/calls/read")
+    case object CallsRead extends ApiKeyPolicy("/twilio/voice/calls/read")
 
     /** An object that represents a connection between a telephone and Twilio. */
-    case object CallsList extends PolicyAllow("/twilio/voice/calls/list")
+    case object CallsList extends ApiKeyPolicy("/twilio/voice/calls/list")
 
     /** An object that represents a connection between a telephone and Twilio. */
-    case object CallsCreate extends PolicyAllow("/twilio/voice/calls/create")
+    case object CallsCreate extends ApiKeyPolicy("/twilio/voice/calls/create")
 
     /** An object that represents a connection between a telephone and Twilio. */
-    case object CallsUpdate extends PolicyAllow("/twilio/voice/calls/update")
+    case object CallsUpdate extends ApiKeyPolicy("/twilio/voice/calls/update")
 
     /** An object that represents a connection between a telephone and Twilio. */
-    case object CallsDelete extends PolicyAllow("/twilio/voice/calls/delete")
+    case object CallsDelete extends ApiKeyPolicy("/twilio/voice/calls/delete")
 
     /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
       * over a BYOC Trunk.
       */
     case object SipConnectionPoliciesRead
-        extends PolicyAllow("/twilio/voice/sip.connection-policies/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies/read")
 
     /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
       * over a BYOC Trunk.
       */
     case object SipConnectionPoliciesList
-        extends PolicyAllow("/twilio/voice/sip.connection-policies/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies/list")
 
     /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
       * over a BYOC Trunk.
       */
     case object SipConnectionPoliciesCreate
-        extends PolicyAllow("/twilio/voice/sip.connection-policies/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies/create")
 
     /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
       * over a BYOC Trunk.
       */
     case object SipConnectionPoliciesUpdate
-        extends PolicyAllow("/twilio/voice/sip.connection-policies/update")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies/update")
 
     /** Describes a list of URI Entries that are used to route Origination traffic to a PSTN Carrier
       * over a BYOC Trunk.
       */
     case object SipConnectionPoliciesDelete
-        extends PolicyAllow("/twilio/voice/sip.connection-policies/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.connection-policies/delete")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsRead
-        extends PolicyAllow("/twilio/voice/sip.credential-lists/read")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists/read")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsList
-        extends PolicyAllow("/twilio/voice/sip.credential-lists/list")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists/list")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsCreate
-        extends PolicyAllow("/twilio/voice/sip.credential-lists/create")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists/create")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsUpdate
-        extends PolicyAllow("/twilio/voice/sip.credential-lists/update")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists/update")
 
     /** Contain the credentials of the users who are allowed to reach your SIP Domain. */
     case object SipCredentialListsDelete
-        extends PolicyAllow("/twilio/voice/sip.credential-lists/delete")
+        extends ApiKeyPolicy("/twilio/voice/sip.credential-lists/delete")
 
     /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
       * communications infrastructure.
       */
-    case object SipTrunksRead extends PolicyAllow("/twilio/voice/sip.trunks/read")
+    case object SipTrunksRead extends ApiKeyPolicy("/twilio/voice/sip.trunks/read")
 
     /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
       * communications infrastructure.
       */
-    case object SipTrunksList extends PolicyAllow("/twilio/voice/sip.trunks/list")
+    case object SipTrunksList extends ApiKeyPolicy("/twilio/voice/sip.trunks/list")
 
     /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
       * communications infrastructure.
       */
-    case object SipTrunksCreate extends PolicyAllow("/twilio/voice/sip.trunks/create")
+    case object SipTrunksCreate extends ApiKeyPolicy("/twilio/voice/sip.trunks/create")
 
     /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
       * communications infrastructure.
       */
-    case object SipTrunksUpdate extends PolicyAllow("/twilio/voice/sip.trunks/update")
+    case object SipTrunksUpdate extends ApiKeyPolicy("/twilio/voice/sip.trunks/update")
 
     /** Elastic SIP Trunking enables you to make & receive telephone calls from your IP
       * communications infrastructure.
       */
-    case object SipTrunksDelete extends PolicyAllow("/twilio/voice/sip.trunks/delete")
+    case object SipTrunksDelete extends ApiKeyPolicy("/twilio/voice/sip.trunks/delete")
 
     /** Voice twiml apps. */
-    case object TwimlAppsRead extends PolicyAllow("/twilio/voice/twiml.apps/read")
+    case object TwimlAppsRead extends ApiKeyPolicy("/twilio/voice/twiml.apps/read")
 
     /** Voice twiml apps. */
-    case object TwimlAppsList extends PolicyAllow("/twilio/voice/twiml.apps/list")
+    case object TwimlAppsList extends ApiKeyPolicy("/twilio/voice/twiml.apps/list")
 
     /** Voice twiml apps. */
-    case object TwimlAppsCreate extends PolicyAllow("/twilio/voice/twiml.apps/create")
+    case object TwimlAppsCreate extends ApiKeyPolicy("/twilio/voice/twiml.apps/create")
 
     /** Voice twiml apps. */
-    case object TwimlAppsUpdate extends PolicyAllow("/twilio/voice/twiml.apps/update")
+    case object TwimlAppsUpdate extends ApiKeyPolicy("/twilio/voice/twiml.apps/update")
 
     /** Voice twiml apps. */
-    case object TwimlAppsDelete extends PolicyAllow("/twilio/voice/twiml.apps/delete")
+    case object TwimlAppsDelete extends ApiKeyPolicy("/twilio/voice/twiml.apps/delete")
 
     /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesRead
-        extends PolicyAllow("/twilio/voice/intelligence.services/read")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.services/read")
 
     /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesList
-        extends PolicyAllow("/twilio/voice/intelligence.services/list")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.services/list")
 
     /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesCreate
-        extends PolicyAllow("/twilio/voice/intelligence.services/create")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.services/create")
 
     /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesUpdate
-        extends PolicyAllow("/twilio/voice/intelligence.services/update")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.services/update")
 
     /** A Service provides control and configuration for how Transcripts are processed. */
     case object IntelligenceServicesDelete
-        extends PolicyAllow("/twilio/voice/intelligence.services/delete")
+        extends ApiKeyPolicy("/twilio/voice/intelligence.services/delete")
 
     /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
-    case object SipDomainsRead extends PolicyAllow("/twilio/voice/sip.domains/read")
+    case object SipDomainsRead extends ApiKeyPolicy("/twilio/voice/sip.domains/read")
 
     /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
-    case object SipDomainsList extends PolicyAllow("/twilio/voice/sip.domains/list")
+    case object SipDomainsList extends ApiKeyPolicy("/twilio/voice/sip.domains/list")
 
     /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
-    case object SipDomainsCreate extends PolicyAllow("/twilio/voice/sip.domains/create")
+    case object SipDomainsCreate extends ApiKeyPolicy("/twilio/voice/sip.domains/create")
 
     /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
-    case object SipDomainsUpdate extends PolicyAllow("/twilio/voice/sip.domains/update")
+    case object SipDomainsUpdate extends ApiKeyPolicy("/twilio/voice/sip.domains/update")
 
     /** Describes a custom DNS hostname that can accept SIP traffic for your account. */
-    case object SipDomainsDelete extends PolicyAllow("/twilio/voice/sip.domains/delete")
+    case object SipDomainsDelete extends ApiKeyPolicy("/twilio/voice/sip.domains/delete")
 
     /** The Recordings subresource on any given Call. */
-    case object CallsRecordingsRead extends PolicyAllow("/twilio/voice/calls.recordings/read")
+    case object CallsRecordingsRead extends ApiKeyPolicy("/twilio/voice/calls.recordings/read")
 
     /** The Recordings subresource on any given Call. */
-    case object CallsRecordingsList extends PolicyAllow("/twilio/voice/calls.recordings/list")
+    case object CallsRecordingsList extends ApiKeyPolicy("/twilio/voice/calls.recordings/list")
 
     /** The Recordings subresource on any given Call. */
-    case object CallsRecordingsCreate extends PolicyAllow("/twilio/voice/calls.recordings/create")
+    case object CallsRecordingsCreate extends ApiKeyPolicy("/twilio/voice/calls.recordings/create")
 
     /** The Recordings subresource on any given Call. */
-    case object CallsRecordingsUpdate extends PolicyAllow("/twilio/voice/calls.recordings/update")
+    case object CallsRecordingsUpdate extends ApiKeyPolicy("/twilio/voice/calls.recordings/update")
 
     /** The Recordings subresource on any given Call. */
-    case object CallsRecordingsDelete extends PolicyAllow("/twilio/voice/calls.recordings/delete")
+    case object CallsRecordingsDelete extends ApiKeyPolicy("/twilio/voice/calls.recordings/delete")
 
     /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
       * IP Address instead of an FQDN.
       */
-    case object SipIpRecordsRead extends PolicyAllow("/twilio/voice/sip.ip-records/read")
+    case object SipIpRecordsRead extends ApiKeyPolicy("/twilio/voice/sip.ip-records/read")
 
     /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
       * IP Address instead of an FQDN.
       */
-    case object SipIpRecordsList extends PolicyAllow("/twilio/voice/sip.ip-records/list")
+    case object SipIpRecordsList extends ApiKeyPolicy("/twilio/voice/sip.ip-records/list")
 
     /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
       * IP Address instead of an FQDN.
       */
-    case object SipIpRecordsCreate extends PolicyAllow("/twilio/voice/sip.ip-records/create")
+    case object SipIpRecordsCreate extends ApiKeyPolicy("/twilio/voice/sip.ip-records/create")
 
     /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
       * IP Address instead of an FQDN.
       */
-    case object SipIpRecordsUpdate extends PolicyAllow("/twilio/voice/sip.ip-records/update")
+    case object SipIpRecordsUpdate extends ApiKeyPolicy("/twilio/voice/sip.ip-records/update")
 
     /** Describes Static IP addresses used to address the BYOC Trunk's Termination SIP Domain via an
       * IP Address instead of an FQDN.
       */
-    case object SipIpRecordsDelete extends PolicyAllow("/twilio/voice/sip.ip-records/delete")
+    case object SipIpRecordsDelete extends ApiKeyPolicy("/twilio/voice/sip.ip-records/delete")
 
     /** IpAccessControlList resources contain the Access Control List (ACL). */
-    case object SipIpAclsRead extends PolicyAllow("/twilio/voice/sip.ip-acls/read")
+    case object SipIpAclsRead extends ApiKeyPolicy("/twilio/voice/sip.ip-acls/read")
 
     /** IpAccessControlList resources contain the Access Control List (ACL). */
-    case object SipIpAclsList extends PolicyAllow("/twilio/voice/sip.ip-acls/list")
+    case object SipIpAclsList extends ApiKeyPolicy("/twilio/voice/sip.ip-acls/list")
 
     /** IpAccessControlList resources contain the Access Control List (ACL). */
-    case object SipIpAclsCreate extends PolicyAllow("/twilio/voice/sip.ip-acls/create")
+    case object SipIpAclsCreate extends ApiKeyPolicy("/twilio/voice/sip.ip-acls/create")
 
     /** IpAccessControlList resources contain the Access Control List (ACL). */
-    case object SipIpAclsUpdate extends PolicyAllow("/twilio/voice/sip.ip-acls/update")
+    case object SipIpAclsUpdate extends ApiKeyPolicy("/twilio/voice/sip.ip-acls/update")
 
     /** IpAccessControlList resources contain the Access Control List (ACL). */
-    case object SipIpAclsDelete extends PolicyAllow("/twilio/voice/sip.ip-acls/delete")
+    case object SipIpAclsDelete extends ApiKeyPolicy("/twilio/voice/sip.ip-acls/delete")
 
     /** A general pattern for how one system can be notified of events generated by another system
       * in real-time.
       */
-    case object VerifyWebhookAll extends PolicyAllow("/twilio/verify/webhook/*")
+    case object VerifyWebhookAll extends ApiKeyPolicy("/twilio/verify/webhook/*")
 
     /** A general pattern for how one system can be notified of events generated by another system
       * in real-time.
       */
-    case object VerifyWebhookRead extends PolicyAllow("/twilio/verify/webhook/read")
+    case object VerifyWebhookRead extends ApiKeyPolicy("/twilio/verify/webhook/read")
 
     /** A general pattern for how one system can be notified of events generated by another system
       * in real-time.
       */
-    case object VerifyWebhookList extends PolicyAllow("/twilio/verify/webhook/list")
+    case object VerifyWebhookList extends ApiKeyPolicy("/twilio/verify/webhook/list")
 
     /** A general pattern for how one system can be notified of events generated by another system
       * in real-time.
       */
-    case object VerifyWebhookCreate extends PolicyAllow("/twilio/verify/webhook/create")
+    case object VerifyWebhookCreate extends ApiKeyPolicy("/twilio/verify/webhook/create")
 
     /** A general pattern for how one system can be notified of events generated by another system
       * in real-time.
       */
-    case object VerifyWebhookUpdate extends PolicyAllow("/twilio/verify/webhook/update")
+    case object VerifyWebhookUpdate extends ApiKeyPolicy("/twilio/verify/webhook/update")
 
     /** A general pattern for how one system can be notified of events generated by another system
       * in real-time.
       */
-    case object VerifyWebhookDelete extends PolicyAllow("/twilio/verify/webhook/delete")
+    case object VerifyWebhookDelete extends ApiKeyPolicy("/twilio/verify/webhook/delete")
 
     /** A verification channel. */
-    case object VerifyFactorAll extends PolicyAllow("/twilio/verify/factor/*")
+    case object VerifyFactorAll extends ApiKeyPolicy("/twilio/verify/factor/*")
 
     /** A verification channel. */
-    case object VerifyFactorRead extends PolicyAllow("/twilio/verify/factor/read")
+    case object VerifyFactorRead extends ApiKeyPolicy("/twilio/verify/factor/read")
 
     /** A verification channel. */
-    case object VerifyFactorList extends PolicyAllow("/twilio/verify/factor/list")
+    case object VerifyFactorList extends ApiKeyPolicy("/twilio/verify/factor/list")
 
     /** A verification channel. */
-    case object VerifyFactorCreate extends PolicyAllow("/twilio/verify/factor/create")
+    case object VerifyFactorCreate extends ApiKeyPolicy("/twilio/verify/factor/create")
 
     /** A verification channel. */
-    case object VerifyFactorUpdate extends PolicyAllow("/twilio/verify/factor/update")
+    case object VerifyFactorUpdate extends ApiKeyPolicy("/twilio/verify/factor/update")
 
     /** A verification channel. */
-    case object VerifyFactorDelete extends PolicyAllow("/twilio/verify/factor/delete")
+    case object VerifyFactorDelete extends ApiKeyPolicy("/twilio/verify/factor/delete")
 
     /** The limit that should be enforced against the key it is associated with. */
-    case object VerifyBucketAll extends PolicyAllow("/twilio/verify/bucket/*")
+    case object VerifyBucketAll extends ApiKeyPolicy("/twilio/verify/bucket/*")
 
     /** The limit that should be enforced against the key it is associated with. */
-    case object VerifyBucketRead extends PolicyAllow("/twilio/verify/bucket/read")
+    case object VerifyBucketRead extends ApiKeyPolicy("/twilio/verify/bucket/read")
 
     /** The limit that should be enforced against the key it is associated with. */
-    case object VerifyBucketList extends PolicyAllow("/twilio/verify/bucket/list")
+    case object VerifyBucketList extends ApiKeyPolicy("/twilio/verify/bucket/list")
 
     /** The limit that should be enforced against the key it is associated with. */
-    case object VerifyBucketCreate extends PolicyAllow("/twilio/verify/bucket/create")
+    case object VerifyBucketCreate extends ApiKeyPolicy("/twilio/verify/bucket/create")
 
     /** The limit that should be enforced against the key it is associated with. */
-    case object VerifyBucketUpdate extends PolicyAllow("/twilio/verify/bucket/update")
+    case object VerifyBucketUpdate extends ApiKeyPolicy("/twilio/verify/bucket/update")
 
     /** The limit that should be enforced against the key it is associated with. */
-    case object VerifyBucketDelete extends PolicyAllow("/twilio/verify/bucket/delete")
+    case object VerifyBucketDelete extends ApiKeyPolicy("/twilio/verify/bucket/delete")
 
     /** The set of common configurations used to create and check verifications. */
-    case object VerifyServiceAll extends PolicyAllow("/twilio/verify/service/*")
+    case object VerifyServiceAll extends ApiKeyPolicy("/twilio/verify/service/*")
 
     /** The set of common configurations used to create and check verifications. */
-    case object VerifyServiceRead extends PolicyAllow("/twilio/verify/service/read")
+    case object VerifyServiceRead extends ApiKeyPolicy("/twilio/verify/service/read")
 
     /** The set of common configurations used to create and check verifications. */
-    case object VerifyServiceList extends PolicyAllow("/twilio/verify/service/list")
+    case object VerifyServiceList extends ApiKeyPolicy("/twilio/verify/service/list")
 
     /** The set of common configurations used to create and check verifications. */
-    case object VerifyServiceCreate extends PolicyAllow("/twilio/verify/service/create")
+    case object VerifyServiceCreate extends ApiKeyPolicy("/twilio/verify/service/create")
 
     /** The set of common configurations used to create and check verifications. */
-    case object VerifyServiceUpdate extends PolicyAllow("/twilio/verify/service/update")
+    case object VerifyServiceUpdate extends ApiKeyPolicy("/twilio/verify/service/update")
 
     /** The set of common configurations used to create and check verifications. */
-    case object VerifyServiceDelete extends PolicyAllow("/twilio/verify/service/delete")
+    case object VerifyServiceDelete extends ApiKeyPolicy("/twilio/verify/service/delete")
 
     /** Define the keys to meter and limits to enforce when starting user verifications. */
-    case object VerifyRateLimitAll extends PolicyAllow("/twilio/verify/rate-limit/*")
+    case object VerifyRateLimitAll extends ApiKeyPolicy("/twilio/verify/rate-limit/*")
 
     /** Define the keys to meter and limits to enforce when starting user verifications. */
-    case object VerifyRateLimitRead extends PolicyAllow("/twilio/verify/rate-limit/read")
+    case object VerifyRateLimitRead extends ApiKeyPolicy("/twilio/verify/rate-limit/read")
 
     /** Define the keys to meter and limits to enforce when starting user verifications. */
-    case object VerifyRateLimitList extends PolicyAllow("/twilio/verify/rate-limit/list")
+    case object VerifyRateLimitList extends ApiKeyPolicy("/twilio/verify/rate-limit/list")
 
     /** Define the keys to meter and limits to enforce when starting user verifications. */
-    case object VerifyRateLimitCreate extends PolicyAllow("/twilio/verify/rate-limit/create")
+    case object VerifyRateLimitCreate extends ApiKeyPolicy("/twilio/verify/rate-limit/create")
 
     /** Define the keys to meter and limits to enforce when starting user verifications. */
-    case object VerifyRateLimitUpdate extends PolicyAllow("/twilio/verify/rate-limit/update")
+    case object VerifyRateLimitUpdate extends ApiKeyPolicy("/twilio/verify/rate-limit/update")
 
     /** Define the keys to meter and limits to enforce when starting user verifications. */
-    case object VerifyRateLimitDelete extends PolicyAllow("/twilio/verify/rate-limit/delete")
+    case object VerifyRateLimitDelete extends ApiKeyPolicy("/twilio/verify/rate-limit/delete")
 
     /** Rules define the logic flow used by the Fraud Risk Engine's rule processor to identify
       * fraudulent activity and take appropriate actions.
       */
-    case object VerifyRuleUpdate extends PolicyAllow("/twilio/verify/rule/update")
+    case object VerifyRuleUpdate extends ApiKeyPolicy("/twilio/verify/rule/update")
 
     /** Rules define the logic flow used by the Fraud Risk Engine's rule processor to identify
       * fraudulent activity and take appropriate actions.
       */
-    case object VerifyRuleDelete extends PolicyAllow("/twilio/verify/rule/delete")
+    case object VerifyRuleDelete extends ApiKeyPolicy("/twilio/verify/rule/delete")
 
     /** A user or other identity that needs verification. */
-    case object VerifyEntityCreate extends PolicyAllow("/twilio/verify/entity/create")
+    case object VerifyEntityCreate extends ApiKeyPolicy("/twilio/verify/entity/create")
 
     /** Predefined and approved messages used to send verifications that allow customization of the
       * verification message.
       */
     case object VerifyVerificationTemplateList
-        extends PolicyAllow("/twilio/verify/verification-template/list")
+        extends ApiKeyPolicy("/twilio/verify/verification-template/list")
 
     /** A single verification attempt of an Entity using a Factor. */
-    case object VerifyChallengeCreate extends PolicyAllow("/twilio/verify/challenge/create")
+    case object VerifyChallengeCreate extends ApiKeyPolicy("/twilio/verify/challenge/create")
 
     /** A single verification attempt of an Entity using a Factor. */
-    case object VerifyChallengeList extends PolicyAllow("/twilio/verify/challenge/list")
+    case object VerifyChallengeList extends ApiKeyPolicy("/twilio/verify/challenge/list")
 
     /** A single verification attempt of an Entity using a Factor. */
-    case object VerifyChallengeRead extends PolicyAllow("/twilio/verify/challenge/read")
+    case object VerifyChallengeRead extends ApiKeyPolicy("/twilio/verify/challenge/read")
 
     /** List of phone numbers that will never be blocked by Verify Fraud Guard or Geo permissions.
       */
-    case object VerifySafelistRead extends PolicyAllow("/twilio/verify/safelist/read")
+    case object VerifySafelistRead extends ApiKeyPolicy("/twilio/verify/safelist/read")
 
     /** A user or other identity that needs verification. */
-    case object VerifyEntityRead extends PolicyAllow("/twilio/verify/entity/read")
+    case object VerifyEntityRead extends ApiKeyPolicy("/twilio/verify/entity/read")
 
     /** Represents a verification validation that checks if a user-provided token is correct. */
     case object VerifyVerificationCheckCreate
-        extends PolicyAllow("/twilio/verify/verification-check/create")
+        extends ApiKeyPolicy("/twilio/verify/verification-check/create")
 
     /** Resource to authenticate client's request to the Verify Push API when creating (i.e.,
       * enrolling or registering) an Entity and/or Factor.
       */
-    case object VerifyAccessTokenRead extends PolicyAllow("/twilio/verify/access-token/read")
+    case object VerifyAccessTokenRead extends ApiKeyPolicy("/twilio/verify/access-token/read")
 
     /** A user or other identity that needs verification. */
-    case object VerifyEntityList extends PolicyAllow("/twilio/verify/entity/list")
+    case object VerifyEntityList extends ApiKeyPolicy("/twilio/verify/entity/list")
 
     /** Verify a user has a claimed device, phone number, or email address in their possession. */
-    case object VerifyVerificationCreate extends PolicyAllow("/twilio/verify/verification/create")
+    case object VerifyVerificationCreate extends ApiKeyPolicy("/twilio/verify/verification/create")
 
     /** Verify a user has a claimed device, phone number, or email address in their possession. */
-    case object VerifyVerificationRead extends PolicyAllow("/twilio/verify/verification/read")
+    case object VerifyVerificationRead extends ApiKeyPolicy("/twilio/verify/verification/read")
 
     /** Rules define the logic flow used by the Fraud Risk Engine's rule processor to identify
       * fraudulent activity and take appropriate actions.
       */
-    case object VerifyRuleList extends PolicyAllow("/twilio/verify/rule/list")
+    case object VerifyRuleList extends ApiKeyPolicy("/twilio/verify/rule/list")
 
     /** List of phone numbers that will never be blocked by Verify Fraud Guard or Geo permissions.
       */
-    case object VerifySafelistDelete extends PolicyAllow("/twilio/verify/safelist/delete")
+    case object VerifySafelistDelete extends ApiKeyPolicy("/twilio/verify/safelist/delete")
 
     /** Lets developers request Verify Push retry sending a push notification for the same
       * Challenge.
       */
     case object VerifyPushNotificationCreate
-        extends PolicyAllow("/twilio/verify/push-notification/create")
+        extends ApiKeyPolicy("/twilio/verify/push-notification/create")
 
     /** Verify a user has a claimed device, phone number, or email address in their possession. */
-    case object VerifyVerificationUpdate extends PolicyAllow("/twilio/verify/verification/update")
+    case object VerifyVerificationUpdate extends ApiKeyPolicy("/twilio/verify/verification/update")
 
     /** List and filter verification attempts generated by Verify V2 services. */
     case object VerifyVerificationAttemptList
-        extends PolicyAllow("/twilio/verify/verification-attempt/list")
+        extends ApiKeyPolicy("/twilio/verify/verification-attempt/list")
 
     /** A user or other identity that needs verification. */
-    case object VerifyEntityDelete extends PolicyAllow("/twilio/verify/entity/delete")
+    case object VerifyEntityDelete extends ApiKeyPolicy("/twilio/verify/entity/delete")
 
     /** Rules define the logic flow used by the Fraud Risk Engine's rule processor to identify
       * fraudulent activity and take appropriate actions.
       */
-    case object VerifyRuleCreate extends PolicyAllow("/twilio/verify/rule/create")
+    case object VerifyRuleCreate extends ApiKeyPolicy("/twilio/verify/rule/create")
 
     /** List of phone numbers that will never be blocked by Verify Fraud Guard or Geo permissions.
       */
-    case object VerifySafelistCreate extends PolicyAllow("/twilio/verify/safelist/create")
+    case object VerifySafelistCreate extends ApiKeyPolicy("/twilio/verify/safelist/create")
 
     /** List and filter verification attempts generated by Verify V2 services. */
     case object VerifyVerificationAttemptRead
-        extends PolicyAllow("/twilio/verify/verification-attempt/read")
+        extends ApiKeyPolicy("/twilio/verify/verification-attempt/read")
 
     /** Summarize verification attempts generated by Verify V2 services. */
     case object VerifyVerificationAttemptsSummaryRead
-        extends PolicyAllow("/twilio/verify/verification-attempts-summary/read")
+        extends ApiKeyPolicy("/twilio/verify/verification-attempts-summary/read")
 
     /** Resource to authenticate client's request to the Verify Push API when creating (i.e.,
       * enrolling or registering) an Entity and/or Factor.
       */
-    case object VerifyAccessTokenCreate extends PolicyAllow("/twilio/verify/access-token/create")
+    case object VerifyAccessTokenCreate extends ApiKeyPolicy("/twilio/verify/access-token/create")
 
     /** The US App to Person (A2P) Messaging Service Use Case Resource allows you to fetch possible
       * A2P use cases for a Messaging Service.
       */
     case object MessagingServicesUsa2pUsecaseList
-        extends PolicyAllow("/twilio/messaging/services.usa2p-usecase/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.usa2p-usecase/list")
 
     /** Represents a phone number associated to a Messaging Service. */
     case object MessagingServicesPhonenumbersRead
-        extends PolicyAllow("/twilio/messaging/services.phonenumbers/read")
+        extends ApiKeyPolicy("/twilio/messaging/services.phonenumbers/read")
 
     /** Represents a phone number associated to a Messaging Service. */
     case object MessagingServicesPhonenumbersList
-        extends PolicyAllow("/twilio/messaging/services.phonenumbers/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.phonenumbers/list")
 
     /** Represents a phone number associated to a Messaging Service. */
     case object MessagingServicesPhonenumbersCreate
-        extends PolicyAllow("/twilio/messaging/services.phonenumbers/create")
+        extends ApiKeyPolicy("/twilio/messaging/services.phonenumbers/create")
 
     /** Represents a phone number associated to a Messaging Service. */
     case object MessagingServicesPhonenumbersDelete
-        extends PolicyAllow("/twilio/messaging/services.phonenumbers/delete")
+        extends ApiKeyPolicy("/twilio/messaging/services.phonenumbers/delete")
 
     /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
       * Messaging Service.
       */
     case object MessagingServicesUsa2pCampaignRead
-        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/read")
+        extends ApiKeyPolicy("/twilio/messaging/services.usa2p-campaign/read")
 
     /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
       * Messaging Service.
       */
     case object MessagingServicesUsa2pCampaignList
-        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.usa2p-campaign/list")
 
     /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
       * Messaging Service.
       */
     case object MessagingServicesUsa2pCampaignCreate
-        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/create")
+        extends ApiKeyPolicy("/twilio/messaging/services.usa2p-campaign/create")
 
     /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
       * Messaging Service.
       */
     case object MessagingServicesUsa2pCampaignDelete
-        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/delete")
+        extends ApiKeyPolicy("/twilio/messaging/services.usa2p-campaign/delete")
 
     /** Represents a channel sender that is associated with a Messaging Service, such as WhatsApp.
       */
     case object MessagingServicesChannelsendersRead
-        extends PolicyAllow("/twilio/messaging/services.channelsenders/read")
+        extends ApiKeyPolicy("/twilio/messaging/services.channelsenders/read")
 
     /** Represents a channel sender that is associated with a Messaging Service, such as WhatsApp.
       */
     case object MessagingServicesChannelsendersList
-        extends PolicyAllow("/twilio/messaging/services.channelsenders/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.channelsenders/list")
 
     /** Represents the short codes associated to a Messaging Service. */
     case object MessagingServicesShortcodesRead
-        extends PolicyAllow("/twilio/messaging/services.shortcodes/read")
+        extends ApiKeyPolicy("/twilio/messaging/services.shortcodes/read")
 
     /** Represents the short codes associated to a Messaging Service. */
     case object MessagingServicesShortcodesList
-        extends PolicyAllow("/twilio/messaging/services.shortcodes/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.shortcodes/list")
 
     /** Represents the short codes associated to a Messaging Service. */
     case object MessagingServicesShortcodesCreate
-        extends PolicyAllow("/twilio/messaging/services.shortcodes/create")
+        extends ApiKeyPolicy("/twilio/messaging/services.shortcodes/create")
 
     /** Represents the short codes associated to a Messaging Service. */
     case object MessagingServicesShortcodesDelete
-        extends PolicyAllow("/twilio/messaging/services.shortcodes/delete")
+        extends ApiKeyPolicy("/twilio/messaging/services.shortcodes/delete")
 
     /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
     case object MessagingServicesAlphasendersRead
-        extends PolicyAllow("/twilio/messaging/services.alphasenders/read")
+        extends ApiKeyPolicy("/twilio/messaging/services.alphasenders/read")
 
     /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
     case object MessagingServicesAlphasendersList
-        extends PolicyAllow("/twilio/messaging/services.alphasenders/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.alphasenders/list")
 
     /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
     case object MessagingServicesAlphasendersCreate
-        extends PolicyAllow("/twilio/messaging/services.alphasenders/create")
+        extends ApiKeyPolicy("/twilio/messaging/services.alphasenders/create")
 
     /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
     case object MessagingServicesAlphasendersDelete
-        extends PolicyAllow("/twilio/messaging/services.alphasenders/delete")
+        extends ApiKeyPolicy("/twilio/messaging/services.alphasenders/delete")
 
     /** Represents a set of configurable behavior for sending and receiving messages. */
-    case object MessagingServicesAll extends PolicyAllow("/twilio/messaging/services/*")
+    case object MessagingServicesAll extends ApiKeyPolicy("/twilio/messaging/services/*")
 
     /** Represents a set of configurable behavior for sending and receiving messages. */
-    case object MessagingServicesRead extends PolicyAllow("/twilio/messaging/services/read")
+    case object MessagingServicesRead extends ApiKeyPolicy("/twilio/messaging/services/read")
 
     /** Represents a set of configurable behavior for sending and receiving messages. */
-    case object MessagingServicesList extends PolicyAllow("/twilio/messaging/services/list")
+    case object MessagingServicesList extends ApiKeyPolicy("/twilio/messaging/services/list")
 
     /** Represents a set of configurable behavior for sending and receiving messages. */
-    case object MessagingServicesCreate extends PolicyAllow("/twilio/messaging/services/create")
+    case object MessagingServicesCreate extends ApiKeyPolicy("/twilio/messaging/services/create")
 
     /** Represents a set of configurable behavior for sending and receiving messages. */
-    case object MessagingServicesUpdate extends PolicyAllow("/twilio/messaging/services/update")
+    case object MessagingServicesUpdate extends ApiKeyPolicy("/twilio/messaging/services/update")
 
     /** Represents a set of configurable behavior for sending and receiving messages. */
-    case object MessagingServicesDelete extends PolicyAllow("/twilio/messaging/services/delete")
+    case object MessagingServicesDelete extends ApiKeyPolicy("/twilio/messaging/services/delete")
 
     /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
       * Sender can send to a particular ISO country code.
       */
     case object MessagingServicesDestinationAlphaSendersRead
-        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/read")
+        extends ApiKeyPolicy("/twilio/messaging/services.destination-alpha-senders/read")
 
     /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
       * Sender can send to a particular ISO country code.
       */
     case object MessagingServicesDestinationAlphaSendersList
-        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/list")
+        extends ApiKeyPolicy("/twilio/messaging/services.destination-alpha-senders/list")
 
     /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
       * Sender can send to a particular ISO country code.
       */
     case object MessagingServicesDestinationAlphaSendersCreate
-        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/create")
+        extends ApiKeyPolicy("/twilio/messaging/services.destination-alpha-senders/create")
 
     /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
       * Sender can send to a particular ISO country code.
       */
     case object MessagingServicesDestinationAlphaSendersDelete
-        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/delete")
+        extends ApiKeyPolicy("/twilio/messaging/services.destination-alpha-senders/delete")
 
     /** Represents an inbound or outbound message. */
-    case object MessagingMessagesAll extends PolicyAllow("/twilio/messaging/messages/*")
+    case object MessagingMessagesAll extends ApiKeyPolicy("/twilio/messaging/messages/*")
 
     /** Represents an inbound or outbound message. */
-    case object MessagingMessagesRead extends PolicyAllow("/twilio/messaging/messages/read")
+    case object MessagingMessagesRead extends ApiKeyPolicy("/twilio/messaging/messages/read")
 
     /** Represents an inbound or outbound message. */
-    case object MessagingMessagesList extends PolicyAllow("/twilio/messaging/messages/list")
+    case object MessagingMessagesList extends ApiKeyPolicy("/twilio/messaging/messages/list")
 
     /** Represents an inbound or outbound message. */
-    case object MessagingMessagesCreate extends PolicyAllow("/twilio/messaging/messages/create")
+    case object MessagingMessagesCreate extends ApiKeyPolicy("/twilio/messaging/messages/create")
 
     /** Represents an inbound or outbound message. */
-    case object MessagingMessagesUpdate extends PolicyAllow("/twilio/messaging/messages/update")
+    case object MessagingMessagesUpdate extends ApiKeyPolicy("/twilio/messaging/messages/update")
 
     /** Represents an inbound or outbound message. */
-    case object MessagingMessagesDelete extends PolicyAllow("/twilio/messaging/messages/delete")
+    case object MessagingMessagesDelete extends ApiKeyPolicy("/twilio/messaging/messages/delete")
 
     /** The MessageFeedback subresource represents the reported outcome of tracking the performance
       * of a user action taken by the recipient of the message.
       */
     case object MessagingMessagesFeedbackCreate
-        extends PolicyAllow("/twilio/messaging/messages.feedback/create")
+        extends ApiKeyPolicy("/twilio/messaging/messages.feedback/create")
 
     /** Represents templated messages for messaging use cases. */
     case object MessagingContentTemplatesRead
-        extends PolicyAllow("/twilio/messaging/content-templates/read")
+        extends ApiKeyPolicy("/twilio/messaging/content-templates/read")
 
     /** Represents templated messages for messaging use cases. */
     case object MessagingContentTemplatesList
-        extends PolicyAllow("/twilio/messaging/content-templates/list")
+        extends ApiKeyPolicy("/twilio/messaging/content-templates/list")
 
     /** Represents templated messages for messaging use cases. */
     case object MessagingContentTemplatesCreate
-        extends PolicyAllow("/twilio/messaging/content-templates/create")
+        extends ApiKeyPolicy("/twilio/messaging/content-templates/create")
 
     /** Represents templated messages for messaging use cases. */
     case object MessagingContentTemplatesDelete
-        extends PolicyAllow("/twilio/messaging/content-templates/delete")
+        extends ApiKeyPolicy("/twilio/messaging/content-templates/delete")
 
     /** Provides a simple API to pull real-time, account specific pricing. */
-    case object MessagingPricingRead extends PolicyAllow("/twilio/messaging/pricing/read")
+    case object MessagingPricingRead extends ApiKeyPolicy("/twilio/messaging/pricing/read")
 
     /** Provides a simple API to pull real-time, account specific pricing. */
-    case object MessagingPricingList extends PolicyAllow("/twilio/messaging/pricing/list")
+    case object MessagingPricingList extends ApiKeyPolicy("/twilio/messaging/pricing/list")
 
     /** This resource retrieves a list of United States phone numbers that have been deactivated by
       * mobile carriers.
       */
     case object MessagingDeactivationsList
-        extends PolicyAllow("/twilio/messaging/deactivations/list")
+        extends ApiKeyPolicy("/twilio/messaging/deactivations/list")
 
     /** Represents a Whatsapp Sender. */
     case object MessagingWhatsappSendersAll
-        extends PolicyAllow("/twilio/messaging/whatsapp-senders/*")
+        extends ApiKeyPolicy("/twilio/messaging/whatsapp-senders/*")
 
     /** Represents a Whatsapp Sender. */
     case object MessagingWhatsappSendersRead
-        extends PolicyAllow("/twilio/messaging/whatsapp-senders/read")
+        extends ApiKeyPolicy("/twilio/messaging/whatsapp-senders/read")
 
     /** Represents a Whatsapp Sender. */
     case object MessagingWhatsappSendersList
-        extends PolicyAllow("/twilio/messaging/whatsapp-senders/list")
+        extends ApiKeyPolicy("/twilio/messaging/whatsapp-senders/list")
 
     /** Represents a Whatsapp Sender. */
     case object MessagingWhatsappSendersCreate
-        extends PolicyAllow("/twilio/messaging/whatsapp-senders/create")
+        extends ApiKeyPolicy("/twilio/messaging/whatsapp-senders/create")
 
     /** Represents a Whatsapp Sender. */
     case object MessagingWhatsappSendersUpdate
-        extends PolicyAllow("/twilio/messaging/whatsapp-senders/update")
+        extends ApiKeyPolicy("/twilio/messaging/whatsapp-senders/update")
 
     /** Represents a Whatsapp Sender. */
     case object MessagingWhatsappSendersDelete
-        extends PolicyAllow("/twilio/messaging/whatsapp-senders/delete")
+        extends ApiKeyPolicy("/twilio/messaging/whatsapp-senders/delete")
 
     /** Real time statistics for a Task Queue. */
     case object TaskRouterWorkspacesTaskQueueRealTimeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queue.real-time-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queue.real-time-statistics/list")
 
     /** TaskRouter logs Events for each state change in the Workspace for the purpose of historical
       * reporting and auditing; it keeps that data for 30 days.
       */
     case object TaskRouterWorkspacesEventsRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.events/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.events/read")
 
     /** TaskRouter logs Events for each state change in the Workspace for the purpose of historical
       * reporting and auditing; it keeps that data for 30 days.
       */
     case object TaskRouterWorkspacesEventsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.events/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.events/list")
 
     /** Cumulative statistics of your Task Queue over a certain time period. Cumulative statistics
       * allow you to analyze data from the past 30 days.
       */
     case object TaskRouterWorkspacesTaskQueuesCumulativeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues.cumulative-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues.cumulative-statistics/list")
 
     /** Real time statistics for a Workspace. */
     case object TaskRouterWorkspacesRealTimeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.real-time-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.real-time-statistics/list")
 
     /** Real time statistics for multiple Task Queues. */
     case object TaskRouterWorkspacesTaskQueueBulkRealTimeStatisticsList
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/taskrouter/workspaces.task-queue.bulk-real-time-statistics/list"
         )
 
     /** Statistics for a Workspace. */
     case object TaskRouterWorkspacesStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.statistics/list")
 
     /** Cumulative statistics for your Workspace over a certain time period. Cumulative statistics
       * allow you to analyze data from the past 30 days.
       */
     case object TaskRouterWorkspacesCumulativeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.cumulative-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.cumulative-statistics/list")
 
     /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
       * escalate in priority or move across queues over time.
       */
     case object TaskRouterWorkspacesWorkflowsAll
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/*")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows/*")
 
     /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
       * escalate in priority or move across queues over time.
       */
     case object TaskRouterWorkspacesWorkflowsRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows/read")
 
     /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
       * escalate in priority or move across queues over time.
       */
     case object TaskRouterWorkspacesWorkflowsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows/list")
 
     /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
       * escalate in priority or move across queues over time.
       */
     case object TaskRouterWorkspacesWorkflowsCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows/create")
 
     /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
       * escalate in priority or move across queues over time.
       */
     case object TaskRouterWorkspacesWorkflowsUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows/update")
 
     /** Workflows control how tasks will be prioritized and routed into Queues, and how Tasks should
       * escalate in priority or move across queues over time.
       */
     case object TaskRouterWorkspacesWorkflowsDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows/delete")
 
     /** TaskRouter creates a Reservation subresource whenever a Task is reserved for a Worker.
       * TaskRouter will provide the details of this Reservation Instance subresource in the
       * Assignment Callback HTTP request it makes to your application server.
       */
     case object TaskRouterWorkspacesTasksReservationsRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks.reservations/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks.reservations/read")
 
     /** TaskRouter creates a Reservation subresource whenever a Task is reserved for a Worker.
       * TaskRouter will provide the details of this Reservation Instance subresource in the
       * Assignment Callback HTTP request it makes to your application server.
       */
     case object TaskRouterWorkspacesTasksReservationsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks.reservations/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks.reservations/list")
 
     /** TaskRouter creates a Reservation subresource whenever a Task is reserved for a Worker.
       * TaskRouter will provide the details of this Reservation Instance subresource in the
       * Assignment Callback HTTP request it makes to your application server.
       */
     case object TaskRouterWorkspacesTasksReservationsUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks.reservations/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks.reservations/update")
 
     /** Real time statistics for a Workflow. */
     case object TaskRouterWorkspacesWorkflowsRealTimeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows.real-time-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows.real-time-statistics/list")
 
     /** Worker Reservations represent the current and past reservations for a Worker. Current
       * Reservations can be accepted using the Reservation instance resource.
       */
     case object TaskRouterWorkspacesWorkersReservationsRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.reservations/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.reservations/read")
 
     /** Worker Reservations represent the current and past reservations for a Worker. Current
       * Reservations can be accepted using the Reservation instance resource.
       */
     case object TaskRouterWorkspacesWorkersReservationsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.reservations/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.reservations/list")
 
     /** Worker Reservations represent the current and past reservations for a Worker. Current
       * Reservations can be accepted using the Reservation instance resource.
       */
     case object TaskRouterWorkspacesWorkersReservationsUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.reservations/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.reservations/update")
 
     /** Statistics for Workers. */
     case object TaskRouterWorkspacesWorkersStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.statistics/list")
 
     /** Workers represent an entity that is able to perform tasks, such as an agent working in a
       * call center, or a salesperson handling leads.
       */
     case object TaskRouterWorkspacesWorkersAll
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/*")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers/*")
 
     /** Workers represent an entity that is able to perform tasks, such as an agent working in a
       * call center, or a salesperson handling leads.
       */
     case object TaskRouterWorkspacesWorkersRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers/read")
 
     /** Workers represent an entity that is able to perform tasks, such as an agent working in a
       * call center, or a salesperson handling leads.
       */
     case object TaskRouterWorkspacesWorkersList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers/list")
 
     /** Workers represent an entity that is able to perform tasks, such as an agent working in a
       * call center, or a salesperson handling leads.
       */
     case object TaskRouterWorkspacesWorkersCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers/create")
 
     /** Workers represent an entity that is able to perform tasks, such as an agent working in a
       * call center, or a salesperson handling leads.
       */
     case object TaskRouterWorkspacesWorkersUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers/update")
 
     /** Workers represent an entity that is able to perform tasks, such as an agent working in a
       * call center, or a salesperson handling leads.
       */
     case object TaskRouterWorkspacesWorkersDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers/delete")
 
     /** Statistics of all the queues in a workspace. */
     case object TaskRouterWorkspacesTaskQueuesStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues.statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues.statistics/list")
 
     /** A Task represents a single item of work waiting to be processed. */
     case object TaskRouterWorkspacesTasksAll
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/*")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks/*")
 
     /** A Task represents a single item of work waiting to be processed. */
     case object TaskRouterWorkspacesTasksRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks/read")
 
     /** A Task represents a single item of work waiting to be processed. */
     case object TaskRouterWorkspacesTasksList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks/list")
 
     /** A Task represents a single item of work waiting to be processed. */
     case object TaskRouterWorkspacesTasksCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks/create")
 
     /** A Task represents a single item of work waiting to be processed. */
     case object TaskRouterWorkspacesTasksUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks/update")
 
     /** A Task represents a single item of work waiting to be processed. */
     case object TaskRouterWorkspacesTasksDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces.tasks/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.tasks/delete")
 
     /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
       * those Tasks.
       */
     case object TaskRouterWorkspacesTaskQueuesAll
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/*")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues/*")
 
     /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
       * those Tasks.
       */
     case object TaskRouterWorkspacesTaskQueuesRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues/read")
 
     /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
       * those Tasks.
       */
     case object TaskRouterWorkspacesTaskQueuesList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues/list")
 
     /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
       * those Tasks.
       */
     case object TaskRouterWorkspacesTaskQueuesCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues/create")
 
     /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
       * those Tasks.
       */
     case object TaskRouterWorkspacesTaskQueuesUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues/update")
 
     /** Task Queues allow you to categorize Tasks and describe which Workers are eligible to handle
       * those Tasks.
       */
     case object TaskRouterWorkspacesTaskQueuesDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues/delete")
 
     /** Statistics for a Workflow. */
     case object TaskRouterWorkspacesWorkflowsStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows.statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows.statistics/list")
 
     /** Cumulative statistics for your Workflow over a certain time period. Cumulative statistics
       * allow you to analyze data from the past 30 days.
       */
     case object TaskRouterWorkspacesWorkflowsCumulativeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workflows.cumulative-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workflows.cumulative-statistics/list")
 
     /** Cumulative statistics for your Workers over a certain time period. Cumulative statistics
       * allow you to analyze Worker data from the past 30 days.
       */
     case object TaskRouterWorkspacesWorkersCumulativeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.cumulative-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.cumulative-statistics/list")
 
     /** Instance statistics of your Task Queue. */
     case object TaskRouterWorkspacesTaskQueuesInstanceStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-queues.instance-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-queues.instance-statistics/list")
 
     /** Real time statistics for Workers. */
     case object TaskRouterWorkspacesWorkersRealTimeStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.real-time-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.real-time-statistics/list")
 
     /** Task Channels provide a mechanism to separate tasks of different types. You can specify
       * different concurrent capacity for tasks of each type.
       */
     case object TaskRouterWorkspacesTaskChannelsAll
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/*")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-channels/*")
 
     /** Task Channels provide a mechanism to separate tasks of different types. You can specify
       * different concurrent capacity for tasks of each type.
       */
     case object TaskRouterWorkspacesTaskChannelsRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-channels/read")
 
     /** Task Channels provide a mechanism to separate tasks of different types. You can specify
       * different concurrent capacity for tasks of each type.
       */
     case object TaskRouterWorkspacesTaskChannelsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-channels/list")
 
     /** Task Channels provide a mechanism to separate tasks of different types. You can specify
       * different concurrent capacity for tasks of each type.
       */
     case object TaskRouterWorkspacesTaskChannelsCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-channels/create")
 
     /** Task Channels provide a mechanism to separate tasks of different types. You can specify
       * different concurrent capacity for tasks of each type.
       */
     case object TaskRouterWorkspacesTaskChannelsUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-channels/update")
 
     /** Task Channels provide a mechanism to separate tasks of different types. You can specify
       * different concurrent capacity for tasks of each type.
       */
     case object TaskRouterWorkspacesTaskChannelsDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces.task-channels/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.task-channels/delete")
 
     /** Statistics for a specific Worker. */
     case object TaskRouterWorkspacesWorkersInstanceStatisticsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.instance-statistics/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.instance-statistics/list")
 
     /** Worker Channels show the Worker's capacity for handling multiple concurrent Tasks. */
     case object TaskRouterWorkspacesWorkersChannelsRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.channels/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.channels/read")
 
     /** Worker Channels show the Worker's capacity for handling multiple concurrent Tasks. */
     case object TaskRouterWorkspacesWorkersChannelsList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.channels/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.channels/list")
 
     /** Worker Channels show the Worker's capacity for handling multiple concurrent Tasks. */
     case object TaskRouterWorkspacesWorkersChannelsUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.workers.channels/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.workers.channels/update")
 
     /** Activities describe the current status of your Workers, which determines whether they are
       * eligible to receive task assignments. Workers are always set to a single Activity.
       */
     case object TaskRouterWorkspacesActivitiesAll
-        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/*")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.activities/*")
 
     /** Activities describe the current status of your Workers, which determines whether they are
       * eligible to receive task assignments. Workers are always set to a single Activity.
       */
     case object TaskRouterWorkspacesActivitiesRead
-        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/read")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.activities/read")
 
     /** Activities describe the current status of your Workers, which determines whether they are
       * eligible to receive task assignments. Workers are always set to a single Activity.
       */
     case object TaskRouterWorkspacesActivitiesList
-        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/list")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.activities/list")
 
     /** Activities describe the current status of your Workers, which determines whether they are
       * eligible to receive task assignments. Workers are always set to a single Activity.
       */
     case object TaskRouterWorkspacesActivitiesCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.activities/create")
 
     /** Activities describe the current status of your Workers, which determines whether they are
       * eligible to receive task assignments. Workers are always set to a single Activity.
       */
     case object TaskRouterWorkspacesActivitiesUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.activities/update")
 
     /** Activities describe the current status of your Workers, which determines whether they are
       * eligible to receive task assignments. Workers are always set to a single Activity.
       */
     case object TaskRouterWorkspacesActivitiesDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces.activities/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces.activities/delete")
 
     /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
       * Activities.
       */
-    case object TaskRouterWorkspacesAll extends PolicyAllow("/twilio/taskrouter/workspaces/*")
+    case object TaskRouterWorkspacesAll extends ApiKeyPolicy("/twilio/taskrouter/workspaces/*")
 
     /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
       * Activities.
       */
-    case object TaskRouterWorkspacesRead extends PolicyAllow("/twilio/taskrouter/workspaces/read")
+    case object TaskRouterWorkspacesRead extends ApiKeyPolicy("/twilio/taskrouter/workspaces/read")
 
     /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
       * Activities.
       */
-    case object TaskRouterWorkspacesList extends PolicyAllow("/twilio/taskrouter/workspaces/list")
+    case object TaskRouterWorkspacesList extends ApiKeyPolicy("/twilio/taskrouter/workspaces/list")
 
     /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
       * Activities.
       */
     case object TaskRouterWorkspacesCreate
-        extends PolicyAllow("/twilio/taskrouter/workspaces/create")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces/create")
 
     /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
       * Activities.
       */
     case object TaskRouterWorkspacesUpdate
-        extends PolicyAllow("/twilio/taskrouter/workspaces/update")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces/update")
 
     /** A Workspace is a container for your Tasks, Workers, TaskQueues, Workflows, TaskChannels and
       * Activities.
       */
     case object TaskRouterWorkspacesDelete
-        extends PolicyAllow("/twilio/taskrouter/workspaces/delete")
+        extends ApiKeyPolicy("/twilio/taskrouter/workspaces/delete")
 
     /** Query information on a phone number so that you can make a trusted interaction with the
       * user.
       */
-    case object LookupPhoneNumbersRead extends PolicyAllow("/twilio/lookup/phone-numbers/read")
+    case object LookupPhoneNumbersRead extends ApiKeyPolicy("/twilio/lookup/phone-numbers/read")
 
     /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
       * client credentials grant type of OAuth 2.0.
       */
-    case object IamAccountOauthAppsAll extends PolicyAllow("/twilio/iam/account-oauth-apps/*")
+    case object IamAccountOauthAppsAll extends ApiKeyPolicy("/twilio/iam/account-oauth-apps/*")
 
     /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
       * client credentials grant type of OAuth 2.0.
       */
-    case object IamAccountOauthAppsRead extends PolicyAllow("/twilio/iam/account-oauth-apps/read")
+    case object IamAccountOauthAppsRead extends ApiKeyPolicy("/twilio/iam/account-oauth-apps/read")
 
     /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
       * client credentials grant type of OAuth 2.0.
       */
-    case object IamAccountOauthAppsList extends PolicyAllow("/twilio/iam/account-oauth-apps/list")
+    case object IamAccountOauthAppsList extends ApiKeyPolicy("/twilio/iam/account-oauth-apps/list")
 
     /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
       * client credentials grant type of OAuth 2.0.
       */
     case object IamAccountOauthAppsCreate
-        extends PolicyAllow("/twilio/iam/account-oauth-apps/create")
+        extends ApiKeyPolicy("/twilio/iam/account-oauth-apps/create")
 
     /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
       * client credentials grant type of OAuth 2.0.
       */
     case object IamAccountOauthAppsUpdate
-        extends PolicyAllow("/twilio/iam/account-oauth-apps/update")
+        extends ApiKeyPolicy("/twilio/iam/account-oauth-apps/update")
 
     /** OAuth apps generate credentials to access Twilio Account APIs. Currently, we support the
       * client credentials grant type of OAuth 2.0.
       */
     case object IamAccountOauthAppsDelete
-        extends PolicyAllow("/twilio/iam/account-oauth-apps/delete")
+        extends ApiKeyPolicy("/twilio/iam/account-oauth-apps/delete")
 
     /** API keys are unique credentials used to authenticate and authorize requests to an API,
       * enabling controlled access to its resources and operations.
       */
-    case object IamApiKeysAll extends PolicyAllow("/twilio/iam/api-keys/*")
+    case object IamApiKeysAll extends ApiKeyPolicy("/twilio/iam/api-keys/*")
 
     /** API keys are unique credentials used to authenticate and authorize requests to an API,
       * enabling controlled access to its resources and operations.
       */
-    case object IamApiKeysRead extends PolicyAllow("/twilio/iam/api-keys/read")
+    case object IamApiKeysRead extends ApiKeyPolicy("/twilio/iam/api-keys/read")
 
     /** API keys are unique credentials used to authenticate and authorize requests to an API,
       * enabling controlled access to its resources and operations.
       */
-    case object IamApiKeysList extends PolicyAllow("/twilio/iam/api-keys/list")
+    case object IamApiKeysList extends ApiKeyPolicy("/twilio/iam/api-keys/list")
 
     /** API keys are unique credentials used to authenticate and authorize requests to an API,
       * enabling controlled access to its resources and operations.
       */
-    case object IamApiKeysCreate extends PolicyAllow("/twilio/iam/api-keys/create")
+    case object IamApiKeysCreate extends ApiKeyPolicy("/twilio/iam/api-keys/create")
 
     /** API keys are unique credentials used to authenticate and authorize requests to an API,
       * enabling controlled access to its resources and operations.
       */
-    case object IamApiKeysUpdate extends PolicyAllow("/twilio/iam/api-keys/update")
+    case object IamApiKeysUpdate extends ApiKeyPolicy("/twilio/iam/api-keys/update")
 
     /** API keys are unique credentials used to authenticate and authorize requests to an API,
       * enabling controlled access to its resources and operations.
       */
-    case object IamApiKeysDelete extends PolicyAllow("/twilio/iam/api-keys/delete")
+    case object IamApiKeysDelete extends ApiKeyPolicy("/twilio/iam/api-keys/delete")
 
     /** A public key is a cryptographic code that anyone can use to encrypt data or verify a digital
       * signature, but only the matching private key can decrypt or create the signature.
       */
-    case object IamPublicKeysList extends PolicyAllow("/twilio/iam/public-keys/list")
+    case object IamPublicKeysList extends ApiKeyPolicy("/twilio/iam/public-keys/list")
 
     /** Represents Twilio Accounts. When customers first sign up with Twilio, they have just one
       * main account and they can create more accounts and subaccounts for segmenting phone numbers
       * and usage data for their customers and controlling access to data.
       */
-    case object IamAccountsRead extends PolicyAllow("/twilio/iam/accounts/read")
+    case object IamAccountsRead extends ApiKeyPolicy("/twilio/iam/accounts/read")
 
     /** Represents Twilio Accounts. When customers first sign up with Twilio, they have just one
       * main account and they can create more accounts and subaccounts for segmenting phone numbers
       * and usage data for their customers and controlling access to data.
       */
-    case object IamAccountsList extends PolicyAllow("/twilio/iam/accounts/list")
+    case object IamAccountsList extends ApiKeyPolicy("/twilio/iam/accounts/list")
 
     /** The Flow Validate endpoint will validate a Flow definition without creating a new Flow. */
     case object StudioFlowsValidateUpdate
-        extends PolicyAllow("/twilio/studio/flows.validate/update")
+        extends ApiKeyPolicy("/twilio/studio/flows.validate/update")
 
     /** Flows are individual workflows that you create. */
-    case object StudioFlowsAll extends PolicyAllow("/twilio/studio/flows/*")
+    case object StudioFlowsAll extends ApiKeyPolicy("/twilio/studio/flows/*")
 
     /** Flows are individual workflows that you create. */
-    case object StudioFlowsRead extends PolicyAllow("/twilio/studio/flows/read")
+    case object StudioFlowsRead extends ApiKeyPolicy("/twilio/studio/flows/read")
 
     /** Flows are individual workflows that you create. */
-    case object StudioFlowsList extends PolicyAllow("/twilio/studio/flows/list")
+    case object StudioFlowsList extends ApiKeyPolicy("/twilio/studio/flows/list")
 
     /** Flows are individual workflows that you create. */
-    case object StudioFlowsCreate extends PolicyAllow("/twilio/studio/flows/create")
+    case object StudioFlowsCreate extends ApiKeyPolicy("/twilio/studio/flows/create")
 
     /** Flows are individual workflows that you create. */
-    case object StudioFlowsUpdate extends PolicyAllow("/twilio/studio/flows/update")
+    case object StudioFlowsUpdate extends ApiKeyPolicy("/twilio/studio/flows/update")
 
     /** Flows are individual workflows that you create. */
-    case object StudioFlowsDelete extends PolicyAllow("/twilio/studio/flows/delete")
+    case object StudioFlowsDelete extends ApiKeyPolicy("/twilio/studio/flows/delete")
 
     /** Tracks every change made to a Flow resource. Revisions are automatically created when a Flow
       * is created or updated.
       */
-    case object StudioFlowsRevisionsRead extends PolicyAllow("/twilio/studio/flows.revisions/read")
+    case object StudioFlowsRevisionsRead extends ApiKeyPolicy("/twilio/studio/flows.revisions/read")
 
     /** Tracks every change made to a Flow resource. Revisions are automatically created when a Flow
       * is created or updated.
       */
-    case object StudioFlowsRevisionsList extends PolicyAllow("/twilio/studio/flows.revisions/list")
+    case object StudioFlowsRevisionsList extends ApiKeyPolicy("/twilio/studio/flows.revisions/list")
 
     /** The current state of the Flow's Execution. As a flow executes, we save its state in this
       * context.
       */
     case object StudioExecutionsContextRead
-        extends PolicyAllow("/twilio/studio/executions.context/read")
+        extends ApiKeyPolicy("/twilio/studio/executions.context/read")
 
     /** The current state of the Flow's Execution for a single step. As a flow executes, we save its
       * state in this context.
       */
     case object StudioExecutionsStepsContextRead
-        extends PolicyAllow("/twilio/studio/executions.steps.context/read")
+        extends ApiKeyPolicy("/twilio/studio/executions.steps.context/read")
 
     /** Represents a specific person's run through a Flow. */
-    case object StudioExecutionsAll extends PolicyAllow("/twilio/studio/executions/*")
+    case object StudioExecutionsAll extends ApiKeyPolicy("/twilio/studio/executions/*")
 
     /** Represents a specific person's run through a Flow. */
-    case object StudioExecutionsRead extends PolicyAllow("/twilio/studio/executions/read")
+    case object StudioExecutionsRead extends ApiKeyPolicy("/twilio/studio/executions/read")
 
     /** Represents a specific person's run through a Flow. */
-    case object StudioExecutionsList extends PolicyAllow("/twilio/studio/executions/list")
+    case object StudioExecutionsList extends ApiKeyPolicy("/twilio/studio/executions/list")
 
     /** Represents a specific person's run through a Flow. */
-    case object StudioExecutionsCreate extends PolicyAllow("/twilio/studio/executions/create")
+    case object StudioExecutionsCreate extends ApiKeyPolicy("/twilio/studio/executions/create")
 
     /** Represents a specific person's run through a Flow. */
-    case object StudioExecutionsUpdate extends PolicyAllow("/twilio/studio/executions/update")
+    case object StudioExecutionsUpdate extends ApiKeyPolicy("/twilio/studio/executions/update")
 
     /** Represents a specific person's run through a Flow. */
-    case object StudioExecutionsDelete extends PolicyAllow("/twilio/studio/executions/delete")
+    case object StudioExecutionsDelete extends ApiKeyPolicy("/twilio/studio/executions/delete")
 
     /** Runtime processing of a Widget, starting when that Widget is entered. Variables get set at
       * the end of a Step.
       */
     case object StudioExecutionsStepsRead
-        extends PolicyAllow("/twilio/studio/executions.steps/read")
+        extends ApiKeyPolicy("/twilio/studio/executions.steps/read")
 
     /** Runtime processing of a Widget, starting when that Widget is entered. Variables get set at
       * the end of a Step.
       */
     case object StudioExecutionsStepsList
-        extends PolicyAllow("/twilio/studio/executions.steps/list")
+        extends ApiKeyPolicy("/twilio/studio/executions.steps/list")
 
     /** Contact addresses (e.g. phone numbers, Chat identities) who can test the latest drafts of a
       * Flow even if they aren't yet published.
       */
-    case object StudioTestUsersRead extends PolicyAllow("/twilio/studio/test-users/read")
+    case object StudioTestUsersRead extends ApiKeyPolicy("/twilio/studio/test-users/read")
 
     /** Contact addresses (e.g. phone numbers, Chat identities) who can test the latest drafts of a
       * Flow even if they aren't yet published.
       */
-    case object StudioTestUsersUpdate extends PolicyAllow("/twilio/studio/test-users/update")
+    case object StudioTestUsersUpdate extends ApiKeyPolicy("/twilio/studio/test-users/update")
 
     /** Informs which type of document you create and what the values are to then create a new
       * Supporting Document with the correct type and values.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsTypesRead
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/phone-numbers/regulatory-compliance.supporting-documents-types/read"
         )
 
@@ -2138,7 +2147,7 @@ object ApiKey {
       * Supporting Document with the correct type and values.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsTypesList
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/phone-numbers/regulatory-compliance.supporting-documents-types/list"
         )
 
@@ -2146,25 +2155,29 @@ object ApiKey {
       * Regulations.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsAll
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.supporting-documents/*")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.supporting-documents/*")
 
     /** A Supporting Document is a container that holds metadata of a legal document to fulfill
       * Regulations.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.supporting-documents/read")
+        extends ApiKeyPolicy(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents/read"
+        )
 
     /** A Supporting Document is a container that holds metadata of a legal document to fulfill
       * Regulations.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.supporting-documents/list")
+        extends ApiKeyPolicy(
+          "/twilio/phone-numbers/regulatory-compliance.supporting-documents/list"
+        )
 
     /** A Supporting Document is a container that holds metadata of a legal document to fulfill
       * Regulations.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsCreate
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/phone-numbers/regulatory-compliance.supporting-documents/create"
         )
 
@@ -2172,7 +2185,7 @@ object ApiKey {
       * Regulations.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsUpdate
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/phone-numbers/regulatory-compliance.supporting-documents/update"
         )
 
@@ -2180,7 +2193,7 @@ object ApiKey {
       * Regulations.
       */
     case object PhoneNumbersRegulatoryComplianceSupportingDocumentsDelete
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/phone-numbers/regulatory-compliance.supporting-documents/delete"
         )
 
@@ -2188,95 +2201,95 @@ object ApiKey {
       * forth by the regulating telecom body of the end-user.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesAll
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/*")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundles/*")
 
     /** Bundle is a container that references the required Regulatory Compliance information set
       * forth by the regulating telecom body of the end-user.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundles/read")
 
     /** Bundle is a container that references the required Regulatory Compliance information set
       * forth by the regulating telecom body of the end-user.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundles/list")
 
     /** Bundle is a container that references the required Regulatory Compliance information set
       * forth by the regulating telecom body of the end-user.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesCreate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundles/create")
 
     /** Bundle is a container that references the required Regulatory Compliance information set
       * forth by the regulating telecom body of the end-user.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesUpdate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/update")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundles/update")
 
     /** Bundle is a container that references the required Regulatory Compliance information set
       * forth by the regulating telecom body of the end-user.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesDelete
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundles/delete")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundles/delete")
 
     /** End-User is the entity that answers the phone call or receives the message of a phone
       * number. An entity can be either an individual or a business.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersAll
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/*")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users/*")
 
     /** End-User is the entity that answers the phone call or receives the message of a phone
       * number. An entity can be either an individual or a business.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users/read")
 
     /** End-User is the entity that answers the phone call or receives the message of a phone
       * number. An entity can be either an individual or a business.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users/list")
 
     /** End-User is the entity that answers the phone call or receives the message of a phone
       * number. An entity can be either an individual or a business.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersCreate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users/create")
 
     /** End-User is the entity that answers the phone call or receives the message of a phone
       * number. An entity can be either an individual or a business.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersUpdate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/update")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users/update")
 
     /** End-User is the entity that answers the phone call or receives the message of a phone
       * number. An entity can be either an individual or a business.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersDelete
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users/delete")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users/delete")
 
     /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
     case object PhoneNumbersRegulatoryComplianceItemAssignmentsRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.item-assignments/read")
 
     /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
     case object PhoneNumbersRegulatoryComplianceItemAssignmentsList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.item-assignments/list")
 
     /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
     case object PhoneNumbersRegulatoryComplianceItemAssignmentsCreate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.item-assignments/create")
 
     /** Allows you to assign End-Users and Supporting Documents to Regulatory Bundles. */
     case object PhoneNumbersRegulatoryComplianceItemAssignmentsDelete
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.item-assignments/delete")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.item-assignments/delete")
 
     /** Replace Items allows you to update compliance info when Regulations change while
       * provisioning new Phone Numbers.
       */
     case object PhoneNumbersRegulatoryComplianceBundlesReplaceItemsUpdate
-        extends PolicyAllow(
+        extends ApiKeyPolicy(
           "/twilio/phone-numbers/regulatory-compliance.bundles.replace-items/update"
         )
 
@@ -2284,393 +2297,393 @@ object ApiKey {
       * keeping Phone Number provisioning habits.
       */
     case object PhoneNumbersRegulatoryComplianceBundleCopiesList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundle-copies/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundle-copies/list")
 
     /** Bundle Copy allows you to update compliance information when Regulations change while
       * keeping Phone Number provisioning habits.
       */
     case object PhoneNumbersRegulatoryComplianceBundleCopiesCreate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.bundle-copies/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.bundle-copies/create")
 
     /** Informs which type of end-user you can create and what the values are to then create a new
       * End-User resource.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersTypesRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users-types/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users-types/read")
 
     /** Informs which type of end-user you can create and what the values are to then create a new
       * End-User resource.
       */
     case object PhoneNumbersRegulatoryComplianceEndUsersTypesList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.end-users-types/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.end-users-types/list")
 
     /** Evaluations allows developers to understand what failed and why when a Regulatory Bundle is
       * submitted to be evaluated against a Regulation.
       */
     case object PhoneNumbersRegulatoryComplianceEvaluationsRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.evaluations/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.evaluations/read")
 
     /** Evaluations allows developers to understand what failed and why when a Regulatory Bundle is
       * submitted to be evaluated against a Regulation.
       */
     case object PhoneNumbersRegulatoryComplianceEvaluationsList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.evaluations/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.evaluations/list")
 
     /** Evaluations allows developers to understand what failed and why when a Regulatory Bundle is
       * submitted to be evaluated against a Regulation.
       */
     case object PhoneNumbersRegulatoryComplianceEvaluationsCreate
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.evaluations/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.evaluations/create")
 
     /** Allows you to view and understand Regulations. Regulations are requirements based on
       * End-Users and Supporting Documents set by each country's government.
       */
     case object PhoneNumbersRegulatoryComplianceRegulationsRead
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.regulations/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.regulations/read")
 
     /** Allows you to view and understand Regulations. Regulations are requirements based on
       * End-Users and Supporting Documents set by each country's government.
       */
     case object PhoneNumbersRegulatoryComplianceRegulationsList
-        extends PolicyAllow("/twilio/phone-numbers/regulatory-compliance.regulations/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/regulatory-compliance.regulations/list")
 
     /** Lets search for local, toll-free and mobile phone numbers that are available to purchase.
       */
     case object PhoneNumbersAvailableNumbersList
-        extends PolicyAllow("/twilio/phone-numbers/available-numbers/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/available-numbers/list")
 
     /** RBAC permissions for Twilio Address APIs required by TrustHub. */
     case object PhoneNumbersAddressServiceRead
-        extends PolicyAllow("/twilio/phone-numbers/address-service/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/address-service/read")
 
     /** RBAC permissions for Twilio Address APIs required by TrustHub. */
     case object PhoneNumbersAddressServiceCreate
-        extends PolicyAllow("/twilio/phone-numbers/address-service/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/address-service/create")
 
     /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
     case object PhoneNumbersActiveNumbersAll
-        extends PolicyAllow("/twilio/phone-numbers/active-numbers/*")
+        extends ApiKeyPolicy("/twilio/phone-numbers/active-numbers/*")
 
     /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
     case object PhoneNumbersActiveNumbersRead
-        extends PolicyAllow("/twilio/phone-numbers/active-numbers/read")
+        extends ApiKeyPolicy("/twilio/phone-numbers/active-numbers/read")
 
     /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
     case object PhoneNumbersActiveNumbersList
-        extends PolicyAllow("/twilio/phone-numbers/active-numbers/list")
+        extends ApiKeyPolicy("/twilio/phone-numbers/active-numbers/list")
 
     /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
     case object PhoneNumbersActiveNumbersCreate
-        extends PolicyAllow("/twilio/phone-numbers/active-numbers/create")
+        extends ApiKeyPolicy("/twilio/phone-numbers/active-numbers/create")
 
     /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
     case object PhoneNumbersActiveNumbersUpdate
-        extends PolicyAllow("/twilio/phone-numbers/active-numbers/update")
+        extends ApiKeyPolicy("/twilio/phone-numbers/active-numbers/update")
 
     /** Represents local, toll-free and mobile phone numbers provisioned from Twilio. */
     case object PhoneNumbersActiveNumbersDelete
-        extends PolicyAllow("/twilio/phone-numbers/active-numbers/delete")
+        extends ApiKeyPolicy("/twilio/phone-numbers/active-numbers/delete")
 
     /** Access to usage details on console */
-    case object BillingUsageRead extends PolicyAllow("/twilio/billing/usage/read")
+    case object BillingUsageRead extends ApiKeyPolicy("/twilio/billing/usage/read")
 
     /** Events is a platform feature that provides comprehensive event-logging and change-tracking
       * for Twilio resources. The Events REST resource provides an API to retrieve event-log.
       */
-    case object MonitorEventsList extends PolicyAllow("/twilio/monitor/events/list")
+    case object MonitorEventsList extends ApiKeyPolicy("/twilio/monitor/events/list")
 
     /** Events is a platform feature that provides comprehensive event-logging and change-tracking
       * for Twilio resources. The Events REST resource provides an API to retrieve event-log.
       */
-    case object MonitorEventsRead extends PolicyAllow("/twilio/monitor/events/read")
+    case object MonitorEventsRead extends ApiKeyPolicy("/twilio/monitor/events/read")
 
     /** An Alert resource instance represents a single log entry for an error or warning when Twilio
       * makes a webhook request to your server, or when your application makes a request to the REST
       * API.
       */
-    case object MonitorAlertsList extends PolicyAllow("/twilio/monitor/alerts/list")
+    case object MonitorAlertsList extends ApiKeyPolicy("/twilio/monitor/alerts/list")
 
     /** An Alert resource instance represents a single log entry for an error or warning when Twilio
       * makes a webhook request to your server, or when your application makes a request to the REST
       * API.
       */
-    case object MonitorAlertsRead extends PolicyAllow("/twilio/monitor/alerts/read")
+    case object MonitorAlertsRead extends ApiKeyPolicy("/twilio/monitor/alerts/read")
 
     /** A versioned schema that all events of the same event type follow. */
-    case object EventStreamsSchemaRead extends PolicyAllow("/twilio/event-streams/schema/read")
+    case object EventStreamsSchemaRead extends ApiKeyPolicy("/twilio/event-streams/schema/read")
 
     /** The versions of an event schema, each with its corresponding JSON schema. */
     case object EventStreamsSchemaVersionRead
-        extends PolicyAllow("/twilio/event-streams/schema.version/read")
+        extends ApiKeyPolicy("/twilio/event-streams/schema.version/read")
 
     /** The versions of an event schema, each with its corresponding JSON schema. */
     case object EventStreamsSchemaVersionList
-        extends PolicyAllow("/twilio/event-streams/schema.version/list")
+        extends ApiKeyPolicy("/twilio/event-streams/schema.version/list")
 
     /** Each of the event types a subscription is composed of. */
     case object EventStreamsSubscriptionSubscribedEventAll
-        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/*")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription.subscribed-event/*")
 
     /** Each of the event types a subscription is composed of. */
     case object EventStreamsSubscriptionSubscribedEventRead
-        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/read")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription.subscribed-event/read")
 
     /** Each of the event types a subscription is composed of. */
     case object EventStreamsSubscriptionSubscribedEventList
-        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/list")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription.subscribed-event/list")
 
     /** Each of the event types a subscription is composed of. */
     case object EventStreamsSubscriptionSubscribedEventCreate
-        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/create")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription.subscribed-event/create")
 
     /** Each of the event types a subscription is composed of. */
     case object EventStreamsSubscriptionSubscribedEventUpdate
-        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/update")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription.subscribed-event/update")
 
     /** Each of the event types a subscription is composed of. */
     case object EventStreamsSubscriptionSubscribedEventDelete
-        extends PolicyAllow("/twilio/event-streams/subscription.subscribed-event/delete")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription.subscribed-event/delete")
 
     /** Subset of event types to be sent to a sink. */
     case object EventStreamsSubscriptionAll
-        extends PolicyAllow("/twilio/event-streams/subscription/*")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription/*")
 
     /** Subset of event types to be sent to a sink. */
     case object EventStreamsSubscriptionRead
-        extends PolicyAllow("/twilio/event-streams/subscription/read")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription/read")
 
     /** Subset of event types to be sent to a sink. */
     case object EventStreamsSubscriptionList
-        extends PolicyAllow("/twilio/event-streams/subscription/list")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription/list")
 
     /** Subset of event types to be sent to a sink. */
     case object EventStreamsSubscriptionCreate
-        extends PolicyAllow("/twilio/event-streams/subscription/create")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription/create")
 
     /** Subset of event types to be sent to a sink. */
     case object EventStreamsSubscriptionUpdate
-        extends PolicyAllow("/twilio/event-streams/subscription/update")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription/update")
 
     /** Subset of event types to be sent to a sink. */
     case object EventStreamsSubscriptionDelete
-        extends PolicyAllow("/twilio/event-streams/subscription/delete")
+        extends ApiKeyPolicy("/twilio/event-streams/subscription/delete")
 
     /** Sample events sent to a sink for testing and troubleshooting purposes. */
     case object EventStreamsSinkTestCreate
-        extends PolicyAllow("/twilio/event-streams/sink.test/create")
+        extends ApiKeyPolicy("/twilio/event-streams/sink.test/create")
 
     /** Destination capable of receiving a stream of events. */
-    case object EventStreamsSinkAll extends PolicyAllow("/twilio/event-streams/sink/*")
+    case object EventStreamsSinkAll extends ApiKeyPolicy("/twilio/event-streams/sink/*")
 
     /** Destination capable of receiving a stream of events. */
-    case object EventStreamsSinkRead extends PolicyAllow("/twilio/event-streams/sink/read")
+    case object EventStreamsSinkRead extends ApiKeyPolicy("/twilio/event-streams/sink/read")
 
     /** Destination capable of receiving a stream of events. */
-    case object EventStreamsSinkList extends PolicyAllow("/twilio/event-streams/sink/list")
+    case object EventStreamsSinkList extends ApiKeyPolicy("/twilio/event-streams/sink/list")
 
     /** Destination capable of receiving a stream of events. */
-    case object EventStreamsSinkCreate extends PolicyAllow("/twilio/event-streams/sink/create")
+    case object EventStreamsSinkCreate extends ApiKeyPolicy("/twilio/event-streams/sink/create")
 
     /** Destination capable of receiving a stream of events. */
-    case object EventStreamsSinkUpdate extends PolicyAllow("/twilio/event-streams/sink/update")
+    case object EventStreamsSinkUpdate extends ApiKeyPolicy("/twilio/event-streams/sink/update")
 
     /** Destination capable of receiving a stream of events. */
-    case object EventStreamsSinkDelete extends PolicyAllow("/twilio/event-streams/sink/delete")
+    case object EventStreamsSinkDelete extends ApiKeyPolicy("/twilio/event-streams/sink/delete")
 
     /** A kind of event described by a schema which can be subscribed to. */
     case object EventStreamsEventTypeRead
-        extends PolicyAllow("/twilio/event-streams/event-type/read")
+        extends ApiKeyPolicy("/twilio/event-streams/event-type/read")
 
     /** A kind of event described by a schema which can be subscribed to. */
     case object EventStreamsEventTypeList
-        extends PolicyAllow("/twilio/event-streams/event-type/list")
+        extends ApiKeyPolicy("/twilio/event-streams/event-type/list")
 
     /** Generate Flex Insights Historical reports */
     case object FlexInsightsHistoricalReportsRead
-        extends PolicyAllow("/twilio/flex/insights.historical-reports/read")
+        extends ApiKeyPolicy("/twilio/flex/insights.historical-reports/read")
 
     /** Generate Flex Insights Historical reports */
     case object FlexInsightsHistoricalReportsCreate
-        extends PolicyAllow("/twilio/flex/insights.historical-reports/create")
+        extends ApiKeyPolicy("/twilio/flex/insights.historical-reports/create")
 
     /** Generates a self-signed OpenSSL certificate to authenticate calls to Salesforce telephony
       * APIs
       */
-    case object FlexScvCertificateCreate extends PolicyAllow("/twilio/flex/scv-certificate/create")
+    case object FlexScvCertificateCreate extends ApiKeyPolicy("/twilio/flex/scv-certificate/create")
 
     /** Creates and returns a Microvisor device certificate based on a provided CSR, registers the
       * associated device with the calling account
       */
     case object MicrovisorDeviceCertCreate
-        extends PolicyAllow("/twilio/microvisor/device-cert/create")
+        extends ApiKeyPolicy("/twilio/microvisor/device-cert/create")
 
     /** Recording settings allows Twilio to store your recordings encrypted. */
     case object VideoRecordingsRecordingSettingsRead
-        extends PolicyAllow("/twilio/video/recordings.recording-settings/read")
+        extends ApiKeyPolicy("/twilio/video/recordings.recording-settings/read")
 
     /** Recording settings allows Twilio to store your recordings encrypted. */
     case object VideoRecordingsRecordingSettingsUpdate
-        extends PolicyAllow("/twilio/video/recordings.recording-settings/update")
+        extends ApiKeyPolicy("/twilio/video/recordings.recording-settings/update")
 
     /** Captured recordings are single-track, single-media and stored in a single file format. */
-    case object VideoRecordingsRead extends PolicyAllow("/twilio/video/recordings/read")
+    case object VideoRecordingsRead extends ApiKeyPolicy("/twilio/video/recordings/read")
 
     /** Captured recordings are single-track, single-media and stored in a single file format. */
-    case object VideoRecordingsList extends PolicyAllow("/twilio/video/recordings/list")
+    case object VideoRecordingsList extends ApiKeyPolicy("/twilio/video/recordings/list")
 
     /** Captured recordings are single-track, single-media and stored in a single file format. */
-    case object VideoRecordingsDelete extends PolicyAllow("/twilio/video/recordings/delete")
+    case object VideoRecordingsDelete extends ApiKeyPolicy("/twilio/video/recordings/delete")
 
     /** Anonymize room participant identity. */
     case object VideoRoomsParticipantsAnonymizeUpdate
-        extends PolicyAllow("/twilio/video/rooms.participants.anonymize/update")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.anonymize/update")
 
     /** Recording rules that are enforced in a given Room. */
     case object VideoRoomsRecordingRulesList
-        extends PolicyAllow("/twilio/video/rooms.recording-rules/list")
+        extends ApiKeyPolicy("/twilio/video/rooms.recording-rules/list")
 
     /** Recording rules that are enforced in a given Room. */
     case object VideoRoomsRecordingRulesUpdate
-        extends PolicyAllow("/twilio/video/rooms.recording-rules/update")
+        extends ApiKeyPolicy("/twilio/video/rooms.recording-rules/update")
 
     /** Represents media shared in a Video Room by a Participant, including audio, video, and screen
       * share content.
       */
     case object VideoRoomsParticipantsPublishedTracksRead
-        extends PolicyAllow("/twilio/video/rooms.participants.published-tracks/read")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.published-tracks/read")
 
     /** Represents media shared in a Video Room by a Participant, including audio, video, and screen
       * share content.
       */
     case object VideoRoomsParticipantsPublishedTracksList
-        extends PolicyAllow("/twilio/video/rooms.participants.published-tracks/list")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.published-tracks/list")
 
     /** Represents participants currently connected to a given Room. */
     case object VideoRoomsParticipantsRead
-        extends PolicyAllow("/twilio/video/rooms.participants/read")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants/read")
 
     /** Represents participants currently connected to a given Room. */
     case object VideoRoomsParticipantsList
-        extends PolicyAllow("/twilio/video/rooms.participants/list")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants/list")
 
     /** Represents participants currently connected to a given Room. */
     case object VideoRoomsParticipantsUpdate
-        extends PolicyAllow("/twilio/video/rooms.participants/update")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants/update")
 
     /** Represents the subscribe rules that are enforced on a given Participant. */
     case object VideoRoomsParticipantsSubscribeRulesList
-        extends PolicyAllow("/twilio/video/rooms.participants.subscribe-rules/list")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.subscribe-rules/list")
 
     /** Represents the subscribe rules that are enforced on a given Participant. */
     case object VideoRoomsParticipantsSubscribeRulesUpdate
-        extends PolicyAllow("/twilio/video/rooms.participants.subscribe-rules/update")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.subscribe-rules/update")
 
     /** Represents a Participant's Track Subscription, managing which media streams participants
       * receive.
       */
     case object VideoRoomsParticipantsSubscribedTracksRead
-        extends PolicyAllow("/twilio/video/rooms.participants.subscribed-tracks/read")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.subscribed-tracks/read")
 
     /** Represents a Participant's Track Subscription, managing which media streams participants
       * receive.
       */
     case object VideoRoomsParticipantsSubscribedTracksList
-        extends PolicyAllow("/twilio/video/rooms.participants.subscribed-tracks/list")
+        extends ApiKeyPolicy("/twilio/video/rooms.participants.subscribed-tracks/list")
 
     /** Single-track, single-media room recordings. */
-    case object VideoRoomsRecordingsRead extends PolicyAllow("/twilio/video/rooms.recordings/read")
+    case object VideoRoomsRecordingsRead extends ApiKeyPolicy("/twilio/video/rooms.recordings/read")
 
     /** Single-track, single-media room recordings. */
-    case object VideoRoomsRecordingsList extends PolicyAllow("/twilio/video/rooms.recordings/list")
+    case object VideoRoomsRecordingsList extends ApiKeyPolicy("/twilio/video/rooms.recordings/list")
 
     /** Multi-party communications session where participants share real-time audio and video
       * tracks.
       */
-    case object VideoRoomsRead extends PolicyAllow("/twilio/video/rooms/read")
+    case object VideoRoomsRead extends ApiKeyPolicy("/twilio/video/rooms/read")
 
     /** Multi-party communications session where participants share real-time audio and video
       * tracks.
       */
-    case object VideoRoomsList extends PolicyAllow("/twilio/video/rooms/list")
+    case object VideoRoomsList extends ApiKeyPolicy("/twilio/video/rooms/list")
 
     /** Multi-party communications session where participants share real-time audio and video
       * tracks.
       */
-    case object VideoRoomsCreate extends PolicyAllow("/twilio/video/rooms/create")
+    case object VideoRoomsCreate extends ApiKeyPolicy("/twilio/video/rooms/create")
 
     /** Multi-party communications session where participants share real-time audio and video
       * tracks.
       */
-    case object VideoRoomsUpdate extends PolicyAllow("/twilio/video/rooms/update")
+    case object VideoRoomsUpdate extends ApiKeyPolicy("/twilio/video/rooms/update")
 
     /** Transcriptions in video rooms. */
     case object VideoRoomsTranscriptionsRead
-        extends PolicyAllow("/twilio/video/rooms.transcriptions/read")
+        extends ApiKeyPolicy("/twilio/video/rooms.transcriptions/read")
 
     /** Transcriptions in video rooms. */
     case object VideoRoomsTranscriptionsList
-        extends PolicyAllow("/twilio/video/rooms.transcriptions/list")
+        extends ApiKeyPolicy("/twilio/video/rooms.transcriptions/list")
 
     /** Transcriptions in video rooms. */
     case object VideoRoomsTranscriptionsCreate
-        extends PolicyAllow("/twilio/video/rooms.transcriptions/create")
+        extends ApiKeyPolicy("/twilio/video/rooms.transcriptions/create")
 
     /** Transcriptions in video rooms. */
     case object VideoRoomsTranscriptionsUpdate
-        extends PolicyAllow("/twilio/video/rooms.transcriptions/update")
+        extends ApiKeyPolicy("/twilio/video/rooms.transcriptions/update")
 
     /** Media file created as a result of applying a set of media processing operations onto a
       * number of source Recordings.
       */
-    case object VideoCompositionsRead extends PolicyAllow("/twilio/video/compositions/read")
+    case object VideoCompositionsRead extends ApiKeyPolicy("/twilio/video/compositions/read")
 
     /** Media file created as a result of applying a set of media processing operations onto a
       * number of source Recordings.
       */
-    case object VideoCompositionsList extends PolicyAllow("/twilio/video/compositions/list")
+    case object VideoCompositionsList extends ApiKeyPolicy("/twilio/video/compositions/list")
 
     /** Media file created as a result of applying a set of media processing operations onto a
       * number of source Recordings.
       */
-    case object VideoCompositionsCreate extends PolicyAllow("/twilio/video/compositions/create")
+    case object VideoCompositionsCreate extends ApiKeyPolicy("/twilio/video/compositions/create")
 
     /** Media file created as a result of applying a set of media processing operations onto a
       * number of source Recordings.
       */
-    case object VideoCompositionsDelete extends PolicyAllow("/twilio/video/compositions/delete")
+    case object VideoCompositionsDelete extends ApiKeyPolicy("/twilio/video/compositions/delete")
 
     /** Composition settings for account. */
     case object VideoCompositionsCompositionSettingsRead
-        extends PolicyAllow("/twilio/video/compositions.composition-settings/read")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-settings/read")
 
     /** Composition settings for account. */
     case object VideoCompositionsCompositionSettingsUpdate
-        extends PolicyAllow("/twilio/video/compositions.composition-settings/update")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-settings/update")
 
     /** Recording composition hooks. */
     case object VideoCompositionsCompositionHooksRead
-        extends PolicyAllow("/twilio/video/compositions.composition-hooks/read")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-hooks/read")
 
     /** Recording composition hooks. */
     case object VideoCompositionsCompositionHooksList
-        extends PolicyAllow("/twilio/video/compositions.composition-hooks/list")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-hooks/list")
 
     /** Recording composition hooks. */
     case object VideoCompositionsCompositionHooksCreate
-        extends PolicyAllow("/twilio/video/compositions.composition-hooks/create")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-hooks/create")
 
     /** Recording composition hooks. */
     case object VideoCompositionsCompositionHooksUpdate
-        extends PolicyAllow("/twilio/video/compositions.composition-hooks/update")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-hooks/update")
 
     /** Recording composition hooks. */
     case object VideoCompositionsCompositionHooksDelete
-        extends PolicyAllow("/twilio/video/compositions.composition-hooks/delete")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-hooks/delete")
 
     /** Recording composition hooks. */
     case object VideoCompositionsCompositionHooksAll
-        extends PolicyAllow("/twilio/video/compositions.composition-hooks/*")
+        extends ApiKeyPolicy("/twilio/video/compositions.composition-hooks/*")
 
-    override val values: IndexedSeq[PolicyAllow] = findValues
+    override val values: IndexedSeq[ApiKeyPolicy] = findValues
   }
 }

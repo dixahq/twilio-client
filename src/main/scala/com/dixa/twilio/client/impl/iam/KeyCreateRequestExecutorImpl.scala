@@ -68,7 +68,7 @@ private[client] class KeyCreateRequestExecutorImpl()(
 
       policy_allow match {
         case Some(pStrings) =>
-          withFlags.withPolicyAllow(pStrings.flatMap(ApiKey.PolicyAllow.fromTwilioString))
+          withFlags.withPolicyAllow(pStrings.flatMap(ApiKey.ApiKeyPolicy.fromTwilioString))
         case None =>
           withFlags
       }

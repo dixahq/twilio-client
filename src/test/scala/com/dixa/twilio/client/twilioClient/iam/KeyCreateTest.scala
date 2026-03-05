@@ -102,7 +102,7 @@ final class KeyCreateTest extends TwilioClientTest {
         val apiKey = result.getOrElse(fail(s"Expected success, got $result"))
         apiKey match {
           case withPolicy: ApiKey.HasPolicyAllow =>
-            assert(withPolicy.policyAllow === Set(ApiKey.PolicyAllow.ConferencesRead))
+            assert(withPolicy.policyAllow === Set(ApiKey.ApiKeyPolicy.ConferencesRead))
           case _ => fail("Expected ApiKey to have policyAllow")
         }
       }
