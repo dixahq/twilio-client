@@ -52,12 +52,19 @@ private[client] class KeyCreateRequestExecutorImpl()(
       friendly_name: String,
       flags: Option[Set[String]] = None
   ) {
-    def toModel: ApiKey = ApiKey(
-      sid = ApiKey.Sid(sid),
-      secret = ApiKey.Secret(secret),
-      friendlyName = ApiKey.FriendlyName(friendly_name),
-      flags = flags.getOrElse(Set.empty).flatMap(ApiKey.Flag.fromTwilioString)
-    )
+    def toModel: ApiKey = {
+      val base = ApiKey(
+        sid = ApiKey.Sid(sid),
+        friendlyName = ApiKey.FriendlyName(friendly_name)
+      ).withSecret(ApiKey.Secret(secret))
+
+      flags match {
+        case Some(fStrings) =>
+          base.withFlags(fStrings.flatMap(ApiKey.Flag.fromTwilioString))
+        case None =>
+          base
+      }
+    }
   }
 
   private implicit val keyCreateJsonRepReader: Reader[KeyCreateJsonRep] =

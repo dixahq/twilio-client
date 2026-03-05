@@ -4,11 +4,7 @@ import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.iam.KeyReadRequestExecutor
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{
-  ExistingKey,
-  KeyReadException,
-  KeyReadRequest
-}
+import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -47,7 +43,7 @@ private[client] class KeyReadRequestExecutorImpl()(
   ): KeyReadException.Unspecified = KeyReadException.Unspecified(msg, cause)
 
   private case class KeyJsonRep(sid: String, friendly_name: String) {
-    def toModel: ExistingKey = ExistingKey(
+    def toModel: ApiKey = ApiKey(
       sid = ApiKey.Sid(sid),
       friendlyName = ApiKey.FriendlyName(friendly_name)
     )
@@ -64,7 +60,7 @@ private[client] class KeyReadRequestExecutorImpl()(
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       responseEntity: HttpEntityString
-  ): List[Either[KeyReadException, ExistingKey]] =
+  ): List[Either[KeyReadException, ApiKey]] =
     responseEntity.parse[KeyListJsonRep]() match {
       case Left(ex) =>
         List(Left(KeyReadException.Unspecified(Some(ex.cause.getMessage), Some(ex.cause))))

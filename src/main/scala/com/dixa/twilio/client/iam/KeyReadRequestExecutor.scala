@@ -17,7 +17,7 @@ trait KeyReadRequestExecutor
     extends MultipleResponseRequestExecutor[
       KeyReadRequest,
       KeyReadException,
-      KeyReadRequestExecutor.ExistingKey,
+      ApiKey,
       KeyReadRequest.BuilderStartState
     ] {
 
@@ -29,11 +29,6 @@ trait KeyReadRequestExecutor
 }
 
 object KeyReadRequestExecutor {
-
-  /** A summary of an existing API key, as returned by the list endpoint. Does not include the
-    * secret (which is only available at key creation time).
-    */
-  final case class ExistingKey(sid: ApiKey.Sid, friendlyName: ApiKey.FriendlyName)
 
   sealed trait KeyReadRequest {
     def accountSid: TwilioAccount.Sid
