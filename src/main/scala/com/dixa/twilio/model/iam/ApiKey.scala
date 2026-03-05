@@ -1957,6 +1957,11 @@ object ApiKey {
     case object TaskRouterWorkspacesDelete
         extends PolicyAllow("/twilio/taskrouter/workspaces/delete")
 
+    /** Query information on a phone number so that you can make a trusted interaction with the
+      * user.
+      */
+    case object LookupPhoneNumbersRead extends PolicyAllow("/twilio/lookup/phone-numbers/read")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
