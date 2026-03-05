@@ -1381,8 +1381,211 @@ object ApiKey {
       */
     case object VerifyAccessTokenCreate extends PolicyAllow("/twilio/verify/access-token/create")
 
-    /** A single verification attempt of an Entity using a Factor. */
-    case object VerifyChallengeUpdate extends PolicyAllow("/twilio/verify/challenge/update")
+    /** The US App to Person (A2P) Messaging Service Use Case Resource allows you to fetch possible
+      * A2P use cases for a Messaging Service.
+      */
+    case object MessagingServicesUsa2pUsecaseList
+        extends PolicyAllow("/twilio/messaging/services.usa2p-usecase/list")
+
+    /** Represents a phone number associated to a Messaging Service. */
+    case object MessagingServicesPhonenumbersRead
+        extends PolicyAllow("/twilio/messaging/services.phonenumbers/read")
+
+    /** Represents a phone number associated to a Messaging Service. */
+    case object MessagingServicesPhonenumbersList
+        extends PolicyAllow("/twilio/messaging/services.phonenumbers/list")
+
+    /** Represents a phone number associated to a Messaging Service. */
+    case object MessagingServicesPhonenumbersCreate
+        extends PolicyAllow("/twilio/messaging/services.phonenumbers/create")
+
+    /** Represents a phone number associated to a Messaging Service. */
+    case object MessagingServicesPhonenumbersDelete
+        extends PolicyAllow("/twilio/messaging/services.phonenumbers/delete")
+
+    /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
+      * Messaging Service.
+      */
+    case object MessagingServicesUsa2pCampaignRead
+        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/read")
+
+    /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
+      * Messaging Service.
+      */
+    case object MessagingServicesUsa2pCampaignList
+        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/list")
+
+    /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
+      * Messaging Service.
+      */
+    case object MessagingServicesUsa2pCampaignCreate
+        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/create")
+
+    /** The US App to Person (A2P) Campaign Resource allows you to create a US A2P Campaign for a
+      * Messaging Service.
+      */
+    case object MessagingServicesUsa2pCampaignDelete
+        extends PolicyAllow("/twilio/messaging/services.usa2p-campaign/delete")
+
+    /** Represents a channel sender that is associated with a Messaging Service, such as WhatsApp.
+      */
+    case object MessagingServicesChannelsendersRead
+        extends PolicyAllow("/twilio/messaging/services.channelsenders/read")
+
+    /** Represents a channel sender that is associated with a Messaging Service, such as WhatsApp.
+      */
+    case object MessagingServicesChannelsendersList
+        extends PolicyAllow("/twilio/messaging/services.channelsenders/list")
+
+    /** Represents the short codes associated to a Messaging Service. */
+    case object MessagingServicesShortcodesRead
+        extends PolicyAllow("/twilio/messaging/services.shortcodes/read")
+
+    /** Represents the short codes associated to a Messaging Service. */
+    case object MessagingServicesShortcodesList
+        extends PolicyAllow("/twilio/messaging/services.shortcodes/list")
+
+    /** Represents the short codes associated to a Messaging Service. */
+    case object MessagingServicesShortcodesCreate
+        extends PolicyAllow("/twilio/messaging/services.shortcodes/create")
+
+    /** Represents the short codes associated to a Messaging Service. */
+    case object MessagingServicesShortcodesDelete
+        extends PolicyAllow("/twilio/messaging/services.shortcodes/delete")
+
+    /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
+    case object MessagingServicesAlphasendersRead
+        extends PolicyAllow("/twilio/messaging/services.alphasenders/read")
+
+    /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
+    case object MessagingServicesAlphasendersList
+        extends PolicyAllow("/twilio/messaging/services.alphasenders/list")
+
+    /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
+    case object MessagingServicesAlphasendersCreate
+        extends PolicyAllow("/twilio/messaging/services.alphasenders/create")
+
+    /** Represents an Alphanumeric Sender ID (alpha sender) associated with a Messaging Service. */
+    case object MessagingServicesAlphasendersDelete
+        extends PolicyAllow("/twilio/messaging/services.alphasenders/delete")
+
+    /** Represents a set of configurable behavior for sending and receiving messages. */
+    case object MessagingServicesAll extends PolicyAllow("/twilio/messaging/services/*")
+
+    /** Represents a set of configurable behavior for sending and receiving messages. */
+    case object MessagingServicesRead extends PolicyAllow("/twilio/messaging/services/read")
+
+    /** Represents a set of configurable behavior for sending and receiving messages. */
+    case object MessagingServicesList extends PolicyAllow("/twilio/messaging/services/list")
+
+    /** Represents a set of configurable behavior for sending and receiving messages. */
+    case object MessagingServicesCreate extends PolicyAllow("/twilio/messaging/services/create")
+
+    /** Represents a set of configurable behavior for sending and receiving messages. */
+    case object MessagingServicesUpdate extends PolicyAllow("/twilio/messaging/services/update")
+
+    /** Represents a set of configurable behavior for sending and receiving messages. */
+    case object MessagingServicesDelete extends PolicyAllow("/twilio/messaging/services/delete")
+
+    /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
+      * Sender can send to a particular ISO country code.
+      */
+    case object MessagingServicesDestinationAlphaSendersRead
+        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/read")
+
+    /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
+      * Sender can send to a particular ISO country code.
+      */
+    case object MessagingServicesDestinationAlphaSendersList
+        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/list")
+
+    /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
+      * Sender can send to a particular ISO country code.
+      */
+    case object MessagingServicesDestinationAlphaSendersCreate
+        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/create")
+
+    /** Represents a Destination Alpha Sender associated with a Messaging Service. Destination Alpha
+      * Sender can send to a particular ISO country code.
+      */
+    case object MessagingServicesDestinationAlphaSendersDelete
+        extends PolicyAllow("/twilio/messaging/services.destination-alpha-senders/delete")
+
+    /** Represents an inbound or outbound message. */
+    case object MessagingMessagesAll extends PolicyAllow("/twilio/messaging/messages/*")
+
+    /** Represents an inbound or outbound message. */
+    case object MessagingMessagesRead extends PolicyAllow("/twilio/messaging/messages/read")
+
+    /** Represents an inbound or outbound message. */
+    case object MessagingMessagesList extends PolicyAllow("/twilio/messaging/messages/list")
+
+    /** Represents an inbound or outbound message. */
+    case object MessagingMessagesCreate extends PolicyAllow("/twilio/messaging/messages/create")
+
+    /** Represents an inbound or outbound message. */
+    case object MessagingMessagesUpdate extends PolicyAllow("/twilio/messaging/messages/update")
+
+    /** Represents an inbound or outbound message. */
+    case object MessagingMessagesDelete extends PolicyAllow("/twilio/messaging/messages/delete")
+
+    /** The MessageFeedback subresource represents the reported outcome of tracking the performance
+      * of a user action taken by the recipient of the message.
+      */
+    case object MessagingMessagesFeedbackCreate
+        extends PolicyAllow("/twilio/messaging/messages.feedback/create")
+
+    /** Represents templated messages for messaging use cases. */
+    case object MessagingContentTemplatesRead
+        extends PolicyAllow("/twilio/messaging/content-templates/read")
+
+    /** Represents templated messages for messaging use cases. */
+    case object MessagingContentTemplatesList
+        extends PolicyAllow("/twilio/messaging/content-templates/list")
+
+    /** Represents templated messages for messaging use cases. */
+    case object MessagingContentTemplatesCreate
+        extends PolicyAllow("/twilio/messaging/content-templates/create")
+
+    /** Represents templated messages for messaging use cases. */
+    case object MessagingContentTemplatesDelete
+        extends PolicyAllow("/twilio/messaging/content-templates/delete")
+
+    /** Provides a simple API to pull real-time, account specific pricing. */
+    case object MessagingPricingRead extends PolicyAllow("/twilio/messaging/pricing/read")
+
+    /** Provides a simple API to pull real-time, account specific pricing. */
+    case object MessagingPricingList extends PolicyAllow("/twilio/messaging/pricing/list")
+
+    /** This resource retrieves a list of United States phone numbers that have been deactivated by
+      * mobile carriers.
+      */
+    case object MessagingDeactivationsList
+        extends PolicyAllow("/twilio/messaging/deactivations/list")
+
+    /** Represents a Whatsapp Sender. */
+    case object MessagingWhatsappSendersAll
+        extends PolicyAllow("/twilio/messaging/whatsapp-senders/*")
+
+    /** Represents a Whatsapp Sender. */
+    case object MessagingWhatsappSendersRead
+        extends PolicyAllow("/twilio/messaging/whatsapp-senders/read")
+
+    /** Represents a Whatsapp Sender. */
+    case object MessagingWhatsappSendersList
+        extends PolicyAllow("/twilio/messaging/whatsapp-senders/list")
+
+    /** Represents a Whatsapp Sender. */
+    case object MessagingWhatsappSendersCreate
+        extends PolicyAllow("/twilio/messaging/whatsapp-senders/create")
+
+    /** Represents a Whatsapp Sender. */
+    case object MessagingWhatsappSendersUpdate
+        extends PolicyAllow("/twilio/messaging/whatsapp-senders/update")
+
+    /** Represents a Whatsapp Sender. */
+    case object MessagingWhatsappSendersDelete
+        extends PolicyAllow("/twilio/messaging/whatsapp-senders/delete")
 
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
