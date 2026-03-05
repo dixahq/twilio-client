@@ -118,5 +118,10 @@ final class ApiKeyTest extends AnyWordSpec {
         ApiKey.PolicyAllow.fromTwilioString("/twilio/phone-numbers/active-numbers/*")
       assert(policy === Some(ApiKey.PolicyAllow.PhoneNumbersActiveNumbersAll))
     }
+
+    "correctly parse BillingUsageRead policy" in {
+      val policy = ApiKey.PolicyAllow.fromTwilioString("/twilio/billing/usage/read")
+      assert(policy === Some(ApiKey.PolicyAllow.BillingUsageRead))
+    }
   }
 }

@@ -2371,6 +2371,9 @@ object ApiKey {
     case object PhoneNumbersActiveNumbersDelete
         extends PolicyAllow("/twilio/phone-numbers/active-numbers/delete")
 
+    /** Access to usage details on console */
+    case object BillingUsageRead extends PolicyAllow("/twilio/billing/usage/read")
+
     override val values: IndexedSeq[PolicyAllow] = findValues
   }
 }
