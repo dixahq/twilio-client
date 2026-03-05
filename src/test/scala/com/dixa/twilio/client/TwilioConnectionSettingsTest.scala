@@ -56,7 +56,7 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
           edgeLocation = PublicEdgeLocation.Dublin
         )
         val result   = instance.hostNameFor(ApiSubDomain.Iam)
-        val expected = "iam.ie1.twilio.com"
+        val expected = "iam.dublin.ie1.twilio.com"
         assert(result === expected)
       }
 

@@ -80,5 +80,40 @@ final class ApiKeyTest extends AnyWordSpec {
       assert(key.dateCreated === dateCreated)
       assert(key.dateUpdated === dateUpdated)
     }
+
+    "correctly implement equals, hashCode and toString" in {
+      val sid                     = ApiKey.Sid("SK123")
+      val secret                  = ApiKey.Secret("secret")
+      val name                    = ApiKey.FriendlyName("name")
+      val flags: Set[ApiKey.Flag] = Set(ApiKey.Flag.Restricted)
+      val dateCreated             = java.time.Instant.parse("2023-01-01T00:00:00Z")
+      val dateUpdated             = java.time.Instant.parse("2023-01-01T00:01:00Z")
+
+      val key1 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret)
+      val key2 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret)
+      val key3 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret).withFlags(flags)
+      val key4 = ApiKey(sid, name, dateCreated, dateUpdated).withSecret(secret).withFlags(flags)
+
+      assert(key1 === key2)
+      assert(key1.hashCode() === key2.hashCode())
+      assert(
+        key1.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=None, policyAllowOpt=None, dateCreated=$dateCreated, dateUpdated=$dateUpdated)"
+      )
+
+      assert(key3 === key4)
+      assert(key3.hashCode() === key4.hashCode())
+      assert(
+        key3.toString === s"ApiKey(sid=$sid, secretOpt=Some($secret), friendlyName=$name, flagsOpt=Some($flags), policyAllowOpt=None, dateCreated=$dateCreated, dateUpdated=$dateUpdated)"
+      )
+
+      assert(key1 !== key3)
+      assert(key1.hashCode() !== key3.hashCode())
+
+      val keyNoSecret = ApiKey(sid, name, dateCreated, dateUpdated)
+      assert(keyNoSecret.secretOpt === None)
+      assert(
+        keyNoSecret.toString === s"ApiKey(sid=$sid, secretOpt=None, friendlyName=$name, flagsOpt=None, policyAllowOpt=None, dateCreated=$dateCreated, dateUpdated=$dateUpdated)"
+      )
+    }
   }
 }
