@@ -3,7 +3,7 @@ package com.dixa.twilio.client.twilioClient.iam
 import com.dixa.twilio.client.iam.KeyCreateRequestExecutor
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.iam.{ApiKey, TwilioAccount}
+import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy, TwilioAccount}
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
@@ -102,7 +102,7 @@ final class KeyCreateTest extends TwilioClientTest {
         val apiKey = result.getOrElse(fail(s"Expected success, got $result"))
         apiKey match {
           case withPolicy: ApiKey.HasPolicyAllow =>
-            assert(withPolicy.policyAllow === Set(ApiKey.ApiKeyPolicy.ConferencesRead))
+            assert(withPolicy.policyAllow === Set(ApiKeyPolicy.ConferencesRead))
           case _ => fail("Expected ApiKey to have policyAllow")
         }
       }

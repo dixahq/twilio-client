@@ -8,7 +8,7 @@ import com.dixa.twilio.client.iam.KeyCreateRequestExecutor.{KeyCreateException, 
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.iam.ApiKey
+import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy}
 
 import scala.concurrent.ExecutionContext
 
@@ -68,7 +68,7 @@ private[client] class KeyCreateRequestExecutorImpl()(
 
       policy_allow match {
         case Some(pStrings) =>
-          withFlags.withPolicyAllow(pStrings.flatMap(ApiKey.ApiKeyPolicy.fromTwilioString))
+          withFlags.withPolicyAllow(pStrings.flatMap(ApiKeyPolicy.fromTwilioString))
         case None =>
           withFlags
       }

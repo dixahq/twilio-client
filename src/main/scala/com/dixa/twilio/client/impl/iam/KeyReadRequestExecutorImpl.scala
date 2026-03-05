@@ -1,14 +1,14 @@
 package com.dixa.twilio.client.impl.iam
 
+import com.dixa.twilio.client.iam.KeyReadRequestExecutor
+import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
+import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
+import com.dixa.twilio.model.iam.{ApiKey, ApiKeyPolicy}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor
-import com.dixa.twilio.client.iam.KeyReadRequestExecutor.{KeyReadException, KeyReadRequest}
-import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString, QueryParamBuilder}
-import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
-import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.iam.ApiKey
 
 import scala.concurrent.ExecutionContext
 
@@ -63,7 +63,7 @@ private[client] class KeyReadRequestExecutorImpl()(
 
       policy_allow match {
         case Some(pStrings) =>
-          withFlags.withPolicyAllow(pStrings.flatMap(ApiKey.ApiKeyPolicy.fromTwilioString))
+          withFlags.withPolicyAllow(pStrings.flatMap(ApiKeyPolicy.fromTwilioString))
         case None =>
           withFlags
       }
