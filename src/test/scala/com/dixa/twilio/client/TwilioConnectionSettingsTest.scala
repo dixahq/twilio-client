@@ -49,7 +49,7 @@ final class TwilioConnectionSettingsTest extends AnyWordSpec {
         assert(result === expected)
       }
 
-      "work with the Iam sub domain, using only region (no edge location)" in {
+      "work with the Iam sub domain" in {
         val instance = createInstance(
           "twilio.com",
           region = Region.Ireland1,
