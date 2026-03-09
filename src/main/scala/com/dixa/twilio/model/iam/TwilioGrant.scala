@@ -1,5 +1,7 @@
 package com.dixa.twilio.model.iam
 
+import com.dixa.twilio.model.general.Application
+
 sealed trait TwilioGrant {
   def grantKey: String
   def toJson: String
@@ -9,13 +11,13 @@ object TwilioGrant {
 
   final case class VoiceGrant(
       incomingAllow: Boolean,
-      outgoingAppSid: Option[String] // TwiML app
+      outgoingAppSid: Option[Application.Sid] // TwiML app
   ) extends TwilioGrant {
     val grantKey       = "voice"
     def toJson: String = {
       val incoming = s""""incoming":{"allow":$incomingAllow}"""
       val outgoing = outgoingAppSid
-        .map(sid => s""","outgoing":{"application_sid":"$sid"}""")
+        .map(sid => s""","outgoing":{"application_sid":"${sid.toString}"}""")
         .getOrElse("")
       s"{$incoming$outgoing}"
     }

@@ -4,7 +4,9 @@ import com.dixa.twilio.client.iam.{AccessTokenCreateRequestExecutor, TwilioClien
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.Region
+import com.dixa.twilio.model.general.Application
 import com.dixa.twilio.model.iam.TwilioGrant.VoiceGrant
+
 import scala.concurrent.duration._
 
 final class AccessTokenCreateTest extends TwilioClientTest {
@@ -22,7 +24,7 @@ final class AccessTokenCreateTest extends TwilioClientTest {
           .addGrant(
             VoiceGrant(
               incomingAllow = true,
-              outgoingAppSid = Some("APaaaabbbbccccdddd1111222233334444")
+              outgoingAppSid = Some(Application.Sid.unsafe("APaaaabbbbccccdddd1111222233334444"))
             )
           )
           .build()
