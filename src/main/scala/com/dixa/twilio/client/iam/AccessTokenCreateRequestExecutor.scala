@@ -1,130 +1,132 @@
 package com.dixa.twilio.client.iam
 
-import java.util.Base64
-import javax.crypto.Mac
-import javax.crypto.spec.SecretKeySpec
+import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
+import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
+import com.dixa.twilio.model.Region
+import com.dixa.twilio.model.iam.{AccessToken, TwilioGrant}
 
-class AccessTokenCreateRequestExecutor {
+import scala.concurrent.duration.FiniteDuration
 
-  // TODO UVA all the keys, secrets and such will come from connection settings of executor
-  //  conn settings will be provided by telephony when calling this executor
+/** AccessToken creation doesn't follow the standard Twilio REST API request/response pattern as it
+  * is generated locally using API Key credentials.
+  */
+trait AccessTokenCreateRequestExecutor
+    extends SingleRequestExecutor[
+      AccessTokenCreateRequestExecutor.AccessTokenCreateRequest,
+      AccessTokenCreateRequestExecutor.AccessTokenCreateException,
+      AccessToken,
+      AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder
+    ] {
 
-//  val voiceGrants = Map(
-//    "voice" -> Map(
-//      "incoming" -> Map("allow" -> true),
-//      "outgoing" -> Map("application_sid" -> appSid)
-//    )
-//  )
+  override protected type ApiExceptionWrapper =
+    AccessTokenCreateRequestExecutor.AccessTokenCreateException.Api
 
-  sealed trait TwilioRegion {
-    def value: String
+  override protected type UnspecifiedException =
+    AccessTokenCreateRequestExecutor.AccessTokenCreateException.Unspecified
+
+  override protected def createBuilderStartState()
+      : AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder =
+    AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder.empty
+}
+
+object AccessTokenCreateRequestExecutor {
+
+  sealed trait AccessTokenCreateRequest {
+    def identity: String
+    def region: Option[Region]
+    def grants: Seq[TwilioGrant]
+    def ttl: FiniteDuration
   }
 
-  object TwilioRegion {
-    case object US1 extends TwilioRegion { val value = "us1" }
-    case object IE1 extends TwilioRegion { val value = "ie1" }
-    case object AU1 extends TwilioRegion { val value = "au1" }
-  }
+  object AccessTokenCreateRequest {
+    type BuilderStartState = Builder
 
-  sealed trait TwilioGrant {
-    def grantKey: String
-    def toJson: String
-  }
+    final class Builder private (
+        identity: Option[String],
+        region: Option[Region],
+        grants: Seq[TwilioGrant],
+        ttl: FiniteDuration
+    ) {
+      def withIdentity(identity: String): Builder = new Builder(
+        Some(identity),
+        region,
+        grants,
+        ttl
+      )
 
-  object TwilioGrant {
+      def withRegion(region: Region): Builder = new Builder(
+        identity,
+        Some(region),
+        grants,
+        ttl
+      )
 
-    case class VoiceGrant(
-        incomingAllow: Boolean = true,
-        outgoingAppSid: Option[String] = None // TwiML app
-    ) extends TwilioGrant {
-      val grantKey       = "voice"
-      def toJson: String = {
-        val incoming = s""""incoming":{"allow":$incomingAllow}"""
-        val outgoing = outgoingAppSid
-          .map(sid => s""","outgoing":{"application_sid":"$sid"}""")
-          .getOrElse("")
-        s"{$incoming$outgoing}"
+      def withGrants(grants: Seq[TwilioGrant]): Builder = new Builder(
+        identity,
+        region,
+        grants,
+        ttl
+      )
+
+      def addGrant(grant: TwilioGrant): Builder = new Builder(
+        identity,
+        region,
+        grants :+ grant,
+        ttl
+      )
+
+      def withTtl(ttl: FiniteDuration): Builder = new Builder(
+        identity,
+        region,
+        grants,
+        ttl
+      )
+
+      def build(): AccessTokenCreateRequest = {
+        require(identity.isDefined, "identity must be provided")
+        RequestImpl(identity.get, region, grants, ttl)
       }
     }
 
-    case class ChatGrant(
-        serviceSid: String
-    ) extends TwilioGrant {
-      val grantKey       = "chat"
-      def toJson: String =
-        s"""{"service_sid":"$serviceSid"}"""
+    object Builder {
+      import scala.concurrent.duration._
+      val empty = new Builder(None, None, Nil, 1.hour)
     }
 
-    case class SyncGrant(
-        serviceSid: String
-    ) extends TwilioGrant {
-      val grantKey       = "sync"
-      def toJson: String =
-        s"""{"service_sid":"$serviceSid"}"""
-    }
-
-    case class VideoGrant(
-        room: Option[String] = None
-    ) extends TwilioGrant {
-      val grantKey       = "video"
-      def toJson: String =
-        room.map(r => s"""{"room":"$r"}""").getOrElse("{}")
-    }
-
-    case class RawGrant(
-        grantKey: String,
-        json: String
-    ) extends TwilioGrant {
-      def toJson: String = json
-    }
+    def build(fun: BuilderStartState => AccessTokenCreateRequest): AccessTokenCreateRequest =
+      fun(Builder.empty)
   }
 
-  def generateAccessToken(
+  private final case class RequestImpl(
       identity: String,
-      region: Option[TwilioRegion],
+      region: Option[Region],
       grants: Seq[TwilioGrant],
-      ttl: Long
-  ): String = {
+      ttl: FiniteDuration
+  ) extends AccessTokenCreateRequest
 
-    // TODO UVA convert to a proper error returned to client
-    require(ttl > 0 && ttl <= 86400, s"ttl must be between 1 and 86400 seconds, got $ttl")
+  sealed trait AccessTokenCreateException extends RuntimeException
 
-    val now     = System.currentTimeMillis() / 1000
-    val encoder = Base64.getUrlEncoder.withoutPadding()
+  object AccessTokenCreateException {
+    final case class Api(cause: ApiException)
+        extends RuntimeException(cause)
+        with AccessTokenCreateException
+        with ApiExceptionWrapper
 
-    def base64(s: String): String =
-      encoder.encodeToString(s.getBytes("UTF-8"))
+    final case class InvalidTtl(ttlSeconds: Long)
+        extends RuntimeException(s"ttl must be between 1 and 86400 seconds, got $ttlSeconds")
+        with AccessTokenCreateException
 
-    val regionValue = region.getOrElse(TwilioRegion.US1).value
-    val regionField = s""""region":"$regionValue","""
+    final case class Unspecified(msg: Option[String], cause: Option[Throwable])
+        extends RuntimeException(
+          msg.getOrElse("Unspecified error happened trying to create access token"),
+          cause.orNull
+        )
+        with AccessTokenCreateException
 
-    val grantsFields = grants
-      .map(g => s""""${g.grantKey}":${g.toJson}""")
-      .mkString(",")
-
-    val grantsJson = s""""identity":"$identity",$grantsFields"""
-
-    val rawPayload =
-      s"""{""" +
-        s""""jti":"$apiKeySid-$now",""" +
-        s""""iss":"$apiKeySid",""" +
-        s""""sub":"$accountSid",""" +
-        s""""iat":$now,""" +
-        s""""exp":${now + ttl},""" +
-        regionField +
-        s""""grants":{$grantsJson}""" +
-        s"""}"""
-
-    val header  = base64("""{"typ":"JWT","alg":"HS256","cty":"twilio-fpa;v=1"}""")
-    val payload = base64(rawPayload)
-
-    val signingInput = s"$header.$payload"
-
-    val mac = Mac.getInstance("HmacSHA256")
-    mac.init(new SecretKeySpec(apiKeySecret.getBytes("UTF-8"), "HmacSHA256"))
-    val signature = encoder.encodeToString(mac.doFinal(signingInput.getBytes("UTF-8")))
-
-    s"$signingInput.$signature"
+    object Unspecified {
+      def apply(msg: String): Unspecified      = new Unspecified(Some(msg), None)
+      def apply(cause: Throwable): Unspecified =
+        new Unspecified(Option(cause.getMessage), Some(cause))
+    }
   }
-
 }

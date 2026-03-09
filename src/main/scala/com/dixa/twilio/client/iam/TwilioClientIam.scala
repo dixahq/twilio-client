@@ -61,4 +61,8 @@ trait TwilioClientIam {
     * Twilio documentation: [[https://www.twilio.com/docs/iam/api/authtoken]]
     */
   def authTokenPromote: AuthTokenPromoteRequestExecutor
+
+  /** Create an Access Token for client-side SDKs.
+    */
+  def accessTokenCreate: AccessTokenCreateRequestExecutor
 }

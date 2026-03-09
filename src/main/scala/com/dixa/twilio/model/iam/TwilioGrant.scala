@@ -1,0 +1,54 @@
+package com.dixa.twilio.model.iam
+
+sealed trait TwilioGrant {
+  def grantKey: String
+  def toJson: String
+}
+
+object TwilioGrant {
+
+  final case class VoiceGrant(
+      incomingAllow: Boolean,
+      outgoingAppSid: Option[String] // TwiML app
+  ) extends TwilioGrant {
+    val grantKey       = "voice"
+    def toJson: String = {
+      val incoming = s""""incoming":{"allow":$incomingAllow}"""
+      val outgoing = outgoingAppSid
+        .map(sid => s""","outgoing":{"application_sid":"$sid"}""")
+        .getOrElse("")
+      s"{$incoming$outgoing}"
+    }
+  }
+
+  final case class ChatGrant(
+      serviceSid: String
+  ) extends TwilioGrant {
+    val grantKey       = "chat"
+    def toJson: String =
+      s"""{"service_sid":"$serviceSid"}"""
+  }
+
+  final case class SyncGrant(
+      serviceSid: String
+  ) extends TwilioGrant {
+    val grantKey       = "sync"
+    def toJson: String =
+      s"""{"service_sid":"$serviceSid"}"""
+  }
+
+  final case class VideoGrant(
+      room: Option[String]
+  ) extends TwilioGrant {
+    val grantKey       = "video"
+    def toJson: String =
+      room.map(r => s"""{"room":"$r"}""").getOrElse("{}")
+  }
+
+  final case class RawGrant(
+      grantKey: String,
+      json: String
+  ) extends TwilioGrant {
+    def toJson: String = json
+  }
+}

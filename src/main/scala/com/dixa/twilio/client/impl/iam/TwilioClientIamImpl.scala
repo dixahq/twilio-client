@@ -3,6 +3,7 @@ package com.dixa.twilio.client.impl.iam
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.stream.Materializer
 import com.dixa.twilio.client.iam.{
+  AccessTokenCreateRequestExecutor,
   AccountCreateRequestExecutor,
   AccountFetchRequestExecutor,
   AccountUpdateRequestExecutor,
@@ -41,4 +42,7 @@ private[impl] final class TwilioClientIamImpl()(
 
   override val authTokenPromote: AuthTokenPromoteRequestExecutor =
     new AuthTokenPromoteRequestExecutorImpl()
+
+  override val accessTokenCreate: AccessTokenCreateRequestExecutor =
+    new AccessTokenCreateRequestExecutorImpl()
 }
