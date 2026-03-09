@@ -6,6 +6,9 @@ import com.dixa.twilio.client.iam.{
   AccountCreateRequestExecutor,
   AccountFetchRequestExecutor,
   AccountUpdateRequestExecutor,
+  ApiKeyCreateRequestExecutor,
+  ApiKeyDeleteRequestExecutor,
+  ApiKeyReadRequestExecutor,
   AuthTokenPromoteRequestExecutor,
   AuthTokenSecondaryCreateRequestExecutor,
   AuthTokenSecondaryDeleteRequestExecutor,
@@ -41,4 +44,10 @@ private[impl] final class TwilioClientIamImpl()(
 
   override val authTokenPromote: AuthTokenPromoteRequestExecutor =
     new AuthTokenPromoteRequestExecutorImpl()
+
+  override val apiKeyCreate: ApiKeyCreateRequestExecutor = new ApiKeyCreateRequestExecutorImpl()
+
+  override val apiKeyRead: ApiKeyReadRequestExecutor = new ApiKeyReadRequestExecutorImpl()
+
+  override val apiKeyDelete: ApiKeyDeleteRequestExecutor = new ApiKeyDeleteRequestExecutorImpl()
 }

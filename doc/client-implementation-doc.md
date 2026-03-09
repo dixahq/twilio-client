@@ -766,14 +766,91 @@ This ensures at compile time that:
 - Exactly one of `url`, `twiml`, or `applicationSid` is set.
 - `method` can only be set if `url` was set first.
 
+#### Advanced Strategy 2 Trick: Evidence Trait (Type Class)
+
+When you need to enforce complex truth tables between multiple parameters that cannot be easily expressed with simple `=:=` constraints in a single `build()` method, or when you would otherwise need to "overload" the `build()` method (which is not possible in Scala 2 due to erasure), you can use an auxiliary "evidence" trait (or type class) to define valid combinations of phantom types.
+
+For example:
+- Standard key $\rightarrow$ Policy must NOT be set.
+- Restricted key $\rightarrow$ Policy MUST be set.
+
+**How it works:**
+
+1. Define the phantom type parameters as in Strategy 2.
+2. Define an auxiliary trait (e.g., `ValidConfiguration`) inside the `PhantomTypes` object that takes the dependent phantom types as parameters.
+3. Provide implicit instances for every **valid** combination of those types in the trait's companion object.
+4. The `build()` method then requires an implicit instance of this trait.
+
+**Example** (based on `KeyCreateRequestExecutor`):
+
+```scala
+object KeyCreateRequest {
+  object PhantomTypes {
+    sealed trait KeyTypeSet
+    sealed trait KeyTypeSetTrue extends KeyTypeSet
+    sealed trait KeyTypeSetFalse extends KeyTypeSet
+
+    sealed trait PolicySet
+    sealed trait PolicySetTrue extends PolicySet
+    sealed trait PolicySetFalse extends PolicySet
+
+    sealed trait PolicyRequired extends PolicySet
+    sealed trait PolicyRequiredTrue extends PolicyRequired
+    sealed trait PolicyRequiredFalse extends PolicyRequired
+
+    // The auxiliary evidence trait
+    sealed trait ValidPolicyCombinations[
+      PR <: PhantomTypes.PolicyRequired,
+      PS <: PhantomTypes.PolicySet
+    ]
+    object ValidPolicyCombinations {
+      // Case 1: Standard Key (Policy not required, Policy not set)
+      implicit val standard: ValidPolicyCombinations[
+        PhantomTypes.PolicyRequiredFalse,
+        PhantomTypes.PolicySetFalse
+      ] = new ValidPolicyCombinations[
+        PhantomTypes.PolicyRequiredFalse,
+        PhantomTypes.PolicySetFalse
+      ] {}
+
+      // Case 2: Restricted Key (Policy required, Policy IS set)
+      implicit val restricted: ValidPolicyCombinations[
+        PhantomTypes.PolicyRequiredTrue,
+        PhantomTypes.PolicySetTrue
+      ] = new ValidPolicyCombinations[
+        PhantomTypes.PolicyRequiredTrue,
+        PhantomTypes.PolicySetTrue
+      ] {}
+    }
+  }
+
+  final class Builder[
+    AS <: PhantomTypes.AccountSidSet,
+    KT <: PhantomTypes.KeyTypeSet,
+    PS <: PhantomTypes.PolicySet,
+    DP <: PhantomTypes.DisallowPolicy,
+    PR <: PhantomTypes.PolicyRequired
+  ] ... {
+    def build()(
+      implicit evAccount: AS =:= AccountSidSetTrue,
+      evKeyType: KT =:= KeyTypeSetTrue,
+      evValid: ValidPolicyCombinations[PR, PS]
+    ): KeyCreateRequest = ...
+  }
+}
+```
+
+This approach is highly flexible and keeps the validation logic centralized in the `ValidPolicyCombinations` object rather than cluttering the `build()` method signature.
+
 ### Choosing a strategy
 
-| Concern | Strategy 1 (single type param) | Strategy 2 (multiple type params) |
-|---------|-------------------------------|-----------------------------------|
-| Simple required/optional fields | Yes | Yes (but overkill) |
-| Mutual exclusion ("one of X, Y, Z") | No | Yes |
-| Conditional requirements ("A requires B") | No | Yes |
-| Readability | Clean, minimal boilerplate | More verbose, but constraints are explicit |
+| Concern | Strategy 1 (single type param) | Strategy 2 (multiple type params) | Strategy 2 Advanced (evidence trait) |
+|---------|-------------------------------|-----------------------------------|--------------------------------------|
+| Simple required/optional fields | Yes | Yes (but overkill) | Yes (overkill) |
+| Mutual exclusion ("one of X, Y, Z") | No | Yes | Yes |
+| Conditional requirements ("A requires B") | No | Yes | Yes |
+| Complex state combinations / Truth tables | No | Difficult | **Yes (Best)** |
+| Readability | Clean, minimal boilerplate | Verbose | Logic is centralized |
 
 **Default to Strategy 1** unless you need cross-field constraints. If the
 Twilio endpoint has mutually exclusive parameters or conditional
