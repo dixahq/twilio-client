@@ -65,4 +65,30 @@ trait TwilioClientIam {
   /** Create an Access Token for client-side SDKs.
     */
   def accessTokenCreate: AccessTokenCreateRequestExecutor
+
+  /** Create a new Twilio API key for a given account.
+    *
+    * The returned [[com.dixa.twilio.model.iam.ApiKey]] includes the secret, which is only available
+    * at creation time. Store it securely immediately.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
+    */
+  def apiKeyCreate: ApiKeyCreateRequestExecutor
+
+  /** List all Twilio API keys for a given account.
+    *
+    * Note: the key secret is not returned in list responses.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
+    */
+  def apiKeyRead: ApiKeyReadRequestExecutor
+
+  /** Delete a Twilio API key.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
+    */
+  def apiKeyDelete: ApiKeyDeleteRequestExecutor
 }
