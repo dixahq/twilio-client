@@ -47,11 +47,11 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
           def base64(s: String): String =
             encoder.encodeToString(s.getBytes("UTF-8"))
 
-          val apiKeySid    = connSettings.accountSid.toString
-          val apiKeySecret = connSettings.authToken.asString
+          val apiKeySid    = connSettings.apiKeySid.toString
+          val apiKeySecret = connSettings.apiKeySecret.value
+          val accountSid   = connSettings.accountSid.toString
 
           val regionValue = req.region.getOrElse(Region.Us1).twilioString
-          val regionField = s""""region":"$regionValue","""
 
           val grantsFields = req.grants
             .map(g => s""""${g.grantKey}":${g.toJson}""")
@@ -63,10 +63,10 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
             s"""{""" +
               s""""jti":"$apiKeySid-$now",""" +
               s""""iss":"$apiKeySid",""" +
-              s""""sub":"${connSettings.accountSid.toString}",""" +
+              s""""sub":"$accountSid",""" +
               s""""iat":$now,""" +
               s""""exp":${now + ttlSeconds},""" +
-              regionField +
+              s""""region":"$regionValue",""" +
               s""""grants":{$grantsJson}""" +
               s"""}"""
 
