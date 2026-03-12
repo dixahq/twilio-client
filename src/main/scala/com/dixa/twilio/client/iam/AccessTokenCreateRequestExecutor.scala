@@ -15,7 +15,7 @@ trait AccessTokenCreateRequestExecutor
       AccessTokenCreateRequestExecutor.AccessTokenCreateRequest,
       AccessTokenCreateRequestExecutor.AccessTokenCreateException,
       AccessToken,
-      AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder
+      AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.BuilderStartState
     ] {
 
   override protected type ApiExceptionWrapper =
@@ -25,7 +25,7 @@ trait AccessTokenCreateRequestExecutor
     AccessTokenCreateRequestExecutor.AccessTokenCreateException.Unspecified
 
   override protected def createBuilderStartState()
-      : AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder =
+      : AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.BuilderStartState =
     AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder.empty
 }
 
@@ -39,58 +39,70 @@ object AccessTokenCreateRequestExecutor {
   }
 
   object AccessTokenCreateRequest {
-    type BuilderStartState = Builder
+    object PhantomTypes {
+      sealed trait RequestAttribute
+      sealed trait RequestIdentityAttribute extends RequestAttribute
+    }
 
-    final class Builder private (
+    type RequestRequiredAttributes =
+      PhantomTypes.RequestAttribute with PhantomTypes.RequestIdentityAttribute
+
+    type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
+
+    final class Builder[Attributes <: PhantomTypes.RequestAttribute] private (
         identity: Option[String],
         region: Option[Region],
         grants: Seq[TwilioGrant],
         ttl: FiniteDuration
     ) {
-      def withIdentity(identity: String): Builder = new Builder(
-        Some(identity),
-        region,
-        grants,
-        ttl
-      )
+      def withIdentity(
+          identity: String
+      ): Builder[Attributes with PhantomTypes.RequestIdentityAttribute] =
+        new Builder(
+          Some(identity),
+          region,
+          grants,
+          ttl
+        )
 
-      def withRegion(region: Region): Builder = new Builder(
+      def withRegion(region: Region): Builder[Attributes] = new Builder(
         identity,
         Some(region),
         grants,
         ttl
       )
 
-      def withGrants(grants: Seq[TwilioGrant]): Builder = new Builder(
+      def withGrants(grants: Seq[TwilioGrant]): Builder[Attributes] = new Builder(
         identity,
         region,
         grants,
         ttl
       )
 
-      def addGrant(grant: TwilioGrant): Builder = new Builder(
+      def addGrant(grant: TwilioGrant): Builder[Attributes] = new Builder(
         identity,
         region,
         grants :+ grant,
         ttl
       )
 
-      def withTtl(ttl: FiniteDuration): Builder = new Builder(
+      def withTtl(ttl: FiniteDuration): Builder[Attributes] = new Builder(
         identity,
         region,
         grants,
         ttl
       )
 
-      def build(): AccessTokenCreateRequest = {
-        require(identity.isDefined, "identity must be provided")
+      def build()(
+          implicit ev: Attributes =:= RequestRequiredAttributes
+      ): AccessTokenCreateRequest = {
         RequestImpl(identity.get, region, grants, ttl)
       }
     }
 
     object Builder {
       import scala.concurrent.duration._
-      val empty = new Builder(None, None, Nil, 1.hour)
+      val empty: BuilderStartState = new Builder(None, None, Nil, 1.hour)
     }
 
     def build(fun: BuilderStartState => AccessTokenCreateRequest): AccessTokenCreateRequest =
