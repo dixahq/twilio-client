@@ -49,6 +49,21 @@ object PublicEdgeLocation extends EnumWithTwilioString[PublicEdgeLocation] {
     }
   }
 
+  def fromLegacyRegion(region: LegacyRegion): PublicEdgeLocation = region match {
+    case LegacyRegion.Au1 => Sydney
+    case LegacyRegion.Br1 => SaoPaulo
+    case LegacyRegion.Ie1 => Dublin
+    case LegacyRegion.De1 => Frankfurt
+    case LegacyRegion.Jp1 => Tokyo
+    case LegacyRegion.Sg1 => Singapore
+    case LegacyRegion.Us1 => Ashburn
+    case LegacyRegion.Us2 => Umatilla
+    case LegacyRegion.Gll => Roaming
+  }
+
+  def fromLegacyRegionCode(code: String): Option[PublicEdgeLocation] =
+    LegacyRegion.values.find(_.id == code).map(fromLegacyRegion)
+
   sealed abstract class LegacyRegion(val id: String) extends EnumWithTwilioString.EnumEntry
   object LegacyRegion                                extends EnumWithTwilioString[LegacyRegion] {
 
