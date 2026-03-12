@@ -2,7 +2,6 @@ package com.dixa.twilio.client.iam
 
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
-import com.dixa.twilio.model.Region
 import com.dixa.twilio.model.iam.{AccessToken, TwilioGrant}
 
 import scala.concurrent.duration.FiniteDuration
@@ -33,7 +32,6 @@ object AccessTokenCreateRequestExecutor {
 
   sealed trait AccessTokenCreateRequest {
     def identity: String
-    def region: Option[Region]
     def grants: Seq[TwilioGrant]
     def ttl: FiniteDuration
   }
@@ -51,7 +49,6 @@ object AccessTokenCreateRequestExecutor {
 
     final class Builder[Attributes <: PhantomTypes.RequestAttribute] private (
         identity: Option[String],
-        region: Option[Region],
         grants: Seq[TwilioGrant],
         ttl: FiniteDuration
     ) {
@@ -65,28 +62,18 @@ object AccessTokenCreateRequestExecutor {
       ): Builder[Attributes with PhantomTypes.RequestIdentityAttribute] =
         new Builder(
           Some(identity),
-          region,
           grants,
           ttl
         )
 
-      def withRegion(region: Region): Builder[Attributes] = new Builder(
-        identity,
-        Some(region),
-        grants,
-        ttl
-      )
-
       def withGrants(grants: Seq[TwilioGrant]): Builder[Attributes] = new Builder(
         identity,
-        region,
         grants,
         ttl
       )
 
       def addGrant(grant: TwilioGrant): Builder[Attributes] = new Builder(
         identity,
-        region,
         grants :+ grant,
         ttl
       )
@@ -97,7 +84,6 @@ object AccessTokenCreateRequestExecutor {
         */
       def withTtl(ttl: FiniteDuration): Builder[Attributes] = new Builder(
         identity,
-        region,
         grants,
         ttl
       )
@@ -105,13 +91,13 @@ object AccessTokenCreateRequestExecutor {
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): AccessTokenCreateRequest = {
-        RequestImpl(identity.get, region, grants, ttl)
+        RequestImpl(identity.get, grants, ttl)
       }
     }
 
     object Builder {
       import scala.concurrent.duration._
-      val empty: BuilderStartState = new Builder(None, None, Nil, 1.hour)
+      val empty: BuilderStartState = new Builder(None, Nil, 1.hour)
     }
 
     def build(fun: BuilderStartState => AccessTokenCreateRequest): AccessTokenCreateRequest =
@@ -120,7 +106,6 @@ object AccessTokenCreateRequestExecutor {
 
   private final case class RequestImpl(
       identity: String,
-      region: Option[Region],
       grants: Seq[TwilioGrant],
       ttl: FiniteDuration
   ) extends AccessTokenCreateRequest

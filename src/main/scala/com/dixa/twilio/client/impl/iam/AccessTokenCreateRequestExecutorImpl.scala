@@ -13,7 +13,6 @@ import com.dixa.twilio.client.iam.AccessTokenCreateRequestExecutor.{
 }
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.Region
 import com.dixa.twilio.model.iam.TwilioGrant.{
   ChatGrant,
   RawGrant,
@@ -59,8 +58,7 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
         val apiKeySid    = connSettings.apiKeySid.toString
         val apiKeySecret = connSettings.apiKeySecret.value
         val accountSid   = connSettings.accountSid.toString
-
-        val regionValue = req.region.getOrElse(Region.Us1).twilioString
+        val regionValue  = connSettings.region.twilioString
 
         val grantsFields = req.grants
           .map(grantToJson)

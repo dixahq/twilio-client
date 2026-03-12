@@ -3,7 +3,6 @@ package com.dixa.twilio.client.twilioClient.iam
 import com.dixa.twilio.client.iam.{AccessTokenCreateRequestExecutor, TwilioClientIam}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
-import com.dixa.twilio.model.Region
 import com.dixa.twilio.model.general.Application
 import com.dixa.twilio.model.iam.TwilioGrant.VoiceGrant
 
@@ -20,7 +19,6 @@ final class AccessTokenCreateTest extends TwilioClientTest {
 
         val request = AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder.empty
           .withIdentity("user123")
-          .withRegion(Region.Ireland1)
           .addGrant(
             VoiceGrant(
               incomingAllow = true,
