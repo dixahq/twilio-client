@@ -55,6 +55,11 @@ object AccessTokenCreateRequestExecutor {
         grants: Seq[TwilioGrant],
         ttl: FiniteDuration
     ) {
+
+      /** Identity is a shared identifier that applies across all grants in the access token. It
+        * associates the access token with a specific user, and all the grants assigned to the
+        * access token operate under that identity.
+        */
       def withIdentity(
           identity: String
       ): Builder[Attributes with PhantomTypes.RequestIdentityAttribute] =

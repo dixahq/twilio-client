@@ -2,6 +2,11 @@ package com.dixa.twilio.model.iam
 
 import com.dixa.twilio.model.general.Application
 
+/** Represents a grant that defines which Twilio product and actions the Access Token holder is
+  * permitted to use. Each grant is product-specific and is embedded in the Access Token's payload.
+  * A single Access Token can carry multiple grants. More info:
+  * https://www.twilio.com/docs/iam/access-tokens
+  */
 sealed trait TwilioGrant {
   def grantKey: String
   def toJson: String
