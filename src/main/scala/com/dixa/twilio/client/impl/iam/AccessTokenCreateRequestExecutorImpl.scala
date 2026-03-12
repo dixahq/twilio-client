@@ -14,7 +14,14 @@ import com.dixa.twilio.client.iam.AccessTokenCreateRequestExecutor.{
 import com.dixa.twilio.client.impl.{ApiSubDomain, HttpEntityString}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.Region
-import com.dixa.twilio.model.iam.AccessToken
+import com.dixa.twilio.model.iam.TwilioGrant.{
+  ChatGrant,
+  RawGrant,
+  SyncGrant,
+  VideoGrant,
+  VoiceGrant
+}
+import com.dixa.twilio.model.iam.{AccessToken, TwilioGrant}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -56,7 +63,8 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
         val regionValue = req.region.getOrElse(Region.Us1).twilioString
 
         val grantsFields = req.grants
-          .map(g => s""""${g.grantKey}":${g.toJson}""")
+          .map(grantToJson)
+          .map { case (key, json) => s""""$key":$json""" }
           .mkString(",")
 
         val grantsJson = s""""identity":"${req.identity}",$grantsFields"""
@@ -87,6 +95,19 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
           Left(createUnspecifiedException(Some("Error generating AccessToken"), Some(e)))
       }
     }
+  }
+
+  private def grantToJson(grant: TwilioGrant): (String, String) = grant match {
+    case VoiceGrant(incomingAllow, outgoingAppSid) =>
+      val incoming = s""""incoming":{"allow":$incomingAllow}"""
+      val outgoing = outgoingAppSid
+        .map(sid => s""","outgoing":{"application_sid":"$sid"}""")
+        .getOrElse("")
+      "voice" -> s"{$incoming$outgoing}"
+    case ChatGrant(serviceSid)    => "chat"   -> s"""{"service_sid":"$serviceSid"}"""
+    case SyncGrant(serviceSid)    => "sync"   -> s"""{"service_sid":"$serviceSid"}"""
+    case VideoGrant(room)         => "video"  -> room.map(r => s"""{"room":"$r"}""").getOrElse("{}")
+    case RawGrant(grantKey, json) => grantKey -> json
   }
 
   // These are not used since run is overridden, but must be implemented to satisfy the trait
