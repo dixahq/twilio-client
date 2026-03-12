@@ -91,6 +91,10 @@ object AccessTokenCreateRequestExecutor {
         ttl
       )
 
+      /** The time-to-live (TTL) of an Access Token, i.e. the duration for which the token is valid
+        * after it is generated. Must be between 1 and 86400 seconds (24 hours). More than 24 hours
+        * will make SDK throw error. More info: https://www.twilio.com/docs/iam/access-tokens
+        */
       def withTtl(ttl: FiniteDuration): Builder[Attributes] = new Builder(
         identity,
         region,
