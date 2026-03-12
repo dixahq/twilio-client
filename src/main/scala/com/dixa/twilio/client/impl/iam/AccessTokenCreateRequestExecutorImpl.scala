@@ -103,11 +103,12 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
       val outgoing = outgoingAppSid
         .map(sid => s""","outgoing":{"application_sid":"$sid"}""")
         .getOrElse("")
-      "voice" -> s"{$incoming$outgoing}"
-    case ChatGrant(serviceSid)    => "chat"   -> s"""{"service_sid":"$serviceSid"}"""
-    case SyncGrant(serviceSid)    => "sync"   -> s"""{"service_sid":"$serviceSid"}"""
-    case VideoGrant(room)         => "video"  -> room.map(r => s"""{"room":"$r"}""").getOrElse("{}")
-    case RawGrant(grantKey, json) => grantKey -> json
+      grant.twilioString -> s"{$incoming$outgoing}"
+    case ChatGrant(serviceSid) => grant.twilioString -> s"""{"service_sid":"$serviceSid"}"""
+    case SyncGrant(serviceSid) => grant.twilioString -> s"""{"service_sid":"$serviceSid"}"""
+    case VideoGrant(room)      =>
+      grant.twilioString -> room.map(r => s"""{"room":"$r"}""").getOrElse("{}")
+    case RawGrant(_, json) => grant.twilioString -> json
   }
 
   // These are not used since run is overridden, but must be implemented to satisfy the trait
