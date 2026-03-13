@@ -2,7 +2,7 @@ package com.dixa.twilio.client
 
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.model.{PublicEdgeLocation, Region}
-import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
+import com.dixa.twilio.model.iam.{ApiKey, AuthToken, TwilioAccount}
 import com.dixa.twilio.model.voice.Trunk
 
 import java.time.Instant
@@ -20,6 +20,9 @@ object TwilioTestConstants {
   val trunkPassword1AsString         = "TwilioTestConstants.trunkPassword1"
   val trunkPassword1: Trunk.Password = Trunk.Password(trunkPassword1AsString)
 
+  val apiKeySid: ApiKey.Sid       = ApiKey.Sid("SKXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+  val apiKeySecret: ApiKey.Secret = ApiKey.Secret("testApiKeySecret")
+
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
     TwilioEndpoint(baseHostName = "localhost", port = port),
     region = Region.Us1,
@@ -28,6 +31,8 @@ object TwilioTestConstants {
     accountSid = accountSid,
     authToken = authToken,
     parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
-    timeouts = TwilioConnectionSettings.Timeouts.default
+    timeouts = TwilioConnectionSettings.Timeouts.default,
+    apiKeySid = apiKeySid,
+    apiKeySecret = apiKeySecret
   )
 }

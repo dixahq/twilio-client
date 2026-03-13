@@ -4,7 +4,7 @@ import com.dixa.twilio.client
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.model.{PublicEdgeLocation, Region}
-import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
+import com.dixa.twilio.model.iam.{ApiKey, AuthToken, TwilioAccount}
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
@@ -54,7 +54,9 @@ final case class TwilioConnectionSettings(
     accountSid: TwilioAccount.Sid,
     authToken: AuthToken,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
-    timeouts: TwilioConnectionSettings.Timeouts
+    timeouts: TwilioConnectionSettings.Timeouts,
+    apiKeySid: ApiKey.Sid,
+    apiKeySecret: ApiKey.Secret
 ) {
 
   // Tiny optimization. Precalculate if it's localhost, so that we don't have to do it on every call to hostNameFor.

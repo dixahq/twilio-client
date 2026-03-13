@@ -62,6 +62,10 @@ trait TwilioClientIam {
     */
   def authTokenPromote: AuthTokenPromoteRequestExecutor
 
+  /** Create an Access Token for client-side SDKs.
+    */
+  def accessTokenCreate: AccessTokenCreateRequestExecutor
+
   /** Create a new Twilio API key for a given account.
     *
     * The returned [[com.dixa.twilio.model.iam.ApiKey]] includes the secret, which is only available
