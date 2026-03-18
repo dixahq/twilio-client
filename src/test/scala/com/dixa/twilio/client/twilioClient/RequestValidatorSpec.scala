@@ -35,7 +35,7 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
     "ApiVersion"          -> "2010-04-01"
   )
 
-  "RequestValidator" should "encript the full sms inbound request using the twilio auth token as signature " in {
+  "RequestValidator" should "encrypt the full sms inbound request using the twilio auth token as signature " in {
     val authToken        = AuthToken.UnknownType("fakeToken")
     val xTwilioSignature = XTwilioSignature("Q/7zRqLlBg4gVAKs1a6nU9J86ps=")
 
@@ -58,13 +58,13 @@ class RequestValidatorSpec extends AnyFlatSpec with Matchers with ScalaFutures {
 
     val authToken = AuthToken.UnknownType("fakeToken")
     // This signature is the one being expected for the provided url when the query parameter has been re encoded.
-    // So it basical the signature expected for this URL:
+    // So it is basically the signature expected for this URL:
     // "https://example.com/v1/e7a04fc4-bba8-48a8-a92e-013606a188a6/sms?param1=that%3Ahas%3Achars%3Athat%3Awas%3Aoriginally%3Aencoded&param2=NoSpecialCharsHere#fragmentPart
     val xTwilioSignature = XTwilioSignature("AnDR/MYzuZ2PHA35hzHbE67m9Hw=")
 
     // provide an url where the correct url encoded %3A in the query params, has been replaced with the actual : that they represent.
     // URI abstraction layers will often print them like that, to make it more human readable, and as such, it's easy
-    // to end up providing such value to the validator if you not carefully.
+    // to end up providing such value to the validator if you're not careful.
     val requestUrl =
       "https://example.com/v1/e7a04fc4-bba8-48a8-a92e-013606a188a6/sms?param1=that:has:chars:that:was:originally:encoded&param2=NoSpecialCharsHere#fragmentPart"
     val validationSignature =

@@ -96,7 +96,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
           TwilioIncomingPhoneNumber(
             TwilioPhoneNumber.Sid.unsafe("PN8ac53dd1867205c550ee4d41a35c0896"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            TwilioIncomingPhoneNumber.FriendlyName("STAGING-2 NUMBER"),
+            TwilioIncomingPhoneNumber.FriendlyName("Example Phone Number"),
             PhoneNumberE164.unsafe("+4578750614"),
             PhoneNumberCapabilitiesSummary(voice = true, sms = false, mms = false, fax = false)
           )
@@ -212,7 +212,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |    {
       |      "sid": "PN8ac53dd1867205c550ee4d41a35c0896",
       |      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-      |      "friendly_name": "STAGING-2 NUMBER",
+      |      "friendly_name": "Example Phone Number",
       |      "phone_number": "+4578750614",
       |      "voice_url": "https://example.com/v1/twilio/incoming",
       |      "voice_method": "POST",
