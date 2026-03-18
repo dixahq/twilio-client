@@ -15,7 +15,7 @@ object ChannelSenderTestSharedFixture {
   val channelSender: ChannelSender.WhatsappSender = ChannelSender.WhatsappSender(
     status = ChannelSender.Status.Online,
     profile = ChannelSender.Profile
-      .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA"),
+      .WhatsappProfile(phoneNumberDisplayName = "Example WABA"),
     senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
     sid = channelSenderSid,
     webhooks = Webhooks(

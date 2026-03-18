@@ -302,7 +302,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
                           |          _.withAccountSid(connSettings.accountSid)
                           |            .withConferenceSid(conferenceSid)
                           |            .withCallSid(callSid)
-                          |            .withHoldUrl(CallbackUrl("http://test.dixa.io"))
+                          |            .withHoldUrl(CallbackUrl("http://example.com"))
                           |            .build()
                           |        )""".stripMargin)
       }
@@ -315,7 +315,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
                           |    .withConferenceSid(conferenceSid)
                           |    .withCallSid(callSid)
                           |    .withHoldTrue()
-                          |    .withHoldUrl(CallbackUrl("http://test.dixa.io"))
+                          |    .withHoldUrl(CallbackUrl("http://example.com"))
                           |    .withHoldFalse()
                           |    .build()
                           |)""".stripMargin)
@@ -328,7 +328,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
                           |  _.withAccountSid(connSettings.accountSid)
                           |    .withConferenceSid(conferenceSid)
                           |    .withCallSid(callSid)
-                          |    .withHoldUrl(CallbackUrl("http://test.dixa.io"))
+                          |    .withHoldUrl(CallbackUrl("http://example.com"))
                           |    .build()
                           |)""".stripMargin)
       }

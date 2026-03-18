@@ -95,7 +95,7 @@ final class ChannelSendersListTest extends TwilioClientTest with ChannelSenderTe
       |    {
       |      "status": "ONLINE",
       |      "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |      },
       |      "url": "https://messaging.twilio.com/v2/Channels/Senders/XEcfd04c72e3397a53e24bd6c7408aff83",
       |      "sender_id": "whatsapp:+4552511283",
