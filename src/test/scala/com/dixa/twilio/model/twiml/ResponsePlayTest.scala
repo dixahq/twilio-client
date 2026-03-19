@@ -1,3 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Dixa A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.dtmf.{DtmfDigit, DtmfString}
@@ -11,7 +26,7 @@ final class ResponsePlayTest extends AnyWordSpec {
       "Be able to construct a response with a simple Play directive in a typesafe manner," +
         " that plays a sound file from a URL" in {
 
-          val urlAsString               = "https://www.dixa.com"
+          val urlAsString               = "https://example.com"
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addPlay { playBuilder =>
@@ -64,7 +79,7 @@ final class ResponsePlayTest extends AnyWordSpec {
           responseBuilder
             .addPlay { playBuilder =>
               playBuilder
-                .withSoundFileUrl("https://www.dixa.com")
+                .withSoundFileUrl("https://example.com")
                 .withDigits(DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`))
                 .withLoop(88)
                 .build()
@@ -74,14 +89,14 @@ final class ResponsePlayTest extends AnyWordSpec {
 
         val xmlCompact         = result.xmlCompact
         val expectedXmlCompact =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234" loop="88">https://www.dixa.com</Play></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234" loop="88">https://example.com</Play></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
         val xmlPretty         = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
-             |  <Play digits="234" loop="88">https://www.dixa.com</Play>
+             |  <Play digits="234" loop="88">https://example.com</Play>
              |</Response>""".stripMargin
         assert(xmlPretty === expectedXmlPretty)
       }
@@ -123,8 +138,8 @@ final class ResponsePlayTest extends AnyWordSpec {
            |          responseBuilder
            |            .addPlay { playBuilder =>
            |              playBuilder
-           |                .withSoundFileUrl("https://www.dixa.com/")
-           |                .withSoundFileUrl("https://www.dixa.com/about/")
+           |                .withSoundFileUrl("https://example.com/")
+           |                .withSoundFileUrl("https://example.com/about/")
            |                .build
            |            }
            |            .buildVerified()
@@ -156,7 +171,7 @@ final class ResponsePlayTest extends AnyWordSpec {
             |          responseBuilder
             |            .addPlay { playBuilder =>
             |              playBuilder
-            |                .withSoundFileUrl("https://www.dixa.com")
+            |                .withSoundFileUrl("https://example.com")
             |                .withLoop(88)
             |                .withLoop(99)
             |                .build()
