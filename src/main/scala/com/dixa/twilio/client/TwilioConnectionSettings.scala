@@ -1,10 +1,25 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Dixa A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.dixa.twilio.client
 
 import com.dixa.twilio.client
 import com.dixa.twilio.client.TwilioConnectionSettings.TwilioEndpoint
 import com.dixa.twilio.client.impl.ApiSubDomain
 import com.dixa.twilio.model.{PublicEdgeLocation, Region}
-import com.dixa.twilio.model.iam.{AuthToken, TwilioAccount}
+import com.dixa.twilio.model.iam.{ApiKey, AuthToken, TwilioAccount}
 import enumeratum.{Enum, EnumEntry}
 
 import scala.collection.immutable
@@ -54,7 +69,9 @@ final case class TwilioConnectionSettings(
     accountSid: TwilioAccount.Sid,
     authToken: AuthToken,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
-    timeouts: TwilioConnectionSettings.Timeouts
+    timeouts: TwilioConnectionSettings.Timeouts,
+    apiKeySid: ApiKey.Sid,
+    apiKeySecret: ApiKey.Secret
 ) {
 
   // Tiny optimization. Precalculate if it's localhost, so that we don't have to do it on every call to hostNameFor.

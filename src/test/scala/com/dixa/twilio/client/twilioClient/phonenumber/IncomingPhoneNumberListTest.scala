@@ -1,3 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Dixa A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.dixa.twilio.client.twilioClient.phonenumber
 
 import org.apache.pekko.NotUsed
@@ -96,7 +111,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
           TwilioIncomingPhoneNumber(
             TwilioPhoneNumber.Sid.unsafe("PN8ac53dd1867205c550ee4d41a35c0896"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            TwilioIncomingPhoneNumber.FriendlyName("STAGING-2 NUMBER"),
+            TwilioIncomingPhoneNumber.FriendlyName("Example Phone Number"),
             PhoneNumberE164.unsafe("+4578750614"),
             PhoneNumberCapabilitiesSummary(voice = true, sms = false, mms = false, fax = false)
           )
@@ -126,7 +141,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |      "voice_caller_id_lookup": false,
       |      "date_created": "Thu, 27 Jan 2022 11:58:21 +0000",
       |      "date_updated": "Mon, 31 Jan 2022 16:43:48 +0000",
-      |      "sms_url": "https://sms-twilio.euw1.stag.dixa.io/v1/e7a04fc4-bba8-48a8-a92e-013606a188a6/sms",
+      |      "sms_url": "https://example.com/v1/e7a04fc4-bba8-48a8-a92e-013606a188a6/sms",
       |      "sms_method": "POST",
       |      "sms_fallback_url": "",
       |      "sms_fallback_method": "POST",
@@ -166,7 +181,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |      "voice_caller_id_lookup": false,
       |      "date_created": "Tue, 02 Nov 2021 10:44:40 +0000",
       |      "date_updated": "Mon, 10 Jan 2022 14:53:10 +0000",
-      |      "sms_url": "https://twilio-hooks.sms.stag.dixa.io/receiveSms",
+      |      "sms_url": "https://example.com/receiveSms",
       |      "sms_method": "POST",
       |      "sms_fallback_url": "",
       |      "sms_fallback_method": "POST",
@@ -212,9 +227,9 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |    {
       |      "sid": "PN8ac53dd1867205c550ee4d41a35c0896",
       |      "account_sid": "ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-      |      "friendly_name": "STAGING-2 NUMBER",
+      |      "friendly_name": "Example Phone Number",
       |      "phone_number": "+4578750614",
-      |      "voice_url": "https://twilio.euw1.stag2.dixa.io/v1/twilio/incoming",
+      |      "voice_url": "https://example.com/v1/twilio/incoming",
       |      "voice_method": "POST",
       |      "voice_fallback_url": "",
       |      "voice_fallback_method": "POST",
@@ -233,7 +248,7 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
       |        "mms": false,
       |        "fax": false
       |      },
-      |      "status_callback": "https://twilio.euw1.stag2.dixa.io/v1/twilio/completed",
+      |      "status_callback": "https://example.com/v1/twilio/completed",
       |      "status_callback_method": "POST",
       |      "api_version": "2010-04-01",
       |      "voice_application_sid": "",
