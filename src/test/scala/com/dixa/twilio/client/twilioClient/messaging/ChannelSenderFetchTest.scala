@@ -137,7 +137,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
     """{
       |    "status": "ONLINE",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "whatsapp:+4552511283",
@@ -154,7 +154,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
     """{
       |    "status": "ONLINE",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "@twitterhandel",
@@ -171,7 +171,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
     """{
       |    "status": "ONLINE",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "+4552511283",

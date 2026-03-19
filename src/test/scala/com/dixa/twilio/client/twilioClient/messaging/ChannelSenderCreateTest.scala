@@ -152,7 +152,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
           ),
           webhooks = Webhooks(None, None, None),
           profile = ChannelSender.Profile
-            .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+            .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
         )
 
         val expected = Right(
@@ -198,12 +198,12 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
             callback = Some(
               Webhook(
                 Post,
-                "https://whatsapp-twilio.dixa.io/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message"
+                "https://example.com/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message"
               )
             )
           ),
           profile = ChannelSender.Profile
-            .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+            .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
         )
 
         val expected =
@@ -336,7 +336,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
             ),
             webhooks = Webhooks(None, None, None),
             profile = ChannelSender.Profile
-              .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+              .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
           )
 
           val expected = Left(
@@ -366,7 +366,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       ),
       webhooks = Webhooks(None, None, None),
       profile = ChannelSender.Profile
-        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+        .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
     )
 
     val createRequest1 = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
@@ -376,7 +376,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       ),
       webhooks = Webhooks(None, None, None),
       profile = ChannelSender.Profile
-        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+        .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
@@ -396,7 +396,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "webhook": { },
       |    "configuration": {
@@ -410,7 +410,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     s"""{
        |    "status": "ONLINE",
        |    "profile": {
-       |        "name": "Dixa Twilio WABA"
+       |        "name": "Example WABA"
        |    },
        |    "offline_reasons": null,
        |    "sender_id": "whatsapp:+4552511283",
@@ -431,7 +431,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "webhook": { },
       |    "configuration": {
@@ -445,7 +445,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "webhook": { },
       |    "configuration": {
@@ -460,13 +460,13 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "configuration": {
       |        "waba_id": "316806161514452BROKENID"
       |    },
       |      "webhook": {
-      |      "callback_url": "https://whatsapp-twilio.dixa.io/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message",
+      |      "callback_url": "https://example.com/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message",
       |      "callback_method": "POST"
       |  }
       |}

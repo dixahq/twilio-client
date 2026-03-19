@@ -26,7 +26,7 @@ final class ResponsePlayTest extends AnyWordSpec {
       "Be able to construct a response with a simple Play directive in a typesafe manner," +
         " that plays a sound file from a URL" in {
 
-          val urlAsString               = "https://www.dixa.com"
+          val urlAsString               = "https://example.com"
           val result: Response.Verified = Response.build { responseBuilder =>
             responseBuilder
               .addPlay { playBuilder =>
@@ -79,7 +79,7 @@ final class ResponsePlayTest extends AnyWordSpec {
           responseBuilder
             .addPlay { playBuilder =>
               playBuilder
-                .withSoundFileUrl("https://www.dixa.com")
+                .withSoundFileUrl("https://example.com")
                 .withDigits(DtmfString(DtmfDigit.`2`, DtmfDigit.`3`, DtmfDigit.`4`))
                 .withLoop(88)
                 .build()
@@ -89,14 +89,14 @@ final class ResponsePlayTest extends AnyWordSpec {
 
         val xmlCompact         = result.xmlCompact
         val expectedXmlCompact =
-          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234" loop="88">https://www.dixa.com</Play></Response>"""
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Play digits="234" loop="88">https://example.com</Play></Response>"""
         assert(xmlCompact == expectedXmlCompact)
 
         val xmlPretty         = result.xmlPretty
         val expectedXmlPretty =
           s"""<?xml version="1.0" encoding="UTF-8"?>
              |<Response>
-             |  <Play digits="234" loop="88">https://www.dixa.com</Play>
+             |  <Play digits="234" loop="88">https://example.com</Play>
              |</Response>""".stripMargin
         assert(xmlPretty === expectedXmlPretty)
       }
@@ -138,8 +138,8 @@ final class ResponsePlayTest extends AnyWordSpec {
            |          responseBuilder
            |            .addPlay { playBuilder =>
            |              playBuilder
-           |                .withSoundFileUrl("https://www.dixa.com/")
-           |                .withSoundFileUrl("https://www.dixa.com/about/")
+           |                .withSoundFileUrl("https://example.com/")
+           |                .withSoundFileUrl("https://example.com/about/")
            |                .build
            |            }
            |            .buildVerified()
@@ -171,7 +171,7 @@ final class ResponsePlayTest extends AnyWordSpec {
             |          responseBuilder
             |            .addPlay { playBuilder =>
             |              playBuilder
-            |                .withSoundFileUrl("https://www.dixa.com")
+            |                .withSoundFileUrl("https://example.com")
             |                .withLoop(88)
             |                .withLoop(99)
             |                .build()

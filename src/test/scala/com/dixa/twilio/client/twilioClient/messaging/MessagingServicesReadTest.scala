@@ -108,7 +108,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
             inboundRequestWebhook = None,
             fallbackWebhook = Some(
               TwilioMessagingService
-                .FallbackWebhook(HttpMethod.Post, new URL("https://fallback.dixa.com"))
+                .FallbackWebhook(HttpMethod.Post, new URL("https://fallback.example.com"))
             ),
             statusCallback = Some(MessageStatusCallback(new URL("https://www.example.com"))),
             useInboundWebhookOnNumber = TwilioMessagingService.UseInboundWebhookOnNumber.False
@@ -230,7 +230,7 @@ final class MessagingServicesReadTest extends TwilioClientTest {
       |      "synchronous_validation": true,
       |      "inbound_request_url": null,
       |      "inbound_method": "POST",
-      |      "fallback_url": "https://fallback.dixa.com",
+      |      "fallback_url": "https://fallback.example.com",
       |      "fallback_method": "POST",
       |      "status_callback": "https://www.example.com",
       |      "usecase": "marketing",
