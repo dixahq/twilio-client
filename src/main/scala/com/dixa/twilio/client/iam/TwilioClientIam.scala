@@ -1,3 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Dixa A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.dixa.twilio.client.iam
 
 trait TwilioClientIam {
@@ -61,4 +76,34 @@ trait TwilioClientIam {
     * Twilio documentation: [[https://www.twilio.com/docs/iam/api/authtoken]]
     */
   def authTokenPromote: AuthTokenPromoteRequestExecutor
+
+  /** Create an Access Token for client-side SDKs.
+    */
+  def accessTokenCreate: AccessTokenCreateRequestExecutor
+
+  /** Create a new Twilio API key for a given account.
+    *
+    * The returned [[com.dixa.twilio.model.iam.ApiKey]] includes the secret, which is only available
+    * at creation time. Store it securely immediately.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
+    */
+  def apiKeyCreate: ApiKeyCreateRequestExecutor
+
+  /** List all Twilio API keys for a given account.
+    *
+    * Note: the key secret is not returned in list responses.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
+    */
+  def apiKeyRead: ApiKeyReadRequestExecutor
+
+  /** Delete a Twilio API key.
+    *
+    * @see
+    *   https://www.twilio.com/docs/iam/api-keys/key-resource-v1
+    */
+  def apiKeyDelete: ApiKeyDeleteRequestExecutor
 }

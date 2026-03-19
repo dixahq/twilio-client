@@ -1,3 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Dixa A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.dixa.twilio.model
 
 import scala.collection.immutable
@@ -48,6 +63,21 @@ object PublicEdgeLocation extends EnumWithTwilioString[PublicEdgeLocation] {
       case None    => throw new NoSuchElementException(s"$s is not a member of Region enum")
     }
   }
+
+  def fromLegacyRegion(region: LegacyRegion): PublicEdgeLocation = region match {
+    case LegacyRegion.Au1 => Sydney
+    case LegacyRegion.Br1 => SaoPaulo
+    case LegacyRegion.Ie1 => Dublin
+    case LegacyRegion.De1 => Frankfurt
+    case LegacyRegion.Jp1 => Tokyo
+    case LegacyRegion.Sg1 => Singapore
+    case LegacyRegion.Us1 => Ashburn
+    case LegacyRegion.Us2 => Umatilla
+    case LegacyRegion.Gll => Roaming
+  }
+
+  def fromLegacyRegionCode(code: String): Option[PublicEdgeLocation] =
+    LegacyRegion.values.find(_.id == code).map(fromLegacyRegion)
 
   sealed abstract class LegacyRegion(val id: String) extends EnumWithTwilioString.EnumEntry
   object LegacyRegion                                extends EnumWithTwilioString[LegacyRegion] {

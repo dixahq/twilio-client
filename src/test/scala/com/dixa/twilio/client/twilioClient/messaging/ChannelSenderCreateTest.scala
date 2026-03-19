@@ -1,3 +1,18 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Dixa A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.ApiException.BadRequestException
@@ -137,7 +152,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
           ),
           webhooks = Webhooks(None, None, None),
           profile = ChannelSender.Profile
-            .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+            .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
         )
 
         val expected = Right(
@@ -183,12 +198,12 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
             callback = Some(
               Webhook(
                 Post,
-                "https://whatsapp-twilio.dixa.io/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message"
+                "https://example.com/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message"
               )
             )
           ),
           profile = ChannelSender.Profile
-            .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+            .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
         )
 
         val expected =
@@ -321,7 +336,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
             ),
             webhooks = Webhooks(None, None, None),
             profile = ChannelSender.Profile
-              .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+              .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
           )
 
           val expected = Left(
@@ -351,7 +366,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       ),
       webhooks = Webhooks(None, None, None),
       profile = ChannelSender.Profile
-        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+        .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
     )
 
     val createRequest1 = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
@@ -361,7 +376,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
       ),
       webhooks = Webhooks(None, None, None),
       profile = ChannelSender.Profile
-        .WhatsappProfile(phoneNumberDisplayName = "Dixa Twilio WABA")
+        .WhatsappProfile(phoneNumberDisplayName = "Example WABA")
     )
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
@@ -381,7 +396,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "webhook": { },
       |    "configuration": {
@@ -395,7 +410,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     s"""{
        |    "status": "ONLINE",
        |    "profile": {
-       |        "name": "Dixa Twilio WABA"
+       |        "name": "Example WABA"
        |    },
        |    "offline_reasons": null,
        |    "sender_id": "whatsapp:+4552511283",
@@ -416,7 +431,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "webhook": { },
       |    "configuration": {
@@ -430,7 +445,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "webhook": { },
       |    "configuration": {
@@ -445,13 +460,13 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
     """{
       |    "sender_id": "whatsapp:+4552511283",
       |    "profile": {
-      |        "name": "Dixa Twilio WABA"
+      |        "name": "Example WABA"
       |    },
       |    "configuration": {
       |        "waba_id": "316806161514452BROKENID"
       |    },
       |      "webhook": {
-      |      "callback_url": "https://whatsapp-twilio.dixa.io/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message",
+      |      "callback_url": "https://example.com/v1/995304bc-1bd4-44d1-a3ba-4372239d269e/message",
       |      "callback_method": "POST"
       |  }
       |}
