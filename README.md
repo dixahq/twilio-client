@@ -1,3 +1,10 @@
+> **Open-sourcing in progress**
+>
+> This project is in the process of being open-sourced under the [Apache 2.0 License](LICENSE), but not
+> everything has been completed yet. If you need something that is blocking you (e.g. the library is not yet
+> published to a public Maven repository), feel free to
+> [open a GitHub issue](https://github.com/dixahq/twilio-client/issues) and we will try to prioritise it.
+
 # What is this?
 
 This is two libraries in 1:
