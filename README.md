@@ -68,14 +68,17 @@ This library uses semantic versioning.
 ## Publishing new version
 
 Versions are derived automatically from git tags using
-[sbt-dynver](https://github.com/sbt/sbt-dynver). To publish a new release:
+[sbt-dynver](https://github.com/sbt/sbt-dynver).
 
-1. Merge your PR into `master`.
-2. Tag the merge commit with a version tag: `git tag v1.2.3 && git push origin v1.2.3`
-3. The CI publish workflow will run tests and publish the artifact automatically.
+Every merge to `master` automatically bumps the **patch** version and publishes.
+For example, if the latest tag is `v1.2.3`, the next merge publishes `v1.2.4`.
 
-Between tags, the version includes the commit distance and hash (e.g.
-`1.0.0+3-abcd1234-SNAPSHOT`), so snapshot builds are always distinguishable.
+To bump the **major** or **minor** version, tag the commit manually before the
+workflow runs:
+
+```bash
+git tag v2.0.0 && git push origin v2.0.0
+```
 
 > **Note:** The publish workflow requires the following repository secrets:
 > `NEXUS_REALM`, `NEXUS_HOST`, `NEXUS_USER`, `NEXUS_PASSWORD`.

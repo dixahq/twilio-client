@@ -2,16 +2,21 @@ name: Publish
 
 on:
   push:
+    branches: [master, main]
     tags:
       - 'v*'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Skip redundant run when a tag push also triggers the branch event
+    if: github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+    permissions:
+      contents: write # Needed to push tags
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full history needed for sbt-dynver
+          fetch-depth: 0 # Full history needed for sbt-dynver and tag lookup
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
@@ -19,7 +24,30 @@ jobs:
           cache: 'sbt'
       - uses: sbt/setup-sbt@v1
       - run: sbt "scalafmtSbtCheck; scalafmtCheckAll; +test"
-      - run: |
+
+      - name: Auto-tag next patch version if no tag on this commit
+        if: "!startsWith(github.ref, 'refs/tags/v')"
+        run: |
+          # Find the latest version tag
+          LATEST_TAG=$(git tag -l 'v*' --sort=-v:refname | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            NEXT_TAG="v1.0.0"
+          else
+            # Strip the leading 'v' and split into major.minor.patch
+            VERSION="${LATEST_TAG#v}"
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+            PATCH=$(echo "$VERSION" | cut -d. -f3)
+            NEXT_TAG="v${MAJOR}.${MINOR}.$((PATCH + 1))"
+          fi
+
+          echo "Tagging as $NEXT_TAG"
+          git tag "$NEXT_TAG"
+          git push origin "$NEXT_TAG"
+
+      - name: Write Nexus credentials
+        run: |
           mkdir -p ~/.sbt
           cat > ~/.sbt/.credentials << EOF
           realm=${{ secrets.NEXUS_REALM }}
@@ -27,4 +55,5 @@ jobs:
           user=${{ secrets.NEXUS_USER }}
           password=${{ secrets.NEXUS_PASSWORD }}
           EOF
+
       - run: sbt +publish
