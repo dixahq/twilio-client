@@ -34,7 +34,7 @@ lazy val `twilio-client` = project
         else
           Some("Dixa releases repo" at "https://repo.dixa.io/content/repositories/releases/")
       },
-      scalacOptions     := scalacOpt,
+      scalacOptions      := scalacOpt,
       crossScalaVersions := Seq(scala2_13),
       libraryDependencies ++= Seq(
         // Pekko
