@@ -1,0 +1,30 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed for sbt-dynver
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'sbt'
+      - uses: sbt/setup-sbt@v1
+      - run: sbt "scalafmtSbtCheck; scalafmtCheckAll; +test"
+      - run: |
+          mkdir -p ~/.sbt
+          cat > ~/.sbt/.credentials << EOF
+          realm=${{ secrets.NEXUS_REALM }}
+          host=${{ secrets.NEXUS_HOST }}
+          user=${{ secrets.NEXUS_USER }}
+          password=${{ secrets.NEXUS_PASSWORD }}
+          EOF
+      - run: sbt +publish

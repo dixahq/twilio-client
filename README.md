@@ -67,6 +67,15 @@ This library uses semantic versioning.
 
 ## Publishing new version
 
-Create a PR for merging into `master`. Once that is done, CI pipeline will make sure to
-release a new minor version. If you want to increment major or middle version, you need
-to upate the `version.sbt` file as part of you pull request.
+Versions are derived automatically from git tags using
+[sbt-dynver](https://github.com/sbt/sbt-dynver). To publish a new release:
+
+1. Merge your PR into `master`.
+2. Tag the merge commit with a version tag: `git tag v1.2.3 && git push origin v1.2.3`
+3. The CI publish workflow will run tests and publish the artifact automatically.
+
+Between tags, the version includes the commit distance and hash (e.g.
+`1.0.0+3-abcd1234-SNAPSHOT`), so snapshot builds are always distinguishable.
+
+> **Note:** The publish workflow requires the following repository secrets:
+> `NEXUS_REALM`, `NEXUS_HOST`, `NEXUS_USER`, `NEXUS_PASSWORD`.
