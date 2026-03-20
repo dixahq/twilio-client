@@ -87,7 +87,7 @@ lazy val `twilio-client` = project
         "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
         // Vulnerability from wiremock
         "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.29" % Test, // scala-steward:off
-        "org.eclipse.jetty" % "jetty-server" % "12.0.32" % Test, // Vulnerability from wiremock
+        "org.eclipse.jetty" % "jetty-server" % "12.0.33" % Test, // Vulnerability from wiremock
         "com.fasterxml.jackson.core" % "jackson-core" % "2.21.1" % Test // Vulnerability from wiremock
       ),
       publish / skip := false,
