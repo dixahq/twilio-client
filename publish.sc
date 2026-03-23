@@ -85,4 +85,10 @@ mode match
       finally writeVersionSbt(originalContent)
 
     if code != 0 then sys.exit(code)
+
+    val tagCode = Process(Seq("gh", "release", "create", s"v$newVersion", "--title", s"v$newVersion", "--notes", "")).!
+    if tagCode != 0 then
+      System.err.println(s"\nWarning: artifact published but failed to create GitHub release tag v$newVersion.")
+      System.err.println(s"Create it manually with: gh release create v$newVersion --title v$newVersion --notes \"\"")
+
     println(s"\nPublished: $newVersion")
