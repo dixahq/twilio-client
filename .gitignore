@@ -156,3 +156,5 @@ project/plugins/project/
 *.orig
 # Junie often pipe command output to output.txt, and sometimes forget to delete it again.
 /.output.txt
+# scala-cli script build dir
+.scala-build
