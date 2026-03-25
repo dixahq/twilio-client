@@ -67,6 +67,24 @@ This library uses semantic versioning.
 
 ## Publishing new version
 
-Create a PR for merging into `master`. Once that is done, CI pipeline will make sure to
-release a new minor version. If you want to increment major or middle version, you need
-to upate the `version.sbt` file as part of you pull request.
+> **Note:** Publishing is currently done manually to the internal Dixa Nexus repository.
+> This is temporary — once publishing to Maven Central is in place, this process will be replaced.
+
+Publishing requires [Scala CLI](https://scala-cli.virtuslab.org/) and the Dixa Nexus credentials
+configured in `~/.sbt/.credentials`.
+
+Run the interactive publish script from the project root:
+
+```
+scala-cli publish.sc
+```
+
+The script will ask whether to publish a snapshot or a release:
+
+- **Snapshot:** inserts a UUID into the current version string and publishes
+  (e.g. `1.0.0-550e8400-...-SNAPSHOT`). The version in `version.sbt` is not permanently changed.
+- **Release:** fetches the latest published version from the GitHub tags, asks which part of the
+  version to bump (major, minor, or patch), and publishes the resulting version.
+  The version in `version.sbt` is not permanently changed.
+
+In both cases, `version.sbt` is restored to its original content after publishing, even if publishing fails.
