@@ -89,11 +89,11 @@ private[iam] final class AccessTokenCreateRequestExecutorImpl()(
             s""""sub":"$accountSid",""" +
             s""""iat":$now,""" +
             s""""exp":${now + ttlSeconds},""" +
-            s""""region":"$regionValue",""" +
             s""""grants":{$grantsJson}""" +
             s"""}"""
 
-        val header  = base64("""{"typ":"JWT","alg":"HS256","cty":"twilio-fpa;v=1"}""")
+        val header =
+          base64(s"""{"typ":"JWT","alg":"HS256","cty":"twilio-fpa;v=1","twr":"$regionValue"}""")
         val payload = base64(rawPayload)
 
         val signingInput = s"$header.$payload"
