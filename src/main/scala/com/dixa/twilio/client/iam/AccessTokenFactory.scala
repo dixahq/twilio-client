@@ -30,7 +30,6 @@ import com.dixa.twilio.model.iam.TwilioGrant.{
 import com.dixa.twilio.model.iam.{AccessToken, TwilioAccount, TwilioGrant}
 
 import scala.concurrent.duration.FiniteDuration
-import scala.util.Try
 
 /** Generates Twilio Access Tokens locally using API key credentials.
   *
@@ -39,23 +38,11 @@ import scala.util.Try
   *
   * Tokens have a maximum lifetime of 24 hours. See https://www.twilio.com/docs/iam/access-tokens
   * for details.
+  *
+  * Use [[AccessTokenFactory.defaultImpl]] to get an instance, or provide your own implementation in
+  * tests.
   */
-object AccessTokenFactory {
-
-  sealed trait Error extends RuntimeException
-
-  object Error {
-
-    final case class InvalidTtl(ttlSeconds: Long)
-        extends RuntimeException(
-          s"TTL must be between 1 and 86400 seconds, got $ttlSeconds"
-        )
-        with Error
-
-    final case class GenerationFailed(cause: Throwable)
-        extends RuntimeException("Failed to generate access token", cause)
-        with Error
-  }
+trait AccessTokenFactory {
 
   /** Generate an access token signed with the given API key credentials.
     *
@@ -79,67 +66,101 @@ object AccessTokenFactory {
       identity: String,
       grants: Seq[TwilioGrant],
       ttl: FiniteDuration
-  ): Either[Error, AccessToken] = {
-    val ttlSeconds = ttl.toSeconds
-    if (ttlSeconds <= 0 || ttlSeconds > 86400) {
-      Left(Error.InvalidTtl(ttlSeconds))
-    } else {
-      Try {
-        val now     = System.currentTimeMillis() / 1000
-        val encoder = Base64.getUrlEncoder.withoutPadding()
+  ): Either[AccessTokenFactory.Error, AccessToken]
+}
 
-        def base64(s: String): String = encoder.encodeToString(s.getBytes("UTF-8"))
+object AccessTokenFactory {
 
-        val apiKeySid    = credentials.apiKeySid.toString
-        val apiKeySecret = credentials.apiKeySecret.value
+  sealed trait Error extends RuntimeException
 
-        val grantsObj = ujson.Obj.from(
-          Seq("identity" -> ujson.Str(identity)) ++
-            grants.map(g => g.twilioString -> grantToJson(g))
+  object Error {
+
+    final case class InvalidTtl(ttlSeconds: Long)
+        extends RuntimeException(
+          s"TTL must be between 1 and 86400 seconds, got $ttlSeconds"
         )
+        with Error
 
-        val headerJson = ujson.write(
-          ujson.Obj(
-            "typ" -> ujson.Str("JWT"),
-            "alg" -> ujson.Str("HS256"),
-            "cty" -> ujson.Str("twilio-fpa;v=1"),
-            "twr" -> ujson.Str(region.twilioString)
-          )
-        )
-
-        val payloadJson = ujson.write(
-          ujson.Obj(
-            "jti"    -> ujson.Str(s"$apiKeySid-$now"),
-            "iss"    -> ujson.Str(apiKeySid),
-            "sub"    -> ujson.Str(accountSid.toString),
-            "iat"    -> ujson.Num(now.toDouble),
-            "exp"    -> ujson.Num((now + ttlSeconds).toDouble),
-            "grants" -> grantsObj
-          )
-        )
-
-        val signingInput = s"${base64(headerJson)}.${base64(payloadJson)}"
-
-        val mac = Mac.getInstance("HmacSHA256")
-        mac.init(new SecretKeySpec(apiKeySecret.getBytes("UTF-8"), "HmacSHA256"))
-        val signature = encoder.encodeToString(mac.doFinal(signingInput.getBytes("UTF-8")))
-
-        AccessToken(s"$signingInput.$signature")
-      }.toEither.left.map(Error.GenerationFailed)
-    }
+    final case class GenerationFailed(cause: Throwable)
+        extends RuntimeException("Failed to generate access token", cause)
+        with Error
   }
 
-  private def grantToJson(grant: TwilioGrant): ujson.Value = grant match {
-    case VoiceGrant(incomingAllow, outgoingAppSid) =>
-      val obj = ujson.Obj("incoming" -> ujson.Obj("allow" -> ujson.Bool(incomingAllow)))
-      outgoingAppSid.foreach(sid =>
-        obj("outgoing") = ujson.Obj("application_sid" -> ujson.Str(sid.toString))
-      )
-      obj
-    case ChatGrant(serviceSid) => ujson.Obj("service_sid" -> ujson.Str(serviceSid.twilioString))
-    case SyncGrant(serviceSid) => ujson.Obj("service_sid" -> ujson.Str(serviceSid.twilioString))
-    case VideoGrant(room)      =>
-      room.fold(ujson.Obj())(r => ujson.Obj("room" -> ujson.Str(r.twilioString)))
-    case RawGrant(_, json) => ujson.read(json)
+  val defaultImpl: AccessTokenFactory = new AccessTokenFactoryImpl()
+
+  private final class AccessTokenFactoryImpl extends AccessTokenFactory {
+
+    import scala.util.Try
+
+    override def generate(
+        credentials: TwilioConnectionSettings.Credentials.ApiKeyCredentials,
+        accountSid: TwilioAccount.Sid,
+        region: Region,
+        identity: String,
+        grants: Seq[TwilioGrant],
+        ttl: FiniteDuration
+    ): Either[Error, AccessToken] = {
+      val ttlSeconds = ttl.toSeconds
+      if (ttlSeconds <= 0 || ttlSeconds > 86400) {
+        Left(Error.InvalidTtl(ttlSeconds))
+      } else {
+        Try {
+          val now     = System.currentTimeMillis() / 1000
+          val encoder = Base64.getUrlEncoder.withoutPadding()
+
+          def base64(s: String): String = encoder.encodeToString(s.getBytes("UTF-8"))
+
+          val apiKeySid    = credentials.apiKeySid.toString
+          val apiKeySecret = credentials.apiKeySecret.value
+
+          val grantsObj = ujson.Obj.from(
+            Seq("identity" -> ujson.Str(identity)) ++
+              grants.map(g => g.twilioString -> grantToJson(g))
+          )
+
+          val headerJson = ujson.write(
+            ujson.Obj(
+              "typ" -> ujson.Str("JWT"),
+              "alg" -> ujson.Str("HS256"),
+              "cty" -> ujson.Str("twilio-fpa;v=1"),
+              "twr" -> ujson.Str(region.twilioString)
+            )
+          )
+
+          val payloadJson = ujson.write(
+            ujson.Obj(
+              "jti"    -> ujson.Str(s"$apiKeySid-$now"),
+              "iss"    -> ujson.Str(apiKeySid),
+              "sub"    -> ujson.Str(accountSid.toString),
+              "iat"    -> ujson.Num(now.toDouble),
+              "exp"    -> ujson.Num((now + ttlSeconds).toDouble),
+              "grants" -> grantsObj
+            )
+          )
+
+          val signingInput = s"${base64(headerJson)}.${base64(payloadJson)}"
+
+          val mac = Mac.getInstance("HmacSHA256")
+          mac.init(new SecretKeySpec(apiKeySecret.getBytes("UTF-8"), "HmacSHA256"))
+          val signature = encoder.encodeToString(mac.doFinal(signingInput.getBytes("UTF-8")))
+
+          AccessToken(s"$signingInput.$signature")
+        }.toEither.left.map(Error.GenerationFailed)
+      }
+    }
+
+    private def grantToJson(grant: TwilioGrant): ujson.Value = grant match {
+      case VoiceGrant(incomingAllow, outgoingAppSid) =>
+        val obj = ujson.Obj("incoming" -> ujson.Obj("allow" -> ujson.Bool(incomingAllow)))
+        outgoingAppSid.foreach(sid =>
+          obj("outgoing") = ujson.Obj("application_sid" -> ujson.Str(sid.toString))
+        )
+        obj
+      case ChatGrant(serviceSid) => ujson.Obj("service_sid" -> ujson.Str(serviceSid.twilioString))
+      case SyncGrant(serviceSid) => ujson.Obj("service_sid" -> ujson.Str(serviceSid.twilioString))
+      case VideoGrant(room)      =>
+        room.fold(ujson.Obj())(r => ujson.Obj("room" -> ujson.Str(r.twilioString)))
+      case RawGrant(_, json) => ujson.read(json)
+    }
   }
 }

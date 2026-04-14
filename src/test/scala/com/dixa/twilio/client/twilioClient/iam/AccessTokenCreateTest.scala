@@ -32,12 +32,12 @@ final class AccessTokenCreateTest extends AnyWordSpec {
   private def decodeJson(base64url: String): ujson.Value =
     ujson.read(new String(decoder.decode(base64url), "UTF-8"))
 
-  classOf[AccessTokenFactory.type].getSimpleName when {
+  classOf[AccessTokenFactory].getSimpleName when {
 
     "asked to generate an access token" should {
 
       "produce a JWT with a valid header" in {
-        val token = AccessTokenFactory
+        val token = AccessTokenFactory.defaultImpl
           .generate(
             credentials = TwilioTestConstants.apiKeyCredentials,
             accountSid = TwilioTestConstants.accountSid,
@@ -57,7 +57,7 @@ final class AccessTokenCreateTest extends AnyWordSpec {
       }
 
       "produce a JWT payload with the expected standard claims" in {
-        val token = AccessTokenFactory
+        val token = AccessTokenFactory.defaultImpl
           .generate(
             credentials = TwilioTestConstants.apiKeyCredentials,
             accountSid = TwilioTestConstants.accountSid,
@@ -76,7 +76,7 @@ final class AccessTokenCreateTest extends AnyWordSpec {
       }
 
       "produce a JWT payload with the identity and grants" in {
-        val token = AccessTokenFactory
+        val token = AccessTokenFactory.defaultImpl
           .generate(
             credentials = TwilioTestConstants.apiKeyCredentials,
             accountSid = TwilioTestConstants.accountSid,
@@ -104,7 +104,7 @@ final class AccessTokenCreateTest extends AnyWordSpec {
       }
 
       "produce valid JSON in the grants object when no grants are provided" in {
-        val token = AccessTokenFactory
+        val token = AccessTokenFactory.defaultImpl
           .generate(
             credentials = TwilioTestConstants.apiKeyCredentials,
             accountSid = TwilioTestConstants.accountSid,
@@ -122,7 +122,7 @@ final class AccessTokenCreateTest extends AnyWordSpec {
       }
 
       "correctly escape special characters in the identity field" in {
-        val token = AccessTokenFactory
+        val token = AccessTokenFactory.defaultImpl
           .generate(
             credentials = TwilioTestConstants.apiKeyCredentials,
             accountSid = TwilioTestConstants.accountSid,
@@ -139,7 +139,7 @@ final class AccessTokenCreateTest extends AnyWordSpec {
       }
 
       "return an error if ttl is zero" in {
-        val result = AccessTokenFactory.generate(
+        val result = AccessTokenFactory.defaultImpl.generate(
           credentials = TwilioTestConstants.apiKeyCredentials,
           accountSid = TwilioTestConstants.accountSid,
           region = Region.Us1,
@@ -155,7 +155,7 @@ final class AccessTokenCreateTest extends AnyWordSpec {
       }
 
       "return an error if ttl exceeds 24 hours" in {
-        val result = AccessTokenFactory.generate(
+        val result = AccessTokenFactory.defaultImpl.generate(
           credentials = TwilioTestConstants.apiKeyCredentials,
           accountSid = TwilioTestConstants.accountSid,
           region = Region.Us1,
