@@ -24,6 +24,7 @@ import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.{
 import com.dixa.twilio.client.phonenumber.TwilioClientPhoneNumber
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import com.dixa.twilio.model.Region
 import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
 import com.dixa.twilio.model.phonenumber.{
@@ -99,21 +100,24 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("(459) 375-1435"),
             PhoneNumberE164.unsafe("+4593751435"),
-            PhoneNumberCapabilitiesSummary(voice = true, sms = true, mms = false, fax = false)
+            PhoneNumberCapabilitiesSummary(voice = true, sms = true, mms = false, fax = false),
+            Region.Us1
           ),
           TwilioIncomingPhoneNumber(
             TwilioPhoneNumber.Sid.unsafe("PNa6ab2f33d0ffca5a3fa907a4ce302607"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("uva_testing_sms_dk"),
             PhoneNumberE164.unsafe("+4581827622"),
-            PhoneNumberCapabilitiesSummary(voice = true, sms = true, mms = true, fax = true)
+            PhoneNumberCapabilitiesSummary(voice = true, sms = true, mms = true, fax = true),
+            Region.Us1
           ),
           TwilioIncomingPhoneNumber(
             TwilioPhoneNumber.Sid.unsafe("PN8ac53dd1867205c550ee4d41a35c0896"),
             TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             TwilioIncomingPhoneNumber.FriendlyName("Example Phone Number"),
             PhoneNumberE164.unsafe("+4578750614"),
-            PhoneNumberCapabilitiesSummary(voice = true, sms = false, mms = false, fax = false)
+            PhoneNumberCapabilitiesSummary(voice = true, sms = false, mms = false, fax = false),
+            Region.Us1
           )
         )
 

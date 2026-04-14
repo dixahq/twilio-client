@@ -15,6 +15,7 @@
 
 package com.dixa.twilio.model.phonenumber
 
+import com.dixa.twilio.model.Region
 import com.dixa.twilio.model.iam.TwilioAccount
 
 sealed trait TwilioIncomingPhoneNumber extends TwilioPhoneNumber {
@@ -23,6 +24,7 @@ sealed trait TwilioIncomingPhoneNumber extends TwilioPhoneNumber {
   def friendlyName: TwilioIncomingPhoneNumber.FriendlyName
   def phoneNumber: PhoneNumberE164
   def capabilities: TwilioIncomingPhoneNumber.PhoneNumberCapabilitiesSummary
+  def region: Region
 }
 
 object TwilioIncomingPhoneNumber {
@@ -50,8 +52,9 @@ object TwilioIncomingPhoneNumber {
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
       phoneNumber: PhoneNumberE164,
       capabilities: PhoneNumberCapabilitiesSummary,
+      region: Region
   ): TwilioIncomingPhoneNumber =
-    DefaultImpl(sid, accountSid, friendlyName, phoneNumber, capabilities)
+    DefaultImpl(sid, accountSid, friendlyName, phoneNumber, capabilities, region)
 
   private final case class DefaultImpl(
       sid: TwilioPhoneNumber.Sid,
@@ -59,5 +62,6 @@ object TwilioIncomingPhoneNumber {
       friendlyName: TwilioIncomingPhoneNumber.FriendlyName,
       phoneNumber: PhoneNumberE164,
       capabilities: PhoneNumberCapabilitiesSummary,
+      region: Region
   ) extends TwilioIncomingPhoneNumber
 }

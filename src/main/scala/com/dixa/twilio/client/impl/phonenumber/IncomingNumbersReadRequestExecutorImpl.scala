@@ -83,7 +83,7 @@ private[impl] class IncomingNumbersReadRequestExecutorImpl(
         )
       case Right(decoded: OuterJsonRep) =>
         decoded.incoming_phone_numbers.map { jsonRep =>
-          Right(jsonRep.toModel)
+          Right(jsonRep.toModel(connectionSettings.region))
         }
     }
   }

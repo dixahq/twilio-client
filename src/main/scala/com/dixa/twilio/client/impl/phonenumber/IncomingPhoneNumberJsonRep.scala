@@ -24,6 +24,7 @@ import com.dixa.twilio.model.phonenumber.{
   TwilioPhoneNumber
 }
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
+import com.dixa.twilio.model.Region
 
 private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     sid: String,
@@ -33,7 +34,7 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
     capabilities: IncomingNumberCapabilitiesJsonRep,
 ) {
 
-  private[phonenumber] def toModel = TwilioIncomingPhoneNumber(
+  private[phonenumber] def toModel(region: Region) = TwilioIncomingPhoneNumber(
     TwilioPhoneNumber.Sid.unsafe(sid),
     TwilioAccount.Sid.unsafe(account_sid),
     TwilioIncomingPhoneNumber.FriendlyName(friendly_name),
@@ -43,7 +44,8 @@ private[phonenumber] final case class IncomingPhoneNumberJsonRep(
       capabilities.sms,
       capabilities.mms,
       capabilities.fax.getOrElse(false)
-    )
+    ),
+    region
   )
 }
 
