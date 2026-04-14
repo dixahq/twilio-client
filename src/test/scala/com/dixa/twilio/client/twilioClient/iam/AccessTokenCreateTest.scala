@@ -15,6 +15,7 @@
 
 package com.dixa.twilio.client.twilioClient.iam
 
+import java.util.Base64
 import com.dixa.twilio.client.TwilioTestConstants
 import com.dixa.twilio.client.iam.AccessTokenFactory
 import com.dixa.twilio.model.Region
@@ -26,29 +27,115 @@ import scala.concurrent.duration._
 
 final class AccessTokenCreateTest extends AnyWordSpec {
 
+  private val decoder = Base64.getUrlDecoder
+
+  private def decodeJson(base64url: String): ujson.Value =
+    ujson.read(new String(decoder.decode(base64url), "UTF-8"))
+
   classOf[AccessTokenFactory.type].getSimpleName when {
 
     "asked to generate an access token" should {
 
-      "return a valid JWT string" in {
-        val result = AccessTokenFactory.generate(
-          credentials = TwilioTestConstants.apiKeyCredentials,
-          accountSid = TwilioTestConstants.accountSid,
-          region = Region.Us1,
-          identity = "user123",
-          grants = Seq(
-            VoiceGrant(
-              incomingAllow = true,
-              outgoingAppSid = Some(Application.Sid.unsafe("APaaaabbbbccccdddd1111222233334444"))
-            )
-          ),
-          ttl = 1.hour
-        )
+      "produce a JWT with a valid header" in {
+        val token = AccessTokenFactory
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
 
-        val token = result.toTry.get
-        assert(token.token.nonEmpty)
-        val parts = token.token.split('.')
-        assert(parts.length === 3)
+        val header = decodeJson(token.token.split('.')(0))
+        assert(header("typ").str === "JWT")
+        assert(header("alg").str === "HS256")
+        assert(header("cty").str === "twilio-fpa;v=1")
+        assert(header("twr").str === Region.Us1.twilioString)
+      }
+
+      "produce a JWT payload with the expected standard claims" in {
+        val token = AccessTokenFactory
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val payload = decodeJson(token.token.split('.')(1))
+        assert(payload("iss").str === TwilioTestConstants.apiKeySid.toString)
+        assert(payload("sub").str === TwilioTestConstants.accountSid.toString)
+        assert((payload("exp").num - payload("iat").num) === 3600.0)
+      }
+
+      "produce a JWT payload with the identity and grants" in {
+        val token = AccessTokenFactory
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Seq(
+              VoiceGrant(
+                incomingAllow = true,
+                outgoingAppSid = Some(Application.Sid.unsafe("APaaaabbbbccccdddd1111222233334444"))
+              )
+            ),
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val grants = decodeJson(token.token.split('.')(1))("grants")
+        assert(grants("identity").str === "user123")
+        assert(grants("voice")("incoming")("allow").bool === true)
+        assert(
+          grants("voice")("outgoing")(
+            "application_sid"
+          ).str === "APaaaabbbbccccdddd1111222233334444"
+        )
+      }
+
+      "produce valid JSON in the grants object when no grants are provided" in {
+        val token = AccessTokenFactory
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val grants = decodeJson(token.token.split('.')(1))("grants")
+        assert(grants("identity").str === "user123")
+        assert(grants.obj.size === 1)
+      }
+
+      "correctly escape special characters in the identity field" in {
+        val token = AccessTokenFactory
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = """user"with\special""",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val grants = decodeJson(token.token.split('.')(1))("grants")
+        assert(grants("identity").str === """user"with\special""")
       }
 
       "return an error if ttl is zero" in {
