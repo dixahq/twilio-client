@@ -67,6 +67,20 @@ trait AccessTokenFactory {
       grants: Seq[TwilioGrant],
       ttl: FiniteDuration
   ): Either[AccessTokenFactory.Error, AccessToken]
+
+  /** Like [[generate]], but throws on error instead of returning a [[Left]]. */
+  def generateUnsafe(
+      credentials: TwilioConnectionSettings.Credentials.ApiKeyCredentials,
+      accountSid: TwilioAccount.Sid,
+      region: Region,
+      identity: String,
+      grants: Seq[TwilioGrant],
+      ttl: FiniteDuration
+  ): AccessToken =
+    generate(credentials, accountSid, region, identity, grants, ttl).fold(
+      e => throw e,
+      token => token
+    )
 }
 
 object AccessTokenFactory {
