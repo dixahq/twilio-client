@@ -55,7 +55,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
 
         val expected =
           Recording(
-            accountSid = connSettings.accountSid,
+            accountSid = TwilioTestConstants.accountSid,
             callSid = callSid,
             dateCreated = createdAtInstant,
             dateUpdate = updatedAtInstant,
@@ -101,7 +101,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
 
         val expected =
           Recording(
-            accountSid = connSettings.accountSid,
+            accountSid = TwilioTestConstants.accountSid,
             callSid = callSid,
             dateCreated = createdAtInstant,
             dateUpdate = updatedAtInstant,
@@ -147,7 +147,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
 
         val expected =
           Recording(
-            accountSid = connSettings.accountSid,
+            accountSid = TwilioTestConstants.accountSid,
             callSid = callSid,
             dateCreated = createdAtInstant,
             dateUpdate = updatedAtInstant,
@@ -196,7 +196,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
           instance.run(connSettings, stopRequest)
         val expected = Left(
           CallRecordingUpdateRequestExecutor.CallRecordingUpdateException
-            .RecordingNotFound(connSettings.accountSid, Some(recordingSid), callSid)
+            .RecordingNotFound(TwilioTestConstants.accountSid, Some(recordingSid), callSid)
         )
         resultFut.map(res => assert(res === expected))
       }
@@ -330,7 +330,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val stopRequest  = CallRecordingUpdateRequestExecutor.CallRecordingUpdateRequest.build(
-      _.withAccountSid(connSettings.accountSid)
+      _.withAccountSid(TwilioTestConstants.accountSid)
         .withCallSid(callSid)
         .withSid(recordingSid)
         .withStatus(Recording.Status.Stopped)
@@ -338,7 +338,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
     )
 
     val pausedRequest = CallRecordingUpdateRequestExecutor.CallRecordingUpdateRequest.build(
-      _.withAccountSid(connSettings.accountSid)
+      _.withAccountSid(TwilioTestConstants.accountSid)
         .withCallSid(callSid)
         .withStatus(Recording.Status.Paused)
         .withPauseBehavior(Recording.PauseBehavior.Skip)
@@ -346,7 +346,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
     )
 
     val resumeRequest = CallRecordingUpdateRequestExecutor.CallRecordingUpdateRequest.build(
-      _.withAccountSid(connSettings.accountSid)
+      _.withAccountSid(TwilioTestConstants.accountSid)
         .withCallSid(callSid)
         .withSid(recordingSid)
         .withStatus(Recording.Status.InProgress)
@@ -377,7 +377,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequestWithOutRecordingSid = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid/Recordings/Twilio.CURRENT.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls/$callSid/Recordings/Twilio.CURRENT.json"
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
@@ -386,7 +386,7 @@ final class CallRecordingUpdateStatusTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid/Recordings/$recordingSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls/$callSid/Recordings/$recordingSid.json"
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")

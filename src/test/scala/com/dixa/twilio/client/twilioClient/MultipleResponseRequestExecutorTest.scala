@@ -350,7 +350,7 @@ private object MultipleResponseRequestExecutorTest {
             RawHeader(
               "Api-Key",
               connectionSettings.credentials match {
-                case TwilioConnectionSettings.Credentials.AuthTokenCredentials(token) =>
+                case TwilioConnectionSettings.Credentials.AuthTokenCredentials(_, token) =>
                   token.asString
                 case TwilioConnectionSettings.Credentials.ApiKeyCredentials(sid, _) =>
                   sid.toString

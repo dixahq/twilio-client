@@ -143,8 +143,8 @@ private[client] object TwilioUri {
     ): Either[TwilioUri.HttpRequestCreationException, HttpRequest] = {
       Try {
         val basicCredentials = connSettings.credentials match {
-          case TwilioConnectionSettings.Credentials.AuthTokenCredentials(authToken) =>
-            BasicHttpCredentials(connSettings.accountSid.toString, authToken.asString)
+          case TwilioConnectionSettings.Credentials.AuthTokenCredentials(accountSid, authToken) =>
+            BasicHttpCredentials(accountSid.toString, authToken.asString)
           case TwilioConnectionSettings.Credentials.ApiKeyCredentials(apiKeySid, apiKeySecret) =>
             BasicHttpCredentials(apiKeySid.toString, apiKeySecret.value)
         }

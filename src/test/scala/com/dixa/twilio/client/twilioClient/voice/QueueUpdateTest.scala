@@ -51,7 +51,7 @@ final class QueueUpdateTest extends TwilioClientTest {
           Queue(
             queueSid,
             Queue.FriendlyName("TestQueueFriendlyName"),
-            connSettings.accountSid,
+            TwilioTestConstants.accountSid,
             Queue.CurrentSize(344),
             Queue.MaxSize(5000),
             Duration.ofSeconds(55),
@@ -85,7 +85,8 @@ final class QueueUpdateTest extends TwilioClientTest {
           Either[QueueUpdateRequestExecutor.QueueUpdateException, Queue]
         ] =
           instance.run(connSettings, request)
-        val expected = Left(QueueUpdateException.QueueNotFound(connSettings.accountSid, queueSid))
+        val expected =
+          Left(QueueUpdateException.QueueNotFound(TwilioTestConstants.accountSid, queueSid))
         resultFut.map(res => assert(res === expected))
       }
 
@@ -152,7 +153,7 @@ final class QueueUpdateTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val queueSid     = Queue.Sid.unsafe("QUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val request      = QueueUpdateRequestExecutor.QueueUpdateRequest.build(
-      _.withAccountSid(connSettings.accountSid)
+      _.withAccountSid(TwilioTestConstants.accountSid)
         .withSid(queueSid)
         .withMaxSize(Queue.MaxSize(5000))
         .build()
@@ -161,7 +162,7 @@ final class QueueUpdateTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Queues/$queueSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Queues/$queueSid.json"
         )
       )
       .withRequestBody(

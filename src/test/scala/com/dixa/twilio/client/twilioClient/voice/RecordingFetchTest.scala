@@ -51,7 +51,7 @@ final class RecordingFetchTest extends TwilioClientTest {
 
         val expected =
           Recording(
-            accountSid = connSettings.accountSid,
+            accountSid = TwilioTestConstants.accountSid,
             callSid = callSid,
             conferenceSid = Some(Conference.Sid.unsafe("CFXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")),
             channels = Recording.Channels.unsafe(1),
@@ -118,7 +118,7 @@ final class RecordingFetchTest extends TwilioClientTest {
           instance.run(connSettings, req)
         val expected = Left(
           RecordingFetchRequestExecutor.RecordingFetchException
-            .RecordingNotFound(connSettings.accountSid, recordingSid)
+            .RecordingNotFound(TwilioTestConstants.accountSid, recordingSid)
         )
         resultFut.map(res => assert(res === expected))
       }
@@ -212,7 +212,7 @@ final class RecordingFetchTest extends TwilioClientTest {
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val req          =
       RecordingFetchRequestExecutor.RecordingFetchRequest.build(
-        _.withAccountSid(connSettings.accountSid)
+        _.withAccountSid(TwilioTestConstants.accountSid)
           .withSid(recordingSid)
           .withIncludeSoftDeleted(true)
           .build()
@@ -242,7 +242,7 @@ final class RecordingFetchTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .get(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Recordings/$recordingSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Recordings/$recordingSid.json"
         )
       )
       .withRequestBody(

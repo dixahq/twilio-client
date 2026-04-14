@@ -18,6 +18,7 @@ package com.dixa.twilio.client.messaging
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadException
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{MediaResourceReference, Message}
 
 trait MessageMediaResourceReadRequestExecutor
@@ -38,18 +39,26 @@ trait MessageMediaResourceReadRequestExecutor
 
 object MessageMediaResourceReadRequestExecutor {
   final case class MessageMediaResourceReadRequest(
+      accountSid: TwilioAccount.Sid,
       messageSid: Message.Sid
   )
   object MessageMediaResourceReadRequest {
     type BuilderStartState = Builder
 
-    final class Builder private[messaging] (messageSid: Option[Message.Sid]) {
-      def withMessageSid(messageSid: Message.Sid): Builder = new Builder(Some(messageSid))
-      def build(): MessageMediaResourceReadRequest = MessageMediaResourceReadRequest(messageSid.get)
+    final class Builder private[messaging] (
+        accountSid: Option[TwilioAccount.Sid],
+        messageSid: Option[Message.Sid]
+    ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), messageSid)
+      def withMessageSid(messageSid: Message.Sid): Builder =
+        new Builder(accountSid, Some(messageSid))
+      def build(): MessageMediaResourceReadRequest =
+        MessageMediaResourceReadRequest(accountSid.get, messageSid.get)
     }
 
     object Builder {
-      val empty: BuilderStartState = new BuilderStartState(None)
+      val empty: BuilderStartState = new BuilderStartState(None, None)
     }
 
     def build(

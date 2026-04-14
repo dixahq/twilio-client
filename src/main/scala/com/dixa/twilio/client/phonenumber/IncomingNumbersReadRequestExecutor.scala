@@ -18,6 +18,7 @@ package com.dixa.twilio.client.phonenumber
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
 import com.dixa.twilio.client.phonenumber.IncomingNumbersReadRequestExecutor.IncomingNumbersReadException
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.phonenumber.TwilioIncomingPhoneNumber
 
 trait IncomingNumbersReadRequestExecutor
@@ -38,21 +39,26 @@ trait IncomingNumbersReadRequestExecutor
 
 object IncomingNumbersReadRequestExecutor {
   final case class IncomingNumbersReadRequest(
+      accountSid: TwilioAccount.Sid,
       filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
   )
   object IncomingNumbersReadRequest {
     type BuilderStartState = Builder
 
     final class Builder private[phonenumber] (
+        accountSid: Option[TwilioAccount.Sid],
         filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
     ) {
+      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+        new Builder(Some(accountSid), filter)
       def withFilter(filter: TwilioIncomingPhoneNumber.PhoneNumberFilter): Builder =
-        new Builder(Some(filter))
-      def build(): IncomingNumbersReadRequest = IncomingNumbersReadRequest(filter)
+        new Builder(accountSid, Some(filter))
+      def build(): IncomingNumbersReadRequest =
+        IncomingNumbersReadRequest(accountSid.get, filter)
     }
 
     object Builder {
-      val empty: BuilderStartState = new BuilderStartState(None)
+      val empty: BuilderStartState = new BuilderStartState(None, None)
     }
 
     def build(fun: BuilderStartState => IncomingNumbersReadRequest): IncomingNumbersReadRequest =

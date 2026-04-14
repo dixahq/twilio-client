@@ -39,7 +39,7 @@ object TwilioTestConstants {
   val apiKeySecret: ApiKey.Secret = ApiKey.Secret("testApiKeySecret")
 
   val authTokenCredentials: TwilioConnectionSettings.Credentials.AuthTokenCredentials =
-    TwilioConnectionSettings.Credentials.AuthTokenCredentials(authToken)
+    TwilioConnectionSettings.Credentials.AuthTokenCredentials(accountSid, authToken)
 
   val apiKeyCredentials: TwilioConnectionSettings.Credentials.ApiKeyCredentials =
     TwilioConnectionSettings.Credentials.ApiKeyCredentials(apiKeySid, apiKeySecret)
@@ -49,7 +49,6 @@ object TwilioTestConstants {
     region = Region.Us1,
     publicEdgeLocation = PublicEdgeLocation.Ashburn,
     protocol = TwilioConnectionSettings.Protocol.Http,
-    accountSid = accountSid,
     credentials = authTokenCredentials,
     parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
     timeouts = TwilioConnectionSettings.Timeouts.default

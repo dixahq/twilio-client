@@ -82,7 +82,8 @@ final class IncomingPhoneNumberListTest extends TwilioClientTest {
         val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
         val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
         val req                               = IncomingNumbersReadRequest(
-          Some(TwilioIncomingPhoneNumber.PhoneNumberFilter("+45"))
+          accountSid = TwilioTestConstants.accountSid,
+          filter = Some(TwilioIncomingPhoneNumber.PhoneNumberFilter("+45"))
         )
         val resultSource
             : Source[Either[IncomingNumbersReadException, TwilioIncomingPhoneNumber], NotUsed] =

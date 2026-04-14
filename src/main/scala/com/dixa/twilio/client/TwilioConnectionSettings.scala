@@ -50,8 +50,6 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *   https://www.twilio.com/docs/global-infrastructure/create-an-outbound-call-via-rest-api-in-a-non-us-twilio-region#the-twilio-apis-fqdn-format
   * @param protocol
   *   Protocol to use for connecting to Twilio. Should be Https for production Twilio API.
-  * @param accountSid
-  *   The account sid to connect as.
   * @param credentials
   *   The credentials to use for authenticating requests. Use
   *   [[TwilioConnectionSettings.Credentials.AuthTokenCredentials]] to authenticate with an auth
@@ -69,7 +67,6 @@ final case class TwilioConnectionSettings(
     region: Region,
     publicEdgeLocation: PublicEdgeLocation,
     protocol: client.TwilioConnectionSettings.Protocol,
-    accountSid: TwilioAccount.Sid,
     credentials: TwilioConnectionSettings.Credentials,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
     timeouts: TwilioConnectionSettings.Timeouts
@@ -127,7 +124,8 @@ object TwilioConnectionSettings {
       *
       * Uses Basic Auth with the account SID as the username and the auth token as the password.
       */
-    final case class AuthTokenCredentials(authToken: AuthToken) extends Credentials
+    final case class AuthTokenCredentials(accountSid: TwilioAccount.Sid, authToken: AuthToken)
+        extends Credentials
 
     /** Authenticate using a Twilio API key.
       *
