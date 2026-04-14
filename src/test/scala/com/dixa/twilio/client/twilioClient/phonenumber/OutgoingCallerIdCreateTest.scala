@@ -85,7 +85,7 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
             )
             .withBasicAuth(
               connSettings.accountSid.twilioString,
-              connSettings.authToken.asString
+              TwilioTestConstants.authToken.asString
             )
             .willReturn(
               aResponse()
