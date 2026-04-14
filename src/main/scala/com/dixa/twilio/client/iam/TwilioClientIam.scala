@@ -77,6 +77,18 @@ trait TwilioClientIam {
     */
   def authTokenPromote: AuthTokenPromoteRequestExecutor
 
+  /** Returns the [[AccessTokenFactory]] for generating Twilio Access Tokens.
+    *
+    * Note: unlike other methods on this client, this does not represent a Twilio API request.
+    * Access tokens are generated locally using API key credentials. This method is provided here
+    * purely as a convenience so that the factory is easy to discover via auto-completion alongside
+    * the other IAM operations.
+    *
+    * @see
+    *   [[AccessTokenFactory]]
+    */
+  def accessTokenFactory: AccessTokenFactory
+
   /** Create a new Twilio API key for a given account.
     *
     * The returned [[com.dixa.twilio.model.iam.ApiKey]] includes the secret, which is only available
