@@ -93,10 +93,10 @@ object AccessTokenFactory {
         val apiKeySid    = credentials.apiKeySid.toString
         val apiKeySecret = credentials.apiKeySecret.value
 
-        val grantsFields = grants
-          .map(grantToJson)
-          .map { case (key, json) => s""""$key":$json""" }
-          .mkString(",")
+        val grantsObj = ujson.Obj.from(
+          Seq("identity" -> ujson.Str(identity)) ++
+            grants.map(g => g.twilioString -> grantToJson(g))
+        )
 
         val rawPayload =
           s"""{""" +
@@ -105,7 +105,7 @@ object AccessTokenFactory {
             s""""sub":"${accountSid.toString}",""" +
             s""""iat":$now,""" +
             s""""exp":${now + ttlSeconds},""" +
-            s""""grants":{"identity":"$identity",$grantsFields}""" +
+            s""""grants":${ujson.write(grantsObj)}""" +
             s"""}"""
 
         val header =
@@ -124,17 +124,17 @@ object AccessTokenFactory {
     }
   }
 
-  private def grantToJson(grant: TwilioGrant): (String, String) = grant match {
+  private def grantToJson(grant: TwilioGrant): ujson.Value = grant match {
     case VoiceGrant(incomingAllow, outgoingAppSid) =>
-      val incoming = s""""incoming":{"allow":$incomingAllow}"""
-      val outgoing = outgoingAppSid
-        .map(sid => s""","outgoing":{"application_sid":"$sid"}""")
-        .getOrElse("")
-      grant.twilioString -> s"{$incoming$outgoing}"
-    case ChatGrant(serviceSid) => grant.twilioString -> s"""{"service_sid":"$serviceSid"}"""
-    case SyncGrant(serviceSid) => grant.twilioString -> s"""{"service_sid":"$serviceSid"}"""
+      val obj = ujson.Obj("incoming" -> ujson.Obj("allow" -> ujson.Bool(incomingAllow)))
+      outgoingAppSid.foreach(sid =>
+        obj("outgoing") = ujson.Obj("application_sid" -> ujson.Str(sid.toString))
+      )
+      obj
+    case ChatGrant(serviceSid) => ujson.Obj("service_sid" -> ujson.Str(serviceSid.twilioString))
+    case SyncGrant(serviceSid) => ujson.Obj("service_sid" -> ujson.Str(serviceSid.twilioString))
     case VideoGrant(room)      =>
-      grant.twilioString -> room.map(r => s"""{"room":"$r"}""").getOrElse("{}")
-    case RawGrant(_, json) => grant.twilioString -> json
+      room.fold(ujson.Obj())(r => ujson.Obj("room" -> ujson.Str(r.twilioString)))
+    case RawGrant(_, json) => ujson.read(json)
   }
 }
