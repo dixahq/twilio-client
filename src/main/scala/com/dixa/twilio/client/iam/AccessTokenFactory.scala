@@ -98,22 +98,27 @@ object AccessTokenFactory {
             grants.map(g => g.twilioString -> grantToJson(g))
         )
 
-        val rawPayload =
-          s"""{""" +
-            s""""jti":"$apiKeySid-$now",""" +
-            s""""iss":"$apiKeySid",""" +
-            s""""sub":"${accountSid.toString}",""" +
-            s""""iat":$now,""" +
-            s""""exp":${now + ttlSeconds},""" +
-            s""""grants":${ujson.write(grantsObj)}""" +
-            s"""}"""
-
-        val header =
-          base64(
-            s"""{"typ":"JWT","alg":"HS256","cty":"twilio-fpa;v=1","twr":"${region.twilioString}"}"""
+        val headerJson = ujson.write(
+          ujson.Obj(
+            "typ" -> ujson.Str("JWT"),
+            "alg" -> ujson.Str("HS256"),
+            "cty" -> ujson.Str("twilio-fpa;v=1"),
+            "twr" -> ujson.Str(region.twilioString)
           )
-        val payload      = base64(rawPayload)
-        val signingInput = s"$header.$payload"
+        )
+
+        val payloadJson = ujson.write(
+          ujson.Obj(
+            "jti"    -> ujson.Str(s"$apiKeySid-$now"),
+            "iss"    -> ujson.Str(apiKeySid),
+            "sub"    -> ujson.Str(accountSid.toString),
+            "iat"    -> ujson.Num(now.toDouble),
+            "exp"    -> ujson.Num((now + ttlSeconds).toDouble),
+            "grants" -> grantsObj
+          )
+        )
+
+        val signingInput = s"${base64(headerJson)}.${base64(payloadJson)}"
 
         val mac = Mac.getInstance("HmacSHA256")
         mac.init(new SecretKeySpec(apiKeySecret.getBytes("UTF-8"), "HmacSHA256"))
