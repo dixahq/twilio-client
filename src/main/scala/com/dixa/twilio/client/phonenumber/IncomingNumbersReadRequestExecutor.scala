@@ -26,43 +26,71 @@ trait IncomingNumbersReadRequestExecutor
       IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest,
       IncomingNumbersReadRequestExecutor.IncomingNumbersReadException,
       TwilioIncomingPhoneNumber,
-      IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.Builder
+      IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.BuilderStartState
     ] {
   override protected final type ApiExceptionWrapper = IncomingNumbersReadException.Api
 
   override protected final type UnspecifiedException = IncomingNumbersReadException.Unspecified
 
   override protected final def createBuilderStartState()
-      : IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.Builder =
+      : IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.BuilderStartState =
     IncomingNumbersReadRequestExecutor.IncomingNumbersReadRequest.Builder.empty
 }
 
 object IncomingNumbersReadRequestExecutor {
-  final case class IncomingNumbersReadRequest(
+
+  sealed trait IncomingNumbersReadRequest {
+    def accountSid: TwilioAccount.Sid
+    def filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
+  }
+
+  private final case class IncomingNumbersReadRequestImpl(
       accountSid: TwilioAccount.Sid,
       filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
-  )
-  object IncomingNumbersReadRequest {
-    type BuilderStartState = Builder
+  ) extends IncomingNumbersReadRequest
 
-    final class Builder private[phonenumber] (
+  object IncomingNumbersReadRequest {
+
+    object PhantomTypes {
+      sealed trait RequestAttribute
+      sealed trait RequestAccountSidAttribute extends RequestAttribute
+    }
+
+    type RequestRequiredAttributes =
+      PhantomTypes.RequestAttribute with PhantomTypes.RequestAccountSidAttribute
+
+    type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
+
+    final class Builder[
+        Attributes <: PhantomTypes.RequestAttribute
+    ] private[IncomingNumbersReadRequest] (
         accountSid: Option[TwilioAccount.Sid],
         filter: Option[TwilioIncomingPhoneNumber.PhoneNumberFilter]
     ) {
-      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
+
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[Attributes with PhantomTypes.RequestAccountSidAttribute] =
         new Builder(Some(accountSid), filter)
-      def withFilter(filter: TwilioIncomingPhoneNumber.PhoneNumberFilter): Builder =
+
+      def withFilter(
+          filter: TwilioIncomingPhoneNumber.PhoneNumberFilter
+      ): Builder[Attributes] =
         new Builder(accountSid, Some(filter))
-      def build(): IncomingNumbersReadRequest =
-        IncomingNumbersReadRequest(accountSid.get, filter)
+
+      def build()(
+          implicit ev: Attributes =:= RequestRequiredAttributes
+      ): IncomingNumbersReadRequest =
+        IncomingNumbersReadRequestImpl(accountSid.get, filter)
     }
 
     object Builder {
-      val empty: BuilderStartState = new BuilderStartState(None, None)
+      val empty: BuilderStartState = new Builder(None, None)
     }
 
-    def build(fun: BuilderStartState => IncomingNumbersReadRequest): IncomingNumbersReadRequest =
-      fun(Builder.empty)
+    def build(
+        fun: BuilderStartState => IncomingNumbersReadRequest
+    ): IncomingNumbersReadRequest = fun(Builder.empty)
   }
 
   sealed trait IncomingNumbersReadException extends RuntimeException
