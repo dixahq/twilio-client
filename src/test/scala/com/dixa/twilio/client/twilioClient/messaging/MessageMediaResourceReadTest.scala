@@ -36,9 +36,10 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val messageSid   = Message.Sid.unsafe("SM9c8a124127702f0c7084b373cb06157a")
   private val sid          = Media.Sid.unsafe("ME9ec380c03268689d63e8fc5e97bba86e")
-  private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest(
-    accountSid = TwilioTestConstants.accountSid,
-    messageSid = messageSid
+  private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.build(
+    _.withAccountSid(TwilioTestConstants.accountSid)
+      .withMessageSid(messageSid)
+      .build()
   )
   private val path = MediaResourceUrlFactory.buildMediaResourcePath(
     TwilioTestConstants.accountSid,
