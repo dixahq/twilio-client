@@ -68,7 +68,7 @@ trait AccessTokenFactory {
       ttl: FiniteDuration
   ): Either[AccessTokenFactory.Error, AccessToken]
 
-  /** Like [[generate]], but throws on error instead of returning a [[Left]]. */
+  /** Like [[generate]], but throws on error instead of returning a `Left`. */
   def generateUnsafe(
       credentials: TwilioConnectionSettings.Credentials.ApiKeyCredentials,
       accountSid: TwilioAccount.Sid,
