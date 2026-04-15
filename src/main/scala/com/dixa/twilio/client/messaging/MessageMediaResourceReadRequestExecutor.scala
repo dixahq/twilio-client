@@ -88,7 +88,7 @@ object MessageMediaResourceReadRequestExecutor {
     }
 
     object Builder {
-      def empty: BuilderStartState = new Builder(None, None)
+      val empty: BuilderStartState = new Builder(None, None)
     }
 
     def build(
