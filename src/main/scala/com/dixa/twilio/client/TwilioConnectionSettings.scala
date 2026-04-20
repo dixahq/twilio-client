@@ -82,6 +82,7 @@ final case class TwilioConnectionSettings(
   private val iamHost       = s"${ApiSubDomain.Iam}.$baseHostNameWithRegionAndEdge"
   private val messagingHost = s"${ApiSubDomain.Messaging}.$baseHostNameWithRegionAndEdge"
   private val previewHost   = s"${ApiSubDomain.Preview}.$baseHostNameWithRegionAndEdge"
+  private val routesHost    = s"${ApiSubDomain.Routes}.$baseHostNameWithRegionAndEdge"
 
   private def baseHostNameWithRegionAndEdge =
     s"${publicEdgeLocation.edgeId}.${region.twilioString}.${endpoint.baseHostName}"
@@ -106,6 +107,7 @@ final case class TwilioConnectionSettings(
         case ApiSubDomain.Iam       => iamHost
         case ApiSubDomain.Messaging => messagingHost
         case ApiSubDomain.Preview   => previewHost
+        case ApiSubDomain.Routes    => routesHost
       }
     }
 
