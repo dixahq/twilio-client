@@ -50,7 +50,7 @@ final class CallRecordingCreateTest extends TwilioClientTest {
 
         val expected =
           Recording(
-            accountSid = connSettings.accountSid,
+            accountSid = TwilioTestConstants.accountSid,
             callSid = callSid,
             channels = Recording.Channels.unsafe(2),
             dateCreated = createdAtInstant,
@@ -99,7 +99,7 @@ final class CallRecordingCreateTest extends TwilioClientTest {
           instance.run(connSettings, req)
         val expected = Left(
           CallRecordingCreateRequestExecutor.CallRecordingCreateException
-            .CallNotFound(connSettings.accountSid, callSid)
+            .CallNotFound(TwilioTestConstants.accountSid, callSid)
         )
         resultFut.map(res => assert(res === expected))
       }
@@ -185,7 +185,7 @@ final class CallRecordingCreateTest extends TwilioClientTest {
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val req          =
       CallRecordingCreateRequestExecutor.CallRecordingCreateRequest.build(
-        _.withAccountSid(connSettings.accountSid)
+        _.withAccountSid(TwilioTestConstants.accountSid)
           .withCallSid(callSid)
           .withRecordingStatusCallback(CallbackUrl("https://myapp.com/recording-events"))
           .withRecordingStatusCallbackEvent(
@@ -219,7 +219,7 @@ final class CallRecordingCreateTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid/Recordings.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls/$callSid/Recordings.json"
         )
       )
       .withRequestBody(

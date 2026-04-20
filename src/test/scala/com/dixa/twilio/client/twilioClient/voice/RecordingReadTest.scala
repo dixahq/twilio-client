@@ -41,34 +41,34 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val expected1 = recording(
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           Recording.Status.Completed,
           callSid1,
           conferenceSid1
         )
 
         val expected2 = recording(
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           Recording.Status.Deleted,
           callSid2,
           conferenceSid2
         )
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Recordings.json"
+        val expectedPath = s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Recordings.json"
 
         wireMockServer.stubFor(
           WireMock
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
                 .withBody(
                   recordingListResp(
-                    accountSid = connSettings.accountSid,
+                    accountSid = TwilioTestConstants.accountSid,
                     recordings = List(expected1, expected2)
                   )
                 )
@@ -76,7 +76,7 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         )
 
         val req = RecordingReadRequestExecutor.RecordingReadRequest.build(
-          _.withAccountSid(connSettings.accountSid).build()
+          _.withAccountSid(TwilioTestConstants.accountSid).build()
         )
 
         val resultFut
@@ -96,14 +96,14 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         val f = new Fixture
         import f._
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Recordings.json"
+        val expectedPath = s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Recordings.json"
 
         wireMockServer.stubFor(
           WireMock
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(401)
@@ -113,7 +113,7 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         )
 
         val req = RecordingReadRequestExecutor.RecordingReadRequest.build(
-          _.withAccountSid(connSettings.accountSid).build()
+          _.withAccountSid(TwilioTestConstants.accountSid).build()
         )
 
         val resultFut

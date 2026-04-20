@@ -50,10 +50,11 @@ import scala.concurrent.duration.{DurationInt, FiniteDuration}
   *   https://www.twilio.com/docs/global-infrastructure/create-an-outbound-call-via-rest-api-in-a-non-us-twilio-region#the-twilio-apis-fqdn-format
   * @param protocol
   *   Protocol to use for connecting to Twilio. Should be Https for production Twilio API.
-  * @param accountSid
-  *   The account sid to connect as.
-  * @param authToken
-  *   The auth token for the supplied account SID.
+  * @param credentials
+  *   The credentials to use for authenticating requests. Use
+  *   [[TwilioConnectionSettings.Credentials.AuthTokenCredentials]] to authenticate with an auth
+  *   token, or [[TwilioConnectionSettings.Credentials.ApiKeyCredentials]] to authenticate with an
+  *   API key.
   * @param parallelFactor
   *   Some request supports doing some work in parallel. This value will in such cases be used for
   *   that. Note that not all requests support running in parallel, and in the once that does, only
@@ -66,12 +67,9 @@ final case class TwilioConnectionSettings(
     region: Region,
     publicEdgeLocation: PublicEdgeLocation,
     protocol: client.TwilioConnectionSettings.Protocol,
-    accountSid: TwilioAccount.Sid,
-    authToken: AuthToken,
+    credentials: TwilioConnectionSettings.Credentials,
     parallelFactor: TwilioConnectionSettings.ParallelFactor,
-    timeouts: TwilioConnectionSettings.Timeouts,
-    apiKeySid: ApiKey.Sid,
-    apiKeySecret: ApiKey.Secret
+    timeouts: TwilioConnectionSettings.Timeouts
 ) {
 
   // Tiny optimization. Precalculate if it's localhost, so that we don't have to do it on every call to hostNameFor.
@@ -116,6 +114,28 @@ final case class TwilioConnectionSettings(
 }
 
 object TwilioConnectionSettings {
+
+  /** Credentials used to authenticate HTTP requests to the Twilio API. */
+  sealed trait Credentials
+
+  object Credentials {
+
+    /** Authenticate using an account auth token.
+      *
+      * Uses Basic Auth with the account SID as the username and the auth token as the password.
+      */
+    final case class AuthTokenCredentials(accountSid: TwilioAccount.Sid, authToken: AuthToken)
+        extends Credentials
+
+    /** Authenticate using a Twilio API key.
+      *
+      * Uses Basic Auth with the API key SID as the username and the API key secret as the password.
+      * Preferred over auth tokens where possible, as API keys can be revoked independently without
+      * affecting the account auth token.
+      */
+    final case class ApiKeyCredentials(apiKeySid: ApiKey.Sid, apiKeySecret: ApiKey.Secret)
+        extends Credentials
+  }
 
   sealed abstract class Protocol(override val toString: String) extends EnumEntry
   object Protocol                                               extends Enum[Protocol] {

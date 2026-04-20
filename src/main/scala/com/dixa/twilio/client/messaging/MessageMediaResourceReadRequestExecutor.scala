@@ -18,6 +18,7 @@ package com.dixa.twilio.client.messaging
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 import com.dixa.twilio.client.messaging.MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadException
 import com.dixa.twilio.client.{ApiException, MultipleResponseRequestExecutor}
+import com.dixa.twilio.model.iam.TwilioAccount
 import com.dixa.twilio.model.messaging.{MediaResourceReference, Message}
 
 trait MessageMediaResourceReadRequestExecutor
@@ -25,31 +26,69 @@ trait MessageMediaResourceReadRequestExecutor
       MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest,
       MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadException,
       MediaResourceReference,
-      MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.Builder
+      MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.BuilderStartState
     ] {
   override protected final type ApiExceptionWrapper = MessageMediaResourceReadException.Api
 
   override protected final type UnspecifiedException = MessageMediaResourceReadException.Unspecified
 
   override protected final def createBuilderStartState()
-      : MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.Builder =
+      : MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.BuilderStartState =
     MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.Builder.empty
 }
 
 object MessageMediaResourceReadRequestExecutor {
-  final case class MessageMediaResourceReadRequest(
-      messageSid: Message.Sid
-  )
-  object MessageMediaResourceReadRequest {
-    type BuilderStartState = Builder
 
-    final class Builder private[messaging] (messageSid: Option[Message.Sid]) {
-      def withMessageSid(messageSid: Message.Sid): Builder = new Builder(Some(messageSid))
-      def build(): MessageMediaResourceReadRequest = MessageMediaResourceReadRequest(messageSid.get)
+  sealed trait MessageMediaResourceReadRequest {
+    def accountSid: TwilioAccount.Sid
+    def messageSid: Message.Sid
+  }
+
+  private final case class MessageMediaResourceReadRequestImpl(
+      accountSid: TwilioAccount.Sid,
+      messageSid: Message.Sid
+  ) extends MessageMediaResourceReadRequest
+
+  object MessageMediaResourceReadRequest {
+
+    object PhantomTypes {
+      sealed trait RequestAttribute
+      sealed trait RequestAccountSidAttribute extends RequestAttribute
+      sealed trait RequestMessageSidAttribute extends RequestAttribute
+    }
+
+    type RequestRequiredAttributes =
+      PhantomTypes.RequestAttribute
+        with PhantomTypes.RequestAccountSidAttribute
+        with PhantomTypes.RequestMessageSidAttribute
+
+    type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
+
+    final class Builder[
+        Attributes <: PhantomTypes.RequestAttribute
+    ] private[MessageMediaResourceReadRequest] (
+        accountSid: Option[TwilioAccount.Sid],
+        messageSid: Option[Message.Sid]
+    ) {
+
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[Attributes with PhantomTypes.RequestAccountSidAttribute] =
+        new Builder(Some(accountSid), messageSid)
+
+      def withMessageSid(
+          messageSid: Message.Sid
+      ): Builder[Attributes with PhantomTypes.RequestMessageSidAttribute] =
+        new Builder(accountSid, Some(messageSid))
+
+      def build()(
+          implicit ev: Attributes =:= RequestRequiredAttributes
+      ): MessageMediaResourceReadRequest =
+        MessageMediaResourceReadRequestImpl(accountSid.get, messageSid.get)
     }
 
     object Builder {
-      val empty: BuilderStartState = new BuilderStartState(None)
+      val empty: BuilderStartState = new Builder(None, None)
     }
 
     def build(

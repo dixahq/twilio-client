@@ -335,7 +335,7 @@ private object MultipleResponseRequestExecutorTest {
       successes: List[TestSuccess]
   )
 
-  private implicit val testResponseNextPageJsonRepReader: Reader[TestResponseNextPageJsonRep] =
+  implicit val testResponseNextPageJsonRepReader: Reader[TestResponseNextPageJsonRep] =
     macroR[TestResponseNextPageJsonRep]
 
   def sharedNextPageHttpRequestBuilder(
@@ -347,7 +347,15 @@ private object MultipleResponseRequestExecutorTest {
       .map {
         _.next_page_uri.map(s => {
           HttpRequest(HttpMethods.GET, s).addHeader(
-            RawHeader("Api-Key", connectionSettings.authToken.asString)
+            RawHeader(
+              "Api-Key",
+              connectionSettings.credentials match {
+                case TwilioConnectionSettings.Credentials.AuthTokenCredentials(_, token) =>
+                  token.asString
+                case TwilioConnectionSettings.Credentials.ApiKeyCredentials(sid, _) =>
+                  sid.toString
+              }
+            )
           )
         })
       }

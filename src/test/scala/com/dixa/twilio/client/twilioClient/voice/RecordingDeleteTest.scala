@@ -81,7 +81,7 @@ final class RecordingDeleteTest extends TwilioClientTest {
           instance.run(connSettings, req)
         val expected = Left(
           RecordingDeleteRequestExecutor.RecordingDeleteRequestException
-            .RecordingNotFound(connSettings.accountSid, recordingSid)
+            .RecordingNotFound(TwilioTestConstants.accountSid, recordingSid)
         )
         resultFut.map(res => assert(res === expected))
       }
@@ -143,7 +143,7 @@ final class RecordingDeleteTest extends TwilioClientTest {
     val recordingSid = Recording.Sid.unsafe("REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val req          =
       RecordingDeleteRequestExecutor.RecordingDeleteRequest.build(
-        _.withAccountSid(connSettings.accountSid)
+        _.withAccountSid(TwilioTestConstants.accountSid)
           .withSid(recordingSid)
           .build()
       )
@@ -151,7 +151,7 @@ final class RecordingDeleteTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .delete(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Recordings/$recordingSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Recordings/$recordingSid.json"
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")

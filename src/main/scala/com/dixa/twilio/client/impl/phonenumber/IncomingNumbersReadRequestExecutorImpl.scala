@@ -52,7 +52,7 @@ private[impl] class IncomingNumbersReadRequestExecutorImpl(
       }
       .getOrElse("")
     val pathAsString =
-      s"/2010-04-01/Accounts/${connSettings.accountSid}/IncomingPhoneNumbers.json?PageSize=1000$filterQueryParam"
+      s"/2010-04-01/Accounts/${req.accountSid}/IncomingPhoneNumbers.json?PageSize=1000$filterQueryParam"
     createHttpRequestFor(pathAsString, connSettings)
   }
 

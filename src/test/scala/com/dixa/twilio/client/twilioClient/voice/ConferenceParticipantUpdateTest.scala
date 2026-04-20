@@ -41,7 +41,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
 
         val request =
           ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateRequest.build(
-            _.withAccountSid(connSettings.accountSid)
+            _.withAccountSid(TwilioTestConstants.accountSid)
               .withConferenceSid(conferenceSid)
               .withCallSid(callSid)
               .withHoldTrue()
@@ -49,7 +49,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
           )
 
         val twilioReturn = s"""{
-                              |  "account_sid": "${connSettings.accountSid}",
+                              |  "account_sid": "${TwilioTestConstants.accountSid}",
                               |  "call_sid": "$callSid",
                               |  "label": null,
                               |  "conference_sid": "$conferenceSid",
@@ -67,7 +67,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
           WireMock
             .post(
               WireMock.urlPathEqualTo(
-                s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid/Participants/$callSid.json"
+                s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Conferences/$conferenceSid/Participants/$callSid.json"
               )
             )
             .andMatching(postParamMatcher(Map("Hold" -> "true")))
@@ -82,7 +82,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         )
 
         val expected = Conference.Participant(
-          accountSid = connSettings.accountSid,
+          accountSid = TwilioTestConstants.accountSid,
           conferenceSid = conferenceSid,
           callSid = callSid,
           label = None,
@@ -117,7 +117,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
 
         val request =
           ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateRequest.build(
-            _.withAccountSid(connSettings.accountSid)
+            _.withAccountSid(TwilioTestConstants.accountSid)
               .withConferenceSid(conferenceSid)
               .withLabel(label)
               .withHoldTrue()
@@ -128,7 +128,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
 
         val twilioReturn =
           s"""{
-             |  "account_sid": "${connSettings.accountSid}",
+             |  "account_sid": "${TwilioTestConstants.accountSid}",
              |  "call_sid": "$callSid",
              |  "label": "testLabel",
              |  "conference_sid": "$conferenceSid",
@@ -146,7 +146,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
           WireMock
             .post(
               WireMock.urlPathEqualTo(
-                s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid/Participants/testLabel.json"
+                s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Conferences/$conferenceSid/Participants/testLabel.json"
               )
             )
             .andMatching(
@@ -165,7 +165,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         )
 
         val expected = Conference.Participant(
-          accountSid = connSettings.accountSid,
+          accountSid = TwilioTestConstants.accountSid,
           conferenceSid = conferenceSid,
           callSid = callSid,
           label = Some(label),
@@ -197,7 +197,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         import f._
 
         val expectedPath =
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid/Participants/$callSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Conferences/$conferenceSid/Participants/$callSid.json"
         wireMockServer.stubFor(
           WireMock
             .post(
@@ -220,7 +220,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
 
         val request =
           ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateRequest.build(
-            _.withAccountSid(connSettings.accountSid)
+            _.withAccountSid(TwilioTestConstants.accountSid)
               .withConferenceSid(conferenceSid)
               .withCallSid(callSid)
               .withMuted(false)
@@ -233,7 +233,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
           instance.run(connSettings, request)
         val expected = Left(
           ConferenceParticipantUpdateException.ParticipantNotFound(
-            connSettings.accountSid,
+            TwilioTestConstants.accountSid,
             conferenceSid,
             Left(callSid)
           )
@@ -249,7 +249,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
           WireMock
             .post(
               WireMock.urlPathEqualTo(
-                s"/2010-04-01/Accounts/${connSettings.accountSid}/Conferences/$conferenceSid/Participants/$callSid.json"
+                s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Conferences/$conferenceSid/Participants/$callSid.json"
               )
             )
             .andMatching(postParamMatcher(Map("Muted" -> "true")))
@@ -267,7 +267,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
 
         val request =
           ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateRequest.build(
-            _.withAccountSid(connSettings.accountSid)
+            _.withAccountSid(TwilioTestConstants.accountSid)
               .withConferenceSid(conferenceSid)
               .withCallSid(callSid)
               .withMuted(true)
@@ -288,7 +288,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
             |import f._
             |val label = Conference.Participant.Label("testLabel")
             |ConferenceParticipantUpdateRequestExecutor.ConferenceParticipantUpdateRequest.build(
-            |          _.withAccountSid(connSettings.accountSid)
+            |          _.withAccountSid(TwilioTestConstants.accountSid)
             |            .withConferenceSid(conferenceSid)
             |            .withLabel(label)
             |            .withCallSid(callSid)
@@ -303,7 +303,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
                           |        import f._
                           |
                           |ConferenceParticipantUpdateRequest.build(
-                          |          _.withAccountSid(connSettings.accountSid)
+                          |          _.withAccountSid(TwilioTestConstants.accountSid)
                           |            .withConferenceSid(conferenceSid)
                           |            .build()
                           |        )""".stripMargin)
@@ -314,7 +314,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
                           |import f._
                           |
                           |ConferenceParticipantUpdateRequest.build(
-                          |          _.withAccountSid(connSettings.accountSid)
+                          |          _.withAccountSid(TwilioTestConstants.accountSid)
                           |            .withConferenceSid(conferenceSid)
                           |            .withCallSid(callSid)
                           |            .withHoldUrl(CallbackUrl("http://example.com"))
@@ -326,7 +326,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         assertTypeError("""val f = new Fixture
                           |import f._
                           |ConferenceParticipantUpdateRequest.build(
-                          |  _.withAccountSid(connSettings.accountSid)
+                          |  _.withAccountSid(TwilioTestConstants.accountSid)
                           |    .withConferenceSid(conferenceSid)
                           |    .withCallSid(callSid)
                           |    .withHoldTrue()
@@ -340,7 +340,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         assertTypeError("""val f = new Fixture
                           |import f._
                           |ConferenceParticipantUpdateRequest.build(
-                          |  _.withAccountSid(connSettings.accountSid)
+                          |  _.withAccountSid(TwilioTestConstants.accountSid)
                           |    .withConferenceSid(conferenceSid)
                           |    .withCallSid(callSid)
                           |    .withHoldUrl(CallbackUrl("http://example.com"))
@@ -352,7 +352,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         assertTypeError("""val f = new Fixture
                           |import f._
                           |ConferenceParticipantUpdateRequest.build(
-                          |  _.withAccountSid(connSettings.accountSid)
+                          |  _.withAccountSid(TwilioTestConstants.accountSid)
                           |    .withConferenceSid(conferenceSid)
                           |    .withCallSid(callSid)
                           |    .withAnnounceMethod(HttpMethod.Post)
@@ -364,7 +364,7 @@ final class ConferenceParticipantUpdateTest extends TwilioClientTest {
         assertTypeError("""val f = new Fixture
                           |import f._
                           |ConferenceParticipantUpdateRequest.build(
-                          |  _.withAccountSid(connSettings.accountSid)
+                          |  _.withAccountSid(TwilioTestConstants.accountSid)
                           |    .withConferenceSid(conferenceSid)
                           |    .withCallSid(callSid)
                           |    .withWaitMethod(HttpMethod.Post)

@@ -38,16 +38,19 @@ object TwilioTestConstants {
   val apiKeySid: ApiKey.Sid       = ApiKey.Sid("SKXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
   val apiKeySecret: ApiKey.Secret = ApiKey.Secret("testApiKeySecret")
 
+  val authTokenCredentials: TwilioConnectionSettings.Credentials.AuthTokenCredentials =
+    TwilioConnectionSettings.Credentials.AuthTokenCredentials(accountSid, authToken)
+
+  val apiKeyCredentials: TwilioConnectionSettings.Credentials.ApiKeyCredentials =
+    TwilioConnectionSettings.Credentials.ApiKeyCredentials(apiKeySid, apiKeySecret)
+
   def connSettings(port: Int): TwilioConnectionSettings = TwilioConnectionSettings(
     TwilioEndpoint(baseHostName = "localhost", port = port),
     region = Region.Us1,
     publicEdgeLocation = PublicEdgeLocation.Ashburn,
     protocol = TwilioConnectionSettings.Protocol.Http,
-    accountSid = accountSid,
-    authToken = authToken,
+    credentials = authTokenCredentials,
     parallelFactor = TwilioConnectionSettings.ParallelFactor.halfCpuCores,
-    timeouts = TwilioConnectionSettings.Timeouts.default,
-    apiKeySid = apiKeySid,
-    apiKeySecret = apiKeySecret
+    timeouts = TwilioConnectionSettings.Timeouts.default
   )
 }

@@ -43,14 +43,14 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val expected1 = usageTrigger(
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           UsageTrigger.FriendlyName.unsafe("a trigger"),
           UsageTrigger.CurrentValue.unsafe("20"),
           UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
         )
 
         val expected2 = usageTrigger(
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           UsageTrigger.FriendlyName.unsafe("a test trigger"),
           UsageTrigger.CurrentValue.unsafe("10"),
           UsageTrigger.Sid.unsafe("UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2")
@@ -58,16 +58,16 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
 
         val usageTriggerListResp =
           s"""{
-             |    "first_page_uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily&Page=0&PageSize=50",
+             |    "first_page_uri": "/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily&Page=0&PageSize=50",
              |   "previous_page_uri": null,
              |   "usage_triggers": [
              |       {
-             |         "usage_record_uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Records/Today.json?Category=calls",
+             |         "usage_record_uri": "/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Records/Today.json?Category=calls",
              |         "date_updated": "Sat, 29 Sep 2012 19:42:57 +0000",
              |         "date_fired": null,
              |         "friendly_name": "a trigger",
-             |         "uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers/UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1.json",
-             |         "account_sid": "${connSettings.accountSid}",
+             |         "uri": "/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Triggers/UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1.json",
+             |         "account_sid": "${TwilioTestConstants.accountSid}",
              |         "callback_method": "POST",
              |         "trigger_by": "count",
              |         "sid": "UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1",
@@ -79,12 +79,12 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
              |         "trigger_value": "0.000000"
              |       },
              |       {
-             |         "usage_record_uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Records/Today.json?Category=calls",
+             |         "usage_record_uri": "/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Records/Today.json?Category=calls",
              |         "date_updated": "Sat, 29 Sep 2012 19:42:57 +0000",
              |         "date_fired": null,
              |         "friendly_name": "a test trigger",
-             |         "uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers/UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2.json",
-             |         "account_sid": "${connSettings.accountSid}",
+             |         "uri": "/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Triggers/UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2.json",
+             |         "account_sid": "${TwilioTestConstants.accountSid}",
              |         "callback_method": "POST",
              |         "trigger_by": "count",
              |         "sid": "UTXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX2",
@@ -96,24 +96,25 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
              |         "trigger_value": "0.000000"
              |       }
              |   ],
-             |   "uri": "/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily",
+             |   "uri": "/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Triggers.json?TriggerBy=count&UsageCategory=calls&Recurring=daily",
              |   "page_size": 50,
              |   "next_page_uri": null,
              |   "page": 0
              |}
              |""".stripMargin
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?" +
-          s"Recurring=daily&" +
-          s"UsageCategory=calls&" +
-          s"TriggerBy=count"
+        val expectedPath =
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Triggers.json?" +
+            s"Recurring=daily&" +
+            s"UsageCategory=calls&" +
+            s"TriggerBy=count"
 
         wireMockServer.stubFor(
           WireMock
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -123,7 +124,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         )
 
         val req = UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.build(
-          _.withAccountSid(connSettings.accountSid)
+          _.withAccountSid(TwilioTestConstants.accountSid)
             .withTriggerBy(UsageTrigger.TriggerBy.Count)
             .withUsageCategory(UsageTrigger.UsageCategory.Calls)
             .withRecurring(UsageTrigger.Recurring.Daily)
@@ -147,17 +148,18 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         val f = new Fixture
         import f._
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Usage/Triggers.json?" +
-          s"Recurring=daily&" +
-          s"UsageCategory=calls&" +
-          s"TriggerBy=count"
+        val expectedPath =
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Usage/Triggers.json?" +
+            s"Recurring=daily&" +
+            s"UsageCategory=calls&" +
+            s"TriggerBy=count"
 
         wireMockServer.stubFor(
           WireMock
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(401)
@@ -167,7 +169,7 @@ final class UsageTriggerReadTest extends TwilioClientTest with Matchers {
         )
 
         val req = UsageTriggerReadRequestExecutor.UsageTriggerReadRequest.build(
-          _.withAccountSid(connSettings.accountSid)
+          _.withAccountSid(TwilioTestConstants.accountSid)
             .withTriggerBy(UsageTrigger.TriggerBy.Count)
             .withUsageCategory(UsageTrigger.UsageCategory.Calls)
             .withRecurring(UsageTrigger.Recurring.Daily)

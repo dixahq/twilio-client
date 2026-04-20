@@ -38,7 +38,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
   classOf[TwilioClientVoice].getSimpleName when {
 
     val connectionSettings = connSettings(wireMockServer.port())
-    val accountSid         = connectionSettings.accountSid
+    val accountSid         = TwilioTestConstants.accountSid
 
     "conferenceRead" should {
 
@@ -53,7 +53,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(expectedPath)
             )
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -94,7 +94,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(expectedPath)
             )
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -148,13 +148,13 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(expectedPath)
             )
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withBody(
                   conferenceListResp(
-                    connectionSettings.accountSid,
+                    TwilioTestConstants.accountSid,
                     List(expected, expected2, expected3)
                   )
                 )
@@ -197,13 +197,13 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withBody(
                   conferenceListResp(
-                    connectionSettings.accountSid,
+                    TwilioTestConstants.accountSid,
                     List(expected2)
                   )
                 )

@@ -105,7 +105,8 @@ final class CallFetchTest extends TwilioClientTest {
           Either[CallFetchRequestExecutor.CallFetchException, Call]
         ] =
           instance.run(connSettings, request)
-        val expected = Left(CallFetchException.CallNotFound(connSettings.accountSid, callSid))
+        val expected =
+          Left(CallFetchException.CallNotFound(TwilioTestConstants.accountSid, callSid))
         resultFut.map(res => assert(res === expected))
       }
 
@@ -199,7 +200,7 @@ final class CallFetchTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val request      = CallFetchRequestExecutor.CallFetchRequest.build(
-      _.withAccountSid(connSettings.accountSid)
+      _.withAccountSid(TwilioTestConstants.accountSid)
         .withSid(callSid)
         .build()
     )
@@ -207,7 +208,7 @@ final class CallFetchTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .get(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls/$callSid.json"
         )
       )
       .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")

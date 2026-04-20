@@ -109,7 +109,7 @@ final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
     val statusCallbackUrl = CallbackUrl.VoiceStatusCallbackUrl("https://www.myapp.com/events")
     val request           =
       CallCreateRequestExecutor.CallCreateRequest.build(
-        _.withAccountSid(connSettings.accountSid)
+        _.withAccountSid(TwilioTestConstants.accountSid)
           .withToCallerId(toCallerId)
           .withFromCallerId(fromCallerId)
           .withUrl(url)
@@ -123,7 +123,7 @@ final class CallCreateStatusCallbackEventTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls.json"
         )
       )
       .withRequestBody(
