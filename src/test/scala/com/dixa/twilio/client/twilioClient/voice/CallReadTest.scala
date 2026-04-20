@@ -43,20 +43,20 @@ final class CallReadTest extends TwilioClientTest with Matchers {
         import f._
 
         val expected1 = call(
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           Call.CallerId("+13051416799"),
           Call.CallerId("+13051913581"),
           Call.Status.InProgress,
         )
 
         val expected2 = call(
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           Call.CallerId("+13051416798"),
           Call.CallerId("+13051913580"),
           Call.Status.Completed,
         )
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls.json?" +
+        val expectedPath = s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls.json?" +
           "Status=completed&" +
           "From=%2B13051913581&" +
           "To=%2B13051416799"
@@ -66,14 +66,14 @@ final class CallReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withHeader("Content-Type", "application/json")
                 .withBody(
                   callListResp(
-                    accountSid = connSettings.accountSid,
+                    accountSid = TwilioTestConstants.accountSid,
                     calls = List(expected1, expected2)
                   )
                 )
@@ -81,7 +81,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
         )
 
         val req = CallReadRequestExecutor.CallReadRequest.build(
-          _.withAccountSid(connSettings.accountSid)
+          _.withAccountSid(TwilioTestConstants.accountSid)
             .withTo(PhoneNumberE164.unsafe("+13051416799"))
             .withFrom(PhoneNumberE164.unsafe("+13051913581"))
             .withStatus(Call.Status.Completed)
@@ -103,7 +103,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
         val f = new Fixture
         import f._
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls.json?" +
+        val expectedPath = s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls.json?" +
           "Status=completed&" +
           "From=%2B13051913581&" +
           "To=%2B13051416799"
@@ -113,7 +113,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlEqualTo(expectedPath)
             )
-            .withBasicAuth(connSettings.accountSid.twilioString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(401)
@@ -123,7 +123,7 @@ final class CallReadTest extends TwilioClientTest with Matchers {
         )
 
         val req = CallReadRequestExecutor.CallReadRequest.build(
-          _.withAccountSid(connSettings.accountSid)
+          _.withAccountSid(TwilioTestConstants.accountSid)
             .withTo(PhoneNumberE164.unsafe("+13051416799"))
             .withFrom(PhoneNumberE164.unsafe("+13051913581"))
             .withStatus(Call.Status.Completed)

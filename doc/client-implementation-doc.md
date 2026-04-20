@@ -161,7 +161,7 @@ XRequestExecutor (trait)
     │   ├── type BuilderStartState = ...
     │   ├── Builder (final class)
     │   │   └── object Builder (companion)
-    │   │       └── val/def empty = ...
+    │   │       └── val empty = ...
     │   └── def build(fun: ...) = ...
     ├── XException (sealed trait)
     └── XException companion object
@@ -293,7 +293,7 @@ object SipIpAddressDeleteRequestExecutor {
       fun(Builder.empty)
 
     object Builder {
-      def empty: BuilderStartState =
+      val empty: BuilderStartState =
         new BuilderStartState(None, None, None)
     }
   }
@@ -566,7 +566,7 @@ object RecordingReadRequestExecutor {
       fun(Builder.empty)
 
     object Builder {
-      def empty: BuilderStartState = new Builder(None, None)
+      val empty: BuilderStartState = new Builder(None, None)
     }
   }
 

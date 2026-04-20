@@ -108,7 +108,7 @@ final class CallCreateTwimlTest extends TwilioClientTest {
       Response.build(_.addSay(_.withText("Ahoy there!").build()).buildVerified())
     val request =
       CallCreateRequestExecutor.CallCreateRequest.build(
-        _.withAccountSid(connSettings.accountSid)
+        _.withAccountSid(TwilioTestConstants.accountSid)
           .withToCallerId(toCallerId)
           .withFromCallerId(fromCallerId)
           .withSipAuthUsername(TwilioTestConstants.trunkUsername1)
@@ -120,7 +120,7 @@ final class CallCreateTwimlTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls.json"
         )
       )
       .withRequestBody(

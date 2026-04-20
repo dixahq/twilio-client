@@ -107,7 +107,7 @@ final class CallCreateUrlTest extends TwilioClientTest {
     val url          = CallbackUrl.VoiceUrl("http://demo.twilio.com/docs/voice.xml")
     val request      =
       CallCreateRequestExecutor.CallCreateRequest.build(
-        _.withAccountSid(connSettings.accountSid)
+        _.withAccountSid(TwilioTestConstants.accountSid)
           .withToCallerId(toCallerId)
           .withFromCallerId(fromCallerId)
           .withUrl(url)
@@ -117,7 +117,7 @@ final class CallCreateUrlTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls.json"
         )
       )
       .withRequestBody(

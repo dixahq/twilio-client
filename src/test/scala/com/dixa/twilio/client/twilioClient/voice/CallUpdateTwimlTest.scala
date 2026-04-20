@@ -62,7 +62,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
         val expected = Right(
           Call(
             sid = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
-            accountSid = connSettings.accountSid,
+            accountSid = TwilioTestConstants.accountSid,
             answeredBy = None,
             callerName = None,
             dateCreated = createdAtInstant,
@@ -117,7 +117,8 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
           Either[CallUpdateRequestExecutor.CallUpdateException, Call]
         ] =
           instance.run(connSettings, request)
-        val expected = Left(CallUpdateException.CallNotFound(connSettings.accountSid, callSid))
+        val expected =
+          Left(CallUpdateException.CallNotFound(TwilioTestConstants.accountSid, callSid))
         resultFut.map(res => assert(res === expected))
       }
 
@@ -210,7 +211,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val callSid      = Call.Sid.unsafe("CAXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     val request      = CallUpdateRequestExecutor.CallUpdateRequest.build(
-      _.withAccountSid(connSettings.accountSid)
+      _.withAccountSid(TwilioTestConstants.accountSid)
         .withCallSid(callSid)
         .withTwiml(Response.build { _.addSay(_.withText("Ahoy there").build()).buildVerified() })
         .build()
@@ -247,7 +248,7 @@ final class CallUpdateTwimlTest extends TwilioClientTest {
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(
         WireMock.urlPathEqualTo(
-          s"/2010-04-01/Accounts/${connSettings.accountSid}/Calls/$callSid.json"
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Calls/$callSid.json"
         )
       )
       .withRequestBody(

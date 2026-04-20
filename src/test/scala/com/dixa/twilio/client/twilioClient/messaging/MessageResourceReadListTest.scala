@@ -36,7 +36,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
   classOf[TwilioClientMessaging].getSimpleName when {
 
     val connectionSettings = connSettings(wireMockServer.port())
-    val accountSid         = connectionSettings.accountSid
+    val accountSid         = TwilioTestConstants.accountSid
 
     "messageResourceList" should {
 
@@ -47,7 +47,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -71,7 +71,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
               WireMock.urlPathEqualTo(path(accountSid))
             )
             .withQueryParam("PageSize", equalTo(s"${filter.pageSize.toString}"))
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
@@ -107,13 +107,13 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .get(
               WireMock.urlPathEqualTo(path(accountSid))
             )
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withBody(
                   messageResourceListResp(
-                    connectionSettings.accountSid,
+                    TwilioTestConstants.accountSid,
                     List(expected, expected2, expected3)
                   )
                 )
@@ -152,13 +152,13 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             .withQueryParam("To", equalTo(expected.to.toMessageRecipient))
             .withQueryParam("From", equalTo(expected.from.asString))
             .withQueryParam("PageSize", equalTo(filter.pageSize.toString))
-            .withBasicAuth(connectionSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withBody(
                   messageResourceListResp(
-                    connectionSettings.accountSid,
+                    TwilioTestConstants.accountSid,
                     List(expected, expected2, expected3)
                   )
                 )

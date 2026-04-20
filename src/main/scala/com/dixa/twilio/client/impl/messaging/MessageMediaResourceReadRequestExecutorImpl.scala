@@ -49,7 +49,7 @@ private[impl] class MessageMediaResourceReadRequestExecutorImpl(
       connSettings: TwilioConnectionSettings,
       req: MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest
   ): Either[MessageMediaResourceReadException, HttpRequest] = {
-    val requestPath = buildMediaResourcePath(connSettings.accountSid, req.messageSid)
+    val requestPath = buildMediaResourcePath(req.accountSid, req.messageSid)
     createHttpRequestFor(requestPath, connSettings)
   }
 

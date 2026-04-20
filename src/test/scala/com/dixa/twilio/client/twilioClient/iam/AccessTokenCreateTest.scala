@@ -15,57 +15,158 @@
 
 package com.dixa.twilio.client.twilioClient.iam
 
-import com.dixa.twilio.client.iam.{AccessTokenCreateRequestExecutor, TwilioClientIam}
-import com.dixa.twilio.client.twilioClient.TwilioClientTest
-import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
+import java.util.Base64
+import com.dixa.twilio.client.TwilioTestConstants
+import com.dixa.twilio.client.iam.AccessTokenFactory
+import com.dixa.twilio.model.Region
 import com.dixa.twilio.model.general.Application
 import com.dixa.twilio.model.iam.TwilioGrant.VoiceGrant
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration._
 
-final class AccessTokenCreateTest extends TwilioClientTest {
+final class AccessTokenCreateTest extends AnyWordSpec {
 
-  classOf[TwilioClientIam].getSimpleName when {
-    "Asked to create an access token" should {
+  private val decoder = Base64.getUrlDecoder
 
-      "Return a valid token string" in {
-        val instance     = TwilioClient.defaultImpl().iam.accessTokenCreate
-        val connSettings = TwilioTestConstants.connSettings(8080)
+  private def decodeJson(base64url: String): ujson.Value =
+    ujson.read(new String(decoder.decode(base64url), "UTF-8"))
 
-        val request = AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder.empty
-          .withIdentity("user123")
-          .addGrant(
-            VoiceGrant(
-              incomingAllow = true,
-              outgoingAppSid = Some(Application.Sid.unsafe("APaaaabbbbccccdddd1111222233334444"))
-            )
+  classOf[AccessTokenFactory].getSimpleName when {
+
+    "asked to generate an access token" should {
+
+      "produce a JWT with a valid header" in {
+        val token = AccessTokenFactory.defaultImpl
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Nil,
+            ttl = 1.hour
           )
-          .build()
+          .toTry
+          .get
 
-        instance.run(connSettings, request).map { resultEither =>
-          val result = resultEither.toTry.get
-          assert(result.token.nonEmpty)
-          val parts = result.token.split('.')
-          assert(parts.length === 3)
-          // Header, Payload, Signature are all base64url encoded
+        val header = decodeJson(token.token.split('.')(0))
+        assert(header("typ").str === "JWT")
+        assert(header("alg").str === "HS256")
+        assert(header("cty").str === "twilio-fpa;v=1")
+        assert(header("twr").str === Region.Us1.twilioString)
+      }
+
+      "produce a JWT payload with the expected standard claims" in {
+        val token = AccessTokenFactory.defaultImpl
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val payload = decodeJson(token.token.split('.')(1))
+        assert(payload("iss").str === TwilioTestConstants.apiKeySid.toString)
+        assert(payload("sub").str === TwilioTestConstants.accountSid.toString)
+        assert((payload("exp").num - payload("iat").num) === 3600.0)
+      }
+
+      "produce a JWT payload with the identity and grants" in {
+        val token = AccessTokenFactory.defaultImpl
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Seq(
+              VoiceGrant(
+                incomingAllow = true,
+                outgoingAppSid = Some(Application.Sid.unsafe("APaaaabbbbccccdddd1111222233334444"))
+              )
+            ),
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val grants = decodeJson(token.token.split('.')(1))("grants")
+        assert(grants("identity").str === "user123")
+        assert(grants("voice")("incoming")("allow").bool === true)
+        assert(
+          grants("voice")("outgoing")(
+            "application_sid"
+          ).str === "APaaaabbbbccccdddd1111222233334444"
+        )
+      }
+
+      "produce valid JSON in the grants object when no grants are provided" in {
+        val token = AccessTokenFactory.defaultImpl
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = "user123",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val grants = decodeJson(token.token.split('.')(1))("grants")
+        assert(grants("identity").str === "user123")
+        assert(grants.obj.size === 1)
+      }
+
+      "correctly escape special characters in the identity field" in {
+        val token = AccessTokenFactory.defaultImpl
+          .generate(
+            credentials = TwilioTestConstants.apiKeyCredentials,
+            accountSid = TwilioTestConstants.accountSid,
+            region = Region.Us1,
+            identity = """user"with\special""",
+            grants = Nil,
+            ttl = 1.hour
+          )
+          .toTry
+          .get
+
+        val grants = decodeJson(token.token.split('.')(1))("grants")
+        assert(grants("identity").str === """user"with\special""")
+      }
+
+      "return an error if ttl is zero" in {
+        val result = AccessTokenFactory.defaultImpl.generate(
+          credentials = TwilioTestConstants.apiKeyCredentials,
+          accountSid = TwilioTestConstants.accountSid,
+          region = Region.Us1,
+          identity = "user123",
+          grants = Nil,
+          ttl = 0.seconds
+        )
+
+        result match {
+          case Left(AccessTokenFactory.Error.InvalidTtl(0)) => succeed
+          case other => fail(s"Expected InvalidTtl(0), got $other")
         }
       }
 
-      "Return an error if ttl is invalid" in {
-        val instance     = TwilioClient.defaultImpl().iam.accessTokenCreate
-        val connSettings = TwilioTestConstants.connSettings(8080)
+      "return an error if ttl exceeds 24 hours" in {
+        val result = AccessTokenFactory.defaultImpl.generate(
+          credentials = TwilioTestConstants.apiKeyCredentials,
+          accountSid = TwilioTestConstants.accountSid,
+          region = Region.Us1,
+          identity = "user123",
+          grants = Nil,
+          ttl = 25.hours
+        )
 
-        val request = AccessTokenCreateRequestExecutor.AccessTokenCreateRequest.Builder.empty
-          .withIdentity("user123")
-          .withTtl(0.seconds)
-          .build()
-
-        instance.run(connSettings, request).map {
-          case Left(AccessTokenCreateRequestExecutor.AccessTokenCreateException.InvalidTtl(0)) =>
-            // Success
-            succeed
-          case other =>
-            fail(s"Expected InvalidTtl exception, got $other")
+        result match {
+          case Left(AccessTokenFactory.Error.InvalidTtl(_)) => succeed
+          case other => fail(s"Expected InvalidTtl, got $other")
         }
       }
     }

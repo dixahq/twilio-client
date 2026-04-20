@@ -55,7 +55,8 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
 
         val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
 
-        val expectedPath = s"/2010-04-01/Accounts/${connSettings.accountSid}/OutgoingCallerIds.json"
+        val expectedPath =
+          s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/OutgoingCallerIds.json"
 
         wireMockServer.stubFor(
           WireMock
@@ -84,8 +85,8 @@ final class OutgoingCallerIdCreateTest extends TwilioClientTest {
               WireMock.equalTo(createReq.statusCallbackMethod.map(_.twilioString).getOrElse(""))
             )
             .withBasicAuth(
-              connSettings.accountSid.twilioString,
-              connSettings.authToken.asString
+              TwilioTestConstants.accountSid.twilioString,
+              TwilioTestConstants.authToken.asString
             )
             .willReturn(
               aResponse()

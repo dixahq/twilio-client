@@ -36,11 +36,13 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
   private val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
   private val messageSid   = Message.Sid.unsafe("SM9c8a124127702f0c7084b373cb06157a")
   private val sid          = Media.Sid.unsafe("ME9ec380c03268689d63e8fc5e97bba86e")
-  private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest(
-    messageSid = messageSid
+  private val req = MessageMediaResourceReadRequestExecutor.MessageMediaResourceReadRequest.build(
+    _.withAccountSid(TwilioTestConstants.accountSid)
+      .withMessageSid(messageSid)
+      .build()
   )
   private val path = MediaResourceUrlFactory.buildMediaResourcePath(
-    connSettings.accountSid,
+    TwilioTestConstants.accountSid,
     messageSid
   )
 
@@ -71,11 +73,13 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
             .get(
               WireMock.urlPathEqualTo(path)
             )
-            .withBasicAuth(connSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
-                .withBody(mediaResourceListResp(connSettings.accountSid, messageSid, List.empty))
+                .withBody(
+                  mediaResourceListResp(TwilioTestConstants.accountSid, messageSid, List.empty)
+                )
             )
         )
 
@@ -93,23 +97,25 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
             .get(
               WireMock.urlPathEqualTo(path)
             )
-            .withBasicAuth(connSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
-                .withBody(mediaResourceListResp(connSettings.accountSid, messageSid, List(sid)))
+                .withBody(
+                  mediaResourceListResp(TwilioTestConstants.accountSid, messageSid, List(sid))
+                )
             )
         )
 
         val expected = MediaResourceReference(
           sid,
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           messageSid,
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
           MediaResourceUrl(
-            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid"
+            s"http://localhost/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Messages/$messageSid/Media/$sid"
           )
         )
 
@@ -133,49 +139,53 @@ final class MessageMediaResourceReadTest extends TwilioClientTest with Matchers 
             .get(
               WireMock.urlPathEqualTo(path)
             )
-            .withBasicAuth(connSettings.accountSid.toString, "testPassword")
+            .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
             .willReturn(
               aResponse()
                 .withStatus(200)
                 .withBody(
-                  mediaResourceListResp(connSettings.accountSid, messageSid, List(sid, sid2, sid3))
+                  mediaResourceListResp(
+                    TwilioTestConstants.accountSid,
+                    messageSid,
+                    List(sid, sid2, sid3)
+                  )
                 )
             )
         )
 
         val expected = MediaResourceReference(
           sid,
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           messageSid,
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
           MediaResourceUrl(
-            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid"
+            s"http://localhost/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Messages/$messageSid/Media/$sid"
           )
         )
 
         val expected2 = MediaResourceReference(
           sid2,
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           messageSid,
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
           MediaResourceUrl(
-            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/$sid2"
+            s"http://localhost/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Messages/$messageSid/Media/$sid2"
           )
         )
 
         val expected3 = MediaResourceReference(
           sid3,
-          connSettings.accountSid,
+          TwilioTestConstants.accountSid,
           messageSid,
           contentType = "image/jpeg",
           dateCreated = createdAtInstant,
           dateUpdated = updatedAtInstant,
           MediaResourceUrl(
-            s"http://localhost/2010-04-01/Accounts/${connSettings.accountSid}/Messages/$messageSid/Media/MEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"
+            s"http://localhost/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Messages/$messageSid/Media/MEXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX3"
           )
         )
 
