@@ -25,6 +25,7 @@ import com.dixa.twilio.client.phonenumber.{
   OutgoingCallerIdCreateRequestExecutor,
   OutgoingCallerIdDeleteRequestExecutor,
   OutgoingCallerIdReadRequestExecutor,
+  PhoneNumberRoutingVoiceReadRequestExecutor,
   TwilioClientPhoneNumber
 }
 
@@ -55,4 +56,7 @@ private[impl] final class TwilioClientPhoneNumberImpl()(
 
   override val outgoingCallerIdCreate: OutgoingCallerIdCreateRequestExecutor =
     new OutgoingCallerIdCreateRequestExecutorImpl()
+
+  override val phoneNumberRoutingVoiceRead: PhoneNumberRoutingVoiceReadRequestExecutor =
+    new PhoneNumberRoutingVoiceReadRequestExecutorImpl()
 }

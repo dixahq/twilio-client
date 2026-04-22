@@ -71,4 +71,14 @@ trait TwilioClientPhoneNumber {
     *   https://www.twilio.com/docs/voice/api/outgoing-caller-ids#http-post
     */
   def outgoingCallerIdCreate: OutgoingCallerIdCreateRequestExecutor
+
+  /** Fetch the routing region for a phone number.
+    *
+    * Uses Twilio's Voice Routing API to determine which region handles voice traffic for the given
+    * number.
+    *
+    * @see
+    *   https://www.twilio.com/docs/global-infrastructure/inbound-processing-region-api-phone-number#fetch-a-phonenumbers-current-inbound-processing-region-configuration
+    */
+  def phoneNumberRoutingVoiceRead: PhoneNumberRoutingVoiceReadRequestExecutor
 }
