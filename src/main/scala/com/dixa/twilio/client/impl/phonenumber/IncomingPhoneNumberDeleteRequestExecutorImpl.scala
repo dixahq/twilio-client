@@ -45,10 +45,13 @@ private[impl] class IncomingPhoneNumberDeleteRequestExecutorImpl(
       case StatusCodes.NoContent | StatusCodes.OK => Right(Done)
       case StatusCodes.NotFound                   => buildResultForNotFoundResponse(request, entity)
       case StatusCodes.MethodNotAllowed           =>
+        val moreInfo = parseEntityAs[DefaultApiErrorEntityJsonRep](entity).toOption
+          .map(_.more_info)
         Left(
           IncomingPhoneNumberDeleteException.MethodNotAllowed(
             request.accountSid,
-            request.phoneNumberId
+            request.phoneNumberId,
+            moreInfo
           )
         )
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)

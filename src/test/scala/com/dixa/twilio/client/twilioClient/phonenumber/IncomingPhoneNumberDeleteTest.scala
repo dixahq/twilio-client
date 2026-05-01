@@ -94,7 +94,11 @@ final class IncomingPhoneNumberDeleteTest extends TwilioClientTest with Matchers
         resultFut.map(res =>
           assert(
             res === Left(
-              IncomingPhoneNumberDeleteException.MethodNotAllowed(accountSid, numberSid)
+              IncomingPhoneNumberDeleteException.MethodNotAllowed(
+                accountSid,
+                numberSid,
+                Some("https://www.twilio.com/docs/errors/20004")
+              )
             )
           )
         )
