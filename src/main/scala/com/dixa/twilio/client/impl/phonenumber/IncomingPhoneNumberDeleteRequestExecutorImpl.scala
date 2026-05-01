@@ -44,6 +44,13 @@ private[impl] class IncomingPhoneNumberDeleteRequestExecutorImpl(
     httpResponse.status match {
       case StatusCodes.NoContent | StatusCodes.OK => Right(Done)
       case StatusCodes.NotFound                   => buildResultForNotFoundResponse(request, entity)
+      case StatusCodes.MethodNotAllowed           =>
+        Left(
+          IncomingPhoneNumberDeleteException.MethodNotAllowed(
+            request.accountSid,
+            request.phoneNumberId
+          )
+        )
       case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
     }
   }
