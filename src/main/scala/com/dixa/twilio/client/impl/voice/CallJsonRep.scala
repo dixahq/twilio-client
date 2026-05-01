@@ -44,7 +44,7 @@ private[impl] case class CallJsonRep(
     parent_call_sid: Option[String] = None,
     phone_number_sid: Option[String] = None,
     price: Option[String] = None,
-    price_unit: String,
+    price_unit: Option[String],
     sid: String,
     start_time: Option[String] = None,
     status: String,
@@ -69,7 +69,7 @@ private[impl] case class CallJsonRep(
     startTime = start_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
     endTime = end_time.map(time => Instant.from(Formatter.dateTime.parse(time))),
     duration = optionStringToOptionLong(duration).map(Duration.ofSeconds),
-    price = price.map(p => Call.Price(BigDecimal(p), Iso4127CountryCode.apply(price_unit))),
+    price = extractPriceUnsafe,
     direction = Call.Direction.fromTwilioStringUnsafe(direction),
     answeredBy = answered_by.map(Call.AnsweredBy.fromTwilioStringUnsafe),
     forwardedFrom = forwarded_from.map(Call.ForwardedFrom),
@@ -78,6 +78,22 @@ private[impl] case class CallJsonRep(
     queueTime = Try(queue_time.toLong).map(Duration.ofMillis).getOrElse(Duration.ZERO),
     trunkSid = trunk_sid.flatMap(s => Trunk.Sid(s).toOption)
   )
+
+  def extractPriceUnsafe: Option[Call.Price] = {
+    price_unit match {
+      case Some(priceUnit) => // price and unit exists
+        price.map(p => Call.Price(BigDecimal(p), Iso4127CountryCode.apply(priceUnit)))
+      case None =>
+        price match {
+          case Some(p) =>
+            // if price is 0 and unit is null then price is None
+            if (BigDecimal(p) == 0) None
+            // if price exists and unit is null then price is invalid
+            else throw new IllegalArgumentException("Invalid price: price exists, but unit is null")
+          case None => None // price is null and unit is null
+        }
+    }
+  }
 
   private def optionStringToOptionLong(x: Option[String]): Option[Long] =
     x.flatMap(asString => Try(asString.toLong).toOption)
