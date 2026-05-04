@@ -100,6 +100,17 @@ object IncomingPhoneNumberDeleteRequestExecutor {
         )
         with IncomingPhoneNumberDeleteException
 
+    final case class MethodNotAllowed(
+        accountSid: TwilioAccount.Sid,
+        phoneNumberSid: phonenumber.TwilioPhoneNumber.Sid,
+        moreInfo: Option[String]
+    ) extends RuntimeException(
+          s"Twilio returned 405 Method Not Allowed when deleting phone number $phoneNumberSid in account $accountSid. " +
+            "The number may be in a state that does not allow deletion via the API." +
+            moreInfo.fold("")(url => s" More info: $url")
+        )
+        with IncomingPhoneNumberDeleteException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(

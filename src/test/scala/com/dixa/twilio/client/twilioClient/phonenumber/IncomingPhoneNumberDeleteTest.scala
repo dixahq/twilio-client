@@ -61,6 +61,49 @@ final class IncomingPhoneNumberDeleteTest extends TwilioClientTest with Matchers
         resultFut.map(res => assert(res === Right(Done)))
       }
 
+      "Return a left of a MethodNotAllowed exception, if Twilio returns a 405 response" in {
+        wireMockServer.stubFor(
+          WireMock
+            .delete(
+              WireMock.urlPathEqualTo(
+                "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/IncomingPhoneNumbers/PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1.json"
+              )
+            )
+            .withBasicAuth("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "testPassword")
+            .willReturn(
+              aResponse()
+                .withStatus(405)
+                .withBody(
+                  """{"code": 20004, "message": "Method Not Allowed", "more_info": "https://www.twilio.com/docs/errors/20004", "status": 405}"""
+                )
+            )
+        )
+
+        val twilioConnectionSetting = TwilioTestConstants.connSettings(wireMockServer.port())
+        val instance: TwilioClientPhoneNumber = TwilioClient.defaultImpl().phoneNumber
+        val accountSid = TwilioAccount.Sid.unsafe("ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        val numberSid  = TwilioPhoneNumber.Sid.unsafe("PNXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX1")
+        val req        =
+          IncomingPhoneNumberDeleteRequest(
+            accountSid,
+            numberSid
+          )
+
+        val resultFut = instance.incomingPhoneNumberDelete.run(twilioConnectionSetting, req)
+
+        resultFut.map(res =>
+          assert(
+            res === Left(
+              IncomingPhoneNumberDeleteException.MethodNotAllowed(
+                accountSid,
+                numberSid,
+                Some("https://www.twilio.com/docs/errors/20004")
+              )
+            )
+          )
+        )
+      }
+
       "Return a left of a NotFound exception, if twilio return a 404 response" in {
         wireMockServer.stubFor(
           WireMock
