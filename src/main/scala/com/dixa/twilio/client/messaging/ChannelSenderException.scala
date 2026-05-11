@@ -22,8 +22,8 @@ sealed trait ChannelSenderException extends RuntimeException
 
 object ChannelSenderException {
 
-  final case class ChannelNotSupported(channel: String)
-      extends RuntimeException(s"Channel is not supported: $channel")
+  final case class ChannelSenderNotSupported(sender: String)
+      extends RuntimeException(s"Channel is not supported: $sender")
       with ChannelSenderException
 
   final case class ParseFailure(msg: String)

@@ -38,7 +38,7 @@ trait ChannelsSendersCreateRequestExecutor
 object ChannelsSendersCreateRequestExecutor {
 
   final case class ChannelSenderCreateRequest(
-      senderId: MessageRecipient,
+      senderId: MessageSender,
       configuration: ChannelSender.Configuration,
       webhooks: ChannelSender.Webhooks,
       profile: ChannelSender.Profile
@@ -47,12 +47,12 @@ object ChannelsSendersCreateRequestExecutor {
     type BuilderStartState = Builder
 
     final class Builder private[messaging] (
-        senderId: Option[MessageRecipient],
+        senderId: Option[MessageSender],
         configuration: Option[ChannelSender.Configuration],
         webhooks: Option[ChannelSender.Webhooks],
         profile: Option[ChannelSender.Profile]
     ) {
-      def withSenderId(senderId: MessageRecipient): Builder =
+      def withSenderId(senderId: MessageSender): Builder =
         new Builder(Some(senderId), configuration, webhooks, profile)
       def withConfiguration(configuration: ChannelSender.Configuration): Builder =
         new Builder(senderId, Some(configuration), webhooks, profile)

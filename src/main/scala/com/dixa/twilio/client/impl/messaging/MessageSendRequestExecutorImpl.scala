@@ -57,7 +57,7 @@ private[impl] final class MessageSendRequestExecutorImpl()(
   ): Either[MessageSendException, HttpRequest] = {
     val baseFields = Seq(
       "From"           -> req.from.asString,
-      "To"             -> req.to.toMessageRecipient,
+      "To"             -> req.to.asString,
       "Body"           -> req.body.toString,
       "StatusCallback" -> req.statusCallback.toString
     )

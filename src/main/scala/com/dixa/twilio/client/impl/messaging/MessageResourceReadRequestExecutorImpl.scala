@@ -55,7 +55,7 @@ private[impl] final class MessageResourceReadRequestExecutorImpl()(
           "DateSent<" -> date.toString
       }
       val toParameter: Option[(String, String)] = req.filter.to.map { recipient =>
-        "To" -> recipient.toMessageRecipient
+        "To" -> recipient.asString
       }
       val fromParameter: Option[(String, String)] = req.filter.from.map { sender =>
         "From" -> sender.asString

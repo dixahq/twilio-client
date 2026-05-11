@@ -19,7 +19,7 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import scala.util.Try
 
-sealed trait WhatsappNumber extends MessageRecipient {
+sealed trait WhatsappNumber {
   def number: PhoneNumberE164
 
   private def asString: String = WhatsappNumber.Prefix + number.toString

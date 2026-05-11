@@ -18,15 +18,15 @@ package com.dixa.twilio.model.messaging
 import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
-abstract class MessageRecipient private[model] extends TwilioStringValue {
-
-  def toMessageRecipient: String = toString
+sealed abstract class MessageRecipient private[model] extends TwilioStringValue {
+  def asString: String
 }
 
 object MessageRecipient {
-  def fromString(string: String): Option[MessageRecipient] = {
-    PhoneNumberE164(string)
-      .orElse(WhatsappNumber(string))
+  def fromString(s: String): Option[MessageRecipient] = {
+    PhoneNumberE164(s)
+      .map(E164)
+      .orElse(WhatsappNumber(s).map(Whatsapp))
   }
 
   def fromStringUnsafe(string: String): MessageRecipient = {
@@ -35,5 +35,13 @@ object MessageRecipient {
         "Recipient couldn't be parsed neither into Whatsapp nor into E.164 phone number"
       )
     )
+  }
+
+  final case class E164(phoneNumber: PhoneNumberE164) extends MessageRecipient {
+    override def asString: String = phoneNumber.toString
+  }
+
+  final case class Whatsapp(whatsappNumber: WhatsappNumber) extends MessageRecipient {
+    override def asString: String = whatsappNumber.toString
   }
 }

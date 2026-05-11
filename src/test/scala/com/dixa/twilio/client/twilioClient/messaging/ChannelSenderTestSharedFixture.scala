@@ -16,6 +16,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.model.messaging.ChannelSender.Webhooks
+import com.dixa.twilio.model.messaging.MessageSender.Whatsapp
 import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
 
 trait ChannelSenderTestSharedFixture {
@@ -31,7 +32,7 @@ object ChannelSenderTestSharedFixture {
     status = ChannelSender.Status.Online,
     profile = ChannelSender.Profile
       .WhatsappProfile(phoneNumberDisplayName = "Example WABA"),
-    senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
+    senderId = Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")),
     sid = channelSenderSid,
     webhooks = Webhooks(
       callback = None,

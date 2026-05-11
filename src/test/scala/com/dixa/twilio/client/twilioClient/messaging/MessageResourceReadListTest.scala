@@ -149,7 +149,7 @@ final class MessageResourceReadListTest extends TwilioClientTest with Matchers {
             )
             .withQueryParam("DateSent>", equalTo(createdAtInstant.toString))
             .withQueryParam("DateSent<", equalTo(updatedAtInstant.toString))
-            .withQueryParam("To", equalTo(expected.to.toMessageRecipient))
+            .withQueryParam("To", equalTo(expected.to.asString))
             .withQueryParam("From", equalTo(expected.from.asString))
             .withQueryParam("PageSize", equalTo(filter.pageSize.toString))
             .withBasicAuth(TwilioTestConstants.accountSid.toString, "testPassword")
@@ -236,9 +236,9 @@ private object MessageResourceReadListTest {
     BigDecimal(0.234324),
     Iso4127CountryCode("DKK")
   )
-  private val receiver  = PhoneNumberE164.unsafe("+12019235100")
-  private val receiver2 = PhoneNumberE164.unsafe("+12019235100")
-  private val receiver3 = PhoneNumberE164.unsafe("+12019235100")
+  private val receiver  = MessageRecipient.E164(PhoneNumberE164.unsafe("+12019235100"))
+  private val receiver2 = MessageRecipient.E164(PhoneNumberE164.unsafe("+12019235100"))
+  private val receiver3 = MessageRecipient.E164(PhoneNumberE164.unsafe("+12019235100"))
 
   private def messageResource(accountSid: TwilioAccount.Sid) = MessageResource(
     sid = messageSid,
@@ -278,7 +278,7 @@ private object MessageResourceReadListTest {
        |  "price_unit": "${messageResource.price.map(_.unit).getOrElse("null")}",
        |  "sid": "${messageResource.sid}",
        |  "status": "${messageResource.status.twilioString}",
-       |  "to": "${messageResource.to.toMessageRecipient}",
+       |  "to": "${messageResource.to.asString}",
        |  "uri": "/2010-04-01/Accounts/$accountSid/Messages/${messageResource.sid}.json"
        |}""".stripMargin
   }

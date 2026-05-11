@@ -25,7 +25,7 @@ import scala.collection.immutable
 sealed trait ChannelSender {
   val status: ChannelSender.Status
   val profile: ChannelSender.Profile
-  val senderId: MessageRecipient
+  val senderId: MessageSender
   val sid: ChannelSender.Sid
   val webhooks: ChannelSender.Webhooks
   val configuration: ChannelSender.Configuration
@@ -37,7 +37,7 @@ object ChannelSender {
   final case class WhatsappSender(
       status: ChannelSender.Status,
       profile: ChannelSender.Profile.WhatsappProfile,
-      senderId: WhatsappNumber,
+      senderId: MessageSender,
       sid: ChannelSender.Sid,
       webhooks: ChannelSender.Webhooks,
       configuration: ChannelSender.Configuration,

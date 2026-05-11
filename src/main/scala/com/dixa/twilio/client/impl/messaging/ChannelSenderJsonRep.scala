@@ -19,8 +19,8 @@ import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.messaging.ChannelSenderException
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.messaging.ChannelSender.{VerificationMethod, Webhook}
-import com.dixa.twilio.model.messaging.{ChannelSender, MessageRecipient, WhatsappNumber}
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
+import com.dixa.twilio.model.messaging.{ChannelSender, MessageSender}
 
 private[messaging] final case class ChannelSenderJsonRep(
     sender_id: String,
@@ -69,8 +69,8 @@ private[messaging] object ChannelSenderJsonRep {
   def toModel(
       jsonRep: ChannelSenderJsonRep
   ): Either[ChannelSenderException, ChannelSender] = {
-    MessageRecipient.fromString(jsonRep.sender_id) match {
-      case Some(whatsapp: WhatsappNumber) if jsonRep.configuration.waba_id.isDefined =>
+    MessageSender.fromString(jsonRep.sender_id) match {
+      case Right(whatsapp: Whatsapp) if jsonRep.configuration.waba_id.isDefined =>
         val status = ChannelSender.Status
           .fromTwilioString(jsonRep.status)
           .getOrElse(ChannelSender.Status.Unknown)
@@ -93,20 +93,22 @@ private[messaging] object ChannelSenderJsonRep {
             properties = jsonRep.properties.map(toModel)
           )
         )
-      case Some(phoneNumber: PhoneNumberE164) =>
+      case Right(senderE164: E164) =>
         Left(
           ChannelSenderException.ParseFailure(
-            s"PhoneNumber Channel Sender with id $phoneNumber not supported"
+            s"PhoneNumber Channel Sender with ID: ${senderE164.asString} not supported"
           )
         )
-      case Some(unknown) =>
-        Left(
-          ChannelSenderException.ParseFailure(s"Unknown Channel Sender $unknown not supported")
-        )
-      case None =>
+      case Right(other) =>
         Left(
           ChannelSenderException.ParseFailure(
-            s"Channel Sender id ${jsonRep.sender_id} of unknown type not supported"
+            s"Channel Sender with ID: ${other.asString} is not supported"
+          )
+        )
+      case Left(_) =>
+        Left(
+          ChannelSenderException.ParseFailure(
+            s"Channel Sender ID: ${jsonRep.sender_id} of unknown type is not supported"
           )
         )
     }

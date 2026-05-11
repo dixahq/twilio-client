@@ -29,10 +29,10 @@ import com.dixa.twilio.client.messaging.{
   ChannelsSendersCreateRequestExecutor
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
-import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
+import com.dixa.twilio.model.messaging.ChannelSender
 import com.dixa.twilio.client.impl.messaging.WhatsappSenderCreateJsonRep._
 import com.dixa.twilio.client.messaging.ChannelSenderException.Api
+import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{
   ContentTypes,
@@ -62,7 +62,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
   ): Either[ChannelSenderException, HttpRequest] = {
     val jsonBodyEither = (req.senderId, req.profile) match {
       case (
-            number: WhatsappNumber,
+            number: Whatsapp,
             profile: ChannelSender.Profile.WhatsappProfile,
           ) =>
         Right(
@@ -73,9 +73,9 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
             configuration = toJson(req.configuration)
           )
         )
-      case (_: PhoneNumberE164, _) =>
-        Left(ChannelSenderException.ChannelNotSupported("PhoneNumberE164"))
-      case _ => Left(ChannelSenderException.ChannelNotSupported("Unknown"))
+      case (_: E164, _) =>
+        Left(ChannelSenderException.ChannelSenderNotSupported("PhoneNumberE164"))
+      case _ => Left(ChannelSenderException.ChannelSenderNotSupported("Unknown"))
     }
     jsonBodyEither.flatMap(jsonBody =>
       createHttpRequestFor(
