@@ -15,35 +15,32 @@
 
 package com.dixa.twilio.model.messaging
 
-import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-
 import scala.util.Try
 
-sealed trait WhatsappNumber {
-  def number: PhoneNumberE164
-
-  private def asString: String = WhatsappNumber.Prefix + number.toString
+sealed trait WhatsappExternalUserId {
+  def asString: String
 
   override final val toString = asString
 }
 
-object WhatsappNumber {
-  val Prefix = "whatsapp:"
-
-  def unsafe(asString: String): WhatsappNumber = {
+object WhatsappExternalUserId {
+  def unsafe(asString: String): WhatsappExternalUserId = {
     require(
-      asString.startsWith(Prefix),
-      s"$toString is not a valid whatsapp number, must start with '$Prefix'"
+      asString.startsWith(WhatsappParticipant.Prefix),
+      s"$asString is not a valid WhatsApp number, must start with '${WhatsappParticipant.Prefix}'"
     )
-    val number = PhoneNumberE164.unsafe(asString.drop(Prefix.length))
-    DefaultImpl(number)
+    require(
+      verifyPattern.matcher(asString.stripPrefix(WhatsappParticipant.Prefix)).matches(),
+      s"$asString is not a valid WhatsApp external user ID"
+    )
+    DefaultImpl(asString)
   }
 
-  def apply(asString: String): Option[WhatsappNumber] = Try {
+  def apply(asString: String): Option[WhatsappExternalUserId] = Try {
     unsafe(asString)
   }.toOption
 
-  def fromPhoneNumberE164(number: PhoneNumberE164): WhatsappNumber = DefaultImpl(number)
+  private val verifyPattern = """^[A-Z]{2}\.[A-Za-z0-9]{1,128}$""".r.pattern
 
-  private final case class DefaultImpl(number: PhoneNumberE164) extends WhatsappNumber
+  private final case class DefaultImpl(asString: String) extends WhatsappExternalUserId
 }

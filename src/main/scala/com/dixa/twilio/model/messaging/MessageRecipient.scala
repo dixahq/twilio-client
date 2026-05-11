@@ -27,13 +27,14 @@ object MessageRecipient {
   def fromString(s: String): Option[MessageRecipient] = {
     PhoneNumberE164(s)
       .map(E164)
-      .orElse(WhatsappNumber(s).map(Whatsapp))
+      .orElse(WhatsappPhoneNumber(s).map(WhatsappNumber))
+      .orElse(WhatsappExternalUserId(s).map(WhatsappId))
   }
 
   def fromStringUnsafe(string: String): MessageRecipient = {
     fromString(string).getOrElse(
       throw new IllegalArgumentException(
-        "Recipient couldn't be parsed neither into Whatsapp nor into E.164 phone number"
+        "Recipient couldn't be parsed into Whatsapp number, Whatsapp external user ID or into E.164 phone number"
       )
     )
   }
@@ -42,7 +43,11 @@ object MessageRecipient {
     override def asString: String = phoneNumber.toString
   }
 
-  final case class Whatsapp(whatsappNumber: WhatsappNumber) extends MessageRecipient {
+  final case class WhatsappNumber(whatsappNumber: WhatsappPhoneNumber) extends MessageRecipient {
     override def asString: String = whatsappNumber.toString
+  }
+
+  final case class WhatsappId(externalUserId: WhatsappExternalUserId) extends MessageRecipient {
+    override def asString: String = externalUserId.toString
   }
 }

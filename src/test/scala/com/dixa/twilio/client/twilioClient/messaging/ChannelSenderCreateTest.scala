@@ -25,7 +25,7 @@ import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod.Post
 import com.dixa.twilio.model.messaging.ChannelSender.{Webhook, Webhooks}
 import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
-import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
+import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappPhoneNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson}
@@ -146,7 +146,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
         )
 
         val req = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
-          senderId = Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")),
+          senderId = Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")),
           configuration = ChannelSender.Configuration(
             wabaId = Some("316806161514452"),
             verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
@@ -189,7 +189,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
             )
         )
         val createBadRequest = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
-          senderId = Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")),
+          senderId = Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")),
           configuration = ChannelSender.Configuration(
             wabaId = Some("316806161514452BROKENID")
           ),
@@ -330,7 +330,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
           )
 
           val req = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
-            senderId = Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")),
+            senderId = Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")),
             configuration = ChannelSender.Configuration(
               wabaId = Some("316806161514452"),
               verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
@@ -361,7 +361,7 @@ final class ChannelSenderCreateTest extends TwilioClientTest with ChannelSenderT
   // noinspection TypeAnnotation
   final class Fixture {
     val createRequest = ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest(
-      senderId = Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")),
+      senderId = Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")),
       configuration = ChannelSender.Configuration(
         verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
       ),

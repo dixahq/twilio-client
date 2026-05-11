@@ -28,7 +28,7 @@ sealed trait PhoneNumberE164 extends TwilioStringValue {
 object PhoneNumberE164 {
 
   def unsafe(asString: String): PhoneNumberE164 = {
-    require(verifyPattern.matcher(asString).matches(), s"$toString is not in E.164 format")
+    require(verifyPattern.matcher(asString).matches(), s"$asString is not in E.164 format")
     DefaultImpl(asString)
   }
 
