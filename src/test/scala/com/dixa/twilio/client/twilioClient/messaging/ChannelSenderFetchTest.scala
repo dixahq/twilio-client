@@ -70,7 +70,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
         )
 
         val expected = ChannelSenderException.ParseFailure(
-          "Channel Sender id @twitterhandel of unknown type not supported"
+          "Channel Sender ID: @twitterhandle of unknown type is not supported"
         )
 
         val resultFut: Future[
@@ -98,7 +98,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
         )
 
         val expected = ChannelSenderException.ParseFailure(
-          "PhoneNumber Channel Sender with id +4552511283 not supported"
+          "PhoneNumber Channel Sender with ID: +4552511283 not supported"
         )
 
         val resultFut: Future[
@@ -157,7 +157,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
       |        "name": "Example WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
-      |    "sender_id": "@twitterhandel",
+      |    "sender_id": "@twitterhandle",
       |    "webhook": { },
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {

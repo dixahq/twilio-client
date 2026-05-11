@@ -20,6 +20,7 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 sealed abstract class MessageRecipient private[model] extends TwilioStringValue {
   def asString: String
+  override def toString: String = asString
 }
 
 object MessageRecipient {

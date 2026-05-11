@@ -25,6 +25,7 @@ import scala.annotation.nowarn
 // There is also WirelessSIM, not included
 sealed abstract class MessageSender extends TwilioStringValue {
   def asString: String
+  override def toString: String = asString
 }
 
 object MessageSender {
