@@ -17,6 +17,9 @@ package com.dixa.twilio.model.messaging
 
 import scala.util.Try
 
+/** This is a Meta-specific data that Twilio exposes. It is called BSUID (Business Scoped User ID)
+  * in the Meta world.
+  */
 sealed trait WhatsappExternalUserId {
   def asString: String
 
@@ -40,6 +43,8 @@ object WhatsappExternalUserId {
     unsafe(asString)
   }.toOption
 
+  // Documentation on the format of the external user ID (BSUID):
+  // https://developers.facebook.com/documentation/business-messaging/whatsapp/business-scoped-user-ids#business-scoped-user-id
   private val verifyPattern = """^[A-Z]{2}\.[A-Za-z0-9]{1,128}$""".r.pattern
 
   private final case class DefaultImpl(asString: String) extends WhatsappExternalUserId
