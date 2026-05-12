@@ -17,7 +17,10 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
-import com.dixa.twilio.client.messaging.{ChannelSendersException, ChannelsSendersListRequestExecutor}
+import com.dixa.twilio.client.messaging.{
+  ChannelSendersException,
+  ChannelsSendersListRequestExecutor
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}

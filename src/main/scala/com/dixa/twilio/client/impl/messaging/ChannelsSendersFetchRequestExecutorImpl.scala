@@ -74,7 +74,9 @@ private[impl] class ChannelsSendersFetchRequestExecutorImpl(
     }
   }
 
-  private def parseBody(entity: HttpEntityString): Either[ChannelSendersException, ChannelSender] = {
+  private def parseBody(
+      entity: HttpEntityString
+  ): Either[ChannelSendersException, ChannelSender] = {
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(

@@ -105,10 +105,10 @@ private[messaging] final class ChannelsSendersCreateRequestExecutorImpl(
   ): UnspecifiedException = ChannelSendersException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-                                            request: ChannelSendersCreateRequest,
-                                            httpRequest: HttpRequest,
-                                            httpResponse: HttpResponse,
-                                            entity: HttpEntityString
+      request: ChannelSendersCreateRequest,
+      httpRequest: HttpRequest,
+      httpResponse: HttpResponse,
+      entity: HttpEntityString
   ): Either[ChannelSendersException, ChannelSender] = {
     httpResponse.status match {
       case StatusCodes.NotFound   => Left(Api(NotFound(entity.toString)))
