@@ -17,9 +17,9 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
-import com.dixa.twilio.client.messaging.ChannelSenderException.Api
+import com.dixa.twilio.client.messaging.ChannelSendersException.Api
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
+  ChannelSendersException,
   ChannelsSendersDeleteRequestExecutor
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -43,7 +43,7 @@ class ChannelsSendersDeleteRequestExecutorImpl(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest
-  ): Either[ChannelSenderException, HttpRequest] = {
+  ): Either[ChannelSendersException, HttpRequest] = {
     createHttpRequestFor(
       s"/${ApiVersion.V2}/Channels/Senders/${req.channelSenderSid.twilioString}",
       connSettings
@@ -55,20 +55,20 @@ class ChannelsSendersDeleteRequestExecutorImpl(
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ChannelSenderException, FUnit] = {
+  ): Either[ChannelSendersException, FUnit] = {
     httpResponse.status match {
       case StatusCodes.NotFound                   => Left(Api(NotFound(entity.toString)))
       case StatusCodes.BadRequest                 => Left(Api(BadRequestException(entity.toString)))
       case StatusCodes.OK | StatusCodes.NoContent => Right(FUnit)
-      case _ => Left(ChannelSenderException.Unexpected(Some(entity.toString), None))
+      case _ => Left(ChannelSendersException.Unexpected(Some(entity.toString), None))
     }
   }
 
-  override protected def mapApiException(apiException: ApiException): ChannelSenderException.Api =
-    ChannelSenderException.Api(apiException)
+  override protected def mapApiException(apiException: ApiException): ChannelSendersException.Api =
+    ChannelSendersException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
+  ): ChannelSendersException.Unspecified = ChannelSendersException.Unspecified(msg, cause)
 }

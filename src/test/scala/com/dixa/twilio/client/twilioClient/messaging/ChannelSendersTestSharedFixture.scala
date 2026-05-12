@@ -19,13 +19,13 @@ import com.dixa.twilio.model.messaging.ChannelSender.Webhooks
 import com.dixa.twilio.model.messaging.MessageSender.Whatsapp
 import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
 
-trait ChannelSenderTestSharedFixture {
-  def channelSenderSid: ChannelSender.Sid = ChannelSenderTestSharedFixture.channelSenderSid
+trait ChannelSendersTestSharedFixture {
+  def channelSenderSid: ChannelSender.Sid = ChannelSendersTestSharedFixture.channelSenderSid
   def whatsappChannelSender: ChannelSender.WhatsappSender =
-    ChannelSenderTestSharedFixture.channelSender
+    ChannelSendersTestSharedFixture.channelSender
 }
 
-object ChannelSenderTestSharedFixture {
+object ChannelSendersTestSharedFixture {
   val channelSenderSid: ChannelSender.Sid =
     ChannelSender.Sid.unsafe("XEcfd04c72e3397a53e24bd6c7408aff83")
   val channelSender: ChannelSender.WhatsappSender = ChannelSender.WhatsappSender(

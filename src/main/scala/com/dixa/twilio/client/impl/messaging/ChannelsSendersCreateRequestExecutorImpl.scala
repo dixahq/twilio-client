@@ -25,13 +25,14 @@ import com.dixa.twilio.client.impl.{
   TwilioInternalErrorJsonRep
 }
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
+  ChannelSendersException,
   ChannelsSendersCreateRequestExecutor
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.ChannelSender
 import com.dixa.twilio.client.impl.messaging.WhatsappSenderCreateJsonRep._
-import com.dixa.twilio.client.messaging.ChannelSenderException.Api
+import com.dixa.twilio.client.messaging.ChannelSendersException.Api
+import com.dixa.twilio.client.messaging.ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest
 import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{
@@ -46,7 +47,7 @@ import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
 
-private[impl] class ChannelsSendersCreateRequestExecutorImpl(
+private[messaging] final class ChannelsSendersCreateRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
@@ -56,10 +57,10 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
 
   override protected def method: org.apache.pekko.http.scaladsl.model.HttpMethod = HttpMethods.POST
 
-  override def createHttpReq(
+  override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest
-  ): Either[ChannelSenderException, HttpRequest] = {
+      req: ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest
+  ): Either[ChannelSendersException, HttpRequest] = {
     val jsonBodyEither = (req.senderId, req.profile) match {
       case (
             number: Whatsapp,
@@ -74,8 +75,8 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
           )
         )
       case (_: E164, _) =>
-        Left(ChannelSenderException.ChannelSenderNotSupported("PhoneNumberE164"))
-      case _ => Left(ChannelSenderException.ChannelSenderNotSupported("Unknown"))
+        Left(ChannelSendersException.ChannelSenderNotSupported("PhoneNumberE164"))
+      case _ => Left(ChannelSendersException.ChannelSenderNotSupported("Unknown"))
     }
     jsonBodyEither.flatMap(jsonBody =>
       createHttpRequestFor(
@@ -95,20 +96,20 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): ChannelSenderException.Api =
-    ChannelSenderException.Api(apiException)
+  ): ApiExceptionWrapper =
+    ChannelSendersException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
+  ): UnspecifiedException = ChannelSendersException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-      request: ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest,
-      httpRequest: HttpRequest,
-      httpResponse: HttpResponse,
-      entity: HttpEntityString
-  ): Either[ChannelSenderException, ChannelSender] = {
+                                            request: ChannelSendersCreateRequest,
+                                            httpRequest: HttpRequest,
+                                            httpResponse: HttpResponse,
+                                            entity: HttpEntityString
+  ): Either[ChannelSendersException, ChannelSender] = {
     httpResponse.status match {
       case StatusCodes.NotFound   => Left(Api(NotFound(entity.toString)))
       case StatusCodes.BadRequest => Left(Api(BadRequestException(entity.toString)))
@@ -119,7 +120,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
             (defaultApiError.code, defaultApiError.message) match {
               case (63100L, "sender_id provided already exists") =>
                 Left(
-                  ChannelSenderException.SenderIdAlreadyExists(
+                  ChannelSendersException.SenderIdAlreadyExists(
                     request.senderId.twilioString,
                     defaultApiError.message,
                     defaultApiError.more_info
@@ -127,7 +128,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
                 )
               case (63103L, "Could not extend credit line to the waba_id provided") =>
                 Left(
-                  ChannelSenderException.CouldNotExtendCreditLine(
+                  ChannelSendersException.CouldNotExtendCreditLine(
                     request.configuration.wabaId,
                     defaultApiError.message,
                     defaultApiError.more_info
@@ -140,7 +141,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
         entity.parse[TwilioInternalErrorJsonRep]() match {
           case Left(_) =>
             Left(
-              ChannelSenderException.TwilioInternalError(
+              ChannelSendersException.TwilioInternalError(
                 errorCode = None,
                 errorMessage = None,
                 moreInfo = None,
@@ -149,7 +150,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
             )
           case Right(errorRep) =>
             Left(
-              ChannelSenderException.TwilioInternalError(
+              ChannelSendersException.TwilioInternalError(
                 errorCode = errorRep.code,
                 errorMessage = errorRep.message,
                 moreInfo = errorRep.more_info,
@@ -166,7 +167,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
     entity.parse[ChannelSenderJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderException.ParseFailure(ex.cause.getMessage)
+          ChannelSendersException.ParseFailure(ex.cause.getMessage)
         )
       case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
     }

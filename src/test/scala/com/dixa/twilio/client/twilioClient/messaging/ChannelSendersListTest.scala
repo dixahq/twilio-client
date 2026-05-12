@@ -15,7 +15,10 @@
 
 package com.dixa.twilio.client.twilioClient.messaging
 
-import com.dixa.twilio.client.messaging.{ChannelSenderException, ChannelsSendersListRequestExecutor}
+import com.dixa.twilio.client.messaging.{
+  ChannelSendersException,
+  ChannelsSendersListRequestExecutor
+}
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -23,7 +26,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class ChannelSendersListTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
+final class ChannelSendersListTest extends TwilioClientTest with ChannelSendersTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "Asked to list channel senders" should {
@@ -44,7 +47,7 @@ final class ChannelSendersListTest extends TwilioClientTest with ChannelSenderTe
 
         val resultFut: Future[
           Either[
-            ChannelSenderException,
+            ChannelSendersException,
             ChannelsSendersListRequestExecutor.ChannelSendersListResponse
           ]
         ] =
@@ -73,7 +76,7 @@ final class ChannelSendersListTest extends TwilioClientTest with ChannelSenderTe
 
         val resultFut: Future[
           Either[
-            ChannelSenderException,
+            ChannelSendersException,
             ChannelsSendersListRequestExecutor.ChannelSendersListResponse
           ]
         ] =

@@ -18,28 +18,28 @@ package com.dixa.twilio.client.messaging
 import com.dixa.twilio.client.ApiException
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 
-sealed trait ChannelSenderException extends RuntimeException
+sealed trait ChannelSendersException extends RuntimeException
 
-object ChannelSenderException {
+object ChannelSendersException {
 
   final case class ChannelSenderNotSupported(sender: String)
-      extends RuntimeException(s"Channel is not supported: $sender")
-      with ChannelSenderException
+      extends RuntimeException(s"Channel sender is not supported: $sender")
+      with ChannelSendersException
 
   final case class ParseFailure(msg: String)
       extends RuntimeException(msg)
-      with ChannelSenderException
+      with ChannelSendersException
 
   final case class Api(cause: ApiException)
       extends RuntimeException(cause)
-      with ChannelSenderException
+      with ChannelSendersException
       with ApiExceptionWrapper
 
   final case class SenderIdAlreadyExists(senderId: String, apiMsg: String, apiLink: String)
       extends RuntimeException(
         s"SenderId already exists: $senderId - ${apiMsg} - ${apiLink}"
       )
-      with ChannelSenderException
+      with ChannelSendersException
 
   final case class CouldNotExtendCreditLine(
       wabaId: Option[String],
@@ -48,7 +48,7 @@ object ChannelSenderException {
   ) extends RuntimeException(
         s"Could not extend credit line for WABA: ${wabaId.getOrElse("WABA ID Not found")} - ${apiMsg} - ${apiLink}"
       )
-      with ChannelSenderException
+      with ChannelSendersException
 
   final case class Unspecified(msg: Option[String], cause: Option[Throwable])
       extends RuntimeException(
@@ -57,7 +57,7 @@ object ChannelSenderException {
         ),
         cause.orNull
       )
-      with ChannelSenderException {
+      with ChannelSendersException {
     def this(msg: String) = this(Some(msg), None)
 
     def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
@@ -70,7 +70,7 @@ object ChannelSenderException {
         ),
         cause.orNull
       )
-      with ChannelSenderException {
+      with ChannelSendersException {
     def this(msg: String) = this(Some(msg), None)
 
     def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
@@ -84,5 +84,5 @@ object ChannelSenderException {
   ) extends RuntimeException(
         s"Twilio internal error (${errorCode.getOrElse("unknown")}): ${errorMessage.getOrElse("unknown")} - ${moreInfo.getOrElse("")}"
       )
-      with ChannelSenderException
+      with ChannelSendersException
 }

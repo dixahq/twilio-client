@@ -25,7 +25,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson}
 
 import scala.concurrent.Future
 
-final class ChannelSenderVerificationTest extends TwilioClientTest {
+final class ChannelSendersVerificationTest extends TwilioClientTest {
 
   "TwilioClientMessaging" when {
     "Sending verification code" should {

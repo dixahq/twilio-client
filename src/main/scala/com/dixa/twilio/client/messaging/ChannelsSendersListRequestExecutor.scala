@@ -24,14 +24,14 @@ import scala.collection.immutable
 trait ChannelsSendersListRequestExecutor
     extends SingleRequestExecutor[
       ChannelsSendersListRequestExecutor.ChannelSendersListRequest,
-      ChannelSenderException,
+      ChannelSendersException,
       ChannelsSendersListRequestExecutor.ChannelSendersListResponse,
       ChannelsSendersListRequestExecutor.ChannelSendersListRequest.Builder
     ] {
 
-  override protected type ApiExceptionWrapper = ChannelSenderException.Api
+  override protected type ApiExceptionWrapper = ChannelSendersException.Api
 
-  override protected type UnspecifiedException = ChannelSenderException.Unspecified
+  override protected type UnspecifiedException = ChannelSendersException.Unspecified
 
   override protected def createBuilderStartState()
       : ChannelsSendersListRequestExecutor.ChannelSendersListRequest.Builder =

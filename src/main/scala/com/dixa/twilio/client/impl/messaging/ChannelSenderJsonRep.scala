@@ -16,7 +16,7 @@
 package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
-import com.dixa.twilio.client.messaging.ChannelSenderException
+import com.dixa.twilio.client.messaging.ChannelSendersException
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.messaging.ChannelSender.{VerificationMethod, Webhook}
 import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
@@ -68,7 +68,7 @@ private[messaging] object ChannelSenderJsonRep {
 
   def toModel(
       jsonRep: ChannelSenderJsonRep
-  ): Either[ChannelSenderException, ChannelSender] = {
+  ): Either[ChannelSendersException, ChannelSender] = {
     MessageSender.fromString(jsonRep.sender_id) match {
       case Right(whatsapp: Whatsapp) if jsonRep.configuration.waba_id.isDefined =>
         val status = ChannelSender.Status
@@ -95,19 +95,19 @@ private[messaging] object ChannelSenderJsonRep {
         )
       case Right(senderE164: E164) =>
         Left(
-          ChannelSenderException.ParseFailure(
+          ChannelSendersException.ParseFailure(
             s"PhoneNumber Channel Sender with ID: ${senderE164.asString} not supported"
           )
         )
       case Right(other) =>
         Left(
-          ChannelSenderException.ParseFailure(
+          ChannelSendersException.ParseFailure(
             s"Channel Sender with ID: ${other.asString} is not supported"
           )
         )
       case Left(_) =>
         Left(
-          ChannelSenderException.ParseFailure(
+          ChannelSendersException.ParseFailure(
             s"Channel Sender ID: ${jsonRep.sender_id} of unknown type is not supported"
           )
         )

@@ -20,56 +20,94 @@ import com.dixa.twilio.model.messaging._
 
 trait ChannelsSendersCreateRequestExecutor
     extends SingleRequestExecutor[
-      ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest,
-      ChannelSenderException,
+      ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest,
+      ChannelSendersException,
       ChannelSender,
-      ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest.Builder
+      ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.BuilderStartState
     ] {
 
-  override protected type ApiExceptionWrapper = ChannelSenderException.Api
+  override protected type ApiExceptionWrapper = ChannelSendersException.Api
 
-  override protected type UnspecifiedException = ChannelSenderException.Unspecified
+  override protected type UnspecifiedException = ChannelSendersException.Unspecified
 
   override protected def createBuilderStartState()
-      : ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest.Builder =
-    ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest.Builder.empty
+      : ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.BuilderStartState =
+    ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.Builder.empty
 }
 
 object ChannelsSendersCreateRequestExecutor {
 
-  final case class ChannelSenderCreateRequest(
+  sealed trait ChannelSendersCreateRequest {
+    def senderId: MessageSender
+    def configuration: ChannelSender.Configuration
+    def webhooks: ChannelSender.Webhooks
+    def profile: ChannelSender.Profile
+  }
+
+  private final case class ChannelSendersCreateRequestImpl(
       senderId: MessageSender,
       configuration: ChannelSender.Configuration,
       webhooks: ChannelSender.Webhooks,
       profile: ChannelSender.Profile
-  )
-  object ChannelSenderCreateRequest {
-    type BuilderStartState = Builder
+  ) extends ChannelSendersCreateRequest
 
-    final class Builder private[messaging] (
+  object ChannelSendersCreateRequest {
+
+    sealed trait RequestAttribute
+    sealed trait RequestSenderIdAttribute      extends RequestAttribute
+    sealed trait RequestConfigurationAttribute extends RequestAttribute
+    sealed trait RequestWebhooksAttribute      extends RequestAttribute
+    sealed trait RequestProfileAttribute       extends RequestAttribute
+
+    type RequestRequiredAttributes =
+      RequestAttribute
+        with RequestSenderIdAttribute
+        with RequestConfigurationAttribute
+        with RequestWebhooksAttribute
+        with RequestProfileAttribute
+
+    type BuilderStartState = Builder[RequestAttribute]
+
+    final class Builder[
+        Attributes <: RequestAttribute
+    ] private[ChannelSendersCreateRequest] (
         senderId: Option[MessageSender],
         configuration: Option[ChannelSender.Configuration],
         webhooks: Option[ChannelSender.Webhooks],
         profile: Option[ChannelSender.Profile]
     ) {
-      def withSenderId(senderId: MessageSender): Builder =
+      def withSenderId(
+          senderId: MessageSender
+      ): Builder[Attributes with RequestSenderIdAttribute] =
         new Builder(Some(senderId), configuration, webhooks, profile)
-      def withConfiguration(configuration: ChannelSender.Configuration): Builder =
+
+      def withConfiguration(
+          configuration: ChannelSender.Configuration
+      ): Builder[Attributes with RequestConfigurationAttribute] =
         new Builder(senderId, Some(configuration), webhooks, profile)
-      def withWebhooks(webhooks: ChannelSender.Webhooks): Builder =
+
+      def withWebhooks(
+          webhooks: ChannelSender.Webhooks
+      ): Builder[Attributes with RequestWebhooksAttribute] =
         new Builder(senderId, configuration, Some(webhooks), profile)
-      def withProfile(profile: ChannelSender.Profile): Builder =
+
+      def withProfile(
+          profile: ChannelSender.Profile
+      ): Builder[Attributes with RequestProfileAttribute] =
         new Builder(senderId, configuration, webhooks, Some(profile))
-      def build(): ChannelSenderCreateRequest =
-        ChannelSenderCreateRequest(senderId.get, configuration.get, webhooks.get, profile.get)
+
+      def build()(
+          implicit ev: Attributes =:= RequestRequiredAttributes
+      ): ChannelSendersCreateRequest =
+        ChannelSendersCreateRequestImpl(senderId.get, configuration.get, webhooks.get, profile.get)
     }
 
     object Builder {
-      val empty: BuilderStartState = new BuilderStartState(None, None, None, None)
+      val empty: BuilderStartState = new Builder(None, None, None, None)
     }
 
     def build(
-        fun: BuilderStartState => ChannelSenderCreateRequest
-    ): ChannelSenderCreateRequest = fun(Builder.empty)
+        fun: BuilderStartState => ChannelSendersCreateRequest
+    ): ChannelSendersCreateRequest = fun(Builder.empty)
   }
 }
