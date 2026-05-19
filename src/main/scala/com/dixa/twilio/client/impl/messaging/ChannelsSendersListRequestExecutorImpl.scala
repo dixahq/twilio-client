@@ -64,7 +64,7 @@ private[impl] class ChannelsSendersListRequestExecutorImpl(
       cause: Option[Throwable]
   ): ChannelSendersException.Unspecified = ChannelSendersException.Unspecified(msg, cause)
 
-  private case class SendersListJsonRep(senders: List[ChannelSenderJsonRep])
+  private case class SendersListJsonRep(senders: List[ChannelsSendersJsonRep])
 
   private implicit val sendersListJsonRepReader: Reader[SendersListJsonRep] =
     macroR[SendersListJsonRep]
@@ -85,7 +85,7 @@ private[impl] class ChannelsSendersListRequestExecutorImpl(
             Left(ChannelSendersException.ParseFailure(ex.cause.getMessage))
           case Right(decoded) =>
             val parsedSenders = decoded.senders.flatMap { jsonRep =>
-              ChannelSenderJsonRep.toModel(jsonRep).toOption
+              ChannelsSendersJsonRep.toModelOldExceptionHandling(jsonRep).toOption
             }
             Right(ChannelsSendersListRequestExecutor.ChannelSendersListResponse(parsedSenders))
         }

@@ -16,10 +16,8 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.ApiException.BadRequestException
-import com.dixa.twilio.client.messaging.{
-  ChannelSendersException,
-  ChannelsSendersCreateRequestExecutor
-}
+import com.dixa.twilio.client.messaging.ChannelsSendersCreateRequestExecutor
+import com.dixa.twilio.client.messaging.ChannelsSendersCreateRequestExecutor.ChannelsSendersException
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod.Post
@@ -66,7 +64,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val resultFut: Future[
-            Either[ChannelSendersException, ChannelSender]
+            Either[ChannelsSendersException, ChannelSender]
           ] =
             instance.run(connSettings, createRequest)
           resultFut.map { result => assert(result === expected) }
@@ -99,7 +97,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val resultFut: Future[
-            Either[ChannelSendersException, ChannelSender]
+            Either[ChannelsSendersException, ChannelSender]
           ] =
             instance.run(connSettings, createRequest)
           resultFut.map { result => assert(result === expected) }
@@ -121,10 +119,10 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
             )
         )
 
-        val expected = Left(ChannelSendersException.ChannelSenderNotSupported("PhoneNumberE164"))
+        val expected = Left(ChannelsSendersException.ChannelSenderNotSupported("+4552511283"))
 
         val resultFut: Future[
-          Either[ChannelSendersException, ChannelSender]
+          Either[ChannelsSendersException, ChannelSender]
         ] =
           instance.run(connSettings, createRequest1)
         resultFut.map { result => assert(result === expected) }
@@ -145,7 +143,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
             )
         )
 
-        val req = ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.build(
+        val req = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
           _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
             .withConfiguration(
               ChannelSender.Configuration(
@@ -172,7 +170,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
         )
 
         val resultFut: Future[
-          Either[ChannelSendersException, ChannelSender]
+          Either[ChannelsSendersException, ChannelSender]
         ] =
           instance.run(connSettings, req)
         resultFut.map { result => assert(result === expected) }
@@ -193,7 +191,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
             )
         )
         val createBadRequest =
-          ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.build(
+          ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
             _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
               .withConfiguration(
                 ChannelSender.Configuration(wabaId = Some("316806161514452BROKENID"))
@@ -217,10 +215,10 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
         val expected =
-          Left(ChannelSendersException.Api(BadRequestException(createChannelBrokenWabaIdResponse)))
+          Left(ChannelsSendersException.Api(BadRequestException(createChannelBrokenWabaIdResponse)))
 
         val resultFut: Future[
-          Either[ChannelSendersException, ChannelSender]
+          Either[ChannelsSendersException, ChannelSender]
         ] =
           instance.run(connSettings, createBadRequest)
         resultFut.map { result => assert(result === expected) }
@@ -243,7 +241,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val expected = Left(
-            ChannelSendersException.TwilioInternalError(
+            ChannelsSendersException.TwilioInternalError(
               errorCode = Some(20500L),
               errorMessage = Some("An internal server error has occurred"),
               moreInfo = Some("https://www.twilio.com/docs/errors/20500"),
@@ -252,7 +250,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val resultFut: Future[
-            Either[ChannelSendersException, ChannelSender]
+            Either[ChannelsSendersException, ChannelSender]
           ] =
             instance.run(connSettings, createRequest)
           resultFut.map { result => assert(result === expected) }
@@ -276,7 +274,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val expected = Left(
-            ChannelSendersException.TwilioInternalError(
+            ChannelsSendersException.TwilioInternalError(
               errorCode = None,
               errorMessage = None,
               moreInfo = None,
@@ -285,7 +283,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val resultFut: Future[
-            Either[ChannelSendersException, ChannelSender]
+            Either[ChannelsSendersException, ChannelSender]
           ] =
             instance.run(connSettings, createRequest)
           resultFut.map { result => assert(result === expected) }
@@ -309,7 +307,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val expected = Left(
-            ChannelSendersException.SenderIdAlreadyExists(
+            ChannelsSendersException.SenderIdAlreadyExists(
               "whatsapp:+4552511283",
               "sender_id provided already exists",
               "https://www.twilio.com/docs/errors/63100"
@@ -317,7 +315,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val resultFut: Future[
-            Either[ChannelSendersException, ChannelSender]
+            Either[ChannelsSendersException, ChannelSender]
           ] =
             instance.run(connSettings, createRequest)
           resultFut.map { result => assert(result === expected) }
@@ -338,7 +336,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
               )
           )
 
-          val req = ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.build(
+          val req = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
             _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
               .withConfiguration(
                 ChannelSender.Configuration(
@@ -354,7 +352,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val expected = Left(
-            ChannelSendersException.CouldNotExtendCreditLine(
+            ChannelsSendersException.CouldNotExtendCreditLine(
               Some("316806161514452"),
               "Could not extend credit line to the waba_id provided",
               "https://www.twilio.com/docs/errors/63103"
@@ -362,7 +360,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
           )
 
           val resultFut: Future[
-            Either[ChannelSendersException, ChannelSender]
+            Either[ChannelsSendersException, ChannelSender]
           ] =
             instance.run(connSettings, req)
           resultFut.map { result => assert(result === expected) }
@@ -373,7 +371,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
 
   // noinspection TypeAnnotation
   final class Fixture {
-    val createRequest = ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.build(
+    val createRequest = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
       _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
         .withConfiguration(
           ChannelSender.Configuration(verificationMethod =
@@ -385,7 +383,7 @@ final class ChannelSendersCreateTest extends TwilioClientTest with ChannelSender
         .build()
     )
 
-    val createRequest1 = ChannelsSendersCreateRequestExecutor.ChannelSendersCreateRequest.build(
+    val createRequest1 = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
       _.withSenderId(E164(PhoneNumberE164.unsafe("+4552511283")))
         .withConfiguration(
           ChannelSender.Configuration(verificationMethod =

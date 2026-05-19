@@ -17,23 +17,24 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.client.messaging.ChannelSendersException
+import com.dixa.twilio.client.messaging.ChannelsSendersCreateRequestExecutor.ChannelsSendersException
 import com.dixa.twilio.model.HttpMethod
 import com.dixa.twilio.model.messaging.ChannelSender.{VerificationMethod, Webhook}
 import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
 import com.dixa.twilio.model.messaging.{ChannelSender, MessageSender}
 
-private[messaging] final case class ChannelSenderJsonRep(
+private[messaging] final case class ChannelsSendersJsonRep(
     sender_id: String,
     status: String,
-    profile: ChannelSenderJsonRep.ProfileJsonRep,
+    profile: ChannelsSendersJsonRep.ProfileJsonRep,
     url: String,
-    webhook: ChannelSenderJsonRep.WebhooksJsonRep,
+    webhook: ChannelsSendersJsonRep.WebhooksJsonRep,
     sid: String,
-    configuration: ChannelSenderJsonRep.ConfigurationJsonRep,
-    properties: Option[ChannelSenderJsonRep.PropertiesJsonRep]
+    configuration: ChannelsSendersJsonRep.ConfigurationJsonRep,
+    properties: Option[ChannelsSendersJsonRep.PropertiesJsonRep]
 )
 
-private[messaging] object ChannelSenderJsonRep {
+private[messaging] object ChannelsSendersJsonRep {
 
   final case class WebhooksJsonRep(
       fallback_method: Option[String] = None,
@@ -63,36 +64,41 @@ private[messaging] object ChannelSenderJsonRep {
     macroR[ConfigurationJsonRep]
   implicit val propertiesJsonRepReader: Reader[PropertiesJsonRep] =
     macroR[PropertiesJsonRep]
-  implicit val ChannelSenderJsonRepReader: Reader[ChannelSenderJsonRep] =
-    macroR[ChannelSenderJsonRep]
+  implicit val channelsSendersJsonRepReader: Reader[ChannelsSendersJsonRep] =
+    macroR[ChannelsSendersJsonRep]
 
-  def toModel(
-      jsonRep: ChannelSenderJsonRep
+  private def toModel(
+      jsonRep: ChannelsSendersJsonRep,
+      sender: MessageSender
+  ): ChannelSender = {
+    val status = ChannelSender.Status
+      .fromTwilioString(jsonRep.status)
+      .getOrElse(ChannelSender.Status.Unknown)
+    ChannelSender.WhatsappSender(
+      status = status,
+      profile = ChannelSender.Profile
+        .WhatsappProfile(
+          about = jsonRep.profile.about,
+          phoneNumberDisplayName = jsonRep.profile.name
+        ),
+      senderId = sender,
+      sid = ChannelSender.Sid.unsafe(jsonRep.sid),
+      webhooks = toModel(jsonRep.webhook),
+      configuration = ChannelSender.Configuration(
+        wabaId = jsonRep.configuration.waba_id,
+        verificationMethod = jsonRep.configuration.verificationMethod
+          .flatMap(VerificationMethod.fromTwilioString)
+      ),
+      properties = jsonRep.properties.map(toModel)
+    )
+  }
+
+  def toModelOldExceptionHandling(
+      jsonRep: ChannelsSendersJsonRep
   ): Either[ChannelSendersException, ChannelSender] = {
     MessageSender.fromString(jsonRep.sender_id) match {
       case Right(whatsapp: Whatsapp) if jsonRep.configuration.waba_id.isDefined =>
-        val status = ChannelSender.Status
-          .fromTwilioString(jsonRep.status)
-          .getOrElse(ChannelSender.Status.Unknown)
-        Right(
-          ChannelSender.WhatsappSender(
-            status = status,
-            profile = ChannelSender.Profile
-              .WhatsappProfile(
-                about = jsonRep.profile.about,
-                phoneNumberDisplayName = jsonRep.profile.name
-              ),
-            senderId = whatsapp,
-            sid = ChannelSender.Sid.unsafe(jsonRep.sid),
-            webhooks = toModel(jsonRep.webhook),
-            configuration = ChannelSender.Configuration(
-              wabaId = jsonRep.configuration.waba_id,
-              verificationMethod = jsonRep.configuration.verificationMethod
-                .flatMap(VerificationMethod.fromTwilioString)
-            ),
-            properties = jsonRep.properties.map(toModel)
-          )
-        )
+        Right(toModel(jsonRep, whatsapp))
       case Right(senderE164: E164) =>
         Left(
           ChannelSendersException.ParseFailure(
@@ -109,6 +115,25 @@ private[messaging] object ChannelSenderJsonRep {
         Left(
           ChannelSendersException.ParseFailure(
             s"Channel Sender ID: ${jsonRep.sender_id} of unknown type is not supported"
+          )
+        )
+    }
+  }
+
+  def toModelNewExceptionHandling(
+      jsonRep: ChannelsSendersJsonRep
+  ): Either[ChannelsSendersException, ChannelSender] = {
+    MessageSender.fromString(jsonRep.sender_id) match {
+      case Right(whatsapp: Whatsapp) if jsonRep.configuration.waba_id.isDefined =>
+        Right(toModel(jsonRep, whatsapp))
+      case Right(unsupportedSender) =>
+        Left(
+          ChannelsSendersException.ChannelSenderNotSupported(unsupportedSender.asString)
+        )
+      case Left(_) =>
+        Left(
+          ChannelsSendersException.ChannelSenderNotSupported(
+            s"Unknown Channel Sender ID: ${jsonRep.sender_id}"
           )
         )
     }

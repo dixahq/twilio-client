@@ -22,10 +22,6 @@ sealed trait ChannelSendersException extends RuntimeException
 
 object ChannelSendersException {
 
-  final case class ChannelSenderNotSupported(sender: String)
-      extends RuntimeException(s"Channel sender is not supported: $sender")
-      with ChannelSendersException
-
   final case class ParseFailure(msg: String)
       extends RuntimeException(msg)
       with ChannelSendersException
@@ -34,21 +30,6 @@ object ChannelSendersException {
       extends RuntimeException(cause)
       with ChannelSendersException
       with ApiExceptionWrapper
-
-  final case class SenderIdAlreadyExists(senderId: String, apiMsg: String, apiLink: String)
-      extends RuntimeException(
-        s"SenderId already exists: $senderId - ${apiMsg} - ${apiLink}"
-      )
-      with ChannelSendersException
-
-  final case class CouldNotExtendCreditLine(
-      wabaId: Option[String],
-      apiMsg: String,
-      apiLink: String
-  ) extends RuntimeException(
-        s"Could not extend credit line for WABA: ${wabaId.getOrElse("WABA ID Not found")} - ${apiMsg} - ${apiLink}"
-      )
-      with ChannelSendersException
 
   final case class Unspecified(msg: Option[String], cause: Option[Throwable])
       extends RuntimeException(
@@ -75,14 +56,4 @@ object ChannelSendersException {
 
     def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
   }
-
-  final case class TwilioInternalError(
-      errorCode: Option[Long],
-      errorMessage: Option[String],
-      moreInfo: Option[String],
-      rawResponse: String
-  ) extends RuntimeException(
-        s"Twilio internal error (${errorCode.getOrElse("unknown")}): ${errorMessage.getOrElse("unknown")} - ${moreInfo.getOrElse("")}"
-      )
-      with ChannelSendersException
 }

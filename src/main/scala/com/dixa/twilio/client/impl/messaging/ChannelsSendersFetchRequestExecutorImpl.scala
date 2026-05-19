@@ -77,12 +77,13 @@ private[impl] class ChannelsSendersFetchRequestExecutorImpl(
   private def parseBody(
       entity: HttpEntityString
   ): Either[ChannelSendersException, ChannelSender] = {
-    entity.parse[ChannelSenderJsonRep]() match {
+    entity.parse[ChannelsSendersJsonRep]() match {
       case Left(ex) =>
         Left(
           ChannelSendersException.ParseFailure(ex.cause.getMessage)
         )
-      case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
+      case Right(decoded: ChannelsSendersJsonRep) =>
+        ChannelsSendersJsonRep.toModelOldExceptionHandling(decoded)
     }
   }
 }
