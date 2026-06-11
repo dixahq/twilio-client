@@ -64,6 +64,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val instance = TwilioClient.defaultImpl().voice
         val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.build(
           _.withAccountSid(accountSid)
+            .withStatus(Conference.Status.InProgress)
             .build()
         )
         val result =
@@ -105,6 +106,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val instance = TwilioClient.defaultImpl().voice
         val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.build(
           _.withAccountSid(accountSid)
+            .withStatus(Conference.Status.InProgress)
             .build()
         )
         val result =
@@ -164,6 +166,7 @@ final class ConferenceReadTest extends TwilioClientTest with Matchers {
         val instance = TwilioClient.defaultImpl().voice
         val req      = ConferenceReadRequestExecutor.ConferenceReadRequest.build(
           _.withAccountSid(accountSid)
+            .withStatus(Conference.Status.InProgress)
             .build()
         )
         val result =
