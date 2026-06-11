@@ -36,7 +36,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
   @nowarn // Haven's figured out how to handel this like a MultipleRequestExecutor
   def apply(
       connSettings: TwilioConnectionSettings,
-      statusFilter: Option[Conference.Status]
+      status: Conference.Status
   )(
       implicit http: HttpExt,
       materializer: Materializer,
@@ -47,7 +47,7 @@ private[impl] object FetchAllConferencesWithParticipantsRequest {
       connSettings.parallelFactor.asInt,
       accountSid =>
         {
-          val statusParam = statusFilter.map(f => s"Status=${f.twilioString}&").getOrElse("")
+          val statusParam = s"Status=${status.twilioString}&"
           val initPath    = TwilioUri.createPathUnsafe(
             ApiSubDomain.Api,
             HttpMethods.GET,
