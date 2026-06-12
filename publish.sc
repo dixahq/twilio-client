@@ -1,7 +1,6 @@
 #!/usr/bin/env -S scala-cli shebang
 
 //> using scala 3
-//> using dep com.lihaoyi::requests::0.9.0
 //> using dep com.lihaoyi::upickle::4.4.1
 
 import java.util.UUID
@@ -56,13 +55,12 @@ mode match
     val bump = prompt("Bump major, minor, or patch? [major/minor/patch]: ", "major", "minor", "patch")
 
     print("Fetching latest tag from GitHub... ")
-    val resp = requests.get(
-      "https://api.github.com/repos/dixahq/twilio-client/tags",
-      params  = Map("per_page" -> "100"),
-      headers = Map("User-Agent" -> "twilio-client-publish-script"),
-    )
+    // Use `gh api` so the request is authenticated (avoids the anonymous rate limit).
+    // `--paginate` merges all pages of the JSON array into a single array.
+    val tagsJson =
+      Process(Seq("gh", "api", "--paginate", "repos/dixahq/twilio-client/tags?per_page=100")).!!
     val vRe      = raw"v(\d+)\.(\d+)\.(\d+)".r
-    val versions = ujson.read(resp.text()).arr.toSeq
+    val versions = ujson.read(tagsJson).arr.toSeq
       .flatMap(t => vRe.findFirstMatchIn(t("name").str))
       .map(m => (m.group(1).toInt, m.group(2).toInt, m.group(3).toInt))
 
