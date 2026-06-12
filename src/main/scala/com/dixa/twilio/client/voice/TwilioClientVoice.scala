@@ -56,9 +56,15 @@ trait TwilioClientVoice {
 
   def conferenceParticipantDelete: ConferenceParticipantDeleteRequestExecutor
 
+  /** Streams every conference (with its participants) for each account SID, for the given `status`.
+    *
+    * `status` is required: Twilio's Conferences list endpoint can only return conferences of a
+    * single status (in-progress and completed live in separate systems as of 2026-07-13), so the
+    * caller must state which conferences to fetch.
+    */
   def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
-      statusFilter: Option[Conference.Status]
+      status: Conference.Status
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed]
 
   def recordingFetch: RecordingFetchRequestExecutor

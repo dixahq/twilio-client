@@ -42,12 +42,19 @@ trait ConferenceReadRequestExecutor
 
 object ConferenceReadRequestExecutor {
 
+  /** A request to the Twilio Conferences list endpoint.
+    *
+    * `status` is required. As of 2026-07-13 Twilio stores in-progress and completed conferences in
+    * separate systems, so a single list call can only ever return conferences of one status — there
+    * is no "all statuses" query. The status is therefore a routing discriminator rather than an
+    * optional filter, and callers must state which conferences they want.
+    */
   sealed trait ConferenceReadRequest {
     def accountSid: TwilioAccount.Sid
     def dateCreated: Option[Iso8601DateTime]
     def dateUpdated: Option[Iso8601DateTime]
     def friendlyName: Option[Conference.FriendlyName]
-    def status: Option[Conference.Status]
+    def status: Conference.Status
   }
 
   private final case class ConferenceReadRequestImpl(
@@ -55,14 +62,16 @@ object ConferenceReadRequestExecutor {
       dateCreated: Option[Iso8601DateTime],
       dateUpdated: Option[Iso8601DateTime],
       friendlyName: Option[Conference.FriendlyName],
-      status: Option[Conference.Status]
+      status: Conference.Status
   ) extends ConferenceReadRequest
 
   object ConferenceReadRequest {
     sealed trait RequestAttribute
     sealed trait RequestAccountSidAttribute extends RequestAttribute
+    sealed trait RequestStatusAttribute     extends RequestAttribute
 
-    type RequestRequiredAttributes = RequestAttribute with RequestAccountSidAttribute
+    type RequestRequiredAttributes =
+      RequestAttribute with RequestAccountSidAttribute with RequestStatusAttribute
 
     type BuilderStartState = Builder[RequestAttribute]
 
@@ -87,13 +96,22 @@ object ConferenceReadRequestExecutor {
       def withFriendlyName(friendlyName: Conference.FriendlyName): Builder[Attributes] =
         new Builder(accountSid, dateCreated, dateUpdated, Some(friendlyName), status)
 
-      def withStatus(status: Conference.Status): Builder[Attributes] =
+      /** Required — see [[ConferenceReadRequest]]. */
+      def withStatus(
+          status: Conference.Status
+      ): Builder[Attributes with RequestStatusAttribute] =
         new Builder(accountSid, dateCreated, dateUpdated, friendlyName, Some(status))
 
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ConferenceReadRequest =
-        ConferenceReadRequestImpl(accountSid.get, dateCreated, dateUpdated, friendlyName, status)
+        ConferenceReadRequestImpl(
+          accountSid.get,
+          dateCreated,
+          dateUpdated,
+          friendlyName,
+          status.get
+        )
     }
 
     def build(fun: BuilderStartState => ConferenceReadRequest): ConferenceReadRequest =

@@ -111,9 +111,9 @@ private[impl] final class TwilioClientVoiceImpl()(
 
   override def fetchAllConferencesWithParticipants(
       connSettings: TwilioConnectionSettings,
-      statusFilter: Option[Conference.Status]
+      status: Conference.Status
   ): Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
-    FetchAllConferencesWithParticipantsRequest(connSettings, statusFilter)
+    FetchAllConferencesWithParticipantsRequest(connSettings, status)
 
   override val recordingFetch: RecordingFetchRequestExecutor =
     new RecordingFetchRequestExecutorImpl()
