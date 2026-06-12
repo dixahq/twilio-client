@@ -46,7 +46,7 @@ class ConferenceReadRequestExecutorImpl()(
       .withOptionalDateParam(dateCreatedParamKey, req.dateCreated)
       .withOptionalDateParam(dateUpdatedParamKey, req.dateUpdated)
       .withOptionalParam(friendlyNameParamKey, req.friendlyName)
-      .withOptionalParam(statusParamKey, req.status)
+      .withParam(statusParamKey, req.status)
       .build
 
     createHttpRequestFor(

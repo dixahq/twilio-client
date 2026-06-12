@@ -183,7 +183,7 @@ final class FetchAllConferencesForAccountsTest extends TwilioClientTest {
         val resultFlow: Flow[TwilioAccount.Sid, ConferenceWithParticipants, NotUsed] =
           instance.fetchAllConferencesWithParticipants(
             twilioConnectionSetting,
-            statusFilter = Some(Conference.Status.InProgress)
+            Conference.Status.InProgress
           )
         val resultFut: Future[Seq[ConferenceWithParticipants]] =
           Source(List(account1Sid, account2Sid)).via(resultFlow).toMat(Sink.seq)(Keep.right).run()
