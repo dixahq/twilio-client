@@ -18,7 +18,7 @@ package com.dixa.twilio.client.twilioClient.messaging
 import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
 import com.dixa.twilio.client.{TwilioClient, TwilioConnectionSettings, TwilioTestConstants}
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
+  ChannelSendersException,
   ChannelsSendersDeleteRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -26,7 +26,9 @@ import com.dixa.twilio.model.FUnit
 import com.github.tomakehurst.wiremock.client.{MappingBuilder, WireMock}
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-final class ChannelSendersDeleteTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
+final class ChannelsSendersDeleteTest
+    extends TwilioClientTest
+    with ChannelsSendersTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "asked to delete a channel sender" should {
@@ -64,7 +66,7 @@ final class ChannelSendersDeleteTest extends TwilioClientTest with ChannelSender
         )
 
         val expected =
-          Left(ChannelSenderException.Api(BadRequestException("you asked wrong")))
+          Left(ChannelSendersException.Api(BadRequestException("you asked wrong")))
 
         val resultFut = instance.run(connSettings, deleteReq)
         resultFut.map { result => assert(result === expected) }
@@ -86,7 +88,7 @@ final class ChannelSendersDeleteTest extends TwilioClientTest with ChannelSender
         )
 
         val expected =
-          Left(ChannelSenderException.Api(NotFound(deleteSenderNotFoundError)))
+          Left(ChannelSendersException.Api(NotFound(deleteSenderNotFoundError)))
 
         val resultFut = instance.run(connSettings, deleteReq)
         resultFut.map { result => assert(result === expected) }

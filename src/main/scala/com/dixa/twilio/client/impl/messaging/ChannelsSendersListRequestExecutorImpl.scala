@@ -17,7 +17,10 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
-import com.dixa.twilio.client.messaging.{ChannelSenderException, ChannelsSendersListRequestExecutor}
+import com.dixa.twilio.client.messaging.{
+  ChannelSendersException,
+  ChannelsSendersListRequestExecutor
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{HttpMethods, HttpRequest, HttpResponse, StatusCodes}
@@ -38,7 +41,7 @@ private[impl] class ChannelsSendersListRequestExecutorImpl(
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ChannelsSendersListRequestExecutor.ChannelSendersListRequest
-  ): Either[ChannelSenderException, HttpRequest] = {
+  ): Either[ChannelSendersException, HttpRequest] = {
     val optionalParams = List(
       req.pageSize.map(size => s"PageSize=$size")
     ).flatten
@@ -53,15 +56,15 @@ private[impl] class ChannelsSendersListRequestExecutorImpl(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): ChannelSenderException.Api =
-    ChannelSenderException.Api(apiException)
+  ): ChannelSendersException.Api =
+    ChannelSendersException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
+  ): ChannelSendersException.Unspecified = ChannelSendersException.Unspecified(msg, cause)
 
-  private case class SendersListJsonRep(senders: List[ChannelSenderJsonRep])
+  private case class SendersListJsonRep(senders: List[ChannelsSendersJsonRep])
 
   private implicit val sendersListJsonRepReader: Reader[SendersListJsonRep] =
     macroR[SendersListJsonRep]
@@ -72,17 +75,17 @@ private[impl] class ChannelsSendersListRequestExecutorImpl(
       httpResponse: HttpResponse,
       entity: HttpEntityString
   ): Either[
-    ChannelSenderException,
+    ChannelSendersException,
     ChannelsSendersListRequestExecutor.ChannelSendersListResponse
   ] = {
     httpResponse.status match {
       case StatusCodes.OK =>
         entity.parse[SendersListJsonRep]() match {
           case Left(ex) =>
-            Left(ChannelSenderException.ParseFailure(ex.cause.getMessage))
+            Left(ChannelSendersException.ParseFailure(ex.cause.getMessage))
           case Right(decoded) =>
             val parsedSenders = decoded.senders.flatMap { jsonRep =>
-              ChannelSenderJsonRep.toModel(jsonRep).toOption
+              ChannelsSendersJsonRep.toModelOldExceptionHandling(jsonRep).toOption
             }
             Right(ChannelsSendersListRequestExecutor.ChannelSendersListResponse(parsedSenders))
         }

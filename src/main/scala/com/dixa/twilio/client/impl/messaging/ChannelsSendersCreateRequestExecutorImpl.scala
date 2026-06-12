@@ -24,15 +24,15 @@ import com.dixa.twilio.client.impl.{
   TwilioClientPickler,
   TwilioInternalErrorJsonRep
 }
-import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
-  ChannelsSendersCreateRequestExecutor
-}
+import com.dixa.twilio.client.messaging.ChannelsSendersCreateRequestExecutor
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.messaging.ChannelSender
 import com.dixa.twilio.client.impl.messaging.WhatsappSenderCreateJsonRep._
-import com.dixa.twilio.client.messaging.ChannelSenderException.Api
-import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
+import com.dixa.twilio.client.messaging.ChannelsSendersCreateRequestExecutor.{
+  ChannelsSendersCreateRequest,
+  ChannelsSendersException
+}
+import com.dixa.twilio.model.messaging.MessageSender.Whatsapp
 import org.apache.pekko.http.scaladsl.HttpExt
 import org.apache.pekko.http.scaladsl.model.{
   ContentTypes,
@@ -46,7 +46,7 @@ import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
 
-private[impl] class ChannelsSendersCreateRequestExecutorImpl(
+private[messaging] final class ChannelsSendersCreateRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
@@ -56,10 +56,10 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
 
   override protected def method: org.apache.pekko.http.scaladsl.model.HttpMethod = HttpMethods.POST
 
-  override def createHttpReq(
+  override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
-      req: ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest
-  ): Either[ChannelSenderException, HttpRequest] = {
+      req: ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest
+  ): Either[ChannelsSendersException, HttpRequest] = {
     val jsonBodyEither = (req.senderId, req.profile) match {
       case (
             number: Whatsapp,
@@ -73,9 +73,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
             configuration = toJson(req.configuration)
           )
         )
-      case (_: E164, _) =>
-        Left(ChannelSenderException.ChannelSenderNotSupported("PhoneNumberE164"))
-      case _ => Left(ChannelSenderException.ChannelSenderNotSupported("Unknown"))
+      case (sender, _) => Left(ChannelsSendersException.ChannelSenderNotSupported(sender.asString))
     }
     jsonBodyEither.flatMap(jsonBody =>
       createHttpRequestFor(
@@ -95,31 +93,32 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): ChannelSenderException.Api =
-    ChannelSenderException.Api(apiException)
+  ): ApiExceptionWrapper =
+    ChannelsSendersException.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
+  ): UnspecifiedException = ChannelsSendersException.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
-      request: ChannelsSendersCreateRequestExecutor.ChannelSenderCreateRequest,
+      request: ChannelsSendersCreateRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ChannelSenderException, ChannelSender] = {
+  ): Either[ChannelsSendersException, ChannelSender] = {
     httpResponse.status match {
-      case StatusCodes.NotFound   => Left(Api(NotFound(entity.toString)))
-      case StatusCodes.BadRequest => Left(Api(BadRequestException(entity.toString)))
-      case StatusCodes.Conflict   =>
+      case StatusCodes.NotFound   => Left(ChannelsSendersException.Api(NotFound(entity.toString)))
+      case StatusCodes.BadRequest =>
+        Left(ChannelsSendersException.Api(BadRequestException(entity.toString)))
+      case StatusCodes.Conflict =>
         entity.parse[DefaultApiErrorEntityJsonRep]() match {
-          case Left(_)                => Left(Api(Conflict(Some(entity.toString))))
+          case Left(_) => Left(ChannelsSendersException.Api(Conflict(Some(entity.toString))))
           case Right(defaultApiError) =>
             (defaultApiError.code, defaultApiError.message) match {
               case (63100L, "sender_id provided already exists") =>
                 Left(
-                  ChannelSenderException.SenderIdAlreadyExists(
+                  ChannelsSendersException.SenderIdAlreadyExists(
                     request.senderId.twilioString,
                     defaultApiError.message,
                     defaultApiError.more_info
@@ -127,20 +126,20 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
                 )
               case (63103L, "Could not extend credit line to the waba_id provided") =>
                 Left(
-                  ChannelSenderException.CouldNotExtendCreditLine(
+                  ChannelsSendersException.CouldNotExtendCreditLine(
                     request.configuration.wabaId,
                     defaultApiError.message,
                     defaultApiError.more_info
                   )
                 )
-              case _ => Left(Api(Conflict(Some(entity.toString))))
+              case _ => Left(ChannelsSendersException.Api(Conflict(Some(entity.toString))))
             }
         }
       case StatusCodes.InternalServerError =>
         entity.parse[TwilioInternalErrorJsonRep]() match {
           case Left(_) =>
             Left(
-              ChannelSenderException.TwilioInternalError(
+              ChannelsSendersException.TwilioInternalError(
                 errorCode = None,
                 errorMessage = None,
                 moreInfo = None,
@@ -149,7 +148,7 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
             )
           case Right(errorRep) =>
             Left(
-              ChannelSenderException.TwilioInternalError(
+              ChannelsSendersException.TwilioInternalError(
                 errorCode = errorRep.code,
                 errorMessage = errorRep.message,
                 moreInfo = errorRep.more_info,
@@ -163,12 +162,13 @@ private[impl] class ChannelsSendersCreateRequestExecutorImpl(
   }
 
   private def parseBody(entity: HttpEntityString) = {
-    entity.parse[ChannelSenderJsonRep]() match {
+    entity.parse[ChannelsSendersJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderException.ParseFailure(ex.cause.getMessage)
+          ChannelsSendersException.ParseFailure(ex.entity.toString, ex.cause.getMessage, Some(ex))
         )
-      case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
+      case Right(decoded: ChannelsSendersJsonRep) =>
+        ChannelsSendersJsonRep.toModelNewExceptionHandling(decoded)
     }
   }
 

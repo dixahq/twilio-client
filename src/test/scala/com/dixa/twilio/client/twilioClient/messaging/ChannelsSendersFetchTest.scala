@@ -16,7 +16,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
+  ChannelSendersException,
   ChannelsSendersFetchRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -27,7 +27,9 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
+final class ChannelsSendersFetchTest
+    extends TwilioClientTest
+    with ChannelsSendersTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "Asked to fetch an channel sender" should {
@@ -49,7 +51,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
         val expected = Right(whatsappChannelSender)
 
         val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
+          Either[ChannelSendersException, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map { result => assert(result === expected) }
@@ -69,12 +71,12 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
             )
         )
 
-        val expected = ChannelSenderException.ParseFailure(
+        val expected = ChannelSendersException.ParseFailure(
           "Channel Sender ID: @twitterhandle of unknown type is not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
+          Either[ChannelSendersException, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
@@ -97,12 +99,12 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
             )
         )
 
-        val expected = ChannelSenderException.ParseFailure(
+        val expected = ChannelSendersException.ParseFailure(
           "PhoneNumber Channel Sender with ID: +4552511283 not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
+          Either[ChannelSendersException, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
