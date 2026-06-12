@@ -3,7 +3,7 @@ import sbt.Test
 val scala2_13 = "2.13.18"
 
 val Version = new AnyRef {
-  val Pekko     = "1.3.0"
+  val Pekko     = "1.6.0"
   val PekkoHttp = "1.3.0"
 }
 
