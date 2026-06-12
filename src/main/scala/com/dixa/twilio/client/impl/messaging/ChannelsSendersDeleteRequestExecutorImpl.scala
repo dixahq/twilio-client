@@ -64,11 +64,14 @@ class ChannelsSendersDeleteRequestExecutorImpl(
     }
   }
 
-  override protected def mapApiException(apiException: ApiException): ChannelsSendersCommonExceptions.Api =
+  override protected def mapApiException(
+      apiException: ApiException
+  ): ChannelsSendersCommonExceptions.Api =
     ChannelsSendersCommonExceptions.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelsSendersCommonExceptions.Unspecified = ChannelsSendersCommonExceptions.Unspecified(msg, cause)
+  ): ChannelsSendersCommonExceptions.Unspecified =
+    ChannelsSendersCommonExceptions.Unspecified(msg, cause)
 }

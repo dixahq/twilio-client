@@ -56,7 +56,8 @@ private[impl] class ChannelsSendersFetchRequestExecutorImpl(
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelsSendersCommonExceptions.Unspecified = ChannelsSendersCommonExceptions.Unspecified(msg, cause)
+  ): ChannelsSendersCommonExceptions.Unspecified =
+    ChannelsSendersCommonExceptions.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
       request: ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest,

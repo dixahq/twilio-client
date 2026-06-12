@@ -62,7 +62,8 @@ private[impl] class ChannelsSendersListRequestExecutorImpl(
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelsSendersCommonExceptions.Unspecified = ChannelsSendersCommonExceptions.Unspecified(msg, cause)
+  ): ChannelsSendersCommonExceptions.Unspecified =
+    ChannelsSendersCommonExceptions.Unspecified(msg, cause)
 
   private case class SendersListJsonRep(senders: List[ChannelsSendersJsonRep])
 
