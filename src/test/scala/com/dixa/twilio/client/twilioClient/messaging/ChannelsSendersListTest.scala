@@ -16,7 +16,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.messaging.{
-  ChannelSendersException,
+  ChannelsSendersCommonExceptions,
   ChannelsSendersListRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -47,7 +47,7 @@ final class ChannelsSendersListTest extends TwilioClientTest with ChannelsSender
 
         val resultFut: Future[
           Either[
-            ChannelSendersException,
+            ChannelsSendersCommonExceptions,
             ChannelsSendersListRequestExecutor.ChannelSendersListResponse
           ]
         ] =
@@ -76,7 +76,7 @@ final class ChannelsSendersListTest extends TwilioClientTest with ChannelsSender
 
         val resultFut: Future[
           Either[
-            ChannelSendersException,
+            ChannelsSendersCommonExceptions,
             ChannelsSendersListRequestExecutor.ChannelSendersListResponse
           ]
         ] =
