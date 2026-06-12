@@ -26,7 +26,9 @@ import com.dixa.twilio.model.FUnit
 import com.github.tomakehurst.wiremock.client.{MappingBuilder, WireMock}
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
-final class ChannelSendersDeleteTest extends TwilioClientTest with ChannelSendersTestSharedFixture {
+final class ChannelsSendersDeleteTest
+    extends TwilioClientTest
+    with ChannelsSendersTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "asked to delete a channel sender" should {

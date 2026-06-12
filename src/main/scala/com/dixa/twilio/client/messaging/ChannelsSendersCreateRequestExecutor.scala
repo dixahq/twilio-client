@@ -55,23 +55,25 @@ object ChannelsSendersCreateRequestExecutor {
 
   object ChannelsSendersCreateRequest {
 
-    sealed trait RequestAttribute
-    sealed trait RequestSenderIdAttribute      extends RequestAttribute
-    sealed trait RequestConfigurationAttribute extends RequestAttribute
-    sealed trait RequestWebhooksAttribute      extends RequestAttribute
-    sealed trait RequestProfileAttribute       extends RequestAttribute
+    object PhantomTypes {
+      sealed trait RequestAttribute
+      sealed trait RequestSenderIdAttribute      extends RequestAttribute
+      sealed trait RequestConfigurationAttribute extends RequestAttribute
+      sealed trait RequestWebhooksAttribute      extends RequestAttribute
+      sealed trait RequestProfileAttribute       extends RequestAttribute
+    }
 
     type RequestRequiredAttributes =
-      RequestAttribute
-        with RequestSenderIdAttribute
-        with RequestConfigurationAttribute
-        with RequestWebhooksAttribute
-        with RequestProfileAttribute
+      PhantomTypes.RequestAttribute
+        with PhantomTypes.RequestSenderIdAttribute
+        with PhantomTypes.RequestConfigurationAttribute
+        with PhantomTypes.RequestWebhooksAttribute
+        with PhantomTypes.RequestProfileAttribute
 
-    type BuilderStartState = Builder[RequestAttribute]
+    type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
 
     final class Builder[
-        Attributes <: RequestAttribute
+        Attributes <: PhantomTypes.RequestAttribute
     ] private[ChannelsSendersCreateRequest] (
         senderId: Option[MessageSender],
         configuration: Option[ChannelSender.Configuration],
@@ -80,22 +82,22 @@ object ChannelsSendersCreateRequestExecutor {
     ) {
       def withSenderId(
           senderId: MessageSender
-      ): Builder[Attributes with RequestSenderIdAttribute] =
+      ): Builder[Attributes with PhantomTypes.RequestSenderIdAttribute] =
         new Builder(Some(senderId), configuration, webhooks, profile)
 
       def withConfiguration(
           configuration: ChannelSender.Configuration
-      ): Builder[Attributes with RequestConfigurationAttribute] =
+      ): Builder[Attributes with PhantomTypes.RequestConfigurationAttribute] =
         new Builder(senderId, Some(configuration), webhooks, profile)
 
       def withWebhooks(
           webhooks: ChannelSender.Webhooks
-      ): Builder[Attributes with RequestWebhooksAttribute] =
+      ): Builder[Attributes with PhantomTypes.RequestWebhooksAttribute] =
         new Builder(senderId, configuration, Some(webhooks), profile)
 
       def withProfile(
           profile: ChannelSender.Profile
-      ): Builder[Attributes with RequestProfileAttribute] =
+      ): Builder[Attributes with PhantomTypes.RequestProfileAttribute] =
         new Builder(senderId, configuration, webhooks, Some(profile))
 
       def build()(

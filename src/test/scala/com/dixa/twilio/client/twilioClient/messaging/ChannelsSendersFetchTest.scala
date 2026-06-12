@@ -27,7 +27,9 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class ChannelSendersFetchTest extends TwilioClientTest with ChannelSendersTestSharedFixture {
+final class ChannelsSendersFetchTest
+    extends TwilioClientTest
+    with ChannelsSendersTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "Asked to fetch an channel sender" should {
