@@ -15,6 +15,7 @@
 
 package com.dixa.twilio.model.messaging
 
+import com.dixa.twilio.model.TwilioStringValue
 import com.dixa.twilio.model.messaging.MessageSender.Alphanumeric.AlphanumericException.AlphanumericInvalidException
 import com.dixa.twilio.model.messaging.MessageSender.MessageSenderException.MessageSenderInvalidException
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
@@ -22,8 +23,9 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import scala.annotation.nowarn
 
 // There is also WirelessSIM, not included
-sealed abstract class MessageSender {
+sealed abstract class MessageSender extends TwilioStringValue {
   def asString: String
+  override def toString: String = asString
 }
 
 object MessageSender {
@@ -41,7 +43,7 @@ object MessageSender {
   def fromString(s: String): Either[MessageSenderException, MessageSender] = {
     PhoneNumberE164(s)
       .map(E164)
-      .orElse(WhatsappNumber(s).map(Whatsapp))
+      .orElse(WhatsappPhoneNumber(s).map(Whatsapp))
       .orElse(Alphanumeric.fromString(s).toOption)
       .toRight(MessageSenderInvalidException(s))
   }
@@ -54,7 +56,7 @@ object MessageSender {
     override def asString: String = phoneNumber.asString
   }
 
-  final case class Whatsapp(whatsappNumber: WhatsappNumber) extends MessageSender {
+  final case class Whatsapp(whatsappNumber: WhatsappPhoneNumber) extends MessageSender {
     override def asString: String = whatsappNumber.toString
   }
 

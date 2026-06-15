@@ -97,7 +97,7 @@ final class MessageSendTest extends TwilioClientTest {
             price = None,
             sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             status = MessageStatus.withName("Sent"),
-            to = PhoneNumberE164.unsafe(to),
+            to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
             error = None
           )
         )
@@ -175,7 +175,7 @@ final class MessageSendTest extends TwilioClientTest {
             price = None,
             sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             status = MessageStatus.withName("Sent"),
-            to = PhoneNumberE164.unsafe(to),
+            to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
             error = None
           )
         )
@@ -252,7 +252,7 @@ final class MessageSendTest extends TwilioClientTest {
             price = None,
             sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
             status = MessageStatus.withName("Sent"),
-            to = PhoneNumberE164.unsafe(to),
+            to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
             error = None
           )
         )
@@ -374,6 +374,150 @@ final class MessageSendTest extends TwilioClientTest {
         resultFut.map(res => assert(res === expected))
       }
     }
+
+    "asked to send a whatsapp message" should {
+      "successfully send a whatsapp message to a phone number" in {
+        val f = new Fixture
+        import f._
+
+        val messageSendTwilioSuccessResponse =
+          s"""{
+             |  "account_sid": "$accountSid",
+             |  "api_version": "2010-04-01",
+             |  "body": "$messageBody",
+             |  "date_created": null,
+             |  "date_sent": null,
+             |  "date_updated": null,
+             |  "direction": "outbound-api",
+             |  "error_code": null,
+             |  "error_message": null,
+             |  "from": "${fromWhatsapp.toString}",
+             |  "messaging_service_sid": null,
+             |  "num_media": "0",
+             |  "num_segments": "1",
+             |  "price": null,
+             |  "price_unit": null,
+             |  "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+             |  "status": "sent",
+             |  "subresource_uris": {
+             |    "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+             |  },
+             |  "to": "${toWhatsapp.toString}",
+             |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+             |}""".stripMargin
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
+            .withRequestBody(WireMock.containing(reqWhatsappEntityToPhoneNumber))
+            .withBasicAuth(accountSid.toString, authToken.asString)
+            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(messageSendTwilioSuccessResponse)
+            )
+        )
+
+        val expected = Right(
+          MessageResource(
+            accountSid = accountSid,
+            body = MessageBody(messageBody),
+            dateCreated = None,
+            dateSent = None,
+            dateUpdated = None,
+            direction = MessageDirection.withName("OutboundApi"),
+            from = MessageSender.Whatsapp(fromWhatsapp),
+            messagingServiceSid = None,
+            numMedia = 0,
+            numSegments = MessageNumSegments(1),
+            price = None,
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            status = MessageStatus.withName("Sent"),
+            to = MessageRecipient.WhatsappNumber(toWhatsapp),
+            error = None
+          )
+        )
+
+        val resultFut: Future[
+          Either[MessageSendException, MessageResource]
+        ] =
+          instance.run(connSettings, messageSendRequestWhatsappToPhoneNumber)
+        resultFut.map(result => assert(result === expected))
+      }
+
+      "successfully send a whatsapp message to an external user ID" in {
+        val f = new Fixture
+        import f._
+
+        val messageSendTwilioSuccessResponse =
+          s"""{
+             |  "account_sid": "$accountSid",
+             |  "api_version": "2010-04-01",
+             |  "body": "$messageBody",
+             |  "date_created": null,
+             |  "date_sent": null,
+             |  "date_updated": null,
+             |  "direction": "outbound-api",
+             |  "error_code": null,
+             |  "error_message": null,
+             |  "from": "${fromWhatsapp.toString}",
+             |  "messaging_service_sid": null,
+             |  "num_media": "0",
+             |  "num_segments": "1",
+             |  "price": null,
+             |  "price_unit": null,
+             |  "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+             |  "status": "sent",
+             |  "subresource_uris": {
+             |    "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+             |  },
+             |  "to": "${toExternalUserIdWhatsapp.toString}",
+             |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+             |}""".stripMargin
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
+            .withRequestBody(WireMock.containing(reqWhatsappEntityToExternalUserId))
+            .withBasicAuth(accountSid.toString, authToken.asString)
+            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(messageSendTwilioSuccessResponse)
+            )
+        )
+
+        val expected = Right(
+          MessageResource(
+            accountSid = accountSid,
+            body = MessageBody(messageBody),
+            dateCreated = None,
+            dateSent = None,
+            dateUpdated = None,
+            direction = MessageDirection.withName("OutboundApi"),
+            from = MessageSender.Whatsapp(fromWhatsapp),
+            messagingServiceSid = None,
+            numMedia = 0,
+            numSegments = MessageNumSegments(1),
+            price = None,
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            status = MessageStatus.withName("Sent"),
+            to = MessageRecipient.WhatsappId(toExternalUserIdWhatsapp),
+            error = None
+          )
+        )
+
+        val resultFut: Future[
+          Either[MessageSendException, MessageResource]
+        ] =
+          instance.run(connSettings, messageSendRequestWhatsappToExternalUserId)
+        resultFut.map(result => assert(result === expected))
+      }
+    }
   }
 
   private def twilioResponseToNumberNotValid =
@@ -419,8 +563,12 @@ final class MessageSendTest extends TwilioClientTest {
 
   // noinspection TypeAnnotation
   final class Fixture {
-    val from = "+12015550123"
-    val to   = "+4532123456"
+    val from                     = "+12015550123"
+    val to                       = "+4532123456"
+    val fromWhatsapp             = WhatsappPhoneNumber.unsafe(s"${WhatsappParticipant.Prefix}$from")
+    val toWhatsapp               = WhatsappPhoneNumber.unsafe(s"${WhatsappParticipant.Prefix}$to")
+    val toExternalUserIdWhatsapp =
+      WhatsappExternalUserId.unsafe(s"${WhatsappParticipant.Prefix}LT.13491208655302741918")
 
     val messageBody        = "Hi there"
     val testStatusCallback = "http://example.com/v1/sms/status"
@@ -428,13 +576,20 @@ final class MessageSendTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val instance: MessageSendRequestExecutor = TwilioClient.defaultImpl().messaging.messageSend
 
-    private def encode(s: String) = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
-    val encFrom                   = encode(from)
-    val encTo                     = encode(to)
-    val encBody                   = encode(messageBody)
-    val encStatusCallback         = encode(testStatusCallback)
+    private def encode(s: String)   = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
+    val encFrom                     = encode(from)
+    val encTo                       = encode(to)
+    val encWhatsappFrom             = encode(fromWhatsapp.toString)
+    val encWhatsappTo               = encode(toWhatsapp.toString)
+    val encToExternalUserIdWhatsapp = encode(toExternalUserIdWhatsapp.toString)
+    val encBody                     = encode(messageBody)
+    val encStatusCallback           = encode(testStatusCallback)
 
     val reqEntity = s"From=$encFrom&To=$encTo&Body=$encBody&StatusCallback=$encStatusCallback"
+    val reqWhatsappEntityToPhoneNumber =
+      s"From=$encWhatsappFrom&To=$encWhatsappTo&Body=$encBody&StatusCallback=$encStatusCallback"
+    val reqWhatsappEntityToExternalUserId =
+      s"From=$encWhatsappFrom&To=$encToExternalUserIdWhatsapp&Body=$encBody&StatusCallback=$encStatusCallback"
 
     val wireMockBuilderExpectedTwilioRequest = WireMock
       .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
@@ -445,7 +600,23 @@ final class MessageSendTest extends TwilioClientTest {
     val messageSendRequest = MessageSendRequest(
       accountSid = accountSid,
       from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
-      to = PhoneNumberE164.unsafe(to),
+      to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
+      body = MessageBody(messageBody),
+      statusCallback = MessageStatusCallback(new URL(testStatusCallback))
+    )
+
+    val messageSendRequestWhatsappToPhoneNumber = MessageSendRequest(
+      accountSid = accountSid,
+      from = MessageSender.Whatsapp(fromWhatsapp),
+      to = MessageRecipient.WhatsappNumber(toWhatsapp),
+      body = MessageBody(messageBody),
+      statusCallback = MessageStatusCallback(new URL(testStatusCallback))
+    )
+
+    val messageSendRequestWhatsappToExternalUserId = MessageSendRequest(
+      accountSid = accountSid,
+      from = MessageSender.Whatsapp(fromWhatsapp),
+      to = MessageRecipient.WhatsappId(toExternalUserIdWhatsapp),
       body = MessageBody(messageBody),
       statusCallback = MessageStatusCallback(new URL(testStatusCallback))
     )

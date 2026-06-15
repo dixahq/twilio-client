@@ -17,7 +17,7 @@ package com.dixa.twilio.client.impl.messaging
 
 import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
+  ChannelsSendersCommonExceptions,
   ChannelsSendersFetchRequestExecutor
 }
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
@@ -41,7 +41,7 @@ private[impl] class ChannelsSendersFetchRequestExecutorImpl(
   override def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest
-  ): Either[ChannelSenderException, HttpRequest] = {
+  ): Either[ChannelsSendersCommonExceptions, HttpRequest] = {
     createHttpRequestFor(
       s"/${ApiVersion.V2}/Channels/Senders/${req.channelSenderSid}",
       connSettings
@@ -50,37 +50,41 @@ private[impl] class ChannelsSendersFetchRequestExecutorImpl(
 
   override protected def mapApiException(
       apiException: ApiException
-  ): ChannelSenderException.Api =
-    ChannelSenderException.Api(apiException)
+  ): ChannelsSendersCommonExceptions.Api =
+    ChannelsSendersCommonExceptions.Api(apiException)
 
   override protected def createUnspecifiedException(
       msg: Option[String],
       cause: Option[Throwable]
-  ): ChannelSenderException.Unspecified = ChannelSenderException.Unspecified(msg, cause)
+  ): ChannelsSendersCommonExceptions.Unspecified =
+    ChannelsSendersCommonExceptions.Unspecified(msg, cause)
 
   override protected def parseHttpResponse(
       request: ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest,
       httpRequest: HttpRequest,
       httpResponse: HttpResponse,
       entity: HttpEntityString
-  ): Either[ChannelSenderException, ChannelSender] = {
+  ): Either[ChannelsSendersCommonExceptions, ChannelSender] = {
     httpResponse.status match {
       case StatusCodes.OK =>
         parseBody(entity)
       case _ =>
         Left(
-          ChannelSenderException.Unexpected(Some(entity.toString), None)
+          ChannelsSendersCommonExceptions.Unexpected(Some(entity.toString), None)
         )
     }
   }
 
-  private def parseBody(entity: HttpEntityString): Either[ChannelSenderException, ChannelSender] = {
-    entity.parse[ChannelSenderJsonRep]() match {
+  private def parseBody(
+      entity: HttpEntityString
+  ): Either[ChannelsSendersCommonExceptions, ChannelSender] = {
+    entity.parse[ChannelsSendersJsonRep]() match {
       case Left(ex) =>
         Left(
-          ChannelSenderException.ParseFailure(ex.cause.getMessage)
+          ChannelsSendersCommonExceptions.ParseFailure(ex.cause.getMessage)
         )
-      case Right(decoded: ChannelSenderJsonRep) => ChannelSenderJsonRep.toModel(decoded)
+      case Right(decoded: ChannelsSendersJsonRep) =>
+        ChannelsSendersJsonRep.toModelOldExceptionHandling(decoded)
     }
   }
 }

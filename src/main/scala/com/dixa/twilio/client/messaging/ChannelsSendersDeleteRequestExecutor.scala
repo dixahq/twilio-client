@@ -22,14 +22,14 @@ import com.dixa.twilio.model.messaging.ChannelSender
 trait ChannelsSendersDeleteRequestExecutor
     extends SingleRequestExecutor[
       ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest,
-      ChannelSenderException,
+      ChannelsSendersCommonExceptions,
       FUnit,
       ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest.Builder
     ] {
 
-  override protected type ApiExceptionWrapper = ChannelSenderException.Api
+  override protected type ApiExceptionWrapper = ChannelsSendersCommonExceptions.Api
 
-  override protected type UnspecifiedException = ChannelSenderException.Unspecified
+  override protected type UnspecifiedException = ChannelsSendersCommonExceptions.Unspecified
 
   override protected def createBuilderStartState()
       : ChannelsSendersDeleteRequestExecutor.ChannelSenderDeleteRequest.Builder =

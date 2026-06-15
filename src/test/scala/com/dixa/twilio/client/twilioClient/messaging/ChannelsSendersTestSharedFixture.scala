@@ -16,22 +16,23 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.model.messaging.ChannelSender.Webhooks
-import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
+import com.dixa.twilio.model.messaging.MessageSender.Whatsapp
+import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappPhoneNumber}
 
-trait ChannelSenderTestSharedFixture {
-  def channelSenderSid: ChannelSender.Sid = ChannelSenderTestSharedFixture.channelSenderSid
+trait ChannelsSendersTestSharedFixture {
+  def channelSenderSid: ChannelSender.Sid = ChannelsSendersTestSharedFixture.channelSenderSid
   def whatsappChannelSender: ChannelSender.WhatsappSender =
-    ChannelSenderTestSharedFixture.channelSender
+    ChannelsSendersTestSharedFixture.channelSender
 }
 
-object ChannelSenderTestSharedFixture {
+object ChannelsSendersTestSharedFixture {
   val channelSenderSid: ChannelSender.Sid =
     ChannelSender.Sid.unsafe("XEcfd04c72e3397a53e24bd6c7408aff83")
   val channelSender: ChannelSender.WhatsappSender = ChannelSender.WhatsappSender(
     status = ChannelSender.Status.Online,
     profile = ChannelSender.Profile
       .WhatsappProfile(phoneNumberDisplayName = "Example WABA"),
-    senderId = WhatsappNumber.unsafe("whatsapp:+4552511283"),
+    senderId = Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")),
     sid = channelSenderSid,
     webhooks = Webhooks(
       callback = None,

@@ -16,7 +16,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.messaging.{
-  ChannelSenderException,
+  ChannelsSendersCommonExceptions,
   ChannelsSendersFetchRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -27,7 +27,9 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import scala.concurrent.Future
 
-final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTestSharedFixture {
+final class ChannelsSendersFetchTest
+    extends TwilioClientTest
+    with ChannelsSendersTestSharedFixture {
 
   "TwilioClientMessaging" when {
     "Asked to fetch an channel sender" should {
@@ -49,7 +51,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
         val expected = Right(whatsappChannelSender)
 
         val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map { result => assert(result === expected) }
@@ -69,12 +71,12 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
             )
         )
 
-        val expected = ChannelSenderException.ParseFailure(
-          "Channel Sender id @twitterhandel of unknown type not supported"
+        val expected = ChannelsSendersCommonExceptions.ParseFailure(
+          "Channel Sender ID: @twitterhandle of unknown type is not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
@@ -97,12 +99,12 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
             )
         )
 
-        val expected = ChannelSenderException.ParseFailure(
-          "PhoneNumber Channel Sender with id +4552511283 not supported"
+        val expected = ChannelsSendersCommonExceptions.ParseFailure(
+          "PhoneNumber Channel Sender with ID: +4552511283 not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSenderException, ChannelSender]
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
@@ -157,7 +159,7 @@ final class ChannelSenderFetchTest extends TwilioClientTest with ChannelSenderTe
       |        "name": "Example WABA"
       |    },
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
-      |    "sender_id": "@twitterhandel",
+      |    "sender_id": "@twitterhandle",
       |    "webhook": { },
       |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
       |    "configuration": {
