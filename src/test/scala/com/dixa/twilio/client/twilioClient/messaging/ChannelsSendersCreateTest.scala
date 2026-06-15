@@ -23,7 +23,7 @@ import com.dixa.twilio.client.{TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.HttpMethod.Post
 import com.dixa.twilio.model.messaging.ChannelSender.{Webhook, Webhooks}
 import com.dixa.twilio.model.messaging.MessageSender.{E164, Whatsapp}
-import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappNumber}
+import com.dixa.twilio.model.messaging.{ChannelSender, WhatsappPhoneNumber}
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalToJson}
@@ -146,7 +146,7 @@ final class ChannelsSendersCreateTest
         )
 
         val req = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
-          _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
+          _.withSenderId(Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")))
             .withConfiguration(
               ChannelSender.Configuration(
                 wabaId = Some("316806161514452"),
@@ -192,9 +192,10 @@ final class ChannelsSendersCreateTest
                 .withBody(createChannelBrokenWabaIdResponse)
             )
         )
+
         val createBadRequest =
           ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
-            _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
+            _.withSenderId(Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")))
               .withConfiguration(
                 ChannelSender.Configuration(wabaId = Some("316806161514452BROKENID"))
               )
@@ -339,7 +340,7 @@ final class ChannelsSendersCreateTest
           )
 
           val req = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
-            _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
+            _.withSenderId(Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")))
               .withConfiguration(
                 ChannelSender.Configuration(
                   wabaId = Some("316806161514452"),
@@ -374,7 +375,7 @@ final class ChannelsSendersCreateTest
   // noinspection TypeAnnotation
   final class Fixture {
     val createRequest = ChannelsSendersCreateRequestExecutor.ChannelsSendersCreateRequest.build(
-      _.withSenderId(Whatsapp(WhatsappNumber.unsafe("whatsapp:+4552511283")))
+      _.withSenderId(Whatsapp(WhatsappPhoneNumber.unsafe("whatsapp:+4552511283")))
         .withConfiguration(
           ChannelSender.Configuration(verificationMethod =
             Some(ChannelSender.VerificationMethod.SMS)

@@ -21,14 +21,14 @@ import com.dixa.twilio.model.messaging._
 trait ChannelsSendersFetchRequestExecutor
     extends SingleRequestExecutor[
       ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest,
-      ChannelSendersException,
+      ChannelsSendersCommonExceptions,
       ChannelSender,
       ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest.Builder
     ] {
 
-  override protected type ApiExceptionWrapper = ChannelSendersException.Api
+  override protected type ApiExceptionWrapper = ChannelsSendersCommonExceptions.Api
 
-  override protected type UnspecifiedException = ChannelSendersException.Unspecified
+  override protected type UnspecifiedException = ChannelsSendersCommonExceptions.Unspecified
 
   override protected def createBuilderStartState()
       : ChannelsSendersFetchRequestExecutor.ChannelSenderFetchRequest.Builder =

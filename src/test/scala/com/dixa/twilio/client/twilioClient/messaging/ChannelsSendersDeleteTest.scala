@@ -18,7 +18,7 @@ package com.dixa.twilio.client.twilioClient.messaging
 import com.dixa.twilio.client.ApiException.{BadRequestException, NotFound}
 import com.dixa.twilio.client.{TwilioClient, TwilioConnectionSettings, TwilioTestConstants}
 import com.dixa.twilio.client.messaging.{
-  ChannelSendersException,
+  ChannelsSendersCommonExceptions,
   ChannelsSendersDeleteRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -66,7 +66,7 @@ final class ChannelsSendersDeleteTest
         )
 
         val expected =
-          Left(ChannelSendersException.Api(BadRequestException("you asked wrong")))
+          Left(ChannelsSendersCommonExceptions.Api(BadRequestException("you asked wrong")))
 
         val resultFut = instance.run(connSettings, deleteReq)
         resultFut.map { result => assert(result === expected) }
@@ -88,7 +88,7 @@ final class ChannelsSendersDeleteTest
         )
 
         val expected =
-          Left(ChannelSendersException.Api(NotFound(deleteSenderNotFoundError)))
+          Left(ChannelsSendersCommonExceptions.Api(NotFound(deleteSenderNotFoundError)))
 
         val resultFut = instance.run(connSettings, deleteReq)
         resultFut.map { result => assert(result === expected) }

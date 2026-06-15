@@ -43,7 +43,7 @@ object MessageSender {
   def fromString(s: String): Either[MessageSenderException, MessageSender] = {
     PhoneNumberE164(s)
       .map(E164)
-      .orElse(WhatsappNumber(s).map(Whatsapp))
+      .orElse(WhatsappPhoneNumber(s).map(Whatsapp))
       .orElse(Alphanumeric.fromString(s).toOption)
       .toRight(MessageSenderInvalidException(s))
   }
@@ -56,7 +56,7 @@ object MessageSender {
     override def asString: String = phoneNumber.asString
   }
 
-  final case class Whatsapp(whatsappNumber: WhatsappNumber) extends MessageSender {
+  final case class Whatsapp(whatsappNumber: WhatsappPhoneNumber) extends MessageSender {
     override def asString: String = whatsappNumber.toString
   }
 

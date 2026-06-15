@@ -16,7 +16,7 @@
 package com.dixa.twilio.client.twilioClient.messaging
 
 import com.dixa.twilio.client.messaging.{
-  ChannelSendersException,
+  ChannelsSendersCommonExceptions,
   ChannelsSendersFetchRequestExecutor
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
@@ -51,7 +51,7 @@ final class ChannelsSendersFetchTest
         val expected = Right(whatsappChannelSender)
 
         val resultFut: Future[
-          Either[ChannelSendersException, ChannelSender]
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map { result => assert(result === expected) }
@@ -71,12 +71,12 @@ final class ChannelsSendersFetchTest
             )
         )
 
-        val expected = ChannelSendersException.ParseFailure(
+        val expected = ChannelsSendersCommonExceptions.ParseFailure(
           "Channel Sender ID: @twitterhandle of unknown type is not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSendersException, ChannelSender]
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {
@@ -99,12 +99,12 @@ final class ChannelsSendersFetchTest
             )
         )
 
-        val expected = ChannelSendersException.ParseFailure(
+        val expected = ChannelsSendersCommonExceptions.ParseFailure(
           "PhoneNumber Channel Sender with ID: +4552511283 not supported"
         )
 
         val resultFut: Future[
-          Either[ChannelSendersException, ChannelSender]
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
         ] =
           instance.run(connSettings, fetchRequest)
         resultFut.map {

@@ -19,31 +19,29 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 
 import scala.util.Try
 
-sealed trait WhatsappNumber {
+sealed trait WhatsappPhoneNumber {
   def number: PhoneNumberE164
 
-  private def asString: String = WhatsappNumber.Prefix + number.toString
+  private def asString: String = WhatsappParticipant.Prefix + number.toString
 
   override final val toString = asString
 }
 
-object WhatsappNumber {
-  val Prefix = "whatsapp:"
-
-  def unsafe(asString: String): WhatsappNumber = {
+object WhatsappPhoneNumber {
+  def unsafe(asString: String): WhatsappPhoneNumber = {
     require(
-      asString.startsWith(Prefix),
-      s"$toString is not a valid whatsapp number, must start with '$Prefix'"
+      asString.startsWith(WhatsappParticipant.Prefix),
+      s"$asString is not a valid WhatsApp number, must start with '${WhatsappParticipant.Prefix}'"
     )
-    val number = PhoneNumberE164.unsafe(asString.drop(Prefix.length))
+    val number = PhoneNumberE164.unsafe(asString.drop(WhatsappParticipant.Prefix.length))
     DefaultImpl(number)
   }
 
-  def apply(asString: String): Option[WhatsappNumber] = Try {
+  def apply(asString: String): Option[WhatsappPhoneNumber] = Try {
     unsafe(asString)
   }.toOption
 
-  def fromPhoneNumberE164(number: PhoneNumberE164): WhatsappNumber = DefaultImpl(number)
+  def fromPhoneNumberE164(number: PhoneNumberE164): WhatsappPhoneNumber = DefaultImpl(number)
 
-  private final case class DefaultImpl(number: PhoneNumberE164) extends WhatsappNumber
+  private final case class DefaultImpl(number: PhoneNumberE164) extends WhatsappPhoneNumber
 }

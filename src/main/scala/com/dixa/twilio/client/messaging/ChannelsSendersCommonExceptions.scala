@@ -18,17 +18,17 @@ package com.dixa.twilio.client.messaging
 import com.dixa.twilio.client.ApiException
 import com.dixa.twilio.client.RequestExecutor.ApiExceptionWrapper
 
-sealed trait ChannelSendersException extends RuntimeException
+sealed trait ChannelsSendersCommonExceptions extends RuntimeException
 
-object ChannelSendersException {
+object ChannelsSendersCommonExceptions {
 
   final case class ParseFailure(msg: String)
       extends RuntimeException(msg)
-      with ChannelSendersException
+      with ChannelsSendersCommonExceptions
 
   final case class Api(cause: ApiException)
       extends RuntimeException(cause)
-      with ChannelSendersException
+      with ChannelsSendersCommonExceptions
       with ApiExceptionWrapper
 
   final case class Unspecified(msg: Option[String], cause: Option[Throwable])
@@ -38,7 +38,7 @@ object ChannelSendersException {
         ),
         cause.orNull
       )
-      with ChannelSendersException {
+      with ChannelsSendersCommonExceptions {
     def this(msg: String) = this(Some(msg), None)
 
     def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
@@ -51,7 +51,7 @@ object ChannelSendersException {
         ),
         cause.orNull
       )
-      with ChannelSendersException {
+      with ChannelsSendersCommonExceptions {
     def this(msg: String) = this(Some(msg), None)
 
     def this(cause: Throwable) = this(Option(cause.getMessage), Some(cause))
