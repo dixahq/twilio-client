@@ -46,7 +46,7 @@ import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
 
-private[messaging] final class ChannelsSendersCreateRequestExecutorImpl(
+private[impl] final class ChannelsSendersCreateRequestExecutorImpl(
     implicit override protected val http: HttpExt,
     override protected val materializer: Materializer,
     override protected val executionContext: ExecutionContext
