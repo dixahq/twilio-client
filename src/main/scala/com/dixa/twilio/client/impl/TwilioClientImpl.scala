@@ -18,8 +18,10 @@ package com.dixa.twilio.client.impl
 import org.apache.pekko.actor.ClassicActorSystemProvider
 import org.apache.pekko.http.scaladsl.{Http, HttpExt}
 import com.dixa.twilio.client.TwilioClient
+import com.dixa.twilio.client.content.TwilioClientContent
 import com.dixa.twilio.client.general.TwilioClientGeneral
 import com.dixa.twilio.client.iam.TwilioClientIam
+import com.dixa.twilio.client.impl.content.TwilioClientContentImpl
 import com.dixa.twilio.client.impl.general.TwilioClientGeneralImpl
 import com.dixa.twilio.client.impl.iam.TwilioClientIamImpl
 import com.dixa.twilio.client.impl.messaging.TwilioClientMessagingImpl
@@ -41,6 +43,8 @@ private[client] final class TwilioClientImpl()(
   private implicit val executionContext: ExecutionContext = actorSystem.classicSystem.dispatcher
 
   private implicit val http: HttpExt = Http()
+
+  override val content: TwilioClientContent = new TwilioClientContentImpl()
 
   override val iam: TwilioClientIam = new TwilioClientIamImpl()
 

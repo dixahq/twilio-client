@@ -16,6 +16,7 @@
 package com.dixa.twilio.client
 
 import org.apache.pekko.actor.ClassicActorSystemProvider
+import com.dixa.twilio.client.content.TwilioClientContent
 import com.dixa.twilio.client.general.TwilioClientGeneral
 import com.dixa.twilio.client.iam.TwilioClientIam
 import com.dixa.twilio.client.impl.TwilioClientImpl
@@ -43,6 +44,9 @@ import com.dixa.twilio.client.voice.TwilioClientVoice
   * errors properly, and also gives the client the possibility to actually use paging if needed.
   */
 trait TwilioClient {
+
+  /** Return sub client for the Twilio Content API */
+  def content: TwilioClientContent
 
   /** Return sub client for the Twilio IAM API */
   def iam: TwilioClientIam
