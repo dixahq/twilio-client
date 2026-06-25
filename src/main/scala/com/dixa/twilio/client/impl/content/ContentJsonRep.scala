@@ -15,7 +15,12 @@
 
 package com.dixa.twilio.client.impl.content
 
-import com.dixa.twilio.model.content.{ContentApproval, ContentTemplate, ContentType}
+import com.dixa.twilio.model.content.{
+  ContentApproval,
+  ContentTemplate,
+  ContentTemplateWithApproval,
+  ContentType
+}
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import java.time.Instant
@@ -128,6 +133,42 @@ private[content] object ContentJsonRep {
     case ContentType.CardAction.Unknown(title, rawType) =>
       ujson.Obj("type" -> rawType, "title" -> title)
   }
+
+  def parseContentTemplateWithApproval(
+      json: ujson.Value
+  ): Either[String, ContentTemplateWithApproval] =
+    parseContentTemplate(json).map { template =>
+      val whatsappApproval = json.obj.get("approvals").flatMap {
+        case ujson.Null => None
+        case approvals  =>
+          approvals.obj.get("whatsapp").flatMap {
+            case ujson.Null => None
+            case w          =>
+              val status = ContentApproval.ApprovalStatus.values
+                .find(_.twilioString == w("status").str)
+                .getOrElse(ContentApproval.ApprovalStatus.Received)
+              val rejectionReason = w.obj.get("rejection_reason").flatMap {
+                case ujson.Null => None
+                case r          => if (r.str.isEmpty) None else Some(r.str)
+              }
+              val allowCategoryChange = w.obj.get("allow_category_change").exists {
+                case ujson.Bool(b) => b
+                case _             => false
+              }
+              Some(
+                ContentApproval.WhatsappApproval(
+                  name = w("name").str,
+                  category = w("category").str,
+                  contentType = w("content_type").str,
+                  status = status,
+                  rejectionReason = rejectionReason,
+                  allowCategoryChange = allowCategoryChange
+                )
+              )
+          }
+      }
+      ContentTemplateWithApproval(template, whatsappApproval)
+    }
 
   def parseApproval(json: ujson.Value): Either[String, ContentApproval] =
     Try {

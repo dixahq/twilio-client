@@ -13,21 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.dixa.twilio.client.content
+package com.dixa.twilio.model.content
 
-trait TwilioClientContent {
-
-  def contentCreate: ContentCreateRequestExecutor
-
-  def contentFetch: ContentFetchRequestExecutor
-
-  def contentRead: ContentReadRequestExecutor
-
-  def contentDelete: ContentDeleteRequestExecutor
-
-  def contentApprovalCreate: ContentApprovalCreateRequestExecutor
-
-  def contentApprovalFetch: ContentApprovalFetchRequestExecutor
-
-  def contentAndApprovalsRead: ContentAndApprovalsReadRequestExecutor
-}
+final case class ContentTemplateWithApproval(
+    template: ContentTemplate,
+    approvals: Option[ContentApproval.WhatsappApproval]
+)
