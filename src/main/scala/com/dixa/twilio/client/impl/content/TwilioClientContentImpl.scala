@@ -47,4 +47,7 @@ private[client] final class TwilioClientContentImpl(
 
   override val contentAndApprovalsRead: ContentAndApprovalsReadRequestExecutor =
     new ContentAndApprovalsReadRequestExecutorImpl()
+
+  override val contentSearch: ContentSearchRequestExecutor =
+    new ContentSearchRequestExecutorImpl()
 }
