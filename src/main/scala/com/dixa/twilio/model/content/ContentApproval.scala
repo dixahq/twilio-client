@@ -42,13 +42,14 @@ object ContentApproval {
 
   object ApprovalStatus extends EnumWithTwilioString[ApprovalStatus] {
     override val values: immutable.IndexedSeq[ApprovalStatus] = findValues
-    case object Received  extends ApprovalStatus("received")
-    case object Pending   extends ApprovalStatus("pending")
-    case object Approved  extends ApprovalStatus("approved")
-    case object Rejected  extends ApprovalStatus("rejected")
-    case object Suspended extends ApprovalStatus("suspended")
-    case object Disabled  extends ApprovalStatus("disabled")
-    case object Paused    extends ApprovalStatus("paused")
+    case object Unsubmitted extends ApprovalStatus("unsubmitted")
+    case object Received    extends ApprovalStatus("received")
+    case object Pending     extends ApprovalStatus("pending")
+    case object Approved    extends ApprovalStatus("approved")
+    case object Rejected    extends ApprovalStatus("rejected")
+    case object Suspended   extends ApprovalStatus("suspended")
+    case object Disabled    extends ApprovalStatus("disabled")
+    case object Paused      extends ApprovalStatus("paused")
   }
 
   sealed abstract class WhatsappCategory(override val twilioString: String)
