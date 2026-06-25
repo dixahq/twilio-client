@@ -57,16 +57,30 @@ private[content] object ContentJsonRep {
     }
 
   private def parseContentType(typeKey: String, json: ujson.Value): ContentType = typeKey match {
-    case "twilio/text"  => ContentType.Text(json("body").str)
+    case "twilio/text" =>
+      ContentType.Text(json("body").str)
+
     case "twilio/media" =>
-      val body = json.obj.get("body") match {
-        case Some(ujson.Null) | None => None
-        case Some(v)                 => Some(v.str)
-      }
+      val body  = optStr(json, "body")
       val media = json.obj.get("media").map(_.arr.map(_.str).toList).getOrElse(List.empty)
       ContentType.Media(body, media)
+
     case _ =>
       ContentType.Unknown(typeKey, ujson.write(json))
+  }
+
+  def contentTypeToJson(contentType: ContentType): ujson.Value = contentType match {
+    case ContentType.Text(body) =>
+      ujson.Obj("body" -> body)
+
+    case ContentType.Media(body, media) =>
+      ujson.Obj(
+        "body"  -> body.fold(ujson.Null: ujson.Value)(ujson.Str(_)),
+        "media" -> ujson.Arr.from(media.map(ujson.Str(_)))
+      )
+
+    case ContentType.Unknown(_, rawJson) =>
+      ujson.read(rawJson)
   }
 
   def parseContentTemplateWithApproval(
@@ -118,6 +132,12 @@ private[content] object ContentJsonRep {
       allowCategoryChange = allowCategoryChange
     )
   }
+
+  private def optStr(json: ujson.Value, key: String): Option[String] =
+    json.obj.get(key).flatMap {
+      case ujson.Null => None
+      case v          => Some(v.str)
+    }
 
   private def optNonEmptyStr(json: ujson.Value, key: String): Option[String] =
     json.obj.get(key).flatMap {

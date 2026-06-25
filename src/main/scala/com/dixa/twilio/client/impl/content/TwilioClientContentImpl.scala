@@ -27,11 +27,17 @@ private[client] final class TwilioClientContentImpl(
     executionContext: ExecutionContext
 ) extends TwilioClientContent {
 
+  override val contentCreate: ContentCreateRequestExecutor =
+    new ContentCreateRequestExecutorImpl()
+
   override val contentFetch: ContentFetchRequestExecutor =
     new ContentFetchRequestExecutorImpl()
 
   override val contentDelete: ContentDeleteRequestExecutor =
     new ContentDeleteRequestExecutorImpl()
+
+  override val contentApprovalCreate: ContentApprovalCreateRequestExecutor =
+    new ContentApprovalCreateRequestExecutorImpl()
 
   override val contentApprovalFetch: ContentApprovalFetchRequestExecutor =
     new ContentApprovalFetchRequestExecutorImpl()
