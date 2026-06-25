@@ -25,4 +25,10 @@ trait TwilioClientContent {
 
   def contentApprovalFetch: ContentApprovalFetchRequestExecutor
 
+  def contentAndApprovalsRead: ContentAndApprovalsReadRequestExecutor
+
+  def contentAndApprovalsSearch: ContentAndApprovalsSearchRequestExecutor
+
+  def contentSearch: ContentSearchRequestExecutor
+
 }
