@@ -79,7 +79,7 @@ final case class TwilioConnectionSettings(
   // Tiny optimization, but pregenerate the possible hostnames so that we don't have to generate a new string on every call to hostNameFor.
   private val accountHost   = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
   private val apiHost       = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
-  private val contentHost   = s"${ApiSubDomain.Content}.$baseHostNameWithRegionAndEdge"
+  private val contentHost   = s"${ApiSubDomain.Content}.${endpoint.baseHostName}"
   private val iamHost       = s"${ApiSubDomain.Iam}.$baseHostNameWithRegionAndEdge"
   private val messagingHost = s"${ApiSubDomain.Messaging}.$baseHostNameWithRegionAndEdge"
   private val previewHost   = s"${ApiSubDomain.Preview}.$baseHostNameWithRegionAndEdge"
