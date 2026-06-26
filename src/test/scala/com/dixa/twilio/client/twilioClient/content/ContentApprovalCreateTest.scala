@@ -50,9 +50,9 @@ final class ContentApprovalCreateTest extends TwilioClientTest with ContentShare
             accountSid = None,
             whatsapp = Some(
               ContentApproval.WhatsappApproval(
-                name = "my_utility_template",
-                category = "UTILITY",
-                contentType = "twilio/text",
+                name = Some("my_utility_template"),
+                category = Some("UTILITY"),
+                contentType = Some("twilio/text"),
                 status = ContentApproval.ApprovalStatus.Received,
                 rejectionReason = None,
                 allowCategoryChange = false

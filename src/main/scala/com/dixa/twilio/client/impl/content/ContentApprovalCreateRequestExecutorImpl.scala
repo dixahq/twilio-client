@@ -76,10 +76,11 @@ private[impl] final class ContentApprovalCreateRequestExecutorImpl()(
               case ujson.Null => None
               case r          => if (r.str.isEmpty) None else Some(r.str)
             }
-            val whatsapp = ContentApproval.WhatsappApproval(
-              name = json("name").str,
-              category = json("category").str,
-              contentType = json.obj.get("content_type").map(_.str).getOrElse(""),
+            def optNonEmpty(v: String): Option[String] = if (v.isEmpty) None else Some(v)
+            val whatsapp                               = ContentApproval.WhatsappApproval(
+              name = optNonEmpty(json("name").str),
+              category = optNonEmpty(json("category").str),
+              contentType = json.obj.get("content_type").map(_.str).flatMap(optNonEmpty),
               status = status,
               rejectionReason = rejectionReason,
               allowCategoryChange = false
