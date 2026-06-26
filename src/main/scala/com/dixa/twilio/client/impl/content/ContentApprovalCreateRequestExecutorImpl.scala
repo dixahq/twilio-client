@@ -17,7 +17,12 @@ package com.dixa.twilio.client.impl.content
 
 import com.dixa.twilio.client.content.ContentApprovalCreateRequestExecutor
 import com.dixa.twilio.client.content.ContentApprovalCreateRequestExecutor._
-import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
+import com.dixa.twilio.client.impl.{
+  ApiSubDomain,
+  ApiVersion,
+  DefaultApiErrorEntityJsonRep,
+  HttpEntityString
+}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.content.ContentApproval
 import org.apache.pekko.http.scaladsl.HttpExt
@@ -93,6 +98,13 @@ private[impl] final class ContentApprovalCreateRequestExecutorImpl()(
               )
             )
         }
+      case StatusCodes.BadRequest =>
+        parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
+          .map(e => ContentApprovalCreateException.Unspecified(None, Some(e)))
+          .flatMap {
+            case e if e.code == 21658L => Left(ContentApprovalCreateException.TemplateTooLong)
+            case _ => buildResultForUnhandledResponse(request, httpRequest, httpResponse, entity)
+          }
       case StatusCodes.NotFound =>
         Left(ContentApprovalCreateException.ContentNotFound(request.contentSid))
       case _ =>

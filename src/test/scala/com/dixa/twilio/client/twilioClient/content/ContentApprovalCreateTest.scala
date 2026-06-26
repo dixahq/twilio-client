@@ -107,6 +107,34 @@ final class ContentApprovalCreateTest extends TwilioClientTest with ContentShare
         resultFut.map(result => assert(result === expected))
       }
 
+      "return TemplateTooLong on 400 with code 21658" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                  """|{
+                     |  "code": 21658,
+                     |  "message": "Body cannot exceed 1024 characters",
+                     |  "more_info": "https://www.twilio.com/docs/errors/21658",
+                     |  "status": 400
+                     |}""".stripMargin
+                )
+            )
+        )
+
+        val resultFut: Future[Either[ContentApprovalCreateException, _]] =
+          instance.run(connSettings, req)
+        resultFut.map(result =>
+          assert(result === Left(ContentApprovalCreateException.TemplateTooLong))
+        )
+      }
+
       "return ContentNotFound on 404" in {
         val f = new Fixture
         import f._

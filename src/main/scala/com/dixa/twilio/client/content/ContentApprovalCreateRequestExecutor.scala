@@ -126,6 +126,12 @@ object ContentApprovalCreateRequestExecutor {
         extends RuntimeException(s"Content template with sid $sid was not found")
         with ContentApprovalCreateException
 
+    case object TemplateTooLong
+        extends RuntimeException(
+          "Template body cannot exceed 1024 characters for WhatsApp approval"
+        )
+        with ContentApprovalCreateException
+
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse("Unspecified error submitting WhatsApp approval"),
