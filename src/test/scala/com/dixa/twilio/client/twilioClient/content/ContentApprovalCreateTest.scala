@@ -28,6 +28,47 @@ import scala.concurrent.Future
 final class ContentApprovalCreateTest extends TwilioClientTest with ContentSharedFixture {
 
   classOf[ContentApprovalCreateRequestExecutor].getSimpleName when {
+    "building a request" should {
+      "reject names with uppercase letters" in {
+        assertThrows[IllegalArgumentException] {
+          ContentApprovalCreateRequest.build(
+            _.withContentSid(contentSid)
+              .withName("My_Template")
+              .withCategory(ContentApproval.WhatsappCategory.Utility)
+              .build()
+          )
+        }
+      }
+      "reject names with spaces" in {
+        assertThrows[IllegalArgumentException] {
+          ContentApprovalCreateRequest.build(
+            _.withContentSid(contentSid)
+              .withName("my template")
+              .withCategory(ContentApproval.WhatsappCategory.Utility)
+              .build()
+          )
+        }
+      }
+      "reject names with hyphens" in {
+        assertThrows[IllegalArgumentException] {
+          ContentApprovalCreateRequest.build(
+            _.withContentSid(contentSid)
+              .withName("my-template")
+              .withCategory(ContentApproval.WhatsappCategory.Utility)
+              .build()
+          )
+        }
+      }
+      "accept names with only lowercase letters, digits, and underscores" in {
+        ContentApprovalCreateRequest.build(
+          _.withContentSid(contentSid)
+            .withName("my_template_123")
+            .withCategory(ContentApproval.WhatsappCategory.Utility)
+            .build()
+        )
+        succeed
+      }
+    }
     "asked to submit a WhatsApp approval request" should {
       "return the approval on 201" in {
         val f = new Fixture

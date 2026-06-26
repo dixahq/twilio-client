@@ -85,8 +85,13 @@ object ContentApprovalCreateRequestExecutor {
       ): Builder[Attributes with PhantomTypes.ContentSidSet] =
         new Builder(Some(contentSid), name, category)
 
-      def withName(name: String): Builder[Attributes with PhantomTypes.NameSet] =
+      def withName(name: String): Builder[Attributes with PhantomTypes.NameSet] = {
+        require(
+          name.matches("[a-z0-9_]+"),
+          s"WhatsApp template name must contain only lowercase letters, digits, and underscores, but got: $name"
+        )
         new Builder(contentSid, Some(name), category)
+      }
 
       def withCategory(
           category: ContentApproval.WhatsappCategory
