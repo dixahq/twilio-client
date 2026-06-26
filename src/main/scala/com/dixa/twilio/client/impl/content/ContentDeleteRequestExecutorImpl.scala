@@ -17,7 +17,7 @@ package com.dixa.twilio.client.impl.content
 
 import com.dixa.twilio.client.content.ContentDeleteRequestExecutor
 import com.dixa.twilio.client.content.ContentDeleteRequestExecutor._
-import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString}
+import com.dixa.twilio.client.impl.{ApiSubDomain, ApiVersion, HttpEntityString, QueryParamBuilder}
 import com.dixa.twilio.client.{ApiException, TwilioConnectionSettings}
 import com.dixa.twilio.model.FUnit
 import org.apache.pekko.http.scaladsl.HttpExt
@@ -38,8 +38,14 @@ private[impl] final class ContentDeleteRequestExecutorImpl()(
   override protected def createHttpReq(
       connSettings: TwilioConnectionSettings,
       req: ContentDeleteRequest
-  ): Either[ContentDeleteException, HttpRequest] =
-    createHttpRequestFor(s"/${ApiVersion.V1}/Content/${req.contentSid}", connSettings)
+  ): Either[ContentDeleteException, HttpRequest] = {
+    val params = QueryParamBuilder.empty
+      .withOptionalBooleanParam("deleteInWaba", req.deleteInWaba)
+    createHttpRequestFor(
+      s"/${ApiVersion.V1}/Content/${req.contentSid}${params.build}",
+      connSettings
+    )
+  }
 
   override protected def mapApiException(apiException: ApiException): ApiExceptionWrapper =
     ContentDeleteException.Api(apiException)
