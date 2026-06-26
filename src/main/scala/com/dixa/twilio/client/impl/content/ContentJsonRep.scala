@@ -89,9 +89,9 @@ private[content] object ContentJsonRep {
           }
           Some(
             ContentApproval.WhatsappApproval(
-              name = ar("name").str,
-              category = ar("category").str,
-              contentType = ar("content_type").str,
+              name = optNonEmptyStr(ar, "name"),
+              category = optNonEmptyStr(ar, "category"),
+              contentType = optNonEmptyStr(ar, "content_type"),
               status = status,
               rejectionReason = rejectionReason,
               allowCategoryChange = allowCategoryChange
@@ -121,9 +121,9 @@ private[content] object ContentJsonRep {
           }
           Some(
             ContentApproval.WhatsappApproval(
-              name = w("name").str,
-              category = w("category").str,
-              contentType = w("content_type").str,
+              name = optNonEmptyStr(w, "name"),
+              category = optNonEmptyStr(w, "category"),
+              contentType = optNonEmptyStr(w, "content_type"),
               status = status,
               rejectionReason = rejectionReason,
               allowCategoryChange = allowCategoryChange
@@ -134,5 +134,12 @@ private[content] object ContentJsonRep {
     } match {
       case Success(a)  => Right(a)
       case Failure(ex) => Left(ex.getMessage)
+    }
+
+  private def optNonEmptyStr(json: ujson.Value, key: String): Option[String] =
+    json.obj.get(key).flatMap {
+      case ujson.Null         => None
+      case v if v.str.isEmpty => None
+      case v                  => Some(v.str)
     }
 }

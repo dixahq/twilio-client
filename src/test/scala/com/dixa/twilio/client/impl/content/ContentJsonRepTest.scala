@@ -200,9 +200,9 @@ final class ContentJsonRepTest extends AnyWordSpec {
         result.map(_.approval) === Right(
           Some(
             ContentApproval.WhatsappApproval(
-              name = "",
-              category = "",
-              contentType = "",
+              name = None,
+              category = None,
+              contentType = None,
               status = ContentApproval.ApprovalStatus.Unsubmitted,
               rejectionReason = None,
               allowCategoryChange = true
@@ -240,9 +240,9 @@ final class ContentJsonRepTest extends AnyWordSpec {
         result.map(_.approval) === Right(
           Some(
             ContentApproval.WhatsappApproval(
-              name = "my_template",
-              category = "MARKETING",
-              contentType = "twilio/text",
+              name = Some("my_template"),
+              category = Some("MARKETING"),
+              contentType = Some("twilio/text"),
               status = ContentApproval.ApprovalStatus.Approved,
               rejectionReason = None,
               allowCategoryChange = true
@@ -324,9 +324,9 @@ final class ContentJsonRepTest extends AnyWordSpec {
             accountSid = Some(accountSid),
             whatsapp = Some(
               ContentApproval.WhatsappApproval(
-                name = "my_template",
-                category = "UTILITY",
-                contentType = "twilio/text",
+                name = Some("my_template"),
+                category = Some("UTILITY"),
+                contentType = Some("twilio/text"),
                 status = ContentApproval.ApprovalStatus.Approved,
                 rejectionReason = None,
                 allowCategoryChange = true
