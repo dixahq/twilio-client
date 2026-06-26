@@ -46,13 +46,10 @@ object ContentDeleteRequestExecutor {
 
   sealed trait ContentDeleteRequest {
     def contentSid: ContentTemplate.Sid
-    def deleteInWaba: Option[Boolean]
   }
 
-  private final case class ContentDeleteRequestImpl(
-      contentSid: ContentTemplate.Sid,
-      deleteInWaba: Option[Boolean]
-  ) extends ContentDeleteRequest
+  private final case class ContentDeleteRequestImpl(contentSid: ContentTemplate.Sid)
+      extends ContentDeleteRequest
 
   object ContentDeleteRequest {
 
@@ -67,29 +64,25 @@ object ContentDeleteRequestExecutor {
     type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
 
     final class Builder[Attributes <: PhantomTypes.RequestAttribute] private[ContentDeleteRequest] (
-        contentSid: Option[ContentTemplate.Sid],
-        deleteInWaba: Option[Boolean]
+        contentSid: Option[ContentTemplate.Sid]
     ) {
 
       def withContentSid(
           contentSid: ContentTemplate.Sid
       ): Builder[Attributes with PhantomTypes.ContentSidSet] =
-        new Builder(Some(contentSid), deleteInWaba)
-
-      def withDeleteInWaba(deleteInWaba: Boolean): Builder[Attributes] =
-        new Builder(contentSid, Some(deleteInWaba))
+        new Builder(Some(contentSid))
 
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ContentDeleteRequest =
-        ContentDeleteRequestImpl(contentSid.get, deleteInWaba)
+        ContentDeleteRequestImpl(contentSid.get)
     }
 
     def build(fun: BuilderStartState => ContentDeleteRequest): ContentDeleteRequest =
       fun(Builder.empty)
 
     object Builder {
-      val empty: BuilderStartState = new Builder(None, None)
+      val empty: BuilderStartState = new Builder(None)
     }
   }
 
