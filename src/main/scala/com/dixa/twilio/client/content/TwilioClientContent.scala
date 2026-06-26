@@ -19,8 +19,6 @@ trait TwilioClientContent {
 
   def contentFetch: ContentFetchRequestExecutor
 
-  def contentRead: ContentReadRequestExecutor
-
   def contentDelete: ContentDeleteRequestExecutor
 
   def contentApprovalFetch: ContentApprovalFetchRequestExecutor

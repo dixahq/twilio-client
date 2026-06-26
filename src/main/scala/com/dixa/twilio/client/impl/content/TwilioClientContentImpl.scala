@@ -30,9 +30,6 @@ private[client] final class TwilioClientContentImpl(
   override val contentFetch: ContentFetchRequestExecutor =
     new ContentFetchRequestExecutorImpl()
 
-  override val contentRead: ContentReadRequestExecutor =
-    new ContentReadRequestExecutorImpl()
-
   override val contentDelete: ContentDeleteRequestExecutor =
     new ContentDeleteRequestExecutorImpl()
 
