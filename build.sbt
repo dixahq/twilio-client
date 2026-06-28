@@ -65,10 +65,16 @@ lazy val `twilio-client` = project
         "org.eclipse.jetty" % "jetty-http" % "12.0.33" % Test, // GHSA-355h-qmc2-wpwf (transitive via wiremock-jetty12)
         // jackson 2 suite, vulnerabilities from wiremock (Dependabot #43-#46, transitive via wiremock-jetty12)
         "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.0" % Test,
-        "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.0" % Test,
-        // handlebars suite, vulnerability from wiremock (Dependabot #42, transitive via wiremock-jetty12)
-        "com.github.jknack" % "handlebars"         % "4.5.2" % Test,
-        "com.github.jknack" % "handlebars-helpers" % "4.5.2" % Test
+        "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.0" % Test
+        // NOTE: Dependabot #42 (GHSA-r4gv-qr8j-p3pg, handlebars < 4.5.2) is intentionally NOT
+        // overridden here. Forcing com.github.jknack:handlebars(-helpers):4.5.2 breaks WireMock
+        // 3.13.2's response templating: 4.5.2 relocated the helper classes into a new `.ext`
+        // subpackage (e.g. com.github.jknack.handlebars.helper.ext.NumberHelper), but WireMock's
+        // TemplateEngine.addHelpers() still references the old package and throws
+        // NoClassDefFoundError: com/github/jknack/handlebars/helper/NumberHelper at test startup.
+        // WireMock 3.13.2 is the latest release and pins handlebars 4.3.1 transitively; no WireMock
+        // version is compatible with handlebars >= 4.5.2 yet. handlebars is Test-scope only.
+        // Revisit when WireMock ships a build compatible with handlebars 4.5.2.
       ),
       publish / skip := false,
 
