@@ -63,7 +63,12 @@ lazy val `twilio-client` = project
         "org.eclipse.jetty.http2" % "jetty-http2-common" % "12.0.29" % Test, // scala-steward:off
         "org.eclipse.jetty" % "jetty-server" % "12.0.33" % Test, // Vulnerability from wiremock
         "org.eclipse.jetty" % "jetty-http" % "12.0.33" % Test, // GHSA-355h-qmc2-wpwf (transitive via wiremock-jetty12)
-        "com.fasterxml.jackson.core" % "jackson-core" % "2.21.1" % Test // Vulnerability from wiremock
+        // jackson 2 suite, vulnerabilities from wiremock (Dependabot #43-#46, transitive via wiremock-jetty12)
+        "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.0" % Test,
+        "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.0" % Test,
+        // handlebars suite, vulnerability from wiremock (Dependabot #42, transitive via wiremock-jetty12)
+        "com.github.jknack" % "handlebars"         % "4.5.2" % Test,
+        "com.github.jknack" % "handlebars-helpers" % "4.5.2" % Test
       ),
       publish / skip := false,
 
