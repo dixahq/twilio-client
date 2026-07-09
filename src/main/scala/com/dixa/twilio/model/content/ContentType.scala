@@ -21,26 +21,7 @@ object ContentType {
 
   final case class Text(body: String) extends ContentType
 
-  final case class QuickReply(body: String, actions: List[QuickReplyAction]) extends ContentType
-
-  final case class QuickReplyAction(title: String, id: String)
-
-  final case class Card(
-      title: Option[String],
-      subtitle: Option[String],
-      body: Option[String],
-      media: List[String],
-      actions: List[CardAction]
-  ) extends ContentType
-
-  sealed trait CardAction
-
-  object CardAction {
-    final case class Url(title: String, url: String)           extends CardAction
-    final case class PhoneNumber(title: String, phone: String) extends CardAction
-    final case class QuickReply(title: String, id: String)     extends CardAction
-    final case class Unknown(title: String, rawType: String)   extends CardAction
-  }
+  final case class Media(body: Option[String], media: List[String]) extends ContentType
 
   final case class Unknown(typeKey: String, rawJson: String) extends ContentType
 }

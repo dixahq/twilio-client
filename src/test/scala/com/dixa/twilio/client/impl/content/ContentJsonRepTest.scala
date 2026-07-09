@@ -59,20 +59,17 @@ final class ContentJsonRepTest extends AnyWordSpec {
       )
     }
 
-    "parse a twilio/quick-reply template" in {
+    "parse a twilio/media template with body and media URLs" in {
       val json = ujson.read(s"""{
         "account_sid": "$accountSid",
         "sid": "$contentSid",
-        "friendly_name": "qr_template",
+        "friendly_name": "media_template",
         "language": "en",
         "variables": {},
         "types": {
-          "twilio/quick-reply": {
-            "body": "Pick one",
-            "actions": [
-              { "title": "Yes", "id": "yes" },
-              { "title": "No",  "id": "no"  }
-            ]
+          "twilio/media": {
+            "body": "Here is your receipt",
+            "media": ["https://example.com/receipt.pdf"]
           }
         },
         "date_created": "2026-06-18T08:45:32Z",
@@ -85,16 +82,13 @@ final class ContentJsonRepTest extends AnyWordSpec {
           ContentTemplate(
             sid = contentSid,
             accountSid = accountSid,
-            friendlyName = "qr_template",
+            friendlyName = "media_template",
             language = "en",
             variables = Map.empty,
             types = Map(
-              "twilio/quick-reply" -> ContentType.QuickReply(
-                body = "Pick one",
-                actions = List(
-                  ContentType.QuickReplyAction("Yes", "yes"),
-                  ContentType.QuickReplyAction("No", "no")
-                )
+              "twilio/media" -> ContentType.Media(
+                body = Some("Here is your receipt"),
+                media = List("https://example.com/receipt.pdf")
               )
             ),
             dateCreated = dateCreated,
@@ -104,22 +98,17 @@ final class ContentJsonRepTest extends AnyWordSpec {
       )
     }
 
-    "parse a twilio/card template with null subtitle" in {
+    "parse a twilio/media template with null body" in {
       val json = ujson.read(s"""{
         "account_sid": "$accountSid",
         "sid": "$contentSid",
-        "friendly_name": "card_template",
+        "friendly_name": "media_no_body",
         "language": "en",
         "variables": {},
         "types": {
-          "twilio/card": {
-            "title": "Appointment confirmation",
-            "subtitle": null,
-            "body": "Your appointment is tomorrow",
-            "media": [],
-            "actions": [
-              { "type": "URL", "title": "Details", "url": "https://example.com" }
-            ]
+          "twilio/media": {
+            "body": null,
+            "media": ["https://example.com/image.jpg", "https://example.com/image2.jpg"]
           }
         },
         "date_created": "2026-06-18T08:45:32Z",
@@ -128,74 +117,16 @@ final class ContentJsonRepTest extends AnyWordSpec {
 
       val result = ContentJsonRep.parseContentTemplate(json)
       assert(
-        result === Right(
-          ContentTemplate(
-            sid = contentSid,
-            accountSid = accountSid,
-            friendlyName = "card_template",
-            language = "en",
-            variables = Map.empty,
-            types = Map(
-              "twilio/card" -> ContentType.Card(
-                title = Some("Appointment confirmation"),
-                subtitle = None,
-                body = Some("Your appointment is tomorrow"),
-                media = List.empty,
-                actions = List(ContentType.CardAction.Url("Details", "https://example.com"))
-              )
-            ),
-            dateCreated = dateCreated,
-            dateUpdated = dateUpdated
+        result.toOption.flatMap(_.types.get("twilio/media")) === Some(
+          ContentType.Media(
+            body = None,
+            media = List("https://example.com/image.jpg", "https://example.com/image2.jpg")
           )
         )
       )
     }
 
-    "parse all card action types" in {
-      val json = ujson.read(s"""{
-        "account_sid": "$accountSid",
-        "sid": "$contentSid",
-        "friendly_name": "card_actions",
-        "language": "en",
-        "variables": {},
-        "types": {
-          "twilio/card": {
-            "title": "Choose",
-            "body": "Options",
-            "media": [],
-            "actions": [
-              { "type": "URL",          "title": "Visit",  "url": "https://example.com" },
-              { "type": "PHONE_NUMBER", "title": "Call",   "phone": "+4512345678" },
-              { "type": "QUICK_REPLY",  "title": "Yes",    "id": "yes" },
-              { "type": "OTHER",        "title": "Other"  }
-            ]
-          }
-        },
-        "date_created": "2026-06-18T08:45:32Z",
-        "date_updated": "2026-06-23T14:10:40Z"
-      }""")
-
-      val result = ContentJsonRep.parseContentTemplate(json)
-      val card   = result.toOption.flatMap(_.types.get("twilio/card"))
-      assert(
-        card === Some(
-          ContentType.Card(
-            title = Some("Choose"),
-            subtitle = None,
-            body = Some("Options"),
-            media = List.empty,
-            actions = List(
-              ContentType.CardAction.Url("Visit", "https://example.com"),
-              ContentType.CardAction.PhoneNumber("Call", "+4512345678"),
-              ContentType.CardAction.QuickReply("Yes", "yes"),
-              ContentType.CardAction.Unknown("Other", "OTHER")
-            )
-          )
-        )
-      )
-    }
-
-    "parse an unknown content type as Unknown preserving raw JSON" in {
+    "parse an unsupported content type as Unknown preserving raw JSON" in {
       val json = ujson.read(s"""{
         "account_sid": "$accountSid",
         "sid": "$contentSid",

@@ -57,50 +57,16 @@ private[content] object ContentJsonRep {
     }
 
   private def parseContentType(typeKey: String, json: ujson.Value): ContentType = typeKey match {
-    case "twilio/text"        => ContentType.Text(json("body").str)
-    case "twilio/quick-reply" =>
-      val body    = json("body").str
-      val actions = json.obj
-        .get("actions")
-        .map(
-          _.arr
-            .map { a =>
-              ContentType.QuickReplyAction(a("title").str, a("id").str)
-            }
-            .toList
-        )
-        .getOrElse(List.empty)
-      ContentType.QuickReply(body, actions)
-    case "twilio/card" =>
-      val title = json.obj.get("title") match {
-        case Some(ujson.Null) | None => None
-        case Some(v)                 => Some(v.str)
-      }
-      val subtitle = json.obj.get("subtitle") match {
-        case Some(ujson.Null) | None => None
-        case Some(v)                 => Some(v.str)
-      }
+    case "twilio/text"  => ContentType.Text(json("body").str)
+    case "twilio/media" =>
       val body = json.obj.get("body") match {
         case Some(ujson.Null) | None => None
         case Some(v)                 => Some(v.str)
       }
-      val media   = json.obj.get("media").map(_.arr.map(_.str).toList).getOrElse(List.empty)
-      val actions =
-        json.obj.get("actions").map(_.arr.map(parseCardAction).toList).getOrElse(List.empty)
-      ContentType.Card(title, subtitle, body, media, actions)
+      val media = json.obj.get("media").map(_.arr.map(_.str).toList).getOrElse(List.empty)
+      ContentType.Media(body, media)
     case _ =>
       ContentType.Unknown(typeKey, ujson.write(json))
-  }
-
-  private def parseCardAction(json: ujson.Value): ContentType.CardAction = {
-    val title   = json("title").str
-    val rawType = json.obj.get("type").map(_.str).getOrElse("")
-    rawType match {
-      case "URL"          => ContentType.CardAction.Url(title, json("url").str)
-      case "PHONE_NUMBER" => ContentType.CardAction.PhoneNumber(title, json("phone").str)
-      case "QUICK_REPLY"  => ContentType.CardAction.QuickReply(title, json("id").str)
-      case other          => ContentType.CardAction.Unknown(title, other)
-    }
   }
 
   def parseContentTemplateWithApproval(
