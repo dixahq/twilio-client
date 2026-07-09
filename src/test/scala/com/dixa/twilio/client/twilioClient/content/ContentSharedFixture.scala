@@ -67,7 +67,7 @@ trait ContentSharedFixture {
   )
 
   val textTemplateWithUnsubmittedApproval: ContentTemplateWithApproval =
-    ContentTemplateWithApproval(template = textTemplate, approvals = Some(unsubmittedApproval))
+    ContentTemplateWithApproval(template = textTemplate, approval = Some(unsubmittedApproval))
 
   // Shared JSON fragments
 

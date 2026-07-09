@@ -17,5 +17,5 @@ package com.dixa.twilio.model.content
 
 final case class ContentTemplateWithApproval(
     template: ContentTemplate,
-    approvals: Option[ContentApproval.WhatsappApproval]
+    approval: Option[ContentApproval.WhatsappApproval]
 )

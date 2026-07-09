@@ -197,7 +197,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
 
       val result = ContentJsonRep.parseContentTemplateWithApproval(json)
       assert(
-        result.map(_.approvals) === Right(
+        result.map(_.approval) === Right(
           Some(
             ContentApproval.WhatsappApproval(
               name = "",
@@ -237,7 +237,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
 
       val result = ContentJsonRep.parseContentTemplateWithApproval(json)
       assert(
-        result.map(_.approvals) === Right(
+        result.map(_.approval) === Right(
           Some(
             ContentApproval.WhatsappApproval(
               name = "my_template",
@@ -252,7 +252,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
       )
     }
 
-    "return None for approvals when approval_requests is null" in {
+    "return None for approval when approval_requests is null" in {
       val json = ujson.read(s"""{
         "account_sid": "$accountSid",
         "sid": "$contentSid",
@@ -266,7 +266,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
       }""")
 
       val result = ContentJsonRep.parseContentTemplateWithApproval(json)
-      assert(result.map(_.approvals) === Right(None))
+      assert(result.map(_.approval) === Right(None))
     }
 
     "populate rejection_reason when non-empty" in {
@@ -294,7 +294,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
 
       val result = ContentJsonRep.parseContentTemplateWithApproval(json)
       assert(
-        result.map(_.approvals.flatMap(_.rejectionReason)) ===
+        result.map(_.approval.flatMap(_.rejectionReason)) ===
           Right(Some("Template does not match the selected category"))
       )
     }

@@ -77,8 +77,9 @@ final case class TwilioConnectionSettings(
     endpoint.baseHostName == "localhost" || endpoint.baseHostName == "127.0.0.1"
 
   // Tiny optimization, but pregenerate the possible hostnames so that we don't have to generate a new string on every call to hostNameFor.
-  private val accountHost   = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
-  private val apiHost       = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  private val accountHost = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  private val apiHost     = s"${ApiSubDomain.Api}.$baseHostNameWithRegionAndEdge"
+  // The Content API is a global endpoint — Twilio does not support region/edge routing for it.
   private val contentHost   = s"${ApiSubDomain.Content}.${endpoint.baseHostName}"
   private val iamHost       = s"${ApiSubDomain.Iam}.$baseHostNameWithRegionAndEdge"
   private val messagingHost = s"${ApiSubDomain.Messaging}.$baseHostNameWithRegionAndEdge"
