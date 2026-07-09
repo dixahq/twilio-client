@@ -71,32 +71,14 @@ private[impl] final class ContentApprovalCreateRequestExecutorImpl()(
   ): Either[ContentApprovalCreateException, ContentApproval] =
     httpResponse.status match {
       case StatusCodes.OK | StatusCodes.Created =>
-        Try(ujson.read(entity.toString)) match {
-          case Failure(ex)   => Left(ContentApprovalCreateException.Unspecified(ex))
-          case Success(json) =>
-            val status = ContentApproval.ApprovalStatus.values
-              .find(_.twilioString == json.obj.get("status").map(_.str).getOrElse(""))
-              .getOrElse(ContentApproval.ApprovalStatus.Received)
-            val rejectionReason = json.obj.get("rejection_reason").flatMap {
-              case ujson.Null => None
-              case r          => if (r.str.isEmpty) None else Some(r.str)
-            }
-            def optNonEmpty(v: String): Option[String] = if (v.isEmpty) None else Some(v)
-            val whatsapp                               = ContentApproval.WhatsappApproval(
-              name = optNonEmpty(json("name").str),
-              category = optNonEmpty(json("category").str),
-              contentType = json.obj.get("content_type").map(_.str).flatMap(optNonEmpty),
-              status = status,
-              rejectionReason = rejectionReason,
-              allowCategoryChange = false
-            )
-            Right(
-              ContentApproval(
-                sid = request.contentSid,
-                accountSid = None,
-                whatsapp = Some(whatsapp)
-              )
-            )
+        Try {
+          val json     = ujson.read(entity.toString)
+          val whatsapp =
+            ContentJsonRep.parseWhatsappApproval(json, ContentApproval.ApprovalStatus.Received)
+          ContentApproval(sid = request.contentSid, accountSid = None, whatsapp = Some(whatsapp))
+        } match {
+          case Failure(ex)     => Left(ContentApprovalCreateException.Unspecified(ex))
+          case Success(result) => Right(result)
         }
       case StatusCodes.BadRequest =>
         parseEntityAs[DefaultApiErrorEntityJsonRep](entity).left
