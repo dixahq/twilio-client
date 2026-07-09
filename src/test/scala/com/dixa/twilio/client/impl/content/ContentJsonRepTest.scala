@@ -378,7 +378,8 @@ final class ContentJsonRepTest extends AnyWordSpec {
     }
 
     "serialise Media with null body" in {
-      val json = ContentJsonRep.contentTypeToJson(ContentType.Media(body = None, media = List.empty))
+      val json =
+        ContentJsonRep.contentTypeToJson(ContentType.Media(body = None, media = List.empty))
       assert(json("body") === ujson.Null)
       assert(json("media").arr.isEmpty)
     }
