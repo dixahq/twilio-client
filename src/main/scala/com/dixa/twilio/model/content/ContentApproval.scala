@@ -47,7 +47,6 @@ object ContentApproval {
     case object Pending     extends ApprovalStatus("pending")
     case object Approved    extends ApprovalStatus("approved")
     case object Rejected    extends ApprovalStatus("rejected")
-    case object Suspended   extends ApprovalStatus("suspended")
     case object Disabled    extends ApprovalStatus("disabled")
     case object Paused      extends ApprovalStatus("paused")
   }
