@@ -15,6 +15,9 @@
 
 package com.dixa.twilio.client.impl.content
 
+import com.dixa.twilio.client.impl.JsonParsingUtil.emptyStringToNone
+import com.dixa.twilio.client.impl.TwilioClientPickler
+import com.dixa.twilio.client.impl.TwilioClientPickler.{macroR, Reader}
 import com.dixa.twilio.model.content.{
   ContentApproval,
   ContentTemplate,
@@ -24,50 +27,140 @@ import com.dixa.twilio.model.content.{
 import com.dixa.twilio.model.iam.TwilioAccount
 
 import java.time.Instant
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 private[content] object ContentJsonRep {
 
-  def parseContentTemplate(json: ujson.Value): Either[String, ContentTemplate] =
-    Try {
-      val sid          = ContentTemplate.Sid.unsafe(json("sid").str)
-      val accountSid   = TwilioAccount.Sid.unsafe(json("account_sid").str)
-      val friendlyName = json("friendly_name").str
-      val language     = json("language").str
-      val variables    = json.obj.get("variables") match {
-        case Some(ujson.Null) | None => Map.empty[String, String]
-        case Some(v)                 => v.obj.map { case (k, vv) => k -> vv.str }.toMap
-      }
-      val types       = json("types").obj.map { case (k, v) => k -> parseContentType(k, v) }.toMap
-      val dateCreated = Instant.parse(json("date_created").str)
-      val dateUpdated = Instant.parse(json("date_updated").str)
-      ContentTemplate(
-        sid,
-        accountSid,
-        friendlyName,
-        language,
-        variables,
-        types,
-        dateCreated,
-        dateUpdated
+  // ── WhatsappApproval — fixed fields, macroR ───────────────────────────────
+
+  private final case class WhatsappApprovalJsonRep(
+      name: Option[String] = None,
+      category: Option[String] = None,
+      content_type: Option[String] = None,
+      status: String,
+      rejection_reason: Option[String] = None,
+      allow_category_change: Boolean = false
+  ) {
+    def toModel(defaultStatus: ContentApproval.ApprovalStatus): ContentApproval.WhatsappApproval =
+      ContentApproval.WhatsappApproval(
+        name = emptyStringToNone(name),
+        category = emptyStringToNone(category),
+        contentType = emptyStringToNone(content_type),
+        status = ContentApproval.ApprovalStatus.values
+          .find(_.twilioString == status)
+          .getOrElse(defaultStatus),
+        rejectionReason = emptyStringToNone(rejection_reason),
+        allowCategoryChange = allow_category_change
       )
-    } match {
-      case Success(t)  => Right(t)
-      case Failure(ex) => Left(ex.getMessage)
-    }
-
-  private def parseContentType(typeKey: String, json: ujson.Value): ContentType = typeKey match {
-    case "twilio/text" =>
-      ContentType.Text(json("body").str)
-
-    case "twilio/media" =>
-      val body  = optStr(json, "body")
-      val media = json.obj.get("media").map(_.arr.map(_.str).toList).getOrElse(List.empty)
-      ContentType.Media(body, media)
-
-    case _ =>
-      ContentType.Unknown(typeKey, ujson.write(json))
   }
+
+  private object WhatsappApprovalJsonRep {
+    implicit val reader: Reader[WhatsappApprovalJsonRep] = macroR[WhatsappApprovalJsonRep]
+  }
+
+  // ── ContentTemplate — fixed fields macroR; types map stays manual ─────────
+
+  private final case class ContentTemplateJsonRep(
+      sid: String,
+      account_sid: String,
+      friendly_name: String,
+      language: String,
+      variables: Option[Map[String, String]] = None,
+      types: Map[String, ujson.Value],
+      date_created: String,
+      date_updated: String
+  ) {
+    def toModel: ContentTemplate = ContentTemplate(
+      sid = ContentTemplate.Sid.unsafe(sid),
+      accountSid = TwilioAccount.Sid.unsafe(account_sid),
+      friendlyName = friendly_name,
+      language = language,
+      variables = variables.getOrElse(Map.empty),
+      types = types.map { case (k, v) => k -> parseContentType(k, v) },
+      dateCreated = Instant.parse(date_created),
+      dateUpdated = Instant.parse(date_updated)
+    )
+  }
+
+  private object ContentTemplateJsonRep {
+    implicit val reader: Reader[ContentTemplateJsonRep] = macroR[ContentTemplateJsonRep]
+  }
+
+  // ── ContentTemplateWithApproval ───────────────────────────────────────────
+
+  private final case class ContentTemplateWithApprovalJsonRep(
+      sid: String,
+      account_sid: String,
+      friendly_name: String,
+      language: String,
+      variables: Option[Map[String, String]] = None,
+      types: Map[String, ujson.Value],
+      date_created: String,
+      date_updated: String,
+      approval_requests: Option[WhatsappApprovalJsonRep] = None
+  ) {
+    def toModel: ContentTemplateWithApproval = ContentTemplateWithApproval(
+      template = ContentTemplate(
+        sid = ContentTemplate.Sid.unsafe(sid),
+        accountSid = TwilioAccount.Sid.unsafe(account_sid),
+        friendlyName = friendly_name,
+        language = language,
+        variables = variables.getOrElse(Map.empty),
+        types = types.map { case (k, v) => k -> parseContentType(k, v) },
+        dateCreated = Instant.parse(date_created),
+        dateUpdated = Instant.parse(date_updated)
+      ),
+      approval = approval_requests.map(_.toModel(ContentApproval.ApprovalStatus.Unsubmitted))
+    )
+  }
+
+  private object ContentTemplateWithApprovalJsonRep {
+    implicit val reader: Reader[ContentTemplateWithApprovalJsonRep] =
+      macroR[ContentTemplateWithApprovalJsonRep]
+  }
+
+  // ── ContentApproval ───────────────────────────────────────────────────────
+
+  private final case class ContentApprovalJsonRep(
+      sid: String,
+      account_sid: Option[String] = None,
+      whatsapp: Option[WhatsappApprovalJsonRep] = None
+  ) {
+    def toModel: ContentApproval = ContentApproval(
+      sid = ContentTemplate.Sid.unsafe(sid),
+      accountSid = account_sid.map(TwilioAccount.Sid.unsafe),
+      whatsapp = whatsapp.map(_.toModel(ContentApproval.ApprovalStatus.Received))
+    )
+  }
+
+  private object ContentApprovalJsonRep {
+    implicit val reader: Reader[ContentApprovalJsonRep] = macroR[ContentApprovalJsonRep]
+  }
+
+  // ── Public parse API ──────────────────────────────────────────────────────
+
+  def parseContentTemplate(json: ujson.Value): Either[String, ContentTemplate] =
+    Try(TwilioClientPickler.read[ContentTemplateJsonRep](json.toString).toModel).toEither.left
+      .map(_.getMessage)
+
+  def parseContentTemplateWithApproval(
+      json: ujson.Value
+  ): Either[String, ContentTemplateWithApproval] =
+    Try(
+      TwilioClientPickler.read[ContentTemplateWithApprovalJsonRep](json.toString).toModel
+    ).toEither.left.map(_.getMessage)
+
+  def parseApproval(json: ujson.Value): Either[String, ContentApproval] =
+    Try(TwilioClientPickler.read[ContentApprovalJsonRep](json.toString).toModel).toEither.left
+      .map(_.getMessage)
+
+  private[content] def parseWhatsappApproval(
+      json: ujson.Value,
+      defaultStatus: ContentApproval.ApprovalStatus = ContentApproval.ApprovalStatus.Unsubmitted
+  ): ContentApproval.WhatsappApproval =
+    TwilioClientPickler.read[WhatsappApprovalJsonRep](json.toString).toModel(defaultStatus)
+
+  // ── Content type: keyed/polymorphic, stays manual ─────────────────────────
 
   def contentTypeToJson(contentType: ContentType): ujson.Value = contentType match {
     case ContentType.Text(body) =>
@@ -83,66 +176,22 @@ private[content] object ContentJsonRep {
       ujson.read(rawJson)
   }
 
-  def parseContentTemplateWithApproval(
-      json: ujson.Value
-  ): Either[String, ContentTemplateWithApproval] =
-    parseContentTemplate(json).map { template =>
-      val whatsappApproval = json.obj.get("approval_requests").flatMap {
-        case ujson.Null => None
-        case ar         => Some(parseWhatsappApproval(ar))
-      }
-      ContentTemplateWithApproval(template, whatsappApproval)
-    }
+  private def parseContentType(typeKey: String, json: ujson.Value): ContentType = typeKey match {
+    case "twilio/text" =>
+      ContentType.Text(json("body").str)
 
-  def parseApproval(json: ujson.Value): Either[String, ContentApproval] =
-    Try {
-      val sid        = ContentTemplate.Sid.unsafe(json("sid").str)
-      val accountSid = json.obj.get("account_sid").map(v => TwilioAccount.Sid.unsafe(v.str))
-      val whatsapp   = json.obj.get("whatsapp").flatMap {
-        case ujson.Null => None
-        case w          => Some(parseWhatsappApproval(w, ContentApproval.ApprovalStatus.Received))
-      }
-      ContentApproval(sid, accountSid, whatsapp)
-    } match {
-      case Success(a)  => Right(a)
-      case Failure(ex) => Left(ex.getMessage)
-    }
+    case "twilio/media" =>
+      val body  = json.obj.get("body").flatMap { case ujson.Null => None; case v => Some(v.str) }
+      val media = json.obj
+        .get("media")
+        .flatMap {
+          case ujson.Null => None
+          case v          => Some(v.arr.map(_.str).toList)
+        }
+        .getOrElse(List.empty)
+      ContentType.Media(body, media)
 
-  private[content] def parseWhatsappApproval(
-      json: ujson.Value,
-      defaultStatus: ContentApproval.ApprovalStatus = ContentApproval.ApprovalStatus.Unsubmitted
-  ): ContentApproval.WhatsappApproval = {
-    val status = ContentApproval.ApprovalStatus.values
-      .find(_.twilioString == json("status").str)
-      .getOrElse(defaultStatus)
-    val rejectionReason = json.obj.get("rejection_reason").flatMap {
-      case ujson.Null => None
-      case r          => if (r.str.isEmpty) None else Some(r.str)
-    }
-    val allowCategoryChange = json.obj.get("allow_category_change").exists {
-      case ujson.Bool(b) => b
-      case _             => false
-    }
-    ContentApproval.WhatsappApproval(
-      name = optNonEmptyStr(json, "name"),
-      category = optNonEmptyStr(json, "category"),
-      contentType = optNonEmptyStr(json, "content_type"),
-      status = status,
-      rejectionReason = rejectionReason,
-      allowCategoryChange = allowCategoryChange
-    )
+    case _ =>
+      ContentType.Unknown(typeKey, ujson.write(json))
   }
-
-  private def optStr(json: ujson.Value, key: String): Option[String] =
-    json.obj.get(key).flatMap {
-      case ujson.Null => None
-      case v          => Some(v.str)
-    }
-
-  private def optNonEmptyStr(json: ujson.Value, key: String): Option[String] =
-    json.obj.get(key).flatMap {
-      case ujson.Null         => None
-      case v if v.str.isEmpty => None
-      case v                  => Some(v.str)
-    }
 }
