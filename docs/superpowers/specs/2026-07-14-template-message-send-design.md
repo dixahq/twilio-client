@@ -47,7 +47,8 @@ this pattern.
 
 - `messaging.messageSend` can send a template message: `ContentSid` +
   optional `ContentVariables`, as an alternative to `Body`/`MediaUrl`.
-- Twilio's mutual-exclusion rule is enforced **at compile time**:
+- Twilio's mutual-exclusion rule is enforced **at compile time, for every
+  construction path**:
   - Exactly one of `Body` or `ContentSid` must be set.
   - `MediaUrl` cannot be combined with `ContentSid` (in either call order).
   - `ContentVariables` cannot be set without `ContentSid`.
@@ -55,6 +56,27 @@ this pattern.
   constraint become phantom-typed. The four pre-existing required fields
   (`accountSid`, `from`, `to`, `statusCallback`) keep their current
   `Option.get`-in-`build()` behavior, unchanged.
+
+### Amendment (2026-07-14, during plan-writing): sealing `MessageSendRequest`
+
+`MessageSendRequest` is currently a plain public case class with a public
+constructor — `MessageSendTest.scala`'s `Fixture` constructs it directly
+(e.g. `MessageSendRequest(accountSid = ..., body = MessageBody(...), ...)`)
+for every one of its 8 test cases, **never** going through
+`MessageSendRequest.build { ... }`. A phantom-typed `Builder` alone would
+only guard construction through `.build()`; direct case-class construction
+— the path this repo's own tests already use — would remain completely
+unguarded, silently defeating the "enforced at compile time" goal.
+
+Decision: `MessageSendRequest` becomes a `sealed trait` (with a `private`
+impl case class), the same pattern the newly-merged `ContentCreateRequest`
+already uses. This makes `.build { ... }` the only construction path, so
+the compile-time guarantee is real everywhere, at the cost of being a
+breaking API change for any external consumer constructing
+`MessageSendRequest` directly by name (unknown blast radius — this is a
+published library consumed by other services we cannot grep). This
+repo's own `MessageSendTest.scala` fixture is migrated to `.build { ... }`
+as part of this work (see Testing section).
 
 ## Non-goals
 
@@ -71,19 +93,32 @@ this pattern.
 
 ## Data model changes
 
-`MessageSendRequestExecutor.MessageSendRequest`:
+`MessageSendRequestExecutor.MessageSendRequest` becomes a sealed trait
+(matching `ContentCreateRequest`'s pattern) with a private impl case class,
+so it can only be constructed via `MessageSendRequest.build { ... }`:
 
 ```scala
-final case class MessageSendRequest(
+sealed trait MessageSendRequest {
+  def accountSid: TwilioAccount.Sid
+  def from: MessageSender
+  def to: MessageRecipient
+  def body: Option[MessageBody]                       // was: MessageBody (required)
+  def statusCallback: MessageStatusCallback
+  def mediaUrls: Seq[MediaResourceUrl]
+  def contentSid: Option[ContentTemplate.Sid]          // new
+  def contentVariables: Map[String, String]            // new
+}
+
+private final case class MessageSendRequestImpl(
     accountSid: TwilioAccount.Sid,
     from: MessageSender,
     to: MessageRecipient,
-    body: Option[MessageBody],                    // was: MessageBody (required)
+    body: Option[MessageBody],
     statusCallback: MessageStatusCallback,
-    mediaUrls: Seq[MediaResourceUrl] = Seq.empty,
-    contentSid: Option[ContentTemplate.Sid] = None,        // new
-    contentVariables: Map[String, String] = Map.empty      // new
-)
+    mediaUrls: Seq[MediaResourceUrl],
+    contentSid: Option[ContentTemplate.Sid],
+    contentVariables: Map[String, String]
+) extends MessageSendRequest
 ```
 
 `contentVariables` uses `Map[String, String]`, matching
@@ -196,8 +231,13 @@ pattern used for the SMS/MMS/WhatsApp groups:
 - Send with `ContentSid` + `ContentVariables` → asserts both
   `ContentSid=HX...` and the URL-encoded JSON `ContentVariables=...`
   substring.
-- Existing SMS/MMS/WhatsApp tests continue passing unchanged (`body` call
-  sites in tests already call `.withBody(...)`, which remains valid).
+- The `Fixture` class's three direct `MessageSendRequest(...)` case-class
+  constructions (`messageSendRequest`,
+  `messageSendRequestWhatsappToPhoneNumber`,
+  `messageSendRequestWhatsappToExternalUserId`) are migrated to
+  `MessageSendRequest.build { b => b.withAccountSid(...)....withBody(...).build() }`,
+  since the sealed trait no longer has a public constructor. All existing
+  SMS/MMS/WhatsApp test assertions are otherwise unchanged.
 
 No compile-fail ("shouldNot compile") tests exist elsewhere in this
 codebase's test suite today, so none are introduced here — the type-level
@@ -206,10 +246,15 @@ at all under `-Xfatal-warnings`.
 
 ## Risks / open questions carried into the implementation plan
 
-- Confirm no external consumer of this library pattern-matches on
-  `MessageSendRequest.body: MessageBody` expecting it non-`Option` (unlikely
-  given construction is builder-only, but worth a final grep before
-  merging).
+- **Accepted breaking change**: sealing `MessageSendRequest` breaks any
+  external consumer constructing it directly by name (case-class literal
+  or copy-based construction) instead of via `.build { ... }`. This is a
+  deliberate trade-off (see Amendment above) to make the compile-time
+  mutual-exclusion guarantee real; it should be called out prominently in
+  the PR description as a breaking change. This repo tags releases with
+  semver (`v4.0.0` is the latest tag), so this should ship as `v5.0.0`, not
+  a patch/minor bump — tagging/publishing itself is a separate, deliberate
+  release step outside this implementation plan.
 - Confirm the exact `Content-Type: application/x-www-form-urlencoded`
   URL-encoding of a JSON object value (e.g. `{` → `%7B`) matches what the
   existing `WireMock.containing(...)` assertion style expects, consistent
