@@ -19,9 +19,12 @@ sealed trait ContentType
 
 object ContentType {
 
+  // twilio/text
   final case class Text(body: String) extends ContentType
 
+  // twilio/media
   final case class Media(body: Option[String], media: List[String]) extends ContentType
 
+  // Catch-all for forward compatibility with types not yet modelled
   final case class Unknown(typeKey: String, rawJson: String) extends ContentType
 }

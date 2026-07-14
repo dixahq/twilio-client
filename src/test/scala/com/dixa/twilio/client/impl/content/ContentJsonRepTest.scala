@@ -359,4 +359,47 @@ final class ContentJsonRepTest extends AnyWordSpec {
     }
   }
 
+  "ContentJsonRep.contentTypeToJson" should {
+
+    "serialise Text" in {
+      val json = ContentJsonRep.contentTypeToJson(ContentType.Text("Hello {{1}}"))
+      assert(json("body").str === "Hello {{1}}")
+    }
+
+    "serialise Media with body and URLs" in {
+      val json = ContentJsonRep.contentTypeToJson(
+        ContentType.Media(
+          body = Some("Here is your receipt"),
+          media = List("https://example.com/receipt.pdf")
+        )
+      )
+      assert(json("body").str === "Here is your receipt")
+      assert(json("media")(0).str === "https://example.com/receipt.pdf")
+    }
+
+    "serialise Media with null body" in {
+      val json =
+        ContentJsonRep.contentTypeToJson(ContentType.Media(body = None, media = List.empty))
+      assert(json("body") === ujson.Null)
+      assert(json("media").arr.isEmpty)
+    }
+
+    "round-trip Text through serialise then parse" in {
+      val original = ContentType.Text("Hello {{1}}")
+      val json     = ujson.Obj("twilio/text" -> ContentJsonRep.contentTypeToJson(original))
+      val template = ujson.read(s"""{
+        "account_sid": "$accountSid",
+        "sid": "$contentSid",
+        "friendly_name": "t",
+        "language": "en",
+        "variables": {},
+        "types": ${ujson.write(json)},
+        "date_created": "2026-06-18T08:45:32Z",
+        "date_updated": "2026-06-23T14:10:40Z"
+      }""")
+
+      val result = ContentJsonRep.parseContentTemplate(template)
+      assert(result.map(_.types.get("twilio/text")) === Right(Some(original)))
+    }
+  }
 }
