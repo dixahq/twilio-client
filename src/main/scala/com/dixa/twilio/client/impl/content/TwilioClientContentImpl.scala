@@ -21,7 +21,7 @@ import org.apache.pekko.stream.Materializer
 
 import scala.concurrent.ExecutionContext
 
-private[client] final class TwilioClientContentImpl(
+private[impl] final class TwilioClientContentImpl(
     implicit httpExt: HttpExt,
     materializer: Materializer,
     executionContext: ExecutionContext
