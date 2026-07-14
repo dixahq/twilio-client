@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.dixa.twilio.client.twilioClient.content
+package com.dixa.twilio.client.content
 
 import com.dixa.twilio.client.TwilioTestConstants
 import com.dixa.twilio.model.content.{

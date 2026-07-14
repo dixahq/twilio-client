@@ -17,6 +17,7 @@ package com.dixa.twilio.client.twilioClient.content
 
 import com.dixa.twilio.client.content.ContentCreateRequestExecutor
 import com.dixa.twilio.client.content.ContentCreateRequestExecutor._
+import com.dixa.twilio.client.content.ContentSharedFixture
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.content.ContentType
