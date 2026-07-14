@@ -31,6 +31,7 @@ private[client] object ApiSubDomain extends Enum[ApiSubDomain] {
 
   case object Accounts  extends ApiSubDomain("accounts", PagingStyle.NoPaging)
   case object Api       extends ApiSubDomain("api", PagingStyle.PagingAttributesInRootJson)
+  case object Content   extends ApiSubDomain("content", PagingStyle.MetaObject)
   case object Iam       extends ApiSubDomain("iam", PagingStyle.MetaObject)
   case object Messaging extends ApiSubDomain("messaging", PagingStyle.MetaObject)
   case object Preview   extends ApiSubDomain("preview", PagingStyle.MetaObject)
