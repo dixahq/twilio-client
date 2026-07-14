@@ -187,28 +187,39 @@ This gives, at compile time:
 ## HTTP layer
 
 `MessageSendRequestExecutorImpl.createHttpReq` branches on
-`req.contentSid`:
+`req.contentSid`. Field **order matters** here: the existing tests assert
+substrings like `From=...&To=...&Body=...&StatusCallback=...` via
+`WireMock.containing(...)`, so `Body`/`ContentSid`(+`ContentVariables`) must
+stay in the same slot Body already occupies today, with `StatusCallback`
+still last before `MediaUrl`:
 
 ```scala
-val templateFields: Seq[(String, String)] = req.contentSid match {
+val bodyOrContentFields: Seq[(String, String)] = req.contentSid match {
   case Some(contentSid) =>
-    Seq("ContentSid" -> contentSid.toString) ++
-      (if (req.contentVariables.nonEmpty)
-         Seq("ContentVariables" -> write(req.contentVariables))
-       else Seq.empty)
+    val contentVariablesField =
+      if (req.contentVariables.nonEmpty)
+        Seq("ContentVariables" -> write(req.contentVariables))
+      else
+        Seq.empty
+    Seq("ContentSid" -> contentSid.toString) ++ contentVariablesField
   case None =>
-    req.body.toSeq.map(b => "Body" -> b.toString) ++
-      req.mediaUrls.map(url => "MediaUrl" -> url.toString)
+    req.body.toSeq.map(b => "Body" -> b.toString)
 }
 
 val baseFields = Seq(
-  "From"           -> req.from.asString,
-  "To"             -> req.to.asString,
+  "From" -> req.from.asString,
+  "To"   -> req.to.asString
+) ++ bodyOrContentFields ++ Seq(
   "StatusCallback" -> req.statusCallback.toString
 )
 
-val reqEntity = FormData(baseFields ++ templateFields: _*).toEntity
+val mediaFields = req.mediaUrls.map(url => "MediaUrl" -> url.toString)
+val reqEntity    = FormData(baseFields ++ mediaFields: _*).toEntity
 ```
+
+For the existing Body path this produces the exact same field order as
+today (`From&To&Body&StatusCallback&MediaUrl*`); for the new template path
+it produces `From&To&ContentSid[&ContentVariables]&StatusCallback`.
 
 `write(req.contentVariables)` uses `upickle.default.write` (already used
 elsewhere in `client.impl.messaging`, e.g.
