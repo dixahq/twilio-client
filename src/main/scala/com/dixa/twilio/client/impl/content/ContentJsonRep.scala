@@ -57,16 +57,30 @@ private[content] object ContentJsonRep {
     }
 
   private def parseContentType(typeKey: String, json: ujson.Value): ContentType = typeKey match {
-    case "twilio/text"  => ContentType.Text(json("body").str)
+    case "twilio/text" =>
+      ContentType.Text(json("body").str)
+
     case "twilio/media" =>
-      val body = json.obj.get("body") match {
-        case Some(ujson.Null) | None => None
-        case Some(v)                 => Some(v.str)
-      }
+      val body  = optStr(json, "body")
       val media = json.obj.get("media").map(_.arr.map(_.str).toList).getOrElse(List.empty)
       ContentType.Media(body, media)
+
     case _ =>
       ContentType.Unknown(typeKey, ujson.write(json))
+  }
+
+  def contentTypeToJson(contentType: ContentType): ujson.Value = contentType match {
+    case ContentType.Text(body) =>
+      ujson.Obj("body" -> body)
+
+    case ContentType.Media(body, media) =>
+      ujson.Obj(
+        "body"  -> body.fold(ujson.Null: ujson.Value)(ujson.Str(_)),
+        "media" -> ujson.Arr.from(media.map(ujson.Str(_)))
+      )
+
+    case ContentType.Unknown(_, rawJson) =>
+      ujson.read(rawJson)
   }
 
   def parseContentTemplateWithApproval(
@@ -75,28 +89,7 @@ private[content] object ContentJsonRep {
     parseContentTemplate(json).map { template =>
       val whatsappApproval = json.obj.get("approval_requests").flatMap {
         case ujson.Null => None
-        case ar         =>
-          val status = ContentApproval.ApprovalStatus.values
-            .find(_.twilioString == ar("status").str)
-            .getOrElse(ContentApproval.ApprovalStatus.Unsubmitted)
-          val rejectionReason = ar.obj.get("rejection_reason").flatMap {
-            case ujson.Null => None
-            case r          => if (r.str.isEmpty) None else Some(r.str)
-          }
-          val allowCategoryChange = ar.obj.get("allow_category_change").exists {
-            case ujson.Bool(b) => b
-            case _             => false
-          }
-          Some(
-            ContentApproval.WhatsappApproval(
-              name = ar("name").str,
-              category = ar("category").str,
-              contentType = ar("content_type").str,
-              status = status,
-              rejectionReason = rejectionReason,
-              allowCategoryChange = allowCategoryChange
-            )
-          )
+        case ar         => Some(parseWhatsappApproval(ar))
       }
       ContentTemplateWithApproval(template, whatsappApproval)
     }
@@ -107,32 +100,49 @@ private[content] object ContentJsonRep {
       val accountSid = json.obj.get("account_sid").map(v => TwilioAccount.Sid.unsafe(v.str))
       val whatsapp   = json.obj.get("whatsapp").flatMap {
         case ujson.Null => None
-        case w          =>
-          val status = ContentApproval.ApprovalStatus.values
-            .find(_.twilioString == w("status").str)
-            .getOrElse(ContentApproval.ApprovalStatus.Received)
-          val rejectionReason = w.obj.get("rejection_reason").flatMap {
-            case ujson.Null => None
-            case r          => if (r.str.isEmpty) None else Some(r.str)
-          }
-          val allowCategoryChange = w.obj.get("allow_category_change").exists {
-            case ujson.Bool(b) => b
-            case _             => false
-          }
-          Some(
-            ContentApproval.WhatsappApproval(
-              name = w("name").str,
-              category = w("category").str,
-              contentType = w("content_type").str,
-              status = status,
-              rejectionReason = rejectionReason,
-              allowCategoryChange = allowCategoryChange
-            )
-          )
+        case w          => Some(parseWhatsappApproval(w, ContentApproval.ApprovalStatus.Received))
       }
       ContentApproval(sid, accountSid, whatsapp)
     } match {
       case Success(a)  => Right(a)
       case Failure(ex) => Left(ex.getMessage)
+    }
+
+  private[content] def parseWhatsappApproval(
+      json: ujson.Value,
+      defaultStatus: ContentApproval.ApprovalStatus = ContentApproval.ApprovalStatus.Unsubmitted
+  ): ContentApproval.WhatsappApproval = {
+    val status = ContentApproval.ApprovalStatus.values
+      .find(_.twilioString == json("status").str)
+      .getOrElse(defaultStatus)
+    val rejectionReason = json.obj.get("rejection_reason").flatMap {
+      case ujson.Null => None
+      case r          => if (r.str.isEmpty) None else Some(r.str)
+    }
+    val allowCategoryChange = json.obj.get("allow_category_change").exists {
+      case ujson.Bool(b) => b
+      case _             => false
+    }
+    ContentApproval.WhatsappApproval(
+      name = optNonEmptyStr(json, "name"),
+      category = optNonEmptyStr(json, "category"),
+      contentType = optNonEmptyStr(json, "content_type"),
+      status = status,
+      rejectionReason = rejectionReason,
+      allowCategoryChange = allowCategoryChange
+    )
+  }
+
+  private def optStr(json: ujson.Value, key: String): Option[String] =
+    json.obj.get(key).flatMap {
+      case ujson.Null => None
+      case v          => Some(v.str)
+    }
+
+  private def optNonEmptyStr(json: ujson.Value, key: String): Option[String] =
+    json.obj.get(key).flatMap {
+      case ujson.Null         => None
+      case v if v.str.isEmpty => None
+      case v                  => Some(v.str)
     }
 }

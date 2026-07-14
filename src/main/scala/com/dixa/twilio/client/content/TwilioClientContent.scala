@@ -15,4 +15,16 @@
 
 package com.dixa.twilio.client.content
 
-trait TwilioClientContent
+trait TwilioClientContent {
+
+  def contentCreate: ContentCreateRequestExecutor
+
+  def contentFetch: ContentFetchRequestExecutor
+
+  def contentDelete: ContentDeleteRequestExecutor
+
+  def contentApprovalCreate: ContentApprovalCreateRequestExecutor
+
+  def contentApprovalFetch: ContentApprovalFetchRequestExecutor
+
+}

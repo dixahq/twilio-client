@@ -29,9 +29,9 @@ final case class ContentApproval(
 object ContentApproval {
 
   final case class WhatsappApproval(
-      name: String,
-      category: String,
-      contentType: String,
+      name: Option[String],
+      category: Option[String],
+      contentType: Option[String],
       status: ApprovalStatus,
       rejectionReason: Option[String],
       allowCategoryChange: Boolean

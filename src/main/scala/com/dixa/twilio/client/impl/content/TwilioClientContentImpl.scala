@@ -15,6 +15,31 @@
 
 package com.dixa.twilio.client.impl.content
 
-import com.dixa.twilio.client.content.TwilioClientContent
+import com.dixa.twilio.client.content._
+import org.apache.pekko.http.scaladsl.HttpExt
+import org.apache.pekko.stream.Materializer
 
-private[client] final class TwilioClientContentImpl extends TwilioClientContent
+import scala.concurrent.ExecutionContext
+
+private[client] final class TwilioClientContentImpl(
+    implicit httpExt: HttpExt,
+    materializer: Materializer,
+    executionContext: ExecutionContext
+) extends TwilioClientContent {
+
+  override val contentCreate: ContentCreateRequestExecutor =
+    new ContentCreateRequestExecutorImpl()
+
+  override val contentFetch: ContentFetchRequestExecutor =
+    new ContentFetchRequestExecutorImpl()
+
+  override val contentDelete: ContentDeleteRequestExecutor =
+    new ContentDeleteRequestExecutorImpl()
+
+  override val contentApprovalCreate: ContentApprovalCreateRequestExecutor =
+    new ContentApprovalCreateRequestExecutorImpl()
+
+  override val contentApprovalFetch: ContentApprovalFetchRequestExecutor =
+    new ContentApprovalFetchRequestExecutorImpl()
+
+}
