@@ -39,6 +39,7 @@ import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
+import upickle.default.write
 import scala.concurrent.ExecutionContext
 
 private[impl] final class MessageSendRequestExecutorImpl()(
@@ -55,12 +56,25 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: MessageSendRequest
   ): Either[MessageSendException, HttpRequest] = {
+    val bodyOrContentFields: Seq[(String, String)] = req.contentSid match {
+      case Some(contentSid) =>
+        val contentVariablesField =
+          if (req.contentVariables.nonEmpty)
+            Seq("ContentVariables" -> write(req.contentVariables))
+          else
+            Seq.empty
+        Seq("ContentSid" -> contentSid.toString) ++ contentVariablesField
+      case None =>
+        req.body.toSeq.map(b => "Body" -> b.toString)
+    }
+
     val baseFields = Seq(
-      "From"           -> req.from.asString,
-      "To"             -> req.to.asString,
-      "Body"           -> req.body.toString,
+      "From" -> req.from.asString,
+      "To"   -> req.to.asString
+    ) ++ bodyOrContentFields ++ Seq(
       "StatusCallback" -> req.statusCallback.toString
     )
+
     val mediaFields = req.mediaUrls.map(url => "MediaUrl" -> url.toString)
     val reqEntity   = FormData(baseFields ++ mediaFields: _*).toEntity
 

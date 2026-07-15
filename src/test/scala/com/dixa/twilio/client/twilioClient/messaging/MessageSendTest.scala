@@ -22,6 +22,7 @@ import com.dixa.twilio.client.messaging.MessageSendRequestExecutor.{
   MessageSendRequest
 }
 import com.dixa.twilio.client.twilioClient.TwilioClientTest
+import com.dixa.twilio.model.content.ContentTemplate
 import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 import com.dixa.twilio.model.messaging._
@@ -518,6 +519,171 @@ final class MessageSendTest extends TwilioClientTest {
         resultFut.map(result => assert(result === expected))
       }
     }
+
+    "asked to send a template message" should {
+      "successfully send a template message with a content sid only" in {
+        val f = new Fixture
+        import f._
+
+        val messageSendTwilioSuccessResponse =
+          s"""{
+             |  "account_sid": "$accountSid",
+             |  "api_version": "2010-04-01",
+             |  "body": "$messageBody",
+             |  "date_created": null,
+             |  "date_sent": null,
+             |  "date_updated": null,
+             |  "direction": "outbound-api",
+             |  "error_code": null,
+             |  "error_message": null,
+             |  "from": "$from",
+             |  "messaging_service_sid": null,
+             |  "num_media": "0",
+             |  "num_segments": "1",
+             |  "price": null,
+             |  "price_unit": null,
+             |  "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+             |  "status": "sent",
+             |  "subresource_uris": {
+             |    "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+             |  },
+             |  "to": "$to",
+             |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+             |}""".stripMargin
+
+        val reqTemplateEntity =
+          s"From=$encFrom&To=$encTo&ContentSid=$encContentSid&StatusCallback=$encStatusCallback"
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
+            .withRequestBody(WireMock.containing(reqTemplateEntity))
+            .withBasicAuth(accountSid.toString, authToken.asString)
+            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(messageSendTwilioSuccessResponse)
+            )
+        )
+
+        val expected = Right(
+          MessageResource(
+            accountSid = accountSid,
+            body = MessageBody(messageBody),
+            dateCreated = None,
+            dateSent = None,
+            dateUpdated = None,
+            direction = MessageDirection.withName("OutboundApi"),
+            from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+            messagingServiceSid = None,
+            numMedia = 0,
+            numSegments = MessageNumSegments(1),
+            price = None,
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            status = MessageStatus.withName("Sent"),
+            to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
+            error = None
+          )
+        )
+
+        val requestTemplate = MessageSendRequest(
+          accountSid = accountSid,
+          from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+          to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
+          body = None,
+          statusCallback = MessageStatusCallback(new URL(testStatusCallback)),
+          contentSid = Some(contentSid)
+        )
+
+        val resultFut: Future[Either[MessageSendException, MessageResource]] =
+          instance.run(connSettings, requestTemplate)
+        resultFut.map(result => assert(result === expected))
+      }
+
+      "successfully send a template message with content variables" in {
+        val f = new Fixture
+        import f._
+
+        val messageSendTwilioSuccessResponse =
+          s"""{
+             |  "account_sid": "$accountSid",
+             |  "api_version": "2010-04-01",
+             |  "body": "$messageBody",
+             |  "date_created": null,
+             |  "date_sent": null,
+             |  "date_updated": null,
+             |  "direction": "outbound-api",
+             |  "error_code": null,
+             |  "error_message": null,
+             |  "from": "$from",
+             |  "messaging_service_sid": null,
+             |  "num_media": "0",
+             |  "num_segments": "1",
+             |  "price": null,
+             |  "price_unit": null,
+             |  "sid": "SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+             |  "status": "sent",
+             |  "subresource_uris": {
+             |    "media": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Media.json"
+             |  },
+             |  "to": "$to",
+             |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
+             |}""".stripMargin
+
+        val reqTemplateEntity =
+          s"From=$encFrom&To=$encTo&ContentSid=$encContentSid&ContentVariables=$encContentVariables&StatusCallback=$encStatusCallback"
+
+        wireMockServer.stubFor(
+          WireMock
+            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
+            .withRequestBody(WireMock.containing(reqTemplateEntity))
+            .withBasicAuth(accountSid.toString, authToken.asString)
+            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+            .willReturn(
+              aResponse()
+                .withStatus(201)
+                .withHeader("Content-Type", "application/json")
+                .withBody(messageSendTwilioSuccessResponse)
+            )
+        )
+
+        val expected = Right(
+          MessageResource(
+            accountSid = accountSid,
+            body = MessageBody(messageBody),
+            dateCreated = None,
+            dateSent = None,
+            dateUpdated = None,
+            direction = MessageDirection.withName("OutboundApi"),
+            from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+            messagingServiceSid = None,
+            numMedia = 0,
+            numSegments = MessageNumSegments(1),
+            price = None,
+            sid = Message.Sid.unsafe("SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"),
+            status = MessageStatus.withName("Sent"),
+            to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
+            error = None
+          )
+        )
+
+        val requestTemplate = MessageSendRequest(
+          accountSid = accountSid,
+          from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
+          to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
+          body = None,
+          statusCallback = MessageStatusCallback(new URL(testStatusCallback)),
+          contentSid = Some(contentSid),
+          contentVariables = Map("1" -> "Jose")
+        )
+
+        val resultFut: Future[Either[MessageSendException, MessageResource]] =
+          instance.run(connSettings, requestTemplate)
+        resultFut.map(result => assert(result === expected))
+      }
+    }
   }
 
   private def twilioResponseToNumberNotValid =
@@ -572,6 +738,7 @@ final class MessageSendTest extends TwilioClientTest {
 
     val messageBody        = "Hi there"
     val testStatusCallback = "http://example.com/v1/sms/status"
+    val contentSid         = ContentTemplate.Sid.unsafe("HXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val instance: MessageSendRequestExecutor = TwilioClient.defaultImpl().messaging.messageSend
@@ -584,6 +751,8 @@ final class MessageSendTest extends TwilioClientTest {
     val encToExternalUserIdWhatsapp = encode(toExternalUserIdWhatsapp.toString)
     val encBody                     = encode(messageBody)
     val encStatusCallback           = encode(testStatusCallback)
+    val encContentSid               = encode(contentSid.toString)
+    val encContentVariables         = encode("""{"1":"Jose"}""")
 
     val reqEntity = s"From=$encFrom&To=$encTo&Body=$encBody&StatusCallback=$encStatusCallback"
     val reqWhatsappEntityToPhoneNumber =
@@ -601,7 +770,7 @@ final class MessageSendTest extends TwilioClientTest {
       accountSid = accountSid,
       from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
       to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
-      body = MessageBody(messageBody),
+      body = Some(MessageBody(messageBody)),
       statusCallback = MessageStatusCallback(new URL(testStatusCallback))
     )
 
@@ -609,7 +778,7 @@ final class MessageSendTest extends TwilioClientTest {
       accountSid = accountSid,
       from = MessageSender.Whatsapp(fromWhatsapp),
       to = MessageRecipient.WhatsappNumber(toWhatsapp),
-      body = MessageBody(messageBody),
+      body = Some(MessageBody(messageBody)),
       statusCallback = MessageStatusCallback(new URL(testStatusCallback))
     )
 
@@ -617,7 +786,7 @@ final class MessageSendTest extends TwilioClientTest {
       accountSid = accountSid,
       from = MessageSender.Whatsapp(fromWhatsapp),
       to = MessageRecipient.WhatsappId(toExternalUserIdWhatsapp),
-      body = MessageBody(messageBody),
+      body = Some(MessageBody(messageBody)),
       statusCallback = MessageStatusCallback(new URL(testStatusCallback))
     )
   }

@@ -22,6 +22,7 @@ import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.messaging.MessageRecipient
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
+import com.dixa.twilio.model.content.ContentTemplate
 
 trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
@@ -46,9 +47,11 @@ object MessageSendRequestExecutor {
       accountSid: TwilioAccount.Sid,
       from: MessageSender,
       to: MessageRecipient,
-      body: MessageBody,
+      body: Option[MessageBody],
       statusCallback: MessageStatusCallback,
-      mediaUrls: Seq[MediaResourceUrl] = Seq.empty
+      mediaUrls: Seq[MediaResourceUrl] = Seq.empty,
+      contentSid: Option[ContentTemplate.Sid] = None,
+      contentVariables: Map[String, String] = Map.empty
   )
   object MessageSendRequest {
     type BuilderStartState = Builder
@@ -78,7 +81,7 @@ object MessageSendRequestExecutor {
           accountSid.get,
           from.get,
           to.get,
-          body.get,
+          body,
           statusCallback.get,
           mediaUrls
         )
