@@ -39,8 +39,8 @@ import org.apache.pekko.http.scaladsl.model._
 import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
-import upickle.default.write
 import scala.concurrent.ExecutionContext
+import upickle.default.write
 
 private[impl] final class MessageSendRequestExecutorImpl()(
     implicit override protected val http: HttpExt,

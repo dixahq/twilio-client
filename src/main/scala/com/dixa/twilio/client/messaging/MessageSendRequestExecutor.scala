@@ -101,7 +101,7 @@ object MessageSendRequestExecutor {
         BodySet <: HasBodySet,
         ContentSidSet <: HasContentSidSet,
         MediaUrlsSet <: HasMediaUrlsSet
-    ] private[messaging] (
+    ] private[MessageSendRequest] (
         accountSid: Option[TwilioAccount.Sid],
         from: Option[MessageSender],
         to: Option[MessageRecipient],
