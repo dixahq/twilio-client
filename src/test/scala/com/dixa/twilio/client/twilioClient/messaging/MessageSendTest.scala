@@ -103,8 +103,15 @@ final class MessageSendTest extends TwilioClientTest {
           )
         )
 
-        val requestWithMedia =
-          messageSendRequest.copy(mediaUrls = Seq(MediaResourceUrl(mediaUrl1.toString)))
+        val requestWithMedia = MessageSendRequest.build { b =>
+          b.withAccountSid(accountSid)
+            .withFrom(MessageSender.E164(PhoneNumberE164.unsafe(from)))
+            .withTo(MessageRecipient.E164(PhoneNumberE164.unsafe(to)))
+            .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+            .withBody(MessageBody(messageBody))
+            .withMediaUrls(Seq(MediaResourceUrl(mediaUrl1.toString)))
+            .build()
+        }
 
         val resultFut: Future[
           Either[MessageSendException, MessageResource]
@@ -181,12 +188,17 @@ final class MessageSendTest extends TwilioClientTest {
           )
         )
 
-        val requestWithMedia = messageSendRequest.copy(
-          mediaUrls = Seq(
-            MediaResourceUrl(mediaUrl1.toString),
-            MediaResourceUrl(mediaUrl2.toString)
-          )
-        )
+        val requestWithMedia = MessageSendRequest.build { b =>
+          b.withAccountSid(accountSid)
+            .withFrom(MessageSender.E164(PhoneNumberE164.unsafe(from)))
+            .withTo(MessageRecipient.E164(PhoneNumberE164.unsafe(to)))
+            .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+            .withBody(MessageBody(messageBody))
+            .withMediaUrls(
+              Seq(MediaResourceUrl(mediaUrl1.toString), MediaResourceUrl(mediaUrl2.toString))
+            )
+            .build()
+        }
 
         val resultFut: Future[
           Either[MessageSendException, MessageResource]
@@ -588,14 +600,14 @@ final class MessageSendTest extends TwilioClientTest {
           )
         )
 
-        val requestTemplate = MessageSendRequest(
-          accountSid = accountSid,
-          from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
-          to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
-          body = None,
-          statusCallback = MessageStatusCallback(new URL(testStatusCallback)),
-          contentSid = Some(contentSid)
-        )
+        val requestTemplate = MessageSendRequest.build { b =>
+          b.withAccountSid(accountSid)
+            .withFrom(MessageSender.E164(PhoneNumberE164.unsafe(from)))
+            .withTo(MessageRecipient.E164(PhoneNumberE164.unsafe(to)))
+            .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+            .withContentSid(contentSid)
+            .build()
+        }
 
         val resultFut: Future[Either[MessageSendException, MessageResource]] =
           instance.run(connSettings, requestTemplate)
@@ -669,15 +681,15 @@ final class MessageSendTest extends TwilioClientTest {
           )
         )
 
-        val requestTemplate = MessageSendRequest(
-          accountSid = accountSid,
-          from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
-          to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
-          body = None,
-          statusCallback = MessageStatusCallback(new URL(testStatusCallback)),
-          contentSid = Some(contentSid),
-          contentVariables = Map("1" -> "Jose")
-        )
+        val requestTemplate = MessageSendRequest.build { b =>
+          b.withAccountSid(accountSid)
+            .withFrom(MessageSender.E164(PhoneNumberE164.unsafe(from)))
+            .withTo(MessageRecipient.E164(PhoneNumberE164.unsafe(to)))
+            .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+            .withContentSid(contentSid)
+            .withContentVariables(Map("1" -> "Jose"))
+            .build()
+        }
 
         val resultFut: Future[Either[MessageSendException, MessageResource]] =
           instance.run(connSettings, requestTemplate)
@@ -766,28 +778,31 @@ final class MessageSendTest extends TwilioClientTest {
       .withBasicAuth(accountSid.toString, authToken.asString)
       .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
 
-    val messageSendRequest = MessageSendRequest(
-      accountSid = accountSid,
-      from = MessageSender.E164(PhoneNumberE164.unsafe(from)),
-      to = MessageRecipient.E164(PhoneNumberE164.unsafe(to)),
-      body = Some(MessageBody(messageBody)),
-      statusCallback = MessageStatusCallback(new URL(testStatusCallback))
-    )
+    val messageSendRequest = MessageSendRequest.build { b =>
+      b.withAccountSid(accountSid)
+        .withFrom(MessageSender.E164(PhoneNumberE164.unsafe(from)))
+        .withTo(MessageRecipient.E164(PhoneNumberE164.unsafe(to)))
+        .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+        .withBody(MessageBody(messageBody))
+        .build()
+    }
 
-    val messageSendRequestWhatsappToPhoneNumber = MessageSendRequest(
-      accountSid = accountSid,
-      from = MessageSender.Whatsapp(fromWhatsapp),
-      to = MessageRecipient.WhatsappNumber(toWhatsapp),
-      body = Some(MessageBody(messageBody)),
-      statusCallback = MessageStatusCallback(new URL(testStatusCallback))
-    )
+    val messageSendRequestWhatsappToPhoneNumber = MessageSendRequest.build { b =>
+      b.withAccountSid(accountSid)
+        .withFrom(MessageSender.Whatsapp(fromWhatsapp))
+        .withTo(MessageRecipient.WhatsappNumber(toWhatsapp))
+        .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+        .withBody(MessageBody(messageBody))
+        .build()
+    }
 
-    val messageSendRequestWhatsappToExternalUserId = MessageSendRequest(
-      accountSid = accountSid,
-      from = MessageSender.Whatsapp(fromWhatsapp),
-      to = MessageRecipient.WhatsappId(toExternalUserIdWhatsapp),
-      body = Some(MessageBody(messageBody)),
-      statusCallback = MessageStatusCallback(new URL(testStatusCallback))
-    )
+    val messageSendRequestWhatsappToExternalUserId = MessageSendRequest.build { b =>
+      b.withAccountSid(accountSid)
+        .withFrom(MessageSender.Whatsapp(fromWhatsapp))
+        .withTo(MessageRecipient.WhatsappId(toExternalUserIdWhatsapp))
+        .withStatusCallback(MessageStatusCallback(new URL(testStatusCallback)))
+        .withBody(MessageBody(messageBody))
+        .build()
+    }
   }
 }
