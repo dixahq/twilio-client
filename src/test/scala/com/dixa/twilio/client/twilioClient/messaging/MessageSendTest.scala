@@ -27,7 +27,7 @@ import com.dixa.twilio.client.{ApiException, TwilioClient, TwilioTestConstants}
 import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
 import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.{MappingBuilder, WireMock}
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 
 import java.net.{URL, URLEncoder}
@@ -237,11 +237,7 @@ final class MessageSendTest extends TwilioClientTest {
              |}""".stripMargin
 
         wireMockServer.stubFor(
-          WireMock
-            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
-            .withRequestBody(WireMock.containing(reqEntity))
-            .withBasicAuth(accountSid.toString, authToken.asString)
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+          wireMockBuilderExpectedTwilioRequest
             .willReturn(
               aResponse()
                 .withStatus(201)
@@ -420,11 +416,7 @@ final class MessageSendTest extends TwilioClientTest {
              |}""".stripMargin
 
         wireMockServer.stubFor(
-          WireMock
-            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
-            .withRequestBody(WireMock.containing(reqWhatsappEntityToPhoneNumber))
-            .withBasicAuth(accountSid.toString, authToken.asString)
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+          wireMockBuilderExpectedWhatsappRequestToPhoneNumber
             .willReturn(
               aResponse()
                 .withStatus(201)
@@ -491,11 +483,7 @@ final class MessageSendTest extends TwilioClientTest {
              |}""".stripMargin
 
         wireMockServer.stubFor(
-          WireMock
-            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
-            .withRequestBody(WireMock.containing(reqWhatsappEntityToExternalUserId))
-            .withBasicAuth(accountSid.toString, authToken.asString)
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+          wireMockBuilderExpectedWhatsappRequestToExternalUserId
             .willReturn(
               aResponse()
                 .withStatus(201)
@@ -563,15 +551,8 @@ final class MessageSendTest extends TwilioClientTest {
              |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
              |}""".stripMargin
 
-        val reqTemplateEntity =
-          s"From=$encFrom&To=$encTo&ContentSid=$encContentSid&StatusCallback=$encStatusCallback"
-
         wireMockServer.stubFor(
-          WireMock
-            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
-            .withRequestBody(WireMock.containing(reqTemplateEntity))
-            .withBasicAuth(accountSid.toString, authToken.asString)
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+          wireMockBuilderExpectedTemplateRequest
             .willReturn(
               aResponse()
                 .withStatus(201)
@@ -644,15 +625,8 @@ final class MessageSendTest extends TwilioClientTest {
              |  "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Messages/SMXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json"
              |}""".stripMargin
 
-        val reqTemplateEntity =
-          s"From=$encFrom&To=$encTo&ContentSid=$encContentSid&ContentVariables=$encContentVariables&StatusCallback=$encStatusCallback"
-
         wireMockServer.stubFor(
-          WireMock
-            .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
-            .withRequestBody(WireMock.containing(reqTemplateEntity))
-            .withBasicAuth(accountSid.toString, authToken.asString)
-            .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+          wireMockBuilderExpectedTemplateWithVariablesRequest
             .willReturn(
               aResponse()
                 .withStatus(201)
@@ -755,28 +729,62 @@ final class MessageSendTest extends TwilioClientTest {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
     val instance: MessageSendRequestExecutor = TwilioClient.defaultImpl().messaging.messageSend
 
-    private def encode(s: String)   = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
-    val encFrom                     = encode(from)
-    val encTo                       = encode(to)
-    val encWhatsappFrom             = encode(fromWhatsapp.toString)
-    val encWhatsappTo               = encode(toWhatsapp.toString)
-    val encToExternalUserIdWhatsapp = encode(toExternalUserIdWhatsapp.toString)
-    val encBody                     = encode(messageBody)
-    val encStatusCallback           = encode(testStatusCallback)
-    val encContentSid               = encode(contentSid.toString)
-    val encContentVariables         = encode("""{"1":"Jose"}""")
+    private def encode(s: String) = URLEncoder.encode(s, StandardCharsets.UTF_8.toString)
 
-    val reqEntity = s"From=$encFrom&To=$encTo&Body=$encBody&StatusCallback=$encStatusCallback"
-    val reqWhatsappEntityToPhoneNumber =
-      s"From=$encWhatsappFrom&To=$encWhatsappTo&Body=$encBody&StatusCallback=$encStatusCallback"
-    val reqWhatsappEntityToExternalUserId =
-      s"From=$encWhatsappFrom&To=$encToExternalUserIdWhatsapp&Body=$encBody&StatusCallback=$encStatusCallback"
+    // Twilio's API parses form-urlencoded bodies as key-value pairs, so field order carries no
+    // meaning. Assert each field independently (WireMock ANDs multiple withRequestBody matchers on
+    // one stub) rather than one big ordered literal string, so a harmless field reordering in
+    // createHttpReq can never cause a false-positive test failure.
+    private def stubWithFields(fields: (String, String)*): MappingBuilder =
+      fields.foldLeft(
+        WireMock
+          .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
+          .withBasicAuth(accountSid.toString, authToken.asString)
+          .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+      ) { case (builder, (key, value)) =>
+        builder.withRequestBody(WireMock.containing(s"$key=${encode(value)}"))
+      }
 
-    val wireMockBuilderExpectedTwilioRequest = WireMock
-      .post(WireMock.urlPathEqualTo(s"/2010-04-01/Accounts/$accountSid/Messages.json"))
-      .withRequestBody(WireMock.containing(reqEntity))
-      .withBasicAuth(accountSid.toString, authToken.asString)
-      .withHeader("Content-Type", WireMock.equalTo("application/x-www-form-urlencoded"))
+    val wireMockBuilderExpectedTwilioRequest: MappingBuilder =
+      stubWithFields(
+        "From"           -> from,
+        "To"             -> to,
+        "Body"           -> messageBody,
+        "StatusCallback" -> testStatusCallback
+      )
+
+    val wireMockBuilderExpectedWhatsappRequestToPhoneNumber: MappingBuilder =
+      stubWithFields(
+        "From"           -> fromWhatsapp.toString,
+        "To"             -> toWhatsapp.toString,
+        "Body"           -> messageBody,
+        "StatusCallback" -> testStatusCallback
+      )
+
+    val wireMockBuilderExpectedWhatsappRequestToExternalUserId: MappingBuilder =
+      stubWithFields(
+        "From"           -> fromWhatsapp.toString,
+        "To"             -> toExternalUserIdWhatsapp.toString,
+        "Body"           -> messageBody,
+        "StatusCallback" -> testStatusCallback
+      )
+
+    val wireMockBuilderExpectedTemplateRequest: MappingBuilder =
+      stubWithFields(
+        "From"           -> from,
+        "To"             -> to,
+        "ContentSid"     -> contentSid.toString,
+        "StatusCallback" -> testStatusCallback
+      )
+
+    val wireMockBuilderExpectedTemplateWithVariablesRequest: MappingBuilder =
+      stubWithFields(
+        "From"             -> from,
+        "To"               -> to,
+        "ContentSid"       -> contentSid.toString,
+        "ContentVariables" -> """{"1":"Jose"}""",
+        "StatusCallback"   -> testStatusCallback
+      )
 
     val messageSendRequest = MessageSendRequest.build { b =>
       b.withAccountSid(accountSid)
