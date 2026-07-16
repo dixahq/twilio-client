@@ -69,10 +69,11 @@ private[impl] final class MessageSendRequestExecutorImpl()(
     }
 
     val baseFields = Seq(
-      "From"           -> req.from.asString,
-      "To"             -> req.to.asString,
+      "From" -> req.from.asString,
+      "To"   -> req.to.asString
+    ) ++ bodyOrContentFields ++ Seq(
       "StatusCallback" -> req.statusCallback.toString
-    ) ++ bodyOrContentFields
+    )
     val mediaFields = req.mediaUrls.map(url => "MediaUrl" -> url.toString)
     val reqEntity   = FormData(baseFields ++ mediaFields: _*).toEntity
 
