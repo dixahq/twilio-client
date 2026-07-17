@@ -93,7 +93,7 @@ final class ContentApprovalCreateTest extends TwilioClientTest with ContentShare
             whatsapp = Some(
               ContentApproval.WhatsappApproval(
                 name = Some("my_utility_template"),
-                category = Some("UTILITY"),
+                category = Some("utility"),
                 contentType = Some("twilio/text"),
                 status = ContentApproval.ApprovalStatus.Received,
                 rejectionReason = None,
@@ -200,13 +200,13 @@ final class ContentApprovalCreateTest extends TwilioClientTest with ContentShare
     val requestBody =
       """|{
          |  "name": "my_utility_template",
-         |  "category": "UTILITY"
+         |  "category": "utility"
          |}""".stripMargin
 
     val approvalCreateResponse =
       """|{
          |  "name": "my_utility_template",
-         |  "category": "UTILITY",
+         |  "category": "utility",
          |  "content_type": "twilio/text",
          |  "status": "received",
          |  "rejection_reason": ""

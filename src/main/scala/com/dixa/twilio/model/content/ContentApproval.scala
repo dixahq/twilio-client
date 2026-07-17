@@ -56,8 +56,8 @@ object ContentApproval {
 
   object WhatsappCategory extends EnumWithTwilioString[WhatsappCategory] {
     override val values: immutable.IndexedSeq[WhatsappCategory] = findValues
-    case object Utility        extends WhatsappCategory("UTILITY")
-    case object Marketing      extends WhatsappCategory("MARKETING")
-    case object Authentication extends WhatsappCategory("AUTHENTICATION")
+    case object Utility        extends WhatsappCategory("utility")
+    case object Marketing      extends WhatsappCategory("marketing")
+    case object Authentication extends WhatsappCategory("authentication")
   }
 }
