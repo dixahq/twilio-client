@@ -59,7 +59,7 @@ trait ContentSharedFixture {
 
   val approvedApproval: ContentApproval.WhatsappApproval = ContentApproval.WhatsappApproval(
     name = Some("api_rating_request"),
-    category = Some("MARKETING"),
+    category = Some("marketing"),
     contentType = Some("twilio/text"),
     status = ContentApproval.ApprovalStatus.Approved,
     rejectionReason = None,

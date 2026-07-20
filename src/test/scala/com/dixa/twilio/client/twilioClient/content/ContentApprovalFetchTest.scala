@@ -51,7 +51,7 @@ final class ContentApprovalFetchTest extends TwilioClientTest with ContentShared
             whatsapp = Some(
               ContentApproval.WhatsappApproval(
                 name = Some("api_rating_request"),
-                category = Some("MARKETING"),
+                category = Some("marketing"),
                 contentType = Some("twilio/text"),
                 status = ContentApproval.ApprovalStatus.Approved,
                 rejectionReason = None,
@@ -128,7 +128,7 @@ final class ContentApprovalFetchTest extends TwilioClientTest with ContentShared
           |  "account_sid": "$accountSid",
           |  "whatsapp": {
           |    "name": "api_rating_request",
-          |    "category": "MARKETING",
+          |    "category": "marketing",
           |    "content_type": "twilio/text",
           |    "status": "approved",
           |    "rejection_reason": "",

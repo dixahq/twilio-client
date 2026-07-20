@@ -224,7 +224,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
         "date_updated": "2026-06-23T14:10:40Z",
         "approval_requests": {
           "allow_category_change": true,
-          "category": "MARKETING",
+          "category": "marketing",
           "content_type": "twilio/text",
           "direct_send": false,
           "flows": null,
@@ -241,7 +241,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
           Some(
             ContentApproval.WhatsappApproval(
               name = Some("my_template"),
-              category = Some("MARKETING"),
+              category = Some("marketing"),
               contentType = Some("twilio/text"),
               status = ContentApproval.ApprovalStatus.Approved,
               rejectionReason = None,
@@ -281,7 +281,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
         "date_updated": "2026-06-23T14:10:40Z",
         "approval_requests": {
           "allow_category_change": false,
-          "category": "UTILITY",
+          "category": "utility",
           "content_type": "twilio/text",
           "direct_send": null,
           "flows": null,
@@ -308,7 +308,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
         "account_sid": "$accountSid",
         "whatsapp": {
           "name": "my_template",
-          "category": "UTILITY",
+          "category": "utility",
           "content_type": "twilio/text",
           "status": "approved",
           "rejection_reason": "",
@@ -325,7 +325,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
             whatsapp = Some(
               ContentApproval.WhatsappApproval(
                 name = Some("my_template"),
-                category = Some("UTILITY"),
+                category = Some("utility"),
                 contentType = Some("twilio/text"),
                 status = ContentApproval.ApprovalStatus.Approved,
                 rejectionReason = None,
