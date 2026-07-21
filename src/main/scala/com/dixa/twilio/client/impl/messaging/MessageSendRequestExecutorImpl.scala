@@ -40,6 +40,7 @@ import org.apache.pekko.stream.Materializer
 
 import java.time.Instant
 import scala.concurrent.ExecutionContext
+import upickle.default.write
 
 private[impl] final class MessageSendRequestExecutorImpl()(
     implicit override protected val http: HttpExt,
@@ -55,12 +56,24 @@ private[impl] final class MessageSendRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: MessageSendRequest
   ): Either[MessageSendException, HttpRequest] = {
+    val bodyOrContentFields: Seq[(String, String)] = req.contentSid match {
+      case Some(contentSid) =>
+        val contentVariablesField =
+          if (req.contentVariables.nonEmpty)
+            Seq("ContentVariables" -> write(req.contentVariables))
+          else
+            Seq.empty
+        Seq("ContentSid" -> contentSid.toString) ++ contentVariablesField
+      case None =>
+        req.body.toSeq.map(b => "Body" -> b.toString)
+    }
+
     val baseFields = Seq(
       "From"           -> req.from.asString,
       "To"             -> req.to.asString,
-      "Body"           -> req.body.toString,
       "StatusCallback" -> req.statusCallback.toString
-    )
+    ) ++ bodyOrContentFields
+
     val mediaFields = req.mediaUrls.map(url => "MediaUrl" -> url.toString)
     val reqEntity   = FormData(baseFields ++ mediaFields: _*).toEntity
 
@@ -163,6 +176,8 @@ private[impl] final class MessageSendRequestExecutorImpl()(
         case 21212L => Left(MessageSendException.FromNumberNotValid())
         case 21606L => Left(MessageSendException.NotMessageCapableNumber())
         case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
+        case 21655L => Left(MessageSendException.ContentSidNotValid())
+        case 21656L => Left(MessageSendException.ContentVariablesInvalid())
         case other  =>
           Left(
             new MessageSendException.Unspecified(

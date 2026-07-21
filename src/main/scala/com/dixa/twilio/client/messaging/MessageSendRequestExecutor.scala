@@ -22,13 +22,14 @@ import com.dixa.twilio.model.messaging._
 import com.dixa.twilio.model.messaging.MessageRecipient
 import com.dixa.twilio.client.{ApiException, SingleRequestExecutor}
 import com.dixa.twilio.model.callback.CallbackUrl.MessageStatusCallback
+import com.dixa.twilio.model.content.ContentTemplate
 
 trait MessageSendRequestExecutor
     extends SingleRequestExecutor[
       MessageSendRequestExecutor.MessageSendRequest,
       MessageSendRequestExecutor.MessageSendException,
       MessageResource,
-      MessageSendRequestExecutor.MessageSendRequest.Builder
+      MessageSendRequestExecutor.MessageSendRequest.BuilderStartState
     ] {
 
   override protected final type ApiExceptionWrapper = MessageSendException.Api
@@ -36,63 +37,215 @@ trait MessageSendRequestExecutor
   override protected final type UnspecifiedException = MessageSendException.Unspecified
 
   override protected final def createBuilderStartState()
-      : MessageSendRequestExecutor.MessageSendRequest.Builder =
+      : MessageSendRequestExecutor.MessageSendRequest.BuilderStartState =
     MessageSendRequestExecutor.MessageSendRequest.Builder.empty
 }
 
 object MessageSendRequestExecutor {
 
-  final case class MessageSendRequest(
+  sealed trait MessageSendRequest {
+    def accountSid: TwilioAccount.Sid
+    def from: MessageSender
+    def to: MessageRecipient
+    def body: Option[MessageBody]
+    def statusCallback: MessageStatusCallback
+    def mediaUrls: Seq[MediaResourceUrl]
+    def contentSid: Option[ContentTemplate.Sid]
+    def contentVariables: Map[String, String]
+  }
+
+  private final case class MessageSendRequestImpl(
       accountSid: TwilioAccount.Sid,
       from: MessageSender,
       to: MessageRecipient,
-      body: MessageBody,
+      body: Option[MessageBody],
       statusCallback: MessageStatusCallback,
-      mediaUrls: Seq[MediaResourceUrl] = Seq.empty
-  )
-  object MessageSendRequest {
-    type BuilderStartState = Builder
+      mediaUrls: Seq[MediaResourceUrl],
+      contentSid: Option[ContentTemplate.Sid],
+      contentVariables: Map[String, String]
+  ) extends MessageSendRequest
 
-    final class Builder private[messaging] (
+  object MessageSendRequest {
+
+    object PhantomTypes {
+      sealed trait HasBodySet
+      sealed trait HasBodySetTrue  extends HasBodySet
+      sealed trait HasBodySetFalse extends HasBodySet
+
+      sealed trait HasContentSidSet
+      sealed trait HasContentSidSetTrue  extends HasContentSidSet
+      sealed trait HasContentSidSetFalse extends HasContentSidSet
+
+      sealed trait HasMediaUrlsSet
+      sealed trait HasMediaUrlsSetTrue  extends HasMediaUrlsSet
+      sealed trait HasMediaUrlsSetFalse extends HasMediaUrlsSet
+
+      // "Advanced Strategy 2" evidence trait (see doc/client-implementation-doc.md):
+      // only the two valid end states get an implicit instance, so build() rejects
+      // "neither set" for free. "Both set" can never arise — see the with* guards below.
+      sealed trait ExactlyOneOfBodyOrContentSid[B <: HasBodySet, C <: HasContentSidSet]
+      object ExactlyOneOfBodyOrContentSid {
+        implicit val bodySet: ExactlyOneOfBodyOrContentSid[HasBodySetTrue, HasContentSidSetFalse] =
+          new ExactlyOneOfBodyOrContentSid[HasBodySetTrue, HasContentSidSetFalse] {}
+        implicit val contentSidSet
+            : ExactlyOneOfBodyOrContentSid[HasBodySetFalse, HasContentSidSetTrue] =
+          new ExactlyOneOfBodyOrContentSid[HasBodySetFalse, HasContentSidSetTrue] {}
+      }
+    }
+
+    import PhantomTypes._
+
+    type BuilderStartState = Builder[HasBodySetFalse, HasContentSidSetFalse, HasMediaUrlsSetFalse]
+
+    final class Builder[
+        BodySet <: HasBodySet,
+        ContentSidSet <: HasContentSidSet,
+        MediaUrlsSet <: HasMediaUrlsSet
+    ] private[MessageSendRequest] (
         accountSid: Option[TwilioAccount.Sid],
         from: Option[MessageSender],
         to: Option[MessageRecipient],
         body: Option[MessageBody],
         statusCallback: Option[MessageStatusCallback],
-        mediaUrls: Seq[MediaResourceUrl]
+        mediaUrls: Seq[MediaResourceUrl],
+        contentSid: Option[ContentTemplate.Sid],
+        contentVariables: Map[String, String]
     ) {
-      def withAccountSid(accountSid: TwilioAccount.Sid): Builder =
-        new Builder(Some(accountSid), from, to, body, statusCallback, mediaUrls)
-      def withFrom(from: MessageSender): Builder =
-        new Builder(accountSid, Some(from), to, body, statusCallback, mediaUrls)
-      def withTo(to: MessageRecipient): Builder =
-        new Builder(accountSid, from, Some(to), body, statusCallback, mediaUrls)
-      def withBody(body: MessageBody): Builder =
-        new Builder(accountSid, from, to, Some(body), statusCallback, mediaUrls)
-      def withStatusCallback(statusCallback: MessageStatusCallback): Builder =
-        new Builder(accountSid, from, to, body, Some(statusCallback), mediaUrls)
-      def withMediaUrls(mediaUrls: Seq[MediaResourceUrl]): Builder =
-        new Builder(accountSid, from, to, body, statusCallback, mediaUrls)
-      def build(): MessageSendRequest =
-        MessageSendRequest(
+      def withAccountSid(
+          accountSid: TwilioAccount.Sid
+      ): Builder[BodySet, ContentSidSet, MediaUrlsSet] =
+        new Builder(
+          Some(accountSid),
+          from,
+          to,
+          body,
+          statusCallback,
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def withFrom(from: MessageSender): Builder[BodySet, ContentSidSet, MediaUrlsSet] =
+        new Builder(
+          accountSid,
+          Some(from),
+          to,
+          body,
+          statusCallback,
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def withTo(to: MessageRecipient): Builder[BodySet, ContentSidSet, MediaUrlsSet] =
+        new Builder(
+          accountSid,
+          from,
+          Some(to),
+          body,
+          statusCallback,
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def withStatusCallback(
+          statusCallback: MessageStatusCallback
+      ): Builder[BodySet, ContentSidSet, MediaUrlsSet] =
+        new Builder(
+          accountSid,
+          from,
+          to,
+          body,
+          Some(statusCallback),
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def withBody(
+          body: MessageBody
+      )(
+          implicit ev: ContentSidSet =:= HasContentSidSetFalse
+      ): Builder[HasBodySetTrue, ContentSidSet, MediaUrlsSet] =
+        new Builder(
+          accountSid,
+          from,
+          to,
+          Some(body),
+          statusCallback,
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def withMediaUrls(
+          mediaUrls: Seq[MediaResourceUrl]
+      )(
+          implicit ev: ContentSidSet =:= HasContentSidSetFalse
+      ): Builder[BodySet, ContentSidSet, HasMediaUrlsSetTrue] =
+        new Builder(
+          accountSid,
+          from,
+          to,
+          body,
+          statusCallback,
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def withContentSid(
+          contentSid: ContentTemplate.Sid
+      )(
+          implicit evBody: BodySet =:= HasBodySetFalse,
+          evMedia: MediaUrlsSet =:= HasMediaUrlsSetFalse
+      ): Builder[BodySet, HasContentSidSetTrue, MediaUrlsSet] =
+        new Builder(
+          accountSid,
+          from,
+          to,
+          body,
+          statusCallback,
+          mediaUrls,
+          Some(contentSid),
+          contentVariables
+        )
+
+      def withContentVariables(
+          contentVariables: Map[String, String]
+      )(
+          implicit ev: ContentSidSet =:= HasContentSidSetTrue
+      ): Builder[BodySet, ContentSidSet, MediaUrlsSet] =
+        new Builder(
+          accountSid,
+          from,
+          to,
+          body,
+          statusCallback,
+          mediaUrls,
+          contentSid,
+          contentVariables
+        )
+
+      def build()(
+          implicit evValid: ExactlyOneOfBodyOrContentSid[BodySet, ContentSidSet]
+      ): MessageSendRequest =
+        MessageSendRequestImpl(
           accountSid.get,
           from.get,
           to.get,
-          body.get,
+          body,
           statusCallback.get,
-          mediaUrls
+          mediaUrls,
+          contentSid,
+          contentVariables
         )
     }
 
     object Builder {
-      val empty: BuilderStartState = new BuilderStartState(
-        None,
-        None,
-        None,
-        None,
-        None,
-        Seq.empty
-      )
+      val empty: BuilderStartState =
+        new Builder(None, None, None, None, None, Seq.empty, None, Map.empty)
     }
 
     def build(fun: BuilderStartState => MessageSendRequest): MessageSendRequest =
@@ -125,6 +278,16 @@ object MessageSendRequestExecutor {
     final case class MessageBodyCharLimitExceeded()
         extends IllegalStateException(
           "Concatenated message body exceeds the maximum 1600 character limit. More info: https://www.twilio.com/docs/api/errors/21617"
+        )
+        with MessageSendException
+    final case class ContentSidNotValid()
+        extends IllegalStateException(
+          "The 'ContentSid' is invalid, not found, or not approved for this account. More info: https://www.twilio.com/docs/api/errors/21655"
+        )
+        with MessageSendException
+    final case class ContentVariablesInvalid()
+        extends IllegalStateException(
+          "The 'ContentVariables' do not match the variables expected by the content template. More info: https://www.twilio.com/docs/api/errors/21656"
         )
         with MessageSendException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
