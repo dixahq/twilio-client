@@ -176,6 +176,8 @@ private[impl] final class MessageSendRequestExecutorImpl()(
         case 21212L => Left(MessageSendException.FromNumberNotValid())
         case 21606L => Left(MessageSendException.NotMessageCapableNumber())
         case 21617L => Left(MessageSendException.MessageBodyCharLimitExceeded())
+        case 21655L => Left(MessageSendException.ContentSidNotValid())
+        case 21656L => Left(MessageSendException.ContentVariablesInvalid())
         case other  =>
           Left(
             new MessageSendException.Unspecified(

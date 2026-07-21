@@ -361,6 +361,50 @@ final class MessageSendTest extends TwilioClientTest {
         resultFut.map(res => assert(res === expected))
       }
 
+      "return a failed Future when the ContentSid is invalid, not found, or not approved" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseContentSidNotValid)
+            )
+        )
+
+        val resultFut: Future[
+          Either[MessageSendException, MessageResource]
+        ] =
+          instance.run(connSettings, messageSendRequest)
+        val expected = Left(new MessageSendException.ContentSidNotValid)
+        resultFut.map(res => assert(res === expected))
+      }
+
+      "return a failed Future when the ContentVariables do not match the content template" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(400)
+                .withHeader("Content-Type", "application/json")
+                .withBody(twilioResponseContentVariablesInvalid)
+            )
+        )
+
+        val resultFut: Future[
+          Either[MessageSendException, MessageResource]
+        ] =
+          instance.run(connSettings, messageSendRequest)
+        val expected = Left(new MessageSendException.ContentVariablesInvalid)
+        resultFut.map(res => assert(res === expected))
+      }
+
       "return a failed Future when credentials are wrong" in {
         val f = new Fixture
         import f._
@@ -701,6 +745,22 @@ final class MessageSendTest extends TwilioClientTest {
       |"code": 21617,
       |"message": "The concatenated message body exceeds the 1600 character limit.",
       |"more_info": "https://www.twilio.com/docs/errors/21617",
+      |"status": 400
+      |}""".stripMargin
+
+  private def twilioResponseContentSidNotValid =
+    """{
+      |"code": 21655,
+      |"message": "The ContentSid provided is invalid, not found, or not approved for this account.",
+      |"more_info": "https://www.twilio.com/docs/errors/21655",
+      |"status": 400
+      |}""".stripMargin
+
+  private def twilioResponseContentVariablesInvalid =
+    """{
+      |"code": 21656,
+      |"message": "The ContentVariables provided do not match the variables expected by the content template.",
+      |"more_info": "https://www.twilio.com/docs/errors/21656",
       |"status": 400
       |}""".stripMargin
 

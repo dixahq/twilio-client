@@ -280,6 +280,16 @@ object MessageSendRequestExecutor {
           "Concatenated message body exceeds the maximum 1600 character limit. More info: https://www.twilio.com/docs/api/errors/21617"
         )
         with MessageSendException
+    final case class ContentSidNotValid()
+        extends IllegalStateException(
+          "The 'ContentSid' is invalid, not found, or not approved for this account. More info: https://www.twilio.com/docs/api/errors/21655"
+        )
+        with MessageSendException
+    final case class ContentVariablesInvalid()
+        extends IllegalStateException(
+          "The 'ContentVariables' do not match the variables expected by the content template. More info: https://www.twilio.com/docs/api/errors/21656"
+        )
+        with MessageSendException
     final case class Unspecified(msg: Option[String], cause: Option[Throwable])
         extends RuntimeException(
           msg.getOrElse(
