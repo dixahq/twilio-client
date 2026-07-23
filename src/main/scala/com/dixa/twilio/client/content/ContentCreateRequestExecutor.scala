@@ -47,14 +47,14 @@ object ContentCreateRequestExecutor {
     def friendlyName: String
     def language: String
     def variables: Map[String, String]
-    def types: Map[String, ContentType]
+    def types: List[ContentType]
   }
 
   private final case class ContentCreateRequestImpl(
       friendlyName: String,
       language: String,
       variables: Map[String, String],
-      types: Map[String, ContentType]
+      types: List[ContentType]
   ) extends ContentCreateRequest
 
   object ContentCreateRequest {
@@ -78,7 +78,7 @@ object ContentCreateRequestExecutor {
         friendlyName: Option[String],
         language: Option[String],
         variables: Map[String, String],
-        types: Option[Map[String, ContentType]]
+        types: Option[List[ContentType]]
     ) {
 
       def withFriendlyName(
@@ -93,7 +93,7 @@ object ContentCreateRequestExecutor {
         new Builder(friendlyName, language, variables, types)
 
       def withTypes(
-          types: Map[String, ContentType]
+          types: List[ContentType]
       ): Builder[Attributes with PhantomTypes.TypesSet] =
         new Builder(friendlyName, language, variables, Some(types))
 

@@ -76,7 +76,7 @@ private[content] object ContentJsonRep {
       friendlyName = friendly_name,
       language = language,
       variables = variables.getOrElse(Map.empty),
-      types = types.map { case (k, v) => k -> parseContentType(k, v) },
+      types = types.map { case (k, v) => parseContentType(k, v) }.toList,
       dateCreated = Instant.parse(date_created),
       dateUpdated = Instant.parse(date_updated)
     )
@@ -106,7 +106,7 @@ private[content] object ContentJsonRep {
         friendlyName = friendly_name,
         language = language,
         variables = variables.getOrElse(Map.empty),
-        types = types.map { case (k, v) => k -> parseContentType(k, v) },
+        types = types.map { case (k, v) => parseContentType(k, v) }.toList,
         dateCreated = Instant.parse(date_created),
         dateUpdated = Instant.parse(date_updated)
       ),

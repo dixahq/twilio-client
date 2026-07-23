@@ -27,7 +27,7 @@ final case class ContentTemplate(
     friendlyName: String,
     language: String,
     variables: Map[String, String],
-    types: Map[String, ContentType],
+    types: List[ContentType],
     dateCreated: Instant,
     dateUpdated: Instant
 )

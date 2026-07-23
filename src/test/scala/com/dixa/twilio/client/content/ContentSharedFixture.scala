@@ -39,8 +39,8 @@ trait ContentSharedFixture {
     friendlyName = "dixa_support_ticket_changed",
     language = "en",
     variables = Map("1" -> "John Doe", "2" -> "123456"),
-    types = Map(
-      "twilio/text" -> ContentType.Text(
+    types = List(
+      ContentType.Text(
         "Hello, {{1}}.\n Thanks for contacting Dixa Support. Your ticket number is #{{2}}. We will be in touch shortly. Check for more contact options on our website."
       )
     ),

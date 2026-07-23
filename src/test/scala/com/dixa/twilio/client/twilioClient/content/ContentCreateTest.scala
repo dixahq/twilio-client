@@ -105,8 +105,8 @@ final class ContentCreateTest extends TwilioClientTest with ContentSharedFixture
         .withLanguage("en")
         .withVariables(Map("1" -> "John Doe", "2" -> "123456"))
         .withTypes(
-          Map(
-            "twilio/text" -> ContentType.Text(
+          List(
+            ContentType.Text(
               "Hello, {{1}}.\n Thanks for contacting Dixa Support. Your ticket number is #{{2}}. We will be in touch shortly. Check for more contact options on our website."
             )
           )
