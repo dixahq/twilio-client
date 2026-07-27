@@ -15,15 +15,19 @@
 
 package com.dixa.twilio.model.content
 
-sealed trait ContentType
+sealed trait ContentType {
+  def typeKey: String
+}
 
 object ContentType {
 
-  // twilio/text
-  final case class Text(body: String) extends ContentType
+  final case class Text(body: String) extends ContentType {
+    val typeKey = "twilio/text"
+  }
 
-  // twilio/media
-  final case class Media(body: Option[String], media: List[String]) extends ContentType
+  final case class Media(body: Option[String], media: List[String]) extends ContentType {
+    val typeKey = "twilio/media"
+  }
 
   // Catch-all for forward compatibility with types not yet modelled
   final case class Unknown(typeKey: String, rawJson: String) extends ContentType

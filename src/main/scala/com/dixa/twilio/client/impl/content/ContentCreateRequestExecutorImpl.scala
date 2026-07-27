@@ -40,8 +40,8 @@ private[impl] final class ContentCreateRequestExecutorImpl()(
       connSettings: TwilioConnectionSettings,
       req: ContentCreateRequest
   ): Either[ContentCreateException, HttpRequest] = {
-    val typesJson = ujson.Obj.from(req.types.map { case (k, v) =>
-      k -> ContentJsonRep.contentTypeToJson(v)
+    val typesJson = ujson.Obj.from(req.types.map { ct =>
+      ct.typeKey -> ContentJsonRep.contentTypeToJson(ct)
     })
     val body = ujson.Obj(
       "friendly_name" -> req.friendlyName,

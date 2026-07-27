@@ -95,6 +95,46 @@ final class ContentCreateTest extends TwilioClientTest with ContentSharedFixture
     }
   }
 
+  "ContentCreateRequest.Builder" should {
+
+    "reject a duplicate withTextType call at compile time" in {
+      assertDoesNotCompile(
+        """com.dixa.twilio.client.content.ContentCreateRequestExecutor.ContentCreateRequest.build(
+          _.withFriendlyName("x").withLanguage("en")
+            .withTextType(com.dixa.twilio.model.content.ContentType.Text("a"))
+            .withTextType(com.dixa.twilio.model.content.ContentType.Text("b"))
+            .build()
+        )"""
+      )
+    }
+
+    "reject a duplicate withMediaType call at compile time" in {
+      assertDoesNotCompile(
+        """com.dixa.twilio.client.content.ContentCreateRequestExecutor.ContentCreateRequest.build(
+          _.withFriendlyName("x").withLanguage("en")
+            .withMediaType(com.dixa.twilio.model.content.ContentType.Media(None, List.empty))
+            .withMediaType(com.dixa.twilio.model.content.ContentType.Media(None, List.empty))
+            .build()
+        )"""
+      )
+    }
+
+    "allow combining text and media types in the same request" in {
+      val text  = ContentType.Text("hello {{1}}")
+      val media = ContentType.Media(Some("caption"), List("https://example.com/img.jpg"))
+      val req   = ContentCreateRequest.build(
+        _.withFriendlyName("multi_type")
+          .withLanguage("en")
+          .withTextType(text)
+          .withMediaType(media)
+          .build()
+      )
+      assert(req.types.size === 2)
+      assert(req.types.collectFirst { case t: ContentType.Text => t } === Some(text))
+      assert(req.types.collectFirst { case m: ContentType.Media => m } === Some(media))
+    }
+  }
+
   // noinspection TypeAnnotation
   final class Fixture {
     val connSettings = TwilioTestConstants.connSettings(wireMockServer.port())
@@ -104,11 +144,9 @@ final class ContentCreateTest extends TwilioClientTest with ContentSharedFixture
       _.withFriendlyName("dixa_support_ticket_changed")
         .withLanguage("en")
         .withVariables(Map("1" -> "John Doe", "2" -> "123456"))
-        .withTypes(
-          Map(
-            "twilio/text" -> ContentType.Text(
-              "Hello, {{1}}.\n Thanks for contacting Dixa Support. Your ticket number is #{{2}}. We will be in touch shortly. Check for more contact options on our website."
-            )
+        .withTextType(
+          ContentType.Text(
+            "Hello, {{1}}.\n Thanks for contacting Dixa Support. Your ticket number is #{{2}}. We will be in touch shortly. Check for more contact options on our website."
           )
         )
         .build()

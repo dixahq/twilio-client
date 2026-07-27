@@ -51,7 +51,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
             friendlyName = "my_template",
             language = "en",
             variables = Map("1" -> "John"),
-            types = Map("twilio/text" -> ContentType.Text("Hello {{1}}")),
+            types = List(ContentType.Text("Hello {{1}}")),
             dateCreated = dateCreated,
             dateUpdated = dateUpdated
           )
@@ -85,8 +85,8 @@ final class ContentJsonRepTest extends AnyWordSpec {
             friendlyName = "media_template",
             language = "en",
             variables = Map.empty,
-            types = Map(
-              "twilio/media" -> ContentType.Media(
+            types = List(
+              ContentType.Media(
                 body = Some("Here is your receipt"),
                 media = List("https://example.com/receipt.pdf")
               )
@@ -117,7 +117,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
 
       val result = ContentJsonRep.parseContentTemplate(json)
       assert(
-        result.toOption.flatMap(_.types.get("twilio/media")) === Some(
+        result.toOption.flatMap(_.types.collectFirst { case m: ContentType.Media => m }) === Some(
           ContentType.Media(
             body = None,
             media = List("https://example.com/image.jpg", "https://example.com/image2.jpg")
@@ -139,7 +139,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
       }""")
 
       val result = ContentJsonRep.parseContentTemplate(json)
-      result.toOption.flatMap(_.types.get("twilio/future")) match {
+      result.toOption.flatMap(_.types.collectFirst { case u: ContentType.Unknown => u }) match {
         case Some(ContentType.Unknown(typeKey, rawJson)) =>
           assert(typeKey === "twilio/future")
           assert(ujson.read(rawJson)("foo").str === "bar")
@@ -386,7 +386,7 @@ final class ContentJsonRepTest extends AnyWordSpec {
 
     "round-trip Text through serialise then parse" in {
       val original = ContentType.Text("Hello {{1}}")
-      val json     = ujson.Obj("twilio/text" -> ContentJsonRep.contentTypeToJson(original))
+      val json     = ujson.Obj(original.typeKey -> ContentJsonRep.contentTypeToJson(original))
       val template = ujson.read(s"""{
         "account_sid": "$accountSid",
         "sid": "$contentSid",
@@ -399,7 +399,9 @@ final class ContentJsonRepTest extends AnyWordSpec {
       }""")
 
       val result = ContentJsonRep.parseContentTemplate(template)
-      assert(result.map(_.types.get("twilio/text")) === Right(Some(original)))
+      assert(result.map(_.types.collectFirst { case t: ContentType.Text =>
+        t
+      }) === Right(Some(original)))
     }
   }
 }

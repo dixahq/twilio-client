@@ -47,14 +47,14 @@ object ContentCreateRequestExecutor {
     def friendlyName: String
     def language: String
     def variables: Map[String, String]
-    def types: Map[String, ContentType]
+    def types: List[ContentType]
   }
 
   private final case class ContentCreateRequestImpl(
       friendlyName: String,
       language: String,
       variables: Map[String, String],
-      types: Map[String, ContentType]
+      types: List[ContentType]
   ) extends ContentCreateRequest
 
   object ContentCreateRequest {
@@ -64,6 +64,10 @@ object ContentCreateRequestExecutor {
       sealed trait FriendlyNameSet extends RequestAttribute
       sealed trait LanguageSet     extends RequestAttribute
       sealed trait TypesSet        extends RequestAttribute
+      sealed trait TextTypeNotAdded
+      sealed trait TextTypeAdded
+      sealed trait MediaTypeNotAdded
+      sealed trait MediaTypeAdded
     }
 
     type RequestRequiredAttributes =
@@ -72,42 +76,62 @@ object ContentCreateRequestExecutor {
         with PhantomTypes.LanguageSet
         with PhantomTypes.TypesSet
 
-    type BuilderStartState = Builder[PhantomTypes.RequestAttribute]
+    type BuilderStartState =
+      Builder[
+        PhantomTypes.RequestAttribute,
+        PhantomTypes.TextTypeNotAdded,
+        PhantomTypes.MediaTypeNotAdded
+      ]
 
-    final class Builder[Attributes <: PhantomTypes.RequestAttribute] private[ContentCreateRequest] (
+    final class Builder[
+        Attributes <: PhantomTypes.RequestAttribute,
+        TextSlot,
+        MediaSlot
+    ] private[ContentCreateRequest] (
         friendlyName: Option[String],
         language: Option[String],
         variables: Map[String, String],
-        types: Option[Map[String, ContentType]]
+        types: List[ContentType]
     ) {
 
       def withFriendlyName(
           friendlyName: String
-      ): Builder[Attributes with PhantomTypes.FriendlyNameSet] =
+      ): Builder[Attributes with PhantomTypes.FriendlyNameSet, TextSlot, MediaSlot] =
         new Builder(Some(friendlyName), language, variables, types)
 
-      def withLanguage(language: String): Builder[Attributes with PhantomTypes.LanguageSet] =
+      def withLanguage(
+          language: String
+      ): Builder[Attributes with PhantomTypes.LanguageSet, TextSlot, MediaSlot] =
         new Builder(friendlyName, Some(language), variables, types)
 
-      def withVariables(variables: Map[String, String]): Builder[Attributes] =
+      def withVariables(variables: Map[String, String]): Builder[Attributes, TextSlot, MediaSlot] =
         new Builder(friendlyName, language, variables, types)
 
-      def withTypes(
-          types: Map[String, ContentType]
-      ): Builder[Attributes with PhantomTypes.TypesSet] =
-        new Builder(friendlyName, language, variables, Some(types))
+      def withTextType(
+          text: ContentType.Text
+      )(
+          implicit ev: TextSlot =:= PhantomTypes.TextTypeNotAdded
+      ): Builder[Attributes with PhantomTypes.TypesSet, PhantomTypes.TextTypeAdded, MediaSlot] =
+        new Builder(friendlyName, language, variables, types :+ text)
+
+      def withMediaType(
+          media: ContentType.Media
+      )(
+          implicit ev: MediaSlot =:= PhantomTypes.MediaTypeNotAdded
+      ): Builder[Attributes with PhantomTypes.TypesSet, TextSlot, PhantomTypes.MediaTypeAdded] =
+        new Builder(friendlyName, language, variables, types :+ media)
 
       def build()(
           implicit ev: Attributes =:= RequestRequiredAttributes
       ): ContentCreateRequest =
-        ContentCreateRequestImpl(friendlyName.get, language.get, variables, types.get)
+        ContentCreateRequestImpl(friendlyName.get, language.get, variables, types)
     }
 
     def build(fun: BuilderStartState => ContentCreateRequest): ContentCreateRequest =
       fun(Builder.empty)
 
     object Builder {
-      val empty: BuilderStartState = new Builder(None, None, Map.empty, None)
+      val empty: BuilderStartState = new Builder(None, None, Map.empty, List.empty)
     }
   }
 
