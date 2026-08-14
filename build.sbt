@@ -96,6 +96,12 @@ lazy val `twilio-client` = project
         "org.eclipse.jetty.http2" % "jetty-http2-common"     % Version.Jetty % Test,
         "org.eclipse.jetty.http2" % "jetty-http2-hpack"      % Version.Jetty % Test,
         "org.eclipse.jetty.http2" % "jetty-http2-server"     % Version.Jetty % Test,
+        // Apache HttpComponents, vulnerabilities from wiremock (Dependabot #56 medium).
+        // httpcore5 and httpcore5-h2 (#54 and #55, both high) are not listed on purpose:
+        // they reach us only through httpclient5, and httpclient5 5.6.3 pins
+        // httpcore.version to the patched 5.4.3, so this single parent override closes all
+        // three alerts. Verified against the resolved Test classpath, not just declared.
+        "org.apache.httpcomponents.client5" % "httpclient5" % "5.6.3" % Test,
         // jackson 2 suite, vulnerabilities from wiremock (Dependabot #43-#46, transitive via wiremock-jetty12)
         "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.0" % Test,
         "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.0" % Test
