@@ -68,7 +68,7 @@ lazy val `twilio-client` = project
         "org.wiremock"   % "wiremock-jetty12" % "3.13.2" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io"  % "commons-io" % "2.21.0" % Test,
+        "commons-io"  % "commons-io" % "2.22.0" % Test,
         "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
         // Jetty, vulnerabilities from wiremock-jetty12 (Dependabot #50 high, #51, #52, #53).
         // #50 (GHSA-2fvj-hgj9-j2gr, jetty-security) reaches us only through
