@@ -101,7 +101,7 @@ lazy val `twilio-client` = project
         // they reach us only through httpclient5, and httpclient5 5.6.3 pins
         // httpcore.version to the patched 5.4.3, so this single parent override closes all
         // three alerts. Verified against the resolved Test classpath, not just declared.
-        "org.apache.httpcomponents.client5" % "httpclient5" % "5.6.3" % Test,
+        "org.apache.httpcomponents.client5" % "httpclient5" % "5.6.4" % Test,
         // jackson 2 suite, vulnerabilities from wiremock (Dependabot #43-#46 and #47, #49,
         // transitive via wiremock-jetty12). jackson-core is kept in step with jackson-databind:
         // databind 2.22.1 asks for core 2.22.1, so leaving the core override at 2.22.0 would
