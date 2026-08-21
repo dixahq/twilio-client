@@ -106,7 +106,7 @@ lazy val `twilio-client` = project
         // transitive via wiremock-jetty12). jackson-core is kept in step with jackson-databind:
         // databind 2.22.1 asks for core 2.22.1, so leaving the core override at 2.22.0 would
         // pin it back below what databind expects.
-        "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.1" % Test,
+        "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.2" % Test,
         "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.1" % Test
         // NOTE: Dependabot #42 (GHSA-r4gv-qr8j-p3pg, handlebars < 4.5.2) is intentionally NOT
         // overridden here. Forcing com.github.jknack:handlebars(-helpers):4.5.2 breaks WireMock
