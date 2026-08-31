@@ -45,6 +45,7 @@ object ChannelsSendersTestSharedFixture {
         messagingLimit = None,
         qualityRating = ChannelSender.QualityRating.Unknown
       )
-    )
+    ),
+    offlineReasons = Seq.empty
   )
 }

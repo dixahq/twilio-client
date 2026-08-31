@@ -47,7 +47,7 @@ object ChannelSender {
       webhooks: ChannelSender.Webhooks,
       configuration: ChannelSender.Configuration,
       properties: Option[ChannelSender.Properties.WhatsappProperties],
-      offlineReasons: Seq[ChannelSender.OfflineReason] = Nil
+      offlineReasons: Seq[ChannelSender.OfflineReason]
   ) extends ChannelSender
 
   /** A single reason a sender is offline, as reported by Twilio.
