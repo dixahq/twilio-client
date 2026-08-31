@@ -30,6 +30,11 @@ sealed trait ChannelSender {
   val webhooks: ChannelSender.Webhooks
   val configuration: ChannelSender.Configuration
   val properties: Option[ChannelSender.Properties.WhatsappProperties]
+
+  /** Why the sender is not usable. Twilio only populates this when [[status]] is
+    * [[ChannelSender.Status.Offline]]; it is empty for every other status.
+    */
+  val offlineReasons: List[ChannelSender.OfflineReason]
 }
 
 object ChannelSender {
@@ -41,8 +46,22 @@ object ChannelSender {
       sid: ChannelSender.Sid,
       webhooks: ChannelSender.Webhooks,
       configuration: ChannelSender.Configuration,
-      properties: Option[ChannelSender.Properties.WhatsappProperties]
+      properties: Option[ChannelSender.Properties.WhatsappProperties],
+      offlineReasons: List[ChannelSender.OfflineReason] = Nil
   ) extends ChannelSender
+
+  /** A single reason a sender is offline, as reported by Twilio.
+    *
+    * `code` is Twilio's error code, but note it arrives as a string rather than a number (e.g.
+    * `"410"`), so it is kept as a string here rather than guessing a numeric type. `message`
+    * frequently embeds the underlying reason from Meta after a "Root Cause from provider:" prefix,
+    * and is the only place that reason is available to us.
+    */
+  final case class OfflineReason(
+      code: Option[String],
+      message: Option[String],
+      moreInfo: Option[String]
+  )
 
   final case class Sid private[ChannelSender] (override val toString: String) extends SidAbstract
 
