@@ -78,7 +78,7 @@ final class ChannelsSendersFetchTest
               wabaId = Some("316806161514452"),
               verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
             ),
-            offlineReasons = List(
+            offlineReasons = Seq(
               ChannelSender.OfflineReason(
                 code = Some("410"),
                 message = Some(

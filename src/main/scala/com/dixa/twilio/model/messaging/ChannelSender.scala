@@ -34,7 +34,7 @@ sealed trait ChannelSender {
   /** Why the sender is not usable. Twilio only populates this when [[status]] is
     * [[ChannelSender.Status.Offline]]; it is empty for every other status.
     */
-  val offlineReasons: List[ChannelSender.OfflineReason]
+  val offlineReasons: Seq[ChannelSender.OfflineReason]
 }
 
 object ChannelSender {
@@ -47,7 +47,7 @@ object ChannelSender {
       webhooks: ChannelSender.Webhooks,
       configuration: ChannelSender.Configuration,
       properties: Option[ChannelSender.Properties.WhatsappProperties],
-      offlineReasons: List[ChannelSender.OfflineReason] = Nil
+      offlineReasons: Seq[ChannelSender.OfflineReason] = Nil
   ) extends ChannelSender
 
   /** A single reason a sender is offline, as reported by Twilio.

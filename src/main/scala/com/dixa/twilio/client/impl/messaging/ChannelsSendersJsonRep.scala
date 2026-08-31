@@ -32,11 +32,11 @@ private[messaging] final case class ChannelsSendersJsonRep(
     sid: String,
     configuration: ChannelsSendersJsonRep.ConfigurationJsonRep,
     properties: Option[ChannelsSendersJsonRep.PropertiesJsonRep],
-    // Option, not a plain List with a default: Twilio sends `"offline_reasons": null` for a sender
-    // that is not offline, and a default only applies when the key is absent. Read into a bare List
+    // Option, not a plain Seq with a default: Twilio sends `"offline_reasons": null` for a sender
+    // that is not offline, and a default only applies when the key is absent. Read into a bare Seq
     // the null is assigned as-is, so the field holds Java null and blows up on first use rather than
     // failing to parse. Only OptionReader here handles visitNull (see TwilioClientPickler).
-    offline_reasons: Option[List[ChannelsSendersJsonRep.OfflineReasonJsonRep]] = None
+    offline_reasons: Option[Seq[ChannelsSendersJsonRep.OfflineReasonJsonRep]] = None
 )
 
 private[messaging] object ChannelsSendersJsonRep {
@@ -104,7 +104,7 @@ private[messaging] object ChannelsSendersJsonRep {
           .flatMap(VerificationMethod.fromTwilioString)
       ),
       properties = jsonRep.properties.map(toModel),
-      offlineReasons = jsonRep.offline_reasons.toList.flatten.map(toModel)
+      offlineReasons = jsonRep.offline_reasons.getOrElse(Seq.empty).map(toModel)
     )
   }
 
