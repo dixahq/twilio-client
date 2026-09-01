@@ -31,7 +31,12 @@ private[messaging] final case class ChannelsSendersJsonRep(
     webhook: ChannelsSendersJsonRep.WebhooksJsonRep,
     sid: String,
     configuration: ChannelsSendersJsonRep.ConfigurationJsonRep,
-    properties: Option[ChannelsSendersJsonRep.PropertiesJsonRep]
+    properties: Option[ChannelsSendersJsonRep.PropertiesJsonRep],
+    // Option, not a plain Seq with a default: Twilio sends `"offline_reasons": null` for a sender
+    // that is not offline, and a default only applies when the key is absent. Read into a bare Seq
+    // the null is assigned as-is, so the field holds Java null and blows up on first use rather than
+    // failing to parse. Only OptionReader here handles visitNull (see TwilioClientPickler).
+    offline_reasons: Option[Seq[ChannelsSendersJsonRep.OfflineReasonJsonRep]] = None
 )
 
 private[messaging] object ChannelsSendersJsonRep {
@@ -48,12 +53,19 @@ private[messaging] object ChannelsSendersJsonRep {
 
   final case class ConfigurationJsonRep(
       waba_id: Option[String] = None,
-      verificationMethod: Option[String] = None
+      verification_method: Option[String] = None
   )
 
   final case class PropertiesJsonRep(
       quality_rating: Option[String] = None,
       messaging_limit: Option[String] = None,
+  )
+
+  /** Twilio sends `code` as a string (e.g. `"410"`), not a number. */
+  final case class OfflineReasonJsonRep(
+      code: Option[String] = None,
+      message: Option[String] = None,
+      more_info: Option[String] = None
   )
 
   implicit val webhooksJsonRepReader: Reader[WebhooksJsonRep] =
@@ -64,6 +76,8 @@ private[messaging] object ChannelsSendersJsonRep {
     macroR[ConfigurationJsonRep]
   implicit val propertiesJsonRepReader: Reader[PropertiesJsonRep] =
     macroR[PropertiesJsonRep]
+  implicit val offlineReasonJsonRepReader: Reader[OfflineReasonJsonRep] =
+    macroR[OfflineReasonJsonRep]
   implicit val channelsSendersJsonRepReader: Reader[ChannelsSendersJsonRep] =
     macroR[ChannelsSendersJsonRep]
 
@@ -86,12 +100,22 @@ private[messaging] object ChannelsSendersJsonRep {
       webhooks = toModel(jsonRep.webhook),
       configuration = ChannelSender.Configuration(
         wabaId = jsonRep.configuration.waba_id,
-        verificationMethod = jsonRep.configuration.verificationMethod
+        verificationMethod = jsonRep.configuration.verification_method
           .flatMap(VerificationMethod.fromTwilioString)
       ),
-      properties = jsonRep.properties.map(toModel)
+      properties = jsonRep.properties.map(toModel),
+      offlineReasons = jsonRep.offline_reasons.getOrElse(Seq.empty).map(toModel)
     )
   }
+
+  private def toModel(
+      offlineReasonJsonRep: OfflineReasonJsonRep
+  ): ChannelSender.OfflineReason =
+    ChannelSender.OfflineReason(
+      code = offlineReasonJsonRep.code,
+      message = offlineReasonJsonRep.message,
+      moreInfo = offlineReasonJsonRep.more_info
+    )
 
   def toModelOldExceptionHandling(
       jsonRep: ChannelsSendersJsonRep

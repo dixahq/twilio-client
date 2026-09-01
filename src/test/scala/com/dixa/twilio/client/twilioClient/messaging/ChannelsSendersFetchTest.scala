@@ -57,6 +57,71 @@ final class ChannelsSendersFetchTest
         resultFut.map { result => assert(result === expected) }
       }
 
+      "Return the offline reasons when twilio reports the sender as offline" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(channelWhatsappSenderOfflineTwilioResponse)
+            )
+        )
+
+        val expected = Right(
+          whatsappChannelSender.copy(
+            status = ChannelSender.Status.Offline,
+            configuration = ChannelSender.Configuration(
+              wabaId = Some("316806161514452"),
+              verificationMethod = Some(ChannelSender.VerificationMethod.SMS)
+            ),
+            offlineReasons = Seq(
+              ChannelSender.OfflineReason(
+                code = Some("410"),
+                message = Some(
+                  "Something went wrong. Please create a support ticket - Root Cause from " +
+                    "provider: Phone Number In Use - This phone number is already registered to " +
+                    "a WhatsApp account."
+                ),
+                moreInfo = Some("https://www.twilio.com/docs/errors/410")
+              )
+            )
+          )
+        )
+
+        val resultFut: Future[
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
+        ] =
+          instance.run(connSettings, fetchRequest)
+        resultFut.map { result => assert(result === expected) }
+      }
+
+      "Return no offline reasons when twilio sends offline_reasons as null" in {
+        val f = new Fixture
+        import f._
+
+        wireMockServer.stubFor(
+          wireMockBuilderExpectedTwilioRequest
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(channelWhatsappSenderNullOfflineReasonsTwilioResponse)
+            )
+        )
+
+        val expected = Right(whatsappChannelSender)
+
+        val resultFut: Future[
+          Either[ChannelsSendersCommonExceptions, ChannelSender]
+        ] =
+          instance.run(connSettings, fetchRequest)
+        resultFut.map { result => assert(result === expected) }
+      }
+
       "Return exception if channel sender id isn't supported" in {
         val f = new Fixture
         import f._
@@ -141,6 +206,56 @@ final class ChannelsSendersFetchTest
       |    "profile": {
       |        "name": "Example WABA"
       |    },
+      |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
+      |    "sender_id": "whatsapp:+4552511283",
+      |    "webhook": { },
+      |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
+      |    "configuration": {
+      |        "waba_id": "316806161514452"
+      |    },
+      |    "properties":{ }
+      |}
+      |""".stripMargin
+
+  /** Shape taken from a real production response for a sender stuck offline, with the profile and
+    * ids swapped for the shared fixture's. Note that `code` arrives as a string, not a number.
+    */
+  private def channelWhatsappSenderOfflineTwilioResponse =
+    """{
+      |    "status": "OFFLINE",
+      |    "profile": {
+      |        "name": "Example WABA"
+      |    },
+      |    "offline_reasons": [
+      |        {
+      |            "code": "410",
+      |            "message": "Something went wrong. Please create a support ticket - Root Cause from provider: Phone Number In Use - This phone number is already registered to a WhatsApp account.",
+      |            "more_info": "https://www.twilio.com/docs/errors/410"
+      |        }
+      |    ],
+      |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
+      |    "sender_id": "whatsapp:+4552511283",
+      |    "webhook": { },
+      |    "sid": "XEcfd04c72e3397a53e24bd6c7408aff83",
+      |    "configuration": {
+      |        "waba_id": "316806161514452",
+      |        "verification_method": "sms"
+      |    },
+      |    "properties":{ }
+      |}
+      |""".stripMargin
+
+  /** What Twilio actually sends for a sender that is not offline: the key is present and null, not
+    * omitted. This is why `offline_reasons` is an Option rather than a List with a default — a
+    * default only covers an absent key.
+    */
+  private def channelWhatsappSenderNullOfflineReasonsTwilioResponse =
+    """{
+      |    "status": "ONLINE",
+      |    "profile": {
+      |        "name": "Example WABA"
+      |    },
+      |    "offline_reasons": null,
       |    "url": "https://messaging.twilio.com/v2/Channels/Senders/XEfb45b27913a995543c9ccf5be843ee4",
       |    "sender_id": "whatsapp:+4552511283",
       |    "webhook": { },
