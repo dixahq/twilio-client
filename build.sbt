@@ -3,8 +3,8 @@ import sbt.Test
 val scala2_13 = "2.13.18"
 
 val Version = new AnyRef {
-  val Pekko     = "1.3.0"
-  val PekkoHttp = "1.3.0"
+  val Pekko     = "1.7.0"
+  val PekkoHttp = "1.4.0"
 
   // Jetty is not a direct dependency, it arrives transitively from wiremock-jetty12,
   // which imports jetty-bom and jetty-ee10-bom at 12.0.30. Pinned here to the patched
@@ -54,21 +54,21 @@ lazy val `twilio-client` = project
         "org.apache.pekko" %% "pekko-http"        % Version.PekkoHttp % Provided,
 
         // Json serialization / deserialization
-        "com.lihaoyi" %% "upickle" % "4.4.1",
+        "com.lihaoyi" %% "upickle" % "4.4.3",
 
         // Misc
         "com.neovisionaries" % "nv-i18n" % "1.29",
 
         // Lang improvement libs
-        "com.beachape" %% "enumeratum" % "1.9.1",
+        "com.beachape" %% "enumeratum" % "1.9.8",
 
         // Test
-        "org.scalatest" %% "scalatest"        % "3.2.19" % Test,
-        "org.scalamock" %% "scalamock"        % "7.5.2"  % Test,
+        "org.scalatest" %% "scalatest"        % "3.2.20" % Test,
+        "org.scalamock" %% "scalamock"        % "7.5.5"  % Test,
         "org.wiremock"   % "wiremock-jetty12" % "3.13.2" % Test,
       ),
       dependencyOverrides ++= Seq(
-        "commons-io"  % "commons-io" % "2.21.0" % Test,
+        "commons-io"  % "commons-io" % "2.22.0" % Test,
         "net.minidev" % "json-smart" % "2.6.0"  % Test, // Vulnerability from wiremock
         // Jetty, vulnerabilities from wiremock-jetty12 (Dependabot #50 high, #51, #52, #53).
         // #50 (GHSA-2fvj-hgj9-j2gr, jetty-security) reaches us only through
@@ -101,13 +101,13 @@ lazy val `twilio-client` = project
         // they reach us only through httpclient5, and httpclient5 5.6.3 pins
         // httpcore.version to the patched 5.4.3, so this single parent override closes all
         // three alerts. Verified against the resolved Test classpath, not just declared.
-        "org.apache.httpcomponents.client5" % "httpclient5" % "5.6.3" % Test,
+        "org.apache.httpcomponents.client5" % "httpclient5" % "5.6.4" % Test,
         // jackson 2 suite, vulnerabilities from wiremock (Dependabot #43-#46 and #47, #49,
         // transitive via wiremock-jetty12). jackson-core is kept in step with jackson-databind:
         // databind 2.22.1 asks for core 2.22.1, so leaving the core override at 2.22.0 would
         // pin it back below what databind expects.
-        "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.1" % Test,
-        "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.1" % Test
+        "com.fasterxml.jackson.core" % "jackson-core"     % "2.22.2" % Test,
+        "com.fasterxml.jackson.core" % "jackson-databind" % "2.22.2" % Test
         // NOTE: Dependabot #42 (GHSA-r4gv-qr8j-p3pg, handlebars < 4.5.2) is intentionally NOT
         // overridden here. Forcing com.github.jknack:handlebars(-helpers):4.5.2 breaks WireMock
         // 3.13.2's response templating: 4.5.2 relocated the helper classes into a new `.ext`
