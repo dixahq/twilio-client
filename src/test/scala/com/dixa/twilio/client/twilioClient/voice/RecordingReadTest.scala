@@ -92,8 +92,9 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         }
       }
 
-      /* Twilio gives a recording started with the <Start><Recording> TwiML verb this source. An account
-         holding one such recording made every listing of it fail to parse. */
+      /* Twilio assigns recordings started with the <Start><Recording> TwiML verb the source
+         StartCallRecordingTwiML. Previously, an account containing such a recording caused every
+         recording listing to fail to parse. */
       "Support reading a recording started with the <Start><Recording> TwiML verb" in {
 
         val f = new Fixture
