@@ -92,6 +92,54 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         }
       }
 
+      /* Twilio gives a recording started with the <Start><Recording> TwiML verb this source. An account
+         holding one such recording made every listing of it fail to parse. */
+      "Support reading a recording started with the <Start><Recording> TwiML verb" in {
+
+        val f = new Fixture
+        import f._
+
+        val started = recording(
+          TwilioTestConstants.accountSid,
+          Recording.Status.Completed,
+          callSid1,
+          conferenceSid1
+        )
+
+        val expectedPath = s"/2010-04-01/Accounts/${TwilioTestConstants.accountSid}/Recordings.json"
+
+        wireMockServer.stubFor(
+          WireMock
+            .get(
+              WireMock.urlEqualTo(expectedPath)
+            )
+            .withBasicAuth(TwilioTestConstants.accountSid.twilioString, "testPassword")
+            .willReturn(
+              aResponse()
+                .withStatus(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody(
+                  recordingListResp(
+                    accountSid = TwilioTestConstants.accountSid,
+                    recordings = List(started),
+                    source = "StartCallRecordingTwiML"
+                  )
+                )
+            )
+        )
+
+        val req = RecordingReadRequestExecutor.RecordingReadRequest.build(
+          _.withAccountSid(TwilioTestConstants.accountSid).build()
+        )
+
+        instance.source(connSettings, req).runWith(Sink.seq).map { res =>
+          res.map {
+            case Left(e)       => fail(e)
+            case Right(result) => result.source
+          } shouldBe Seq(Recording.Source.StartCallRecordingTwiML)
+        }
+      }
+
       "Return a Left if credentials are wrong" in {
         val f = new Fixture
         import f._
@@ -215,7 +263,8 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
         accountSid: TwilioAccount.Sid,
         status: Recording.Status,
         callSid: Call.Sid,
-        conferenceSid: Option[Conference.Sid]
+        conferenceSid: Option[Conference.Sid],
+        source: String
     ): String = {
       s"""{
          |      "account_sid": "${accountSid.twilioString}",
@@ -230,7 +279,7 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
          |      "price_unit": "USD",
          |      "duration": "4",
          |      "sid": "REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-         |      "source": "StartConferenceRecordingAPI",
+         |      "source": "$source",
          |      "status": "${status.twilioString}",
          |      "error_code": null,
          |      "uri": "/2010-04-01/Accounts/ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/Recordings/REXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.json",
@@ -249,7 +298,8 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
 
     def recordingListResp(
         accountSid: TwilioAccount.Sid,
-        recordings: List[Recording]
+        recordings: List[Recording],
+        source: String = Recording.Source.StartConferenceRecordingAPI.twilioString
     ): String =
       s"""{
          |    "first_page_uri": "/2010-04-01/Accounts/$accountSid/Recordings.json?PageSize=1000&Page=0",
@@ -261,7 +311,8 @@ final class RecordingReadTest extends TwilioClientTest with Matchers {
               accountSid,
               recordings.status,
               recordings.callSid,
-              recordings.conferenceSid
+              recordings.conferenceSid,
+              source
             )
           )
           .mkString(", ")}
