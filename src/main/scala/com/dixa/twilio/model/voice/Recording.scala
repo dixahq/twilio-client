@@ -110,6 +110,9 @@ object Recording {
     case object RecordVerb                  extends Source("RecordVerb")
     case object StartCallRecordingAPI       extends Source("StartCallRecordingAPI")
     case object StartConferenceRecordingAPI extends Source("StartConferenceRecordingAPI")
+
+    /** A recording started with the `<Start><Recording>` TwiML verb. */
+    case object StartCallRecordingTwiML extends Source("StartCallRecordingTwiML")
   }
 
   final case class ErrorCode(code: Int) extends TwilioStringValue {
