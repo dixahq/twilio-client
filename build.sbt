@@ -64,7 +64,7 @@ lazy val `twilio-client` = project
 
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.20" % Test,
-        "org.scalamock" %% "scalamock"        % "7.5.5"  % Test,
+        "org.scalamock" %% "scalamock"        % "7.6.0"  % Test,
         "org.wiremock"   % "wiremock-jetty12" % "3.13.2" % Test,
       ),
       dependencyOverrides ++= Seq(
