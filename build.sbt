@@ -3,8 +3,8 @@ import sbt.Test
 val scala2_13 = "2.13.18"
 
 val Version = new AnyRef {
-  val Pekko     = "1.7.0"
-  val PekkoHttp = "1.4.0"
+  val Pekko     = "1.7.1"
+  val PekkoHttp = "1.4.1"
 
   // Jetty is not a direct dependency, it arrives transitively from wiremock-jetty12,
   // which imports jetty-bom and jetty-ee10-bom at 12.0.30. Pinned here to the patched
@@ -64,7 +64,7 @@ lazy val `twilio-client` = project
 
         // Test
         "org.scalatest" %% "scalatest"        % "3.2.20" % Test,
-        "org.scalamock" %% "scalamock"        % "7.5.5"  % Test,
+        "org.scalamock" %% "scalamock"        % "7.6.0"  % Test,
         "org.wiremock"   % "wiremock-jetty12" % "3.13.2" % Test,
       ),
       dependencyOverrides ++= Seq(
