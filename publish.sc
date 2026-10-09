@@ -1,7 +1,7 @@
 #!/usr/bin/env -S scala-cli shebang
 
 //> using scala 3
-//> using dep com.lihaoyi::upickle::4.4.1
+//> using dep com.lihaoyi::upickle::4.4.3
 
 import java.util.UUID
 import java.nio.file.{Files, Paths}
