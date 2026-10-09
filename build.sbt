@@ -4,7 +4,7 @@ val scala2_13 = "2.13.18"
 
 val Version = new AnyRef {
   val Pekko     = "1.7.1"
-  val PekkoHttp = "1.4.0"
+  val PekkoHttp = "1.4.1"
 
   // Jetty is not a direct dependency, it arrives transitively from wiremock-jetty12,
   // which imports jetty-bom and jetty-ee10-bom at 12.0.30. Pinned here to the patched
