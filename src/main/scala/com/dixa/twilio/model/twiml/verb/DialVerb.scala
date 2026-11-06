@@ -104,9 +104,9 @@ object DialVerb {
     *
     * Twilio allows 1 to 10 nouns in one Dial verb, also of different types.
     */
-  final class Destinations private (val nouns: immutable.Seq[DestinationNoun])
+  final class Nouns private (val nouns: immutable.Seq[DestinationNoun])
 
-  object Destinations {
+  object Nouns {
 
     sealed trait Err extends RuntimeException
     object Err {
@@ -115,11 +115,11 @@ object DialVerb {
           with Err
     }
 
-    def safe(nouns: immutable.Seq[DestinationNoun]): Either[Err, Destinations] =
+    def safe(nouns: immutable.Seq[DestinationNoun]): Either[Err, Nouns] =
       if (nouns.isEmpty || nouns.size > 10) Left(Err.CountOutOfRange(nouns.size))
-      else Right(new Destinations(nouns))
+      else Right(new Nouns(nouns))
 
-    def unsafe(nouns: immutable.Seq[DestinationNoun]): Destinations = safe(nouns).toTry.get
+    def unsafe(nouns: immutable.Seq[DestinationNoun]): Nouns = safe(nouns).toTry.get
   }
 
   final class Builder[
@@ -176,15 +176,22 @@ object DialVerb {
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue, R, C] =
       copy(value = ValueNoun(ConferenceNoun.build(fun)))
 
-    /** Dial the Number, Sip and Client nouns of the given [[Destinations]].
+    /** Dial the Number, Sip and Client nouns of the given [[Nouns]].
       *
       * Twilio calls all of them at the same time, and connects the first one that answers. With
       * [[withSequential]] set to true, Twilio calls them one after the other instead.
+      *
+      * A Conference noun cannot be one of these nouns, and is set with [[withConference]] instead.
+      * Twilio lists only the Number, Sip and Client nouns as nouns that can be mixed in one Dial
+      * verb.
+      *
+      * @see
+      *   https://www.twilio.com/docs/voice/twiml/sip
       */
-    def withDestinations(destinations: Destinations)(
+    def withNouns(nouns: Nouns)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue, R, C] =
-      copy(value = ValueDestinations(destinations))
+      copy(value = ValueNouns(nouns))
 
     /** Set a phone number as the caller ID that the dialed party sees.
       *
@@ -244,8 +251,8 @@ object DialVerb {
     /** Set how long Twilio lets the dialed party ring. See [[Timeout]]. */
     def withTimeout(timeout: Timeout): BuilderWithSameTypes = copy(timeout = Some(timeout))
 
-    /** With true, Twilio calls the nouns of [[withDestinations]] one after the other, instead of
-      * all at the same time.
+    /** With true, Twilio calls the nouns of [[withNouns]] one after the other, instead of all at
+      * the same time.
       *
       * Twilio uses false when this is not set.
       */
@@ -282,10 +289,10 @@ object DialVerb {
   def build(fun: BuildFunction): DialVerb = fun(Builder.empty)
 
   private sealed abstract class ValueToUse
-  private object NotSetValue                                             extends ValueToUse
-  private final case class ValuePhoneNumber(pn: PhoneNumberE164)         extends ValueToUse
-  private final case class ValueNoun(noun: DialNoun)                     extends ValueToUse
-  private final case class ValueDestinations(destinations: Destinations) extends ValueToUse
+  private object NotSetValue                                     extends ValueToUse
+  private final case class ValuePhoneNumber(pn: PhoneNumberE164) extends ValueToUse
+  private final case class ValueNoun(noun: DialNoun)             extends ValueToUse
+  private final case class ValueNouns(nouns: Nouns)              extends ValueToUse
 
   private final case class DialVerbImpl(
       value: ValueToUse,
@@ -310,9 +317,9 @@ object DialVerb {
         .build
 
     override protected def tagSubElements: immutable.Seq[TwimlElement] = value match {
-      case ValueNoun(noun)                 => List(noun)
-      case ValueDestinations(destinations) => destinations.nouns
-      case _                               => Nil
+      case ValueNoun(noun)       => List(noun)
+      case ValueNouns(dialNouns) => dialNouns.nouns
+      case _                     => Nil
     }
 
     override protected def tagValue: Option[String] = value match {
