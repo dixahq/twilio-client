@@ -19,7 +19,6 @@ import com.dixa.twilio.model.{HttpMethod, Region}
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.twiml.TwimlElement
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
-import com.dixa.twilio.model.twiml.verb.DialVerb
 import com.dixa.twilio.model.voice.{Call, Conference}
 
 import scala.collection.immutable
@@ -29,7 +28,7 @@ import scala.collection.immutable
   * Creating a [[com.dixa.twilio.model.twiml.Response]] via the
   * [[com.dixa.twilio.model.twiml.Response.build]] method, is the preferred way to use this trait.
   */
-sealed trait ConferenceNoun extends TwimlElement.Noun with DialVerb.DialNoun {}
+sealed trait ConferenceNoun extends TwimlElement.Noun {}
 
 object ConferenceNoun {
 
@@ -151,7 +150,7 @@ object ConferenceNoun {
         recordingStatusCallbackEvent
       )
 
-    type BuilderWithSameTypes =
+    private type BuilderWithSameTypes =
       Builder[
         ConferenceFriendlyNameSet,
         WaitUrlSet,
