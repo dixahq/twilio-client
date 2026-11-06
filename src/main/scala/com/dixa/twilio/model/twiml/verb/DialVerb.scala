@@ -119,7 +119,7 @@ object DialVerb {
       * code is written.
       *
       * There is one apply method for each number of nouns, so the compiler checks the count. For a
-      * list of nouns, use [[safe]] or [[unsafe]].
+      * list of nouns, use [[fromSeq]] or [[fromSeqUnsafe]].
       */
     def apply(noun1: DestinationNoun): Nouns = new Nouns(List(noun1))
 
@@ -200,11 +200,11 @@ object DialVerb {
     ): Nouns =
       new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6, noun7, noun8, noun9, noun10))
 
-    def safe(nouns: immutable.Seq[DestinationNoun]): Either[Err, Nouns] =
+    def fromSeq(nouns: immutable.Seq[DestinationNoun]): Either[Err, Nouns] =
       if (nouns.isEmpty || nouns.size > 10) Left(Err.CountOutOfRange(nouns.size))
       else Right(new Nouns(nouns))
 
-    def unsafe(nouns: immutable.Seq[DestinationNoun]): Nouns = safe(nouns).toTry.get
+    def fromSeqUnsafe(nouns: immutable.Seq[DestinationNoun]): Nouns = fromSeq(nouns).toTry.get
   }
 
   final class Builder[

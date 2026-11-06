@@ -73,23 +73,23 @@ final class DialVerbNounsTest extends AnyWordSpec {
     }
 
     "return a Left if created without any noun" in {
-      assert(DialVerb.Nouns.safe(Nil) == Left(DialVerb.Nouns.Err.CountOutOfRange(0)))
+      assert(DialVerb.Nouns.fromSeq(Nil) == Left(DialVerb.Nouns.Err.CountOutOfRange(0)))
     }
 
     "return an instance if created with 1 noun" in {
-      assert(DialVerb.Nouns.safe(numberNouns(1)).map(_.nouns) == Right(numberNouns(1)))
+      assert(DialVerb.Nouns.fromSeq(numberNouns(1)).map(_.nouns) == Right(numberNouns(1)))
     }
 
     "return an instance if created with 10 nouns, the maximum Twilio allows in one Dial" in {
-      assert(DialVerb.Nouns.safe(numberNouns(10)).map(_.nouns) == Right(numberNouns(10)))
+      assert(DialVerb.Nouns.fromSeq(numberNouns(10)).map(_.nouns) == Right(numberNouns(10)))
     }
 
     "return a Left if created with 11 nouns" in {
-      assert(DialVerb.Nouns.safe(elevenNouns) == Left(DialVerb.Nouns.Err.CountOutOfRange(11)))
+      assert(DialVerb.Nouns.fromSeq(elevenNouns) == Left(DialVerb.Nouns.Err.CountOutOfRange(11)))
     }
 
-    "throw an exception if created with 11 nouns via the unsafe method" in {
-      intercept[DialVerb.Nouns.Err.CountOutOfRange](DialVerb.Nouns.unsafe(elevenNouns))
+    "throw an exception if created with 11 nouns via fromSeqUnsafe" in {
+      intercept[DialVerb.Nouns.Err.CountOutOfRange](DialVerb.Nouns.fromSeqUnsafe(elevenNouns))
     }
 
     "not allow instances to be created from a list without the count check" in {
