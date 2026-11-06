@@ -439,8 +439,10 @@ final class ResponseDialTest extends AnyWordSpec {
                         sipBuilder
                           .withUri(SipNoun.Uri.unsafe("sip:+15559999999@kamailio.example.com"))
                           .withCredentials(
-                            SipNoun.Username("trunk-user"),
-                            SipNoun.Password("pa\"'<>&ss")
+                            SipNoun.Credentials(
+                              SipNoun.Username("trunk-user"),
+                              SipNoun.Password("pa\"'<>&ss")
+                            )
                           )
                           .build()
                       }
@@ -844,7 +846,9 @@ final class ResponseDialTest extends AnyWordSpec {
 
     "Don't allow building a Sip noun without a URI" in {
       assertTypeError(
-        """SipNoun.build(_.withCredentials(SipNoun.Username("u"), SipNoun.Password("p")).build())"""
+        """SipNoun.build(
+          |  _.withCredentials(SipNoun.Credentials(SipNoun.Username("u"), SipNoun.Password("p"))).build()
+          |)""".stripMargin
       )
     }
 

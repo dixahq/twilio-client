@@ -62,27 +62,25 @@ object SipNoun {
     override def toString: String = "SipNoun.Password(***)"
   }
 
+  /** The username and password that Twilio sends when the SIP endpoint asks for authentication. */
+  final case class Credentials(username: Username, password: Password)
+
   final class Builder[B <: Buildable] private (
       uri: Option[Uri],
-      username: Option[Username],
-      password: Option[Password]
+      credentials: Option[Credentials]
   ) {
 
-    def withUri(uri: Uri): Builder[BuildableTrue] = new Builder(Some(uri), username, password)
+    def withUri(uri: Uri): Builder[BuildableTrue] = new Builder(Some(uri), credentials)
 
-    /** Set the username and password that Twilio sends when the SIP endpoint asks for
-      * authentication.
-      */
-    def withCredentials(username: Username, password: Password): Builder[B] =
-      new Builder(uri, Some(username), Some(password))
+    def withCredentials(credentials: Credentials): Builder[B] = new Builder(uri, Some(credentials))
 
     def build()(
         implicit ev: B =:= BuildableTrue
-    ): SipNoun = SipNounImpl(uri.get, username, password)
+    ): SipNoun = SipNounImpl(uri.get, credentials)
   }
 
   object Builder {
-    val empty: BuilderStartState = new BuilderStartState(None, None, None)
+    val empty: BuilderStartState = new BuilderStartState(None, None)
   }
 
   type BuilderStartState = Builder[BuildableFalse]
@@ -90,18 +88,14 @@ object SipNoun {
 
   def build(fun: BuildFunction): SipNoun = fun(Builder.empty)
 
-  private final case class SipNounImpl(
-      uri: Uri,
-      username: Option[Username],
-      password: Option[Password]
-  ) extends SipNoun {
+  private final case class SipNounImpl(uri: Uri, credentials: Option[Credentials]) extends SipNoun {
 
     override protected def tagName: String = "Sip"
 
     override protected def tagAttributes: immutable.Seq[(String, String)] =
       new TagAttributeBuilder()
-        .add("username", username)
-        .add("password", password)
+        .add("username", credentials.map(_.username))
+        .add("password", credentials.map(_.password))
         .build
 
     override protected def tagSubElements: immutable.Seq[TwimlElement] = Nil

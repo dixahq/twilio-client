@@ -48,4 +48,13 @@ final class SipNounTest extends AnyWordSpec {
       assert(SipNoun.Password("secret-password").twilioString == "secret-password")
     }
   }
+
+  classOf[SipNoun.Credentials].getSimpleName should {
+
+    "hide the password in toString, so it is not logged by accident" in {
+      val credentials =
+        SipNoun.Credentials(SipNoun.Username("trunk-user"), SipNoun.Password("secret-password"))
+      assert(!credentials.toString.contains("secret-password"))
+    }
+  }
 }
