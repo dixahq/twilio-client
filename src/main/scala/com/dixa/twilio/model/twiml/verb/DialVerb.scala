@@ -21,12 +21,8 @@ import com.dixa.twilio.model.twiml.TwimlConstraints._
 import com.dixa.twilio.model.twiml.TwimlElement
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
 import com.dixa.twilio.model.twiml.noun.{ClientNoun, ConferenceNoun}
-import com.dixa.twilio.model.{
-  ConstrainedString,
-  EnumWithTwilioString,
-  HttpMethod,
-  TwilioStringValue
-}
+import com.dixa.twilio.model.voice.AlphanumericCallerId
+import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, TwilioStringValue}
 
 import scala.collection.immutable
 
@@ -61,24 +57,6 @@ object DialVerb {
     sealed trait RecordingStatusCallbackSet
     sealed trait RecordingStatusCallbackSetTrue  extends RecordingStatusCallbackSet
     sealed trait RecordingStatusCallbackSetFalse extends RecordingStatusCallbackSet
-  }
-
-  /** A caller ID that is a text of letters, digits and the chars `+`, `-`, `_` and `.`.
-    *
-    * Twilio accepts such a caller ID only when the Dial calls a Sip noun. The text does not need to
-    * be a phone number.
-    */
-  final case class AlphanumericCallerId private (override val toString: String)
-      extends ConstrainedString
-      with TwilioStringValue
-
-  object AlphanumericCallerId
-      extends ConstrainedString.ConstrainedStringCompanionObject[AlphanumericCallerId] {
-    override protected def constructInstance(wrapped: String): AlphanumericCallerId =
-      new AlphanumericCallerId(wrapped)
-
-    override protected val validChars: Set[Char] =
-      (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ "+-_.").toSet
   }
 
   /** How Twilio records the dialed call.
@@ -224,7 +202,9 @@ object DialVerb {
     def withCallerId(identity: ClientNoun.Identity): BuilderWithSameTypes =
       copy(callerId = Some(s"client:${identity.twilioString}"))
 
-    /** Set a text as the caller ID, for a Dial to a Sip noun. See [[AlphanumericCallerId]]. */
+    /** Set a text as the caller ID, for a Dial to a Sip noun. See
+      * [[com.dixa.twilio.model.voice.AlphanumericCallerId]].
+      */
     def withCallerId(callerId: AlphanumericCallerId): BuilderWithSameTypes =
       copy(callerId = Some(callerId.twilioString))
 

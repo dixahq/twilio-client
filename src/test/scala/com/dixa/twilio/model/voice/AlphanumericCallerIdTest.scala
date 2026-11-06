@@ -13,33 +13,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.dixa.twilio.model.twiml.verb
+package com.dixa.twilio.model.voice
 
 import org.scalatest.wordspec.AnyWordSpec
 
-final class DialVerbAlphanumericCallerIdTest extends AnyWordSpec {
+final class AlphanumericCallerIdTest extends AnyWordSpec {
 
-  classOf[DialVerb.AlphanumericCallerId].getSimpleName should {
+  classOf[AlphanumericCallerId].getSimpleName should {
 
     "return an instance if created with letters, digits and the chars + - _ ." in {
-      val result = DialVerb.AlphanumericCallerId.safe("Dixa_Support-1.0+")
+      val result = AlphanumericCallerId.safe("Dixa_Support-1.0+")
       assert(result.map(_.twilioString) == Right("Dixa_Support-1.0+"))
     }
 
     "throw an exception if created with a space" in {
-      intercept[DialVerb.AlphanumericCallerId.InvalidCharException](
-        DialVerb.AlphanumericCallerId.unsafe("Dixa Support")
+      intercept[AlphanumericCallerId.InvalidCharException](
+        AlphanumericCallerId.unsafe("Dixa Support")
       )
     }
 
     "throw an exception if created with a char that is not alphanumeric or one of + - _ ." in {
-      intercept[DialVerb.AlphanumericCallerId.InvalidCharException](
-        DialVerb.AlphanumericCallerId.unsafe("support@dixa")
+      intercept[AlphanumericCallerId.InvalidCharException](
+        AlphanumericCallerId.unsafe("support@dixa")
       )
     }
 
     "not allow instances to be created with the default apply method of case classes" in {
-      assertTypeError("""DialVerb.AlphanumericCallerId("Dixa")""")
+      assertTypeError("""AlphanumericCallerId("Dixa")""")
     }
   }
 }
