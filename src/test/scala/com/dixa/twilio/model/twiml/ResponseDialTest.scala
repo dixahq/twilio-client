@@ -26,7 +26,7 @@ import org.scalatest.wordspec.AnyWordSpec
 final class ResponseDialTest extends AnyWordSpec {
 
   private val callerIdPhoneNumber =
-    DialVerb.CallerId.PhoneNumber(PhoneNumberE164.unsafe("+18005551212"))
+    PhoneNumberE164.unsafe("+18005551212")
 
   private def numberNoun(phoneNumber: String): NumberNoun =
     NumberNoun.build(_.withPhoneNumber(PhoneNumberE164.unsafe(phoneNumber)).build())
@@ -493,7 +493,7 @@ final class ResponseDialTest extends AnyWordSpec {
           responseBuilder
             .addDial { dialBuilder =>
               dialBuilder
-                .withCallerId(DialVerb.CallerId.Client(ClientNoun.Identity.unsafe("joey")))
+                .withCallerId(ClientNoun.Identity.unsafe("joey"))
                 .withDestinations(
                   DialVerb.Destinations.unsafe(
                     List(
@@ -519,7 +519,7 @@ final class ResponseDialTest extends AnyWordSpec {
           responseBuilder
             .addDial { dialBuilder =>
               dialBuilder
-                .withCallerId(DialVerb.CallerId.Sip.unsafe("Dixa_Support-1.0+"))
+                .withCallerId(DialVerb.AlphanumericCallerId.unsafe("Dixa_Support-1.0+"))
                 .withDestinations(
                   DialVerb.Destinations.unsafe(
                     List(

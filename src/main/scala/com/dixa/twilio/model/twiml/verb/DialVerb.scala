@@ -63,47 +63,22 @@ object DialVerb {
     sealed trait RecordingStatusCallbackSetFalse extends RecordingStatusCallbackSet
   }
 
-  /** The caller ID that the dialed party sees.
+  /** A caller ID that is a text of letters, digits and the chars `+`, `-`, `_` and `.`.
     *
-    * Twilio accepts a different form of caller ID for each kind of noun it dials. Twilio checks the
-    * form when it runs the Dial, so this type does not tie a form to a noun.
+    * Twilio accepts such a caller ID only when the Dial calls a Sip noun. The text does not need to
+    * be a phone number.
     */
-  sealed trait CallerId extends TwilioStringValue
+  final case class AlphanumericCallerId private (override val toString: String)
+      extends ConstrainedString
+      with TwilioStringValue
 
-  object CallerId {
+  object AlphanumericCallerId
+      extends ConstrainedString.ConstrainedStringCompanionObject[AlphanumericCallerId] {
+    override protected def constructInstance(wrapped: String): AlphanumericCallerId =
+      new AlphanumericCallerId(wrapped)
 
-    /** A phone number as caller ID.
-      *
-      * Twilio accepts the To or From number of the call, a phone number bought from Twilio, or a
-      * verified caller ID.
-      */
-    final case class PhoneNumber(phoneNumber: PhoneNumberE164) extends CallerId {
-      override def twilioString: String = phoneNumber.asString
-    }
-
-    /** A client identifier as caller ID, for a Dial to a Client noun.
-      *
-      * Twilio receives it as `client:<identity>`.
-      */
-    final case class Client(identity: ClientNoun.Identity) extends CallerId {
-      override def twilioString: String = s"client:${identity.twilioString}"
-    }
-
-    /** A text as caller ID, for a Dial to a Sip noun.
-      *
-      * Twilio accepts letters, digits and the chars `+`, `-`, `_` and `.`. The text does not need
-      * to be a phone number.
-      */
-    final case class Sip private (override val toString: String)
-        extends ConstrainedString
-        with CallerId
-
-    object Sip extends ConstrainedString.ConstrainedStringCompanionObject[Sip] {
-      override protected def constructInstance(wrapped: String): Sip = new Sip(wrapped)
-
-      override protected val validChars: Set[Char] =
-        (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ "+-_.").toSet
-    }
+    override protected val validChars: Set[Char] =
+      (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ "+-_.").toSet
   }
 
   /** How Twilio records the dialed call.
@@ -176,7 +151,7 @@ object DialVerb {
       C <: PhantomTypes.RecordingStatusCallbackSet
   ] private (
       value: ValueToUse,
-      callerId: Option[CallerId],
+      callerId: Option[String],
       record: Option[Record],
       recordingStatusCallback: Option[CallbackUrl],
       recordingStatusCallbackMethod: Option[HttpMethod],
@@ -192,7 +167,7 @@ object DialVerb {
         CNew <: PhantomTypes.RecordingStatusCallbackSet
     ](
         value: ValueToUse = this.value,
-        callerId: Option[CallerId] = this.callerId,
+        callerId: Option[String] = this.callerId,
         record: Option[Record] = this.record,
         recordingStatusCallback: Option[CallbackUrl] = this.recordingStatusCallback,
         recordingStatusCallbackMethod: Option[HttpMethod] = this.recordingStatusCallbackMethod,
@@ -233,11 +208,25 @@ object DialVerb {
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue, R, C] =
       copy(value = ValueDestinations(destinations))
 
-    /** Set the caller ID that the dialed party sees.
+    /** Set a phone number as the caller ID that the dialed party sees.
       *
-      * Without it, the dialed party sees the caller ID of the call that runs this TwiML.
+      * Twilio accepts the To or From number of the call, a phone number bought from Twilio, or a
+      * verified caller ID. Without a caller ID, the dialed party sees the caller ID of the call
+      * that runs this TwiML.
       */
-    def withCallerId(callerId: CallerId): BuilderWithSameTypes = copy(callerId = Some(callerId))
+    def withCallerId(phoneNumber: PhoneNumberE164): BuilderWithSameTypes =
+      copy(callerId = Some(phoneNumber.asString))
+
+    /** Set a client identifier as the caller ID, for a Dial to a Client noun.
+      *
+      * Twilio receives it as `client:<identity>`.
+      */
+    def withCallerId(identity: ClientNoun.Identity): BuilderWithSameTypes =
+      copy(callerId = Some(s"client:${identity.twilioString}"))
+
+    /** Set a text as the caller ID, for a Dial to a Sip noun. See [[AlphanumericCallerId]]. */
+    def withCallerId(callerId: AlphanumericCallerId): BuilderWithSameTypes =
+      copy(callerId = Some(callerId.twilioString))
 
     /** Record the dialed call.
       *
@@ -320,7 +309,7 @@ object DialVerb {
 
   private final case class DialVerbImpl(
       value: ValueToUse,
-      callerId: Option[CallerId],
+      callerId: Option[String],
       record: Option[Record],
       recordingStatusCallback: Option[CallbackUrl],
       recordingStatusCallbackMethod: Option[HttpMethod],
@@ -331,7 +320,7 @@ object DialVerb {
 
     override protected def tagAttributes: immutable.Seq[(String, String)] =
       new TagAttributeBuilder()
-        .add("callerId", callerId)
+        .addString("callerId", callerId)
         .add("record", record)
         .add("recordingStatusCallbackMethod", recordingStatusCallbackMethod)
         .add("recordingStatusCallback", recordingStatusCallback)
