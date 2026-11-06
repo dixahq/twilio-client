@@ -40,13 +40,10 @@ trait DialVerb extends TwimlElement.Verb {
 
 object DialVerb {
 
-  /** Trait that should be mixed in by Noun traits that are supported in the Dial verb. */
-  trait DialNoun extends TwimlElement.Noun
-
   /** Trait mixed in by the nouns that Twilio can dial together in one Dial verb: the Number, Sip
     * and Client nouns.
     */
-  trait DestinationNoun extends DialNoun
+  trait DestinationNoun extends TwimlElement.Noun
 
   /** DialVerb specific phantom types, used to enforce build constraints compile time. */
   object PhantomTypes {
@@ -174,7 +171,7 @@ object DialVerb {
     def withConference(fun: ConferenceNoun.BuildFunction)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
     ): Builder[BuildableTrue, HasSingleAllowedValueAlreadyTrue, R, C] =
-      copy(value = ValueNoun(ConferenceNoun.build(fun)))
+      copy(value = ValueConference(ConferenceNoun.build(fun)))
 
     /** Dial the Number, Sip and Client nouns of the given [[Nouns]].
       *
@@ -289,10 +286,10 @@ object DialVerb {
   def build(fun: BuildFunction): DialVerb = fun(Builder.empty)
 
   private sealed abstract class ValueToUse
-  private object NotSetValue                                     extends ValueToUse
-  private final case class ValuePhoneNumber(pn: PhoneNumberE164) extends ValueToUse
-  private final case class ValueNoun(noun: DialNoun)             extends ValueToUse
-  private final case class ValueNouns(nouns: Nouns)              extends ValueToUse
+  private object NotSetValue                                           extends ValueToUse
+  private final case class ValuePhoneNumber(pn: PhoneNumberE164)       extends ValueToUse
+  private final case class ValueConference(conference: ConferenceNoun) extends ValueToUse
+  private final case class ValueNouns(nouns: Nouns)                    extends ValueToUse
 
   private final case class DialVerbImpl(
       value: ValueToUse,
@@ -317,9 +314,9 @@ object DialVerb {
         .build
 
     override protected def tagSubElements: immutable.Seq[TwimlElement] = value match {
-      case ValueNoun(noun)       => List(noun)
-      case ValueNouns(dialNouns) => dialNouns.nouns
-      case _                     => Nil
+      case ValueConference(conference) => List(conference)
+      case ValueNouns(dialNouns)       => dialNouns.nouns
+      case _                           => Nil
     }
 
     override protected def tagValue: Option[String] = value match {
