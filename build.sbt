@@ -67,7 +67,7 @@ lazy val `twilio-client` = project
         "org.scalamock" %% "scalamock"        % "7.5.5"  % Test,
         ("org.wiremock"  % "wiremock-jetty12" % "3.13.2" % Test)
           .exclude("com.google.guava", "guava"),
-        "com.google.guava" % "guava" % "33.7.2-jre" % Test,
+        "com.google.guava" % "guava" % "33.8.0-jre" % Test,
       ),
       dependencyOverrides ++= Seq(
         "commons-io"  % "commons-io" % "2.22.0" % Test,
