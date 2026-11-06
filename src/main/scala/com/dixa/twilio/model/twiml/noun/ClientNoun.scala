@@ -31,7 +31,7 @@ import scala.collection.immutable
   * @see
   *   https://www.twilio.com/docs/voice/twiml/client
   */
-sealed trait ClientNoun extends TwimlElement.Noun with DialVerb.DestinationNoun
+sealed trait ClientNoun extends DialVerb.DestinationNoun
 
 object ClientNoun {
 

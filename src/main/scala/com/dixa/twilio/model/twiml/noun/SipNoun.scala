@@ -31,7 +31,7 @@ import scala.collection.immutable
   * @see
   *   https://www.twilio.com/docs/voice/twiml/sip
   */
-sealed trait SipNoun extends TwimlElement.Noun with DialVerb.DestinationNoun
+sealed trait SipNoun extends DialVerb.DestinationNoun
 
 object SipNoun {
 

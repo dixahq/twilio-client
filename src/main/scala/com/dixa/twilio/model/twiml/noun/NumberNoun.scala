@@ -30,7 +30,7 @@ import scala.collection.immutable
   * @see
   *   https://www.twilio.com/docs/voice/twiml/number
   */
-sealed trait NumberNoun extends TwimlElement.Noun with DialVerb.DestinationNoun
+sealed trait NumberNoun extends DialVerb.DestinationNoun
 
 object NumberNoun {
 

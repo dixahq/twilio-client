@@ -40,10 +40,13 @@ trait DialVerb extends TwimlElement.Verb {
 
 object DialVerb {
 
-  /** Trait mixed in by the nouns that Twilio can dial together in one Dial verb: the Number, Sip
-    * and Client nouns.
+  /** Base of the nouns that Twilio can dial together in one Dial verb: the Number, Sip and Client
+    * nouns.
+    *
+    * The constructor is private to the twiml package, so code outside this library cannot add its
+    * own noun to a Dial verb.
     */
-  trait DestinationNoun extends TwimlElement.Noun
+  abstract class DestinationNoun private[twiml] () extends TwimlElement.Noun
 
   /** DialVerb specific phantom types, used to enforce build constraints compile time. */
   object PhantomTypes {
