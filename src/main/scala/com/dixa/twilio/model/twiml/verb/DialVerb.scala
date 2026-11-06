@@ -249,7 +249,7 @@ object DialVerb {
         sequential
       )
 
-    type BuilderWithSameTypes = Builder[B, S, R, C]
+    private type BuilderWithSameTypes = Builder[B, S, R, C]
 
     def withPhoneNumber(pn: PhoneNumberE164)(
         implicit evS: S =:= HasSingleAllowedValueAlreadyFalse
