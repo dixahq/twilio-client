@@ -150,7 +150,7 @@ object ConferenceNoun {
         recordingStatusCallbackEvent
       )
 
-    type BuilderWithSameTypes =
+    private type BuilderWithSameTypes =
       Builder[
         ConferenceFriendlyNameSet,
         WaitUrlSet,
