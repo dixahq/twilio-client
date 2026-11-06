@@ -19,7 +19,7 @@ import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.model.twiml.noun.{ClientNoun, NumberNoun, SipNoun}
 import com.dixa.twilio.model.twiml.verb.DialVerb
-import com.dixa.twilio.model.voice.{AlphanumericCallerId, Call, Conference}
+import com.dixa.twilio.model.voice.{AlphanumericCallerId, Call, ClientIdentity, Conference}
 import com.dixa.twilio.model.{HttpMethod, Region}
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -387,7 +387,7 @@ final class ResponseDialTest extends AnyWordSpec {
                     },
                     ClientNoun.build { clientBuilder =>
                       clientBuilder
-                        .withIdentity(ClientNoun.Identity.unsafe("agent-browser-123"))
+                        .withIdentity(ClientIdentity.unsafe("agent-browser-123"))
                         .build()
                     }
                   )
@@ -481,10 +481,10 @@ final class ResponseDialTest extends AnyWordSpec {
           responseBuilder
             .addDial { dialBuilder =>
               dialBuilder
-                .withCallerId(ClientNoun.Identity.unsafe("joey"))
+                .withCallerId(ClientIdentity.unsafe("joey"))
                 .withNouns(
                   DialVerb.Nouns(
-                    ClientNoun.build(_.withIdentity(ClientNoun.Identity.unsafe("jenny")).build())
+                    ClientNoun.build(_.withIdentity(ClientIdentity.unsafe("jenny")).build())
                   )
                 )
                 .build()

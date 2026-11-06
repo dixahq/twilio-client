@@ -18,7 +18,7 @@ package com.dixa.twilio.model.twiml.noun
 import com.dixa.twilio.model.twiml.TwimlConstraints.{Buildable, BuildableFalse, BuildableTrue}
 import com.dixa.twilio.model.twiml.TwimlElement
 import com.dixa.twilio.model.twiml.verb.DialVerb
-import com.dixa.twilio.model.{ConstrainedString, TwilioStringValue}
+import com.dixa.twilio.model.voice.ClientIdentity
 
 import scala.collection.immutable
 
@@ -35,23 +35,9 @@ sealed trait ClientNoun extends DialVerb.DestinationNoun
 
 object ClientNoun {
 
-  /** The identity of a client, the name that the client registered with.
-    *
-    * Twilio allows up to 256 chars.
-    */
-  final case class Identity private (override val toString: String)
-      extends ConstrainedString
-      with TwilioStringValue
+  final class Builder[B <: Buildable] private (identity: Option[ClientIdentity]) {
 
-  object Identity extends ConstrainedString.ConstrainedStringCompanionObject[Identity] {
-    override protected def constructInstance(wrapped: String): Identity = new Identity(wrapped)
-
-    override protected val maxLength: Option[Int] = Some(256)
-  }
-
-  final class Builder[B <: Buildable] private (identity: Option[Identity]) {
-
-    def withIdentity(identity: Identity): Builder[BuildableTrue] = new Builder(Some(identity))
+    def withIdentity(identity: ClientIdentity): Builder[BuildableTrue] = new Builder(Some(identity))
 
     def build()(
         implicit ev: B =:= BuildableTrue
@@ -67,7 +53,7 @@ object ClientNoun {
 
   def build(fun: BuildFunction): ClientNoun = fun(Builder.empty)
 
-  private final case class ClientNounImpl(identity: Identity) extends ClientNoun {
+  private final case class ClientNounImpl(identity: ClientIdentity) extends ClientNoun {
 
     override protected def tagName: String = "Client"
 

@@ -13,32 +13,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.dixa.twilio.model.twiml.noun
+package com.dixa.twilio.model.voice
 
 import org.scalatest.wordspec.AnyWordSpec
 
-final class ClientNounIdentityTest extends AnyWordSpec {
+final class ClientIdentityTest extends AnyWordSpec {
 
   private val length256Identity = "a" * 256
   private val length257Identity = "a" * 257
 
-  classOf[ClientNoun.Identity].getSimpleName should {
+  classOf[ClientIdentity].getSimpleName should {
 
     "return an instance if created with 256 chars, the maximum Twilio allows" in {
       assert(
-        ClientNoun.Identity.safe(length256Identity).map(_.twilioString) == Right(length256Identity)
+        ClientIdentity.safe(length256Identity).map(_.twilioString) == Right(length256Identity)
       )
     }
 
     "return a Left if created with 257 chars" in {
       assert(
-        ClientNoun.Identity.safe(length257Identity) ==
-          Left(ClientNoun.Identity.ToLongException(length257Identity, 256))
+        ClientIdentity.safe(length257Identity) ==
+          Left(ClientIdentity.ToLongException(length257Identity, 256))
       )
     }
 
     "not allow instances to be created with the default apply method of case classes" in {
-      assertTypeError("""ClientNoun.Identity("joey")""")
+      assertTypeError("""ClientIdentity("joey")""")
     }
   }
 }

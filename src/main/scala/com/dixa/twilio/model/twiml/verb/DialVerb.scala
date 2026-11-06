@@ -20,8 +20,8 @@ import com.dixa.twilio.model.phonenumber.PhoneNumberE164
 import com.dixa.twilio.model.twiml.TwimlConstraints._
 import com.dixa.twilio.model.twiml.TwimlElement
 import com.dixa.twilio.model.twiml.TwimlElement.TagAttributeBuilder
-import com.dixa.twilio.model.twiml.noun.{ClientNoun, ConferenceNoun}
-import com.dixa.twilio.model.voice.AlphanumericCallerId
+import com.dixa.twilio.model.twiml.noun.ConferenceNoun
+import com.dixa.twilio.model.voice.{AlphanumericCallerId, ClientIdentity}
 import com.dixa.twilio.model.{EnumWithTwilioString, HttpMethod, TwilioStringValue}
 
 import scala.collection.immutable
@@ -291,7 +291,7 @@ object DialVerb {
       *
       * Twilio receives it as `client:<identity>`.
       */
-    def withCallerId(identity: ClientNoun.Identity): BuilderWithSameTypes =
+    def withCallerId(identity: ClientIdentity): BuilderWithSameTypes =
       copy(callerId = Some(s"client:${identity.twilioString}"))
 
     /** Set a text as the caller ID, for a Dial to a Sip noun. See
