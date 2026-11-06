@@ -276,14 +276,10 @@ final class ResponseDialTest extends AnyWordSpec {
             .addDial { dialBuilder =>
               dialBuilder
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(
-                      NumberNoun.build { numberBuilder =>
-                        numberBuilder
-                          .withPhoneNumber(PhoneNumberE164.unsafe("+15559999999"))
-                          .build()
-                      }
-                    )
+                  DialVerb.Nouns(
+                    NumberNoun.build { numberBuilder =>
+                      numberBuilder.withPhoneNumber(PhoneNumberE164.unsafe("+15559999999")).build()
+                    }
                   )
                 )
                 .build()
@@ -318,12 +314,10 @@ final class ResponseDialTest extends AnyWordSpec {
                 .withTimeout(DialVerb.Timeout.unsafe(30))
                 .withSequential(true)
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(
-                      numberNoun("+15551111111"),
-                      numberNoun("+15552222222"),
-                      numberNoun("+15553333333")
-                    )
+                  DialVerb.Nouns(
+                    numberNoun("+15551111111"),
+                    numberNoun("+15552222222"),
+                    numberNoun("+15553333333")
                   )
                 )
                 .build()
@@ -363,9 +357,7 @@ final class ResponseDialTest extends AnyWordSpec {
                 .withTimeout(DialVerb.Timeout.unsafe(30))
                 .withSequential(true)
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(numberNoun("+15551111111"), numberNoun("+15552222222"))
-                  )
+                  DialVerb.Nouns(numberNoun("+15551111111"), numberNoun("+15552222222"))
                 )
                 .build()
             }
@@ -388,18 +380,16 @@ final class ResponseDialTest extends AnyWordSpec {
                 .withCallerId(callerIdPhoneNumber)
                 .withTimeout(DialVerb.Timeout.unsafe(30))
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(
-                      numberNoun("+15551111111"),
-                      SipNoun.build { sipBuilder =>
-                        sipBuilder.withUri(SipNoun.Uri.unsafe("sip:agent@pbx.company.com")).build()
-                      },
-                      ClientNoun.build { clientBuilder =>
-                        clientBuilder
-                          .withIdentity(ClientNoun.Identity.unsafe("agent-browser-123"))
-                          .build()
-                      }
-                    )
+                  DialVerb.Nouns(
+                    numberNoun("+15551111111"),
+                    SipNoun.build { sipBuilder =>
+                      sipBuilder.withUri(SipNoun.Uri.unsafe("sip:agent@pbx.company.com")).build()
+                    },
+                    ClientNoun.build { clientBuilder =>
+                      clientBuilder
+                        .withIdentity(ClientNoun.Identity.unsafe("agent-browser-123"))
+                        .build()
+                    }
                   )
                 )
                 .build()
@@ -433,20 +423,18 @@ final class ResponseDialTest extends AnyWordSpec {
             .addDial { dialBuilder =>
               dialBuilder
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(
-                      SipNoun.build { sipBuilder =>
-                        sipBuilder
-                          .withUri(SipNoun.Uri.unsafe("sip:+15559999999@kamailio.example.com"))
-                          .withCredentials(
-                            SipNoun.Credentials(
-                              SipNoun.Username("trunk-user"),
-                              SipNoun.Password("pa\"'<>&ss")
-                            )
+                  DialVerb.Nouns(
+                    SipNoun.build { sipBuilder =>
+                      sipBuilder
+                        .withUri(SipNoun.Uri.unsafe("sip:+15559999999@kamailio.example.com"))
+                        .withCredentials(
+                          SipNoun.Credentials(
+                            SipNoun.Username("trunk-user"),
+                            SipNoun.Password("pa\"'<>&ss")
                           )
-                          .build()
-                      }
-                    )
+                        )
+                        .build()
+                    }
                   )
                 )
                 .build()
@@ -474,7 +462,7 @@ final class ResponseDialTest extends AnyWordSpec {
                 )
                 .withRecordingStatusCallbackMethod(HttpMethod.Post)
                 .withTimeout(DialVerb.Timeout.unsafe(30))
-                .withNouns(DialVerb.Nouns.unsafe(List(numberNoun("+15559999999"))))
+                .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
                 .build()
             }
             .buildVerified()
@@ -495,10 +483,8 @@ final class ResponseDialTest extends AnyWordSpec {
               dialBuilder
                 .withCallerId(ClientNoun.Identity.unsafe("joey"))
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(
-                      ClientNoun.build(_.withIdentity(ClientNoun.Identity.unsafe("jenny")).build())
-                    )
+                  DialVerb.Nouns(
+                    ClientNoun.build(_.withIdentity(ClientNoun.Identity.unsafe("jenny")).build())
                   )
                 )
                 .build()
@@ -521,10 +507,8 @@ final class ResponseDialTest extends AnyWordSpec {
               dialBuilder
                 .withCallerId(AlphanumericCallerId.unsafe("Dixa_Support-1.0+"))
                 .withNouns(
-                  DialVerb.Nouns.unsafe(
-                    List(
-                      SipNoun.build(_.withUri(SipNoun.Uri.unsafe("sip:jack@example.com")).build())
-                    )
+                  DialVerb.Nouns(
+                    SipNoun.build(_.withUri(SipNoun.Uri.unsafe("sip:jack@example.com")).build())
                   )
                 )
                 .build()
@@ -792,7 +776,7 @@ final class ResponseDialTest extends AnyWordSpec {
       assertTypeError(
         """DialVerb.build(
           |  _.withRecordingStatusCallback(CallbackUrl("/recording"))
-          |    .withNouns(DialVerb.Nouns.unsafe(List(numberNoun("+15559999999"))))
+          |    .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
           |    .build()
           |)""".stripMargin
       )
@@ -803,7 +787,7 @@ final class ResponseDialTest extends AnyWordSpec {
         """DialVerb.build(
           |  _.withRecord(DialVerb.Record.RecordFromAnswer)
           |    .withRecordingStatusCallbackMethod(HttpMethod.Post)
-          |    .withNouns(DialVerb.Nouns.unsafe(List(numberNoun("+15559999999"))))
+          |    .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
           |    .build()
           |)""".stripMargin
       )
@@ -811,11 +795,9 @@ final class ResponseDialTest extends AnyWordSpec {
 
     "Don't allow a Conference noun among the nouns of withNouns" in {
       assertTypeError(
-        """DialVerb.Nouns.unsafe(
-          |  List(
-          |    com.dixa.twilio.model.twiml.noun.ConferenceNoun
-          |      .build(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
-          |  )
+        """DialVerb.Nouns(
+          |  com.dixa.twilio.model.twiml.noun.ConferenceNoun
+          |    .build(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
           |)""".stripMargin
       )
     }
@@ -824,7 +806,7 @@ final class ResponseDialTest extends AnyWordSpec {
       assertTypeError(
         """DialVerb.build(
           |  _.withConference(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
-          |    .withNouns(DialVerb.Nouns.unsafe(List(numberNoun("+15559999999"))))
+          |    .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
           |    .build()
           |)""".stripMargin
       )
@@ -833,7 +815,7 @@ final class ResponseDialTest extends AnyWordSpec {
     "Don't allow withConference after withNouns" in {
       assertTypeError(
         """DialVerb.build(
-          |  _.withNouns(DialVerb.Nouns.unsafe(List(numberNoun("+15559999999"))))
+          |  _.withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
           |    .withConference(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
           |    .build()
           |)""".stripMargin

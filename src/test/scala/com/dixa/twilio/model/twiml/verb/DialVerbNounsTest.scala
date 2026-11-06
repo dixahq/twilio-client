@@ -28,7 +28,49 @@ final class DialVerbNounsTest extends AnyWordSpec {
       )
     }
 
+  private val elevenNouns = numberNouns(11)
+
   classOf[DialVerb.Nouns].getSimpleName should {
+
+    "build an instance from 1 noun with apply" in {
+      val nouns = numberNouns(1)
+      assert(DialVerb.Nouns(nouns(0)).nouns == nouns)
+    }
+
+    "build an instance from 10 nouns with apply, in the order given" in {
+      val nouns  = numberNouns(10)
+      val result = DialVerb.Nouns(
+        nouns(0),
+        nouns(1),
+        nouns(2),
+        nouns(3),
+        nouns(4),
+        nouns(5),
+        nouns(6),
+        nouns(7),
+        nouns(8),
+        nouns(9)
+      )
+      assert(result.nouns == nouns)
+    }
+
+    "not compile apply with 11 nouns, one more than Twilio allows in one Dial" in {
+      assertTypeError(
+        """DialVerb.Nouns(
+          |  elevenNouns(0),
+          |  elevenNouns(1),
+          |  elevenNouns(2),
+          |  elevenNouns(3),
+          |  elevenNouns(4),
+          |  elevenNouns(5),
+          |  elevenNouns(6),
+          |  elevenNouns(7),
+          |  elevenNouns(8),
+          |  elevenNouns(9),
+          |  elevenNouns(10)
+          |)""".stripMargin
+      )
+    }
 
     "return a Left if created without any noun" in {
       assert(DialVerb.Nouns.safe(Nil) == Left(DialVerb.Nouns.Err.CountOutOfRange(0)))
@@ -43,21 +85,16 @@ final class DialVerbNounsTest extends AnyWordSpec {
     }
 
     "return a Left if created with 11 nouns" in {
-      assert(
-        DialVerb.Nouns.safe(numberNouns(11)) ==
-          Left(DialVerb.Nouns.Err.CountOutOfRange(11))
-      )
+      assert(DialVerb.Nouns.safe(elevenNouns) == Left(DialVerb.Nouns.Err.CountOutOfRange(11)))
     }
 
     "throw an exception if created with 11 nouns via the unsafe method" in {
-      intercept[DialVerb.Nouns.Err.CountOutOfRange](
-        DialVerb.Nouns.unsafe(numberNouns(11))
-      )
+      intercept[DialVerb.Nouns.Err.CountOutOfRange](DialVerb.Nouns.unsafe(elevenNouns))
     }
 
-    "not allow instances to be created without the count check" in {
-      assertDoesNotCompile("DialVerb.Nouns(numberNouns(11))")
-      assertDoesNotCompile("new DialVerb.Nouns(numberNouns(11))")
+    "not allow instances to be created from a list without the count check" in {
+      assertDoesNotCompile("DialVerb.Nouns(elevenNouns)")
+      assertDoesNotCompile("new DialVerb.Nouns(elevenNouns)")
     }
   }
 }

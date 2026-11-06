@@ -115,6 +115,91 @@ object DialVerb {
           with Err
     }
 
+    /** Build the nouns of a Dial verb from 1 to 10 nouns, when the number of nouns is known as the
+      * code is written.
+      *
+      * There is one apply method for each number of nouns, so the compiler checks the count. For a
+      * list of nouns, use [[safe]] or [[unsafe]].
+      */
+    def apply(noun1: DestinationNoun): Nouns = new Nouns(List(noun1))
+
+    def apply(noun1: DestinationNoun, noun2: DestinationNoun): Nouns =
+      new Nouns(List(noun1, noun2))
+
+    def apply(noun1: DestinationNoun, noun2: DestinationNoun, noun3: DestinationNoun): Nouns =
+      new Nouns(List(noun1, noun2, noun3))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun
+    ): Nouns = new Nouns(List(noun1, noun2, noun3, noun4))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun,
+        noun5: DestinationNoun
+    ): Nouns = new Nouns(List(noun1, noun2, noun3, noun4, noun5))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun,
+        noun5: DestinationNoun,
+        noun6: DestinationNoun
+    ): Nouns = new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun,
+        noun5: DestinationNoun,
+        noun6: DestinationNoun,
+        noun7: DestinationNoun
+    ): Nouns = new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6, noun7))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun,
+        noun5: DestinationNoun,
+        noun6: DestinationNoun,
+        noun7: DestinationNoun,
+        noun8: DestinationNoun
+    ): Nouns = new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6, noun7, noun8))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun,
+        noun5: DestinationNoun,
+        noun6: DestinationNoun,
+        noun7: DestinationNoun,
+        noun8: DestinationNoun,
+        noun9: DestinationNoun
+    ): Nouns = new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6, noun7, noun8, noun9))
+
+    def apply(
+        noun1: DestinationNoun,
+        noun2: DestinationNoun,
+        noun3: DestinationNoun,
+        noun4: DestinationNoun,
+        noun5: DestinationNoun,
+        noun6: DestinationNoun,
+        noun7: DestinationNoun,
+        noun8: DestinationNoun,
+        noun9: DestinationNoun,
+        noun10: DestinationNoun
+    ): Nouns =
+      new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6, noun7, noun8, noun9, noun10))
+
     def safe(nouns: immutable.Seq[DestinationNoun]): Either[Err, Nouns] =
       if (nouns.isEmpty || nouns.size > 10) Left(Err.CountOutOfRange(nouns.size))
       else Right(new Nouns(nouns))
