@@ -56,7 +56,7 @@ object ConstrainedString {
 
   abstract class ToLongException(wrapped: String, maxLength: Int)
       extends IllegalArgumentException(
-        s"$wrapped does not conform to maxLength of $maxLength, as it has length: ${wrapped.length}"
+        s"A value of length ${wrapped.length} does not conform to maxLength of $maxLength"
       )
       with CreationException
 

@@ -32,6 +32,12 @@ final class SipNounTest extends AnyWordSpec {
       assert(SipNoun.Uri.safe(length255Uri) == Left(SipNoun.Uri.ToLongException(length255Uri, 254)))
     }
 
+    "keep the URI out of the message and the toString of a too-long error, so it is not logged by accident" in {
+      val error = SipNoun.Uri.safe(length255Uri).swap.toOption.get
+      assert(error.getMessage == "A value of length 255 does not conform to maxLength of 254")
+      assert(!error.toString.contains(length255Uri))
+    }
+
     "not allow instances to be created with the default apply method of case classes" in {
       assertTypeError("""SipNoun.Uri("sip:jack@example.com")""")
     }
