@@ -65,9 +65,7 @@ object ConstrainedString {
     * A Decimal value is understood as a value only containing digits and optional a single `.`
     */
   abstract class NotDecimalException(wrapped: String)
-      extends IllegalArgumentException(
-        s"$wrapped is not a deciaml value as required"
-      )
+      extends IllegalArgumentException("The value is not a decimal value as required")
       with CreationException
 
   /** Error to be returned, if wrapped string is expected to only contain a specific set of chars,
@@ -75,18 +73,20 @@ object ConstrainedString {
     */
   abstract class InvalidCharException(wrapped: String, allowedChars: Set[Char])
       extends IllegalArgumentException(
-        s"$wrapped contains invalid char. Valid chars are: $allowedChars"
+        s"The value holds a char that is not allowed. Allowed chars are: $allowedChars"
       )
       with CreationException
 
   /** Error to be returned if wrapped string is expected to end on a specific suffix, but does not.
     */
   abstract class InvalidSuffixException(wrapped: String, expectedSuffix: String)
-      extends IllegalArgumentException(s"$wrapped does not have required suffix: $expectedSuffix")
+      extends IllegalArgumentException(
+        s"The value does not end with the required suffix $expectedSuffix"
+      )
       with CreationException
 
   abstract class NotIpv4Exception(wrapped: String)
-      extends IllegalArgumentException(s"$wrapped does not represent a Ipv4 address as required.")
+      extends IllegalArgumentException("The value does not represent an IPv4 address as required")
       with CreationException
 
   // format: off

@@ -43,6 +43,12 @@ final class SipDomainDomainNameTest extends AnyWordSpec {
       )
     }
 
+    "keep the value out of the message of an invalid-suffix error, so it is not logged by accident" in {
+      val error = SipDomain.DomainName.safe("validChars.but.wrong.suffix").swap.toOption.get
+      assert(error.getMessage == "The value does not end with the required suffix .sip.twilio.com")
+      assert(!error.toString.contains("validChars.but.wrong.suffix"))
+    }
+
     "or throw an created with a value that is not ending in via the unsafe method" in {
       intercept[SipDomain.DomainName.InvalidSuffixException](
         SipDomain.DomainName.unsafe("validChars.but.wrong.suffix")

@@ -38,6 +38,16 @@ final class AlphanumericCallerIdTest extends AnyWordSpec {
       )
     }
 
+    "keep the value out of the message of an invalid-char error, so it is not logged by accident" in {
+      val error = AlphanumericCallerId.safe("support@dixa").swap.toOption.get
+      assert(
+        error.getMessage.startsWith(
+          "The value holds a char that is not allowed. Allowed chars are: "
+        )
+      )
+      assert(!error.toString.contains("support@dixa"))
+    }
+
     "not allow instances to be created with the default apply method of case classes" in {
       assertTypeError("""AlphanumericCallerId("Dixa")""")
     }

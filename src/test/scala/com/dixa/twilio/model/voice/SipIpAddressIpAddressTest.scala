@@ -33,6 +33,12 @@ final class SipIpAddressIpAddressTest extends AnyWordSpec {
       val e      = result.swap.getOrElse(fail("Expected error here"))
       assert(e == SipIpAddress.IpAddress.NotIpv4Exception(in))
     }
+
+    "keep the value out of the message of a not-IPv4 error, so it is not logged by accident" in {
+      val error = SipIpAddress.IpAddress.safe("192.168.1.256").swap.toOption.get
+      assert(error.getMessage == "The value does not represent an IPv4 address as required")
+      assert(!error.toString.contains("192.168.1.256"))
+    }
   }
 
 }
