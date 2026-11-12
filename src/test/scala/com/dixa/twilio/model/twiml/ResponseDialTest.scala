@@ -17,11 +17,19 @@ package com.dixa.twilio.model.twiml
 
 import com.dixa.twilio.model.callback.CallbackUrl
 import com.dixa.twilio.model.phonenumber.PhoneNumberE164
-import com.dixa.twilio.model.voice.{Call, Conference}
+import com.dixa.twilio.model.twiml.noun.{ClientNoun, NumberNoun, SipNoun}
+import com.dixa.twilio.model.twiml.verb.DialVerb
+import com.dixa.twilio.model.voice.{AlphanumericCallerId, Call, ClientIdentity, Conference}
 import com.dixa.twilio.model.{HttpMethod, Region}
 import org.scalatest.wordspec.AnyWordSpec
 
 final class ResponseDialTest extends AnyWordSpec {
+
+  private val callerIdPhoneNumber =
+    PhoneNumberE164.unsafe("+18005551212")
+
+  private def numberNoun(phoneNumber: String): NumberNoun =
+    NumberNoun.build(_.withPhoneNumber(PhoneNumberE164.unsafe(phoneNumber)).build())
 
   s"${classOf[Response].getSimpleName}" when {
 
@@ -257,6 +265,260 @@ final class ResponseDialTest extends AnyWordSpec {
         // format: off
         val expectedCompactXml =
           s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial>$pn</Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to dial a Number noun without any attribute" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withNouns(
+                  DialVerb.Nouns(
+                    NumberNoun.build { numberBuilder =>
+                      numberBuilder.withPhoneNumber(PhoneNumberE164.unsafe("+15559999999")).build()
+                    }
+                  )
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Dial>
+             |    <Number>+15559999999</Number>
+             |  </Dial>
+             |</Response>""".stripMargin
+
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Number>+15559999999</Number></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to dial several numbers one after the other, with callerId and timeout" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withCallerId(callerIdPhoneNumber)
+                .withTimeout(DialVerb.Timeout.unsafe(30))
+                .withSequential(true)
+                .withNouns(
+                  DialVerb.Nouns(
+                    numberNoun("+15551111111"),
+                    numberNoun("+15552222222"),
+                    numberNoun("+15553333333")
+                  )
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Dial callerId="+18005551212" timeout="30" sequential="true">
+             |    <Number>+15551111111</Number>
+             |    <Number>+15552222222</Number>
+             |    <Number>+15553333333</Number>
+             |  </Dial>
+             |</Response>""".stripMargin
+
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial callerId="+18005551212" timeout="30" sequential="true"><Number>+15551111111</Number><Number>+15552222222</Number><Number>+15553333333</Number></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to set the action that Twilio requests when the Dial ends" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withCallerId(callerIdPhoneNumber)
+                .withAction(
+                  CallbackUrl("/v1/twilio/forward/12345/status?parent=voicemail-node-123")
+                )
+                .withTimeout(DialVerb.Timeout.unsafe(30))
+                .withSequential(true)
+                .withNouns(
+                  DialVerb.Nouns(numberNoun("+15551111111"), numberNoun("+15552222222"))
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial callerId="+18005551212" action="/v1/twilio/forward/12345/status?parent=voicemail-node-123" timeout="30" sequential="true"><Number>+15551111111</Number><Number>+15552222222</Number></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to dial a Number, a Sip and a Client noun at the same time" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withCallerId(callerIdPhoneNumber)
+                .withTimeout(DialVerb.Timeout.unsafe(30))
+                .withNouns(
+                  DialVerb.Nouns(
+                    numberNoun("+15551111111"),
+                    SipNoun.build { sipBuilder =>
+                      sipBuilder.withUri(SipNoun.Uri.unsafe("sip:agent@pbx.company.com")).build()
+                    },
+                    ClientNoun.build { clientBuilder =>
+                      clientBuilder
+                        .withIdentity(ClientIdentity.unsafe("agent-browser-123"))
+                        .build()
+                    }
+                  )
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        val expectedPrettyXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?>
+             |<Response>
+             |  <Dial callerId="+18005551212" timeout="30">
+             |    <Number>+15551111111</Number>
+             |    <Sip>sip:agent@pbx.company.com</Sip>
+             |    <Client>agent-browser-123</Client>
+             |  </Dial>
+             |</Response>""".stripMargin
+
+        assert(result.xmlPretty === expectedPrettyXml)
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial callerId="+18005551212" timeout="30"><Number>+15551111111</Number><Sip>sip:agent@pbx.company.com</Sip><Client>agent-browser-123</Client></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to dial a Sip noun with credentials, escaping reserved XML chars in them" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withNouns(
+                  DialVerb.Nouns(
+                    SipNoun.build { sipBuilder =>
+                      sipBuilder
+                        .withUri(SipNoun.Uri.unsafe("sip:+15559999999@kamailio.example.com"))
+                        .withCredentials(
+                          SipNoun.Credentials(
+                            SipNoun.Username("trunk-user"),
+                            SipNoun.Password("pa\"'<>&ss")
+                          )
+                        )
+                        .build()
+                    }
+                  )
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial><Sip username="trunk-user" password="pa&quot;&apos;&lt;&gt;&amp;ss">sip:+15559999999@kamailio.example.com</Sip></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to record the dialed call and get a recording status callback" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withCallerId(callerIdPhoneNumber)
+                .withRecord(DialVerb.Record.RecordFromAnswer)
+                .withRecordingStatusCallback(
+                  CallbackUrl("/v1/twilio/incoming/12345/recording?recordingType=callrecording")
+                )
+                .withRecordingStatusCallbackMethod(HttpMethod.Post)
+                .withTimeout(DialVerb.Timeout.unsafe(30))
+                .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
+                .build()
+            }
+            .buildVerified()
+        }
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial callerId="+18005551212" record="record-from-answer" recordingStatusCallbackMethod="POST" recordingStatusCallback="/v1/twilio/incoming/12345/recording?recordingType=callrecording" timeout="30"><Number>+15559999999</Number></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to use a client identifier as callerId" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withCallerId(ClientIdentity.unsafe("joey"))
+                .withNouns(
+                  DialVerb.Nouns(
+                    ClientNoun.build(_.withIdentity(ClientIdentity.unsafe("jenny")).build())
+                  )
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial callerId="client:joey"><Client>jenny</Client></Dial></Response>"""
+        // format: on
+        assert(result.xmlCompact == expectedCompactXml)
+      }
+
+      "Be able to use an alphanumeric callerId for a Sip noun" in {
+
+        val result: Response.Verified = Response.build { responseBuilder =>
+          responseBuilder
+            .addDial { dialBuilder =>
+              dialBuilder
+                .withCallerId(AlphanumericCallerId.unsafe("Dixa_Support-1.0+"))
+                .withNouns(
+                  DialVerb.Nouns(
+                    SipNoun.build(_.withUri(SipNoun.Uri.unsafe("sip:jack@example.com")).build())
+                  )
+                )
+                .build()
+            }
+            .buildVerified()
+        }
+
+        // format: off
+        val expectedCompactXml =
+          s"""<?xml version="1.0" encoding="UTF-8"?><Response><Dial callerId="Dixa_Support-1.0+"><Sip>sip:jack@example.com</Sip></Dial></Response>"""
         // format: on
         assert(result.xmlCompact == expectedCompactXml)
       }
@@ -508,6 +770,72 @@ final class ResponseDialTest extends AnyWordSpec {
           |          .buildVerified()
           |      }""".stripMargin
       )
+    }
+
+    "Don't allow withRecordingStatusCallback on a Dial, if withRecord has not been called first" in {
+      assertTypeError(
+        """DialVerb.build(
+          |  _.withRecordingStatusCallback(CallbackUrl("/recording"))
+          |    .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
+          |    .build()
+          |)""".stripMargin
+      )
+    }
+
+    "Don't allow withRecordingStatusCallbackMethod on a Dial, if withRecordingStatusCallback has not been called first" in {
+      assertTypeError(
+        """DialVerb.build(
+          |  _.withRecord(DialVerb.Record.RecordFromAnswer)
+          |    .withRecordingStatusCallbackMethod(HttpMethod.Post)
+          |    .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
+          |    .build()
+          |)""".stripMargin
+      )
+    }
+
+    "Don't allow a Conference noun among the nouns of withNouns" in {
+      assertTypeError(
+        """DialVerb.Nouns(
+          |  com.dixa.twilio.model.twiml.noun.ConferenceNoun
+          |    .build(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
+          |)""".stripMargin
+      )
+    }
+
+    "Don't allow withNouns after withConference" in {
+      assertTypeError(
+        """DialVerb.build(
+          |  _.withConference(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
+          |    .withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
+          |    .build()
+          |)""".stripMargin
+      )
+    }
+
+    "Don't allow withConference after withNouns" in {
+      assertTypeError(
+        """DialVerb.build(
+          |  _.withNouns(DialVerb.Nouns(numberNoun("+15559999999")))
+          |    .withConference(_.withConferenceFriendlyName(Conference.FriendlyName("c")).build())
+          |    .build()
+          |)""".stripMargin
+      )
+    }
+
+    "Don't allow building a Number noun without a phone number" in {
+      assertTypeError("""NumberNoun.build(_.build())""")
+    }
+
+    "Don't allow building a Sip noun without a URI" in {
+      assertTypeError(
+        """SipNoun.build(
+          |  _.withCredentials(SipNoun.Credentials(SipNoun.Username("u"), SipNoun.Password("p"))).build()
+          |)""".stripMargin
+      )
+    }
+
+    "Don't allow building a Client noun without an identity" in {
+      assertTypeError("""ClientNoun.build(_.build())""")
     }
 
   }
