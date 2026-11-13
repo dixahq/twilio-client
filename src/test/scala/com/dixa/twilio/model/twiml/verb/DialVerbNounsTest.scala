@@ -88,6 +88,13 @@ final class DialVerbNounsTest extends AnyWordSpec {
       assert(DialVerb.Nouns.fromSeq(elevenNouns) == Left(DialVerb.Nouns.Err.CountOutOfRange(11)))
     }
 
+    "say in the message what the limits are" in {
+      assert(
+        DialVerb.Nouns.fromSeq(elevenNouns).swap.toOption.get.getMessage ==
+          "A Dial verb needs 1 to 10 nouns, not 11."
+      )
+    }
+
     "throw an exception if created with 11 nouns via fromSeqUnsafe" in {
       intercept[DialVerb.Nouns.Err.CountOutOfRange](DialVerb.Nouns.fromSeqUnsafe(elevenNouns))
     }

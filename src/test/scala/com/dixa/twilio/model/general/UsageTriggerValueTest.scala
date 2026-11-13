@@ -46,6 +46,12 @@ final class UsageTriggerValueTest extends AnyWordSpec {
       assert(instance == Left(UsageTrigger.TriggerValue.NotDecimalException("Hello")))
     }
 
+    "keep the value out of the message of a not-decimal error, so it is not logged by accident" in {
+      val error = UsageTrigger.TriggerValue.safe("Hello").swap.toOption.get
+      assert(error.getMessage == "The value is not a decimal value as required")
+      assert(!error.toString.contains("Hello"))
+    }
+
     "do not allow instance to be created with the constructor" in {
       assertTypeError("""new UsageTrigger.TriggerValue("bla")""")
     }

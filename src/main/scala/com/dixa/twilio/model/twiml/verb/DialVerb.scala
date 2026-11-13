@@ -76,7 +76,8 @@ object DialVerb {
 
   /** How many seconds Twilio lets the dialed party ring, before the Dial ends as not answered.
     *
-    * Twilio allows 5 to 600 seconds, and uses 30 seconds when the attribute is absent.
+    * Twilio allows `minSeconds` to `maxSeconds` seconds, and uses 30 seconds when the attribute is
+    * absent.
     */
   final class Timeout private (val seconds: Int) extends TwilioStringValue {
     override def toString: String = seconds.toString
@@ -84,34 +85,46 @@ object DialVerb {
 
   object Timeout {
 
+    val minSeconds: Int = 5
+
+    val maxSeconds: Int = 600
+
     sealed trait Err extends RuntimeException
     object Err {
-      final case class NumberOutOfRange(seconds: Int)
+      final case class NumberOutOfRange(seconds: Long)
           extends IllegalArgumentException(
-            s"$seconds is not between 5 and 600 seconds as required for the timeout of a Dial."
+            s"$seconds is not between $minSeconds and $maxSeconds seconds " +
+              "as required for the timeout of a Dial."
           )
           with Err
     }
 
-    def safe(seconds: Int): Either[Err, Timeout] =
-      if (seconds < 5 || seconds > 600) Left(Err.NumberOutOfRange(seconds))
-      else Right(new Timeout(seconds))
+    /** The seconds are a Long, so that a value too large for an Int is out of range as well. */
+    def safe(seconds: Long): Either[Err, Timeout] =
+      if (seconds < minSeconds || seconds > maxSeconds) Left(Err.NumberOutOfRange(seconds))
+      else Right(new Timeout(seconds.toInt))
 
-    def unsafe(seconds: Int): Timeout = safe(seconds).toTry.get
+    def unsafe(seconds: Long): Timeout = safe(seconds).toTry.get
   }
 
   /** The Number, Sip and Client nouns that one Dial verb calls.
     *
-    * Twilio allows 1 to 10 nouns in one Dial verb, also of different types.
+    * Twilio allows `minCount` to `maxCount` nouns in one Dial verb, also of different types.
     */
   final class Nouns private (val nouns: immutable.Seq[DestinationNoun])
 
   object Nouns {
 
+    val minCount: Int = 1
+
+    val maxCount: Int = 10
+
     sealed trait Err extends RuntimeException
     object Err {
       final case class CountOutOfRange(count: Int)
-          extends IllegalArgumentException(s"A Dial verb needs 1 to 10 nouns, not $count.")
+          extends IllegalArgumentException(
+            s"A Dial verb needs $minCount to $maxCount nouns, not $count."
+          )
           with Err
     }
 
@@ -201,7 +214,7 @@ object DialVerb {
       new Nouns(List(noun1, noun2, noun3, noun4, noun5, noun6, noun7, noun8, noun9, noun10))
 
     def fromSeq(nouns: immutable.Seq[DestinationNoun]): Either[Err, Nouns] =
-      if (nouns.isEmpty || nouns.size > 10) Left(Err.CountOutOfRange(nouns.size))
+      if (nouns.size < minCount || nouns.size > maxCount) Left(Err.CountOutOfRange(nouns.size))
       else Right(new Nouns(nouns))
 
     def fromSeqUnsafe(nouns: immutable.Seq[DestinationNoun]): Nouns = fromSeq(nouns).toTry.get

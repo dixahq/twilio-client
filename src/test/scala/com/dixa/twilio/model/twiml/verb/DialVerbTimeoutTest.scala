@@ -33,6 +33,20 @@ final class DialVerbTimeoutTest extends AnyWordSpec {
       assert(DialVerb.Timeout.safe(600).map(_.seconds) == Right(600))
     }
 
+    "return a Left for seconds that do not fit an Int" in {
+      assert(
+        DialVerb.Timeout.safe(Int.MaxValue.toLong + 1) ==
+          Left(DialVerb.Timeout.Err.NumberOutOfRange(2147483648L))
+      )
+    }
+
+    "say in the message what the limits are" in {
+      assert(
+        DialVerb.Timeout.safe(4).swap.toOption.get.getMessage ==
+          "4 is not between 5 and 600 seconds as required for the timeout of a Dial."
+      )
+    }
+
     "return a Left if created with 601 seconds, above Twilio's maximum of 600" in {
       assert(DialVerb.Timeout.safe(601) == Left(DialVerb.Timeout.Err.NumberOutOfRange(601)))
     }
